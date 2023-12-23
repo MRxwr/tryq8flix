@@ -1,3 +1,0 @@
-<?php
-header('LOCATION: error');
-?>
