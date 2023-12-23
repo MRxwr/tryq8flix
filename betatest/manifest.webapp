@@ -1,0 +1,22 @@
+{
+  "name": "TRYQ8FLiX",
+  "short_name": "Q8FLiX",
+  "description": "a web app for all your favourite movies and tvshows",
+  "icons": [
+    {
+      "src": "images/logo.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    // ...
+    {
+      "src": "images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.php",
+  "display": "fullscreen",
+  "theme_color": "#2e2e2e",
+  "background_color": "#2e2e2e"
+}

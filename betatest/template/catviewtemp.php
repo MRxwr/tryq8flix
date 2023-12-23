@@ -1,0 +1,1 @@
+<div class="w3-quarterindex" style="padding: 5px; align-items: center;"> <a href="category.php?id=<?php echo $row["id"] ?>"><img src="<?php echo $row["poster"] ?>" style="width:100%" height="250px"></a></div>

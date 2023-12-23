@@ -1,0 +1,119 @@
+<?php
+include('../languages/lang_config.php');
+include('../admin/config/apply.php');
+include('../includes/functions.php');
+if(isset($_POST['submit']))
+{
+     $package_id = $obj->sanitize($conn,$_POST['id']);
+			$booking_date = $obj->sanitize($conn,$_POST['booking_date']);
+			$date = explode('-',$booking_date);
+			$booking_date = $date[2].'-'.$date[1].'-'.$date[0];
+			$booking_time = $_POST['booking_time'];
+			if(isset($_POST['is_filming'])){ $is_filming = $_POST['is_filming']; }else{ $is_filming =0; }
+			$customer_name = $_POST['customer_name'];
+			$customer_email = $_POST['customer_email'];
+			$mobile_number = $_POST['mobile_number'];
+			if(isset($_POST['baby_name'])){ $baby_name = $_POST['baby_name']; }else{ $baby_name =''; }
+			if(isset($_POST['baby_age'])){ $baby_age = $_POST['baby_age']; }else{ $baby_age =''; }
+			if(isset($_POST['instructions'])){ $instructions = $_POST['instructions']; }else{ $instructions =''; }
+					$created_at = date('Y-m-d H:i:s');
+		
+			if($is_filming == 1){
+				$booking_price = $_POST['booking_price'];
+				$hid_extra_items = $_POST['hid_extra_items'];
+				 $rows = json_decode($hid_extra_items); 
+                        foreach($rows as $row ){
+                           $booking_price = $booking_price + $row->price;
+                        }
+			} else {
+				$booking_price = $_POST['booking_price'];
+      }
+      $package = get_packages_details($package_id);
+      $package_title = $package['title_'.$_SESSION['lang']];
+      $customer_mobile=$mobile_number;
+    
+      $postData='{
+        "PaymentMethodId":"1",
+        "CustomerName": "'.$customer_name.'",
+        "DisplayCurrencyIso": "KWD",
+        "MobileCountryCode":"+965",
+        "CustomerMobile": "'.$customer_mobile.'",
+        "CustomerEmail": "'.$customer_email.'",
+        "InvoiceValue": 35,
+        "CallBackUrl": "'.SITEURL.'index.php?page=booking-complete",
+        "ErrorUrl": "'.SITEURL.'index.php?page=booking-faild",
+        "Language": "en",
+        "CustomerReference" :"1",
+        "CustomerCivilId":12345678,
+        "UserDefinedField": "Custom field",
+        "ExpireDate": "",
+        "CustomerAddress" :{
+            "Block":"",
+            "Street":"",
+            "HouseBuildingNo":"",
+            "Address":"",
+            "AddressInstructions":""
+        },
+        "InvoiceItems": [
+          {
+            "ItemName": "'.$package_title.'",
+            "Quantity": 1,
+            "UnitPrice": 35,
+          }
+        ]
+      }';
+     
+####### Initiate Payment ######
+$token = "cxu2LdP0p0j5BGna0velN9DmzKJTrx3Ftc0ptV8FmvOgoDqvXivkxZ_oqbi_XM9k7jgl3SUriQyRE2uaLWdRumxDLKTn1iNglbQLrZyOkmkD6cjtpAsk1_ctrea_MeOQCMavsQEJ4EZHnP4HoRDOTVRGvYQueYZZvVjsaOLOubLkdovx6STu9imI1zf5OvuC9rB8p0PNIR90rQ0-ILLYbaDZBoQANGND10HdF7zM4qnYFF1wfZ_HgQipC5A7jdrzOoIoFBTCyMz4ZuPPPyXtb30IfNp47LucQKUfF1ySU7Wy_df0O73LVnyV8mpkzzonCJHSYPaum9HzbvY5pvCZxPYw39WGo8pOMPUgEugtaqepILwtGKbIJR3_T5Iimm_oyOoOJFOtTukb_-jGMTLMZWB3vpRI3C08itm7ealISVZb7M3OMPPXgcss9_gFvwYND0Q3zJRPmDASg5NxRlEDHWRnlwNKqcd6nW4JJddffaX8p-ezWB8qAlimoKTTBJCe5CnjT4vNjnWlJWscvk38VNIIslv4gYpC09OLWn4rDNeoUaGXi5kONdEQ0vQcRjENOPAavP7HXtW1-Vz83jMlU3lDOoZsdEKZReNYpvdFrGJ5c3aJB18eLiPX6mI4zxjHCZH25ixDCHzo-nmgs_VTrOL7Zz6K7w6fuu_eBK9P0BDr2fpS";
+$basURL = "https://apitest.myfatoorah.com";
+
+####### Execute Payment ######
+$curl = curl_init();
+curl_setopt_array($curl, array(
+  CURLOPT_URL => "$basURL/v2/ExecutePayment",
+  CURLOPT_CUSTOMREQUEST => "POST",
+  CURLOPT_POSTFIELDS => $postData,
+  CURLOPT_HTTPHEADER => array("Authorization: Bearer $token","Content-Type: application/json"),
+));
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+
+curl_close($curl);
+
+if ($err) {
+  echo "cURL Error #:" . $err;
+}else {
+  //echo "$response '<br />'";
+    $json = json_decode($response, true);
+    $payment_url = $json["Data"]["PaymentURL"];
+    $orderId = $json["Data"]["InvoiceId"];
+    $tbl_name = 'tbl_booking';
+			$data= "
+        package_id = '$package_id',
+        transaction_id = '$orderId',
+				booking_date = '$booking_date',
+				booking_time = '$booking_time',
+				is_filming = '$is_filming',
+				booking_price = '$booking_price',
+				customer_name = '$customer_name',
+				mobile_number = '$mobile_number',
+				baby_name = '$baby_name',
+				baby_age = '$baby_age',
+        instructions = '$instructions',
+        status ='No',
+				created_at = '$created_at'
+				";
+			$query = $obj->insert_data($tbl_name,$data);
+			$res = $obj->execute_query($conn,$query);
+			if($res==true){
+        $last_id = mysqli_insert_id($conn);
+        header('location:'.$payment_url);
+			}else{
+				//Failed to Add Categoy
+			}
+
+  }
+}
+?>
