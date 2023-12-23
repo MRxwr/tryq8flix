@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";
-$username = "u671249433_oudnaUSER";
-$password = "N@b$90949089";
-$dbname = "u671249433_oudnaDB";
+$username = "root";
+$password = "";
+$dbname = "test";
 $dbconnect = new MySQLi($servername,$username,$password,$dbname);
 
 if ( $dbconnect->connect_error ){
