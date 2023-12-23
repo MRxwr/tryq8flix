@@ -37,7 +37,7 @@ footer {
   top: 40px;
   left: 0;
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 88px);
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 9999;
 }
