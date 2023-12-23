@@ -35,10 +35,11 @@ $profileData = checkLogin();
 
     <?php require("templates/header.php"); ?>
     <?php //require("templates/navbar.php"); ?>
-	<div id="loading-screen">
-	  <div class="spinner"></div>
-	</div>
+	
     <div id="mainBody">
+        <div id="loading-screen">
+            <div class="spinner"></div>
+        </div>
         <?php require("templates/content.php"); ?>
     </div>
     <?php require("templates/footer.php"); ?>

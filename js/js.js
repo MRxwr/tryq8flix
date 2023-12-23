@@ -79,18 +79,6 @@ $(document).on('click', '#loginBtn', function(e) {
             if (data == 0) {
                 alert("You have been logged in successfully");
                 location.reload(true);
-                /*
-                $('#login').modal('hide');
-                $("#profileOptions1").attr("style", "display:block");
-                $("#profileOptions0").attr("style", "display:none");
-                $.post("requests/index.php?type=home", {
-                        type: "get",
-                    },
-                    function(data) {
-                        $("#mainBody").html("");
-                        $("#mainBody").append(data);
-                    });
-                    */
             } else {
                 alert(data);
             }
