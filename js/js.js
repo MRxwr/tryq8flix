@@ -420,7 +420,7 @@ $(document).on('click', '#searchBtn', function(e) {
 	$(".bi-house").attr("style","color:black");
     $(".bi-emoji-dizzy").attr("style","color:black");
 	$(".bi-search").attr("style","color:#9f8d5c");
-    $("#mainBody").html("<div class='p-3' id='searchBar' style='direction:ltr'><div class='input-group'><div class='input-group-prepend'><button class='btn btn-secondary' type='button' id='searchButton' style='background-color: #9f8d5c;'>بحث</button></div><input class='form-control' id='searchText' placeholder='إدخل كلمة البحث...'></div></div><div id='searchBody'></div>");
+    $("#mainBody").html("<div class='p-3' id='searchBar' style='direction:ltr'><div class='input-group'><div class='input-group-prepend'><button class='btn btn-secondary' type='button' id='searchButton' style='background-color: #9f8d5c;'>بحث</button></div><input class='form-control' id='searchText' placeholder='إدخل كلمة البحث...' style='border-color: #9f8d5c;color: #9f8d5c;'></div></div><div id='searchBody'></div>");
 });
 
 $(document).on('click', '#searchButton', function(e) {
