@@ -92,7 +92,7 @@ function bodyLoad() {
 		$(".bi-gear-fill").attr("style","color:black");
 		$(".bi-film").attr("style","color:black");
 		$(".bi-tv").attr("style","color:black");
-		$(".bi-house-fill").attr("style","color:green");
+		$(".bi-house-fill").attr("style","color:#9f8d5c");
 		$(".bi-search").attr("style","color:black");
 		$.post("requests/index.php?type=home", {
 			type: "get",
@@ -107,7 +107,7 @@ function bodyLoad() {
 		$(".bi-gear-fill").attr("style","color:black");
 		$(".bi-film").attr("style","color:black");
 		$(".bi-tv").attr("style","color:black");
-		$(".bi-house-fill").attr("style","color:green");
+		$(".bi-house-fill").attr("style","color:#9f8d5c");
 		$(".bi-search").attr("style","color:black");
         $("#profileOptions0").attr("style", "display:block");
         $("#profileOptions1").attr("style", "display:none");
@@ -319,7 +319,7 @@ $(document).on('click', '#homeBtn', function(e) {
 	$(".bi-gear-fill").attr("style","color:black");
 	$(".bi-film").attr("style","color:black");
 	$(".bi-tv").attr("style","color:black");
-	$(".bi-house").attr("style","color:green");
+	$(".bi-house").attr("style","color:#9f8d5c");
 	$(".bi-emoji-dizzy").attr("style","color:black");
 	$(".bi-search").attr("style","color:black");
     $.post("requests/index.php?type=home", {
@@ -339,7 +339,7 @@ $(document).on('click', '#tvBtn', function(e) {
 	$("#loading-screen").show();
 	$(".bi-gear-fill").attr("style","color:black");
 	$(".bi-film").attr("style","color:black");
-	$(".bi-tv").attr("style","color:green");
+	$(".bi-tv").attr("style","color:#9f8d5c");
 	$(".bi-house").attr("style","color:black");
 	$(".bi-emoji-dizzy").attr("style","color:black");
 	$(".bi-search").attr("style","color:black");
@@ -359,7 +359,7 @@ $(document).on('click', '#tvBtn', function(e) {
 $(document).on('click', '#movieBtn', function(e) {
 	$("#loading-screen").show();
 	$(".bi-gear-fill").attr("style","color:black");
-	$(".bi-film").attr("style","color:green");
+	$(".bi-film").attr("style","color:#9f8d5c");
 	$(".bi-tv").attr("style","color:black");
 	$(".bi-emoji-dizzy").attr("style","color:black");
 	$(".bi-house").attr("style","color:black");
@@ -381,7 +381,7 @@ $(document).on('click', '#animeBtn', function(e) {
 	$("#loading-screen").show();
 	$(".bi-gear-fill").attr("style","color:black");
 	$(".bi-film").attr("style","color:black");
-	$(".bi-emoji-dizzy").attr("style","color:green");
+	$(".bi-emoji-dizzy").attr("style","color:#9f8d5c");
 	$(".bi-tv").attr("style","color:black");
 	$(".bi-house").attr("style","color:black");
 	$(".bi-search").attr("style","color:black");
@@ -418,7 +418,7 @@ $(document).on('click', '#searchBtn', function(e) {
 	$(".bi-film").attr("style","color:black");
 	$(".bi-tv").attr("style","color:black");
 	$(".bi-house-fill").attr("style","color:black");
-	$(".bi-search").attr("style","color:green");
+	$(".bi-search").attr("style","color:#9f8d5c");
     $("#mainBody").html("<div class='p-3' id='searchBar' style='direction:ltr'><div class='input-group'><div class='input-group-prepend'><button class='btn btn-secondary' type='button' id='searchButton'>بحث</button></div><input class='form-control' id='searchText' placeholder='إدخل كلمة البحث...'></div></div><div id='searchBody'></div>");
 });
 
