@@ -35,7 +35,7 @@ if ($result && isset($result['data']['link'])) {
 } else {
     echo 'Image upload failed. Error: ' . print_r($result, true);
 }
-
+/*
 // pull from instagram 
 
 $curl = curl_init();
@@ -64,4 +64,5 @@ if ($err) {
 } else {
 	echo $response;
 }
+*/
 ?>
