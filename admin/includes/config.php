@@ -14,5 +14,5 @@ if (!$dbconnect) {
 }
 date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
-$website = "https://shahid4u1.charity/";
+$website = "https://shahee4u.cam/";
 ?>
