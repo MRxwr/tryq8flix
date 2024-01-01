@@ -94,7 +94,7 @@ function bodyLoad() {
 		$(".bi-tv").attr("style","color:black");
 		$(".bi-house-fill").attr("style","color:#9f8d5c");
 		$(".bi-search").attr("style","color:black");
-		/*$.post("requests/index.php?type=home", {
+		$.post("requests/index.php?type=home", {
 			type: "get",
 		},
 		function(data) {
@@ -102,7 +102,6 @@ function bodyLoad() {
 			$("#mainBody").html("");
 			$("#mainBody").append(data);
 		});
-        */
     } else {
 		$("#loading-screen").hide();
 		$(".bi-gear-fill").attr("style","color:black");
