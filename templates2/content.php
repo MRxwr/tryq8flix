@@ -2,11 +2,19 @@
 include('simple_html_dom.php');
 //$html = file_get_contents($website2);
 // use curl instead of file_get_contents
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $website2);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-echo $html = curl_exec($ch);
-curl_close($ch);
+$curl = curl_init();
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://egydead.space/',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'GET',
+));
+$html = curl_exec($curl);
+curl_close($curl);
 // Create a DOM object
 $dom = str_get_html($html);
 
