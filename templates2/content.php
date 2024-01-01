@@ -42,7 +42,7 @@ if ($dom) {
         $data['shows'][] = $jsonData;
     }
     // Output the JSON array
-    $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    echo $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 } else {
     echo 'Error: Invalid DOM object.';
 }
