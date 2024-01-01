@@ -5,7 +5,7 @@ include('simple_html_dom.php');
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $website2);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$html = curl_exec($ch);
+echo $html = curl_exec($ch);
 curl_close($ch);
 // Create a DOM object
 $dom = str_get_html($html);
