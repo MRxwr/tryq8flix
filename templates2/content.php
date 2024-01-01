@@ -1,21 +1,12 @@
 <?php
 include('simple_html_dom.php');
-//$html = file_get_contents($website2);
-// use curl instead of file_get_contents
-$curl = curl_init();
-curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://egydead.space/',
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'GET',
-));
-echo $html = curl_exec($curl);
-curl_close($curl);
-// Create a DOM object
+$options = array(
+    'http' => array(
+        'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+    ),
+);
+$context = stream_context_create($options);
+$html = file_get_contents($website2, false, $context);// Create a DOM object
 $dom = str_get_html($html);
 
 // Check if the DOM object is valid
@@ -50,7 +41,7 @@ if ($dom) {
         $data['shows'][] = $jsonData;
     }
     // Output the JSON array
-    echo $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 } else {
     echo 'Error: Invalid DOM object.';
 }
