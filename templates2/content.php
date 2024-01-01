@@ -13,7 +13,7 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
 ));
-$html = curl_exec($curl);
+echo $html = curl_exec($curl);
 curl_close($curl);
 // Create a DOM object
 $dom = str_get_html($html);
