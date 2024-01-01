@@ -3,6 +3,8 @@ include('simple_html_dom.php');
 $curl = curl_init($website2);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 $html = curl_exec($curl);
 
 if ($html === false) {
