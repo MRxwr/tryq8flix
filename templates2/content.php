@@ -1,6 +1,12 @@
 <?php
 include('simple_html_dom.php');
-$html = file_get_contents($website2);
+//$html = file_get_contents($website2);
+// use curl instead of file_get_contents
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $website2);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$html = curl_exec($ch);
+curl_close($ch);
 // Create a DOM object
 $dom = str_get_html($html);
 
