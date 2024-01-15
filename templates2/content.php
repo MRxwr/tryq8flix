@@ -16,7 +16,7 @@ curl_setopt_array($curl, array(
 $response = curl_exec($curl);
 
 curl_close($curl);
-echo $response;die();
+var_dump($response);die();
 $dom = str_get_html($html);
 
 // Check if the DOM object is valid
