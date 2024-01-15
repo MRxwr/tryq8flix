@@ -1,15 +1,22 @@
 <?php
 include('simple_html_dom.php');
-$curl = curl_init($website2);
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
-curl_setopt($curl, CURLOPT_ENCODING, ''); // Enable automatic content decoding
-$html = curl_exec($curl);
+$curl = curl_init();
 
-$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-echo "HTTP response code: " . $httpCode;
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://egydead.space/',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'GET',
+));
+
+$response = curl_exec($curl);
 
 curl_close($curl);
+echo $response;
 $dom = str_get_html($html);
 
 // Check if the DOM object is valid
