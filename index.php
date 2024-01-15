@@ -40,7 +40,7 @@ $profileData = checkLogin();
         </div>
     <div id="mainBody">
         
-        <?php require("templates/content2.php"); ?>
+        <?php require("templates2/content.php"); ?>
     </div>
     <?php require("templates/footer.php"); ?>
 
