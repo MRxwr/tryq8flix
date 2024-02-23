@@ -39,8 +39,10 @@ $profileData = checkLogin();
             <div class="spinner"></div>
         </div>
     <div id="mainBody">
-        
-        <?php require("templates/content.php"); ?>
+        <div id="content">
+
+        </div>
+        <?php //require("templates/content.php"); ?>
     </div>
     <?php //require("templates/footer.php"); ?>
 
