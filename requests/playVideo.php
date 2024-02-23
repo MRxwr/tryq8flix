@@ -27,12 +27,13 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     $servers = json_decode($server,true);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
-	$notWanted = ["vembed.net","uqload.co","iioo.vadbam.net","emma.viidshar.com","uptostream.com"];
+	$notWanted = ["vembed.net","uqload.co","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
 	for( $i = 0; $i < sizeof($servers); $i++ ){
 		$domain = extractDomain($servers[$i]["url"]);
 		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["url"]) && @!empty(file_get_contents($servers[$i]["url"])) ){
 			$links .= "<div class='col-6 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>{$domain}</a></div>";
 			$server = $servers[$i]["url"];
+			$mainServer[] = $servers[$i]["url"];
 			if( $counter == 3 ){
 				break;
 			}else{
@@ -41,7 +42,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 		}
 	}
 	$links .= "</div>";
-    $videoTag = "{$links}<iframe id='frame' src='{$server}' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-same-origin allow-scripts'></iframe>";
+    $videoTag = "{$links}<iframe id='frame' src='{$mainServer[0]}' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
     echo $videoTag;
 }
 ?>

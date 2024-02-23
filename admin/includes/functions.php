@@ -215,39 +215,47 @@ function validateInput($input) {
 
 function outputData($shows){ 
 	$user = checkLogin();
+	/**/
 	$output = "<div id='content'><div class='row m-0 w-100'>";
 	if( is_array($shows) && !empty($shows) && !empty($user["id"]) ){
-		for ( $i = 0 ; $i < sizeof($shows) ; $i++){
+		for ($i = 0; $i < sizeof($shows); $i++) {
 			$output .= "
-				<div class='col-xl-3 col-lg-4 col-md-6 col-sm-12 p-3'>
-				<div class='card w-100'>
-					<div class='card-body'>
-					<img src='data:image/jpeg;base64,".base64_encode(file_get_contents($shows[$i]["image"]))."' style='width:100%;height:300px' loading='lazy'>
-					<div style='height:225px; overflow:auto' >
-						<h2 class='card-title categoryTitle{$i}' ><b>{$shows[$i]["category"]}</b></h2>
-						<h3 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>
-						<p class='card-text'>
-							<b>Title:</b>{$shows[$i]["episode"]}<br>
-							<b>Details:</b>{$shows[$i]["description"]}</p>
-					</div>
-						<div class='row w-100 p-0 m-0'>
-							<div class='col-6 p-1'>
-								<div data-bs-toggle='modal' data-bs-target='#playVideo' class='btn btn-danger w-100 playVideo' id='".str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])))."'><i class='bi bi-play-fill'></i></div>
+				<div class='col-xl-2 col-lg-4 col-md-6 col-sm-12 p-3'>
+					<div class='card w-100'>
+						<div class='card-body'>
+							<img src='requests/getImages.php?url=" . urlencode($shows[$i]["image"]) . "' style='width:100%;height:300px'>
+							<div style='height:300px; overflow:auto'>
+								<h2 class='card-title categoryTitle{$i}'><b>{$shows[$i]["category"]}</b></h2>
+								<h3 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>
+								<p class='card-text'>
+									<b>Title:</b>{$shows[$i]["episode"]}<br>
+									<b>Details:</b>{$shows[$i]["description"]}
+								</p>
 							</div>
-							<div class='col-6 p-1'>
-								<div data-bs-toggle='modal' data-bs-target='#threeDots' class='btn btn-warning w-100 threeDots' id='{$shows[$i]["href"]}'><i class='bi bi-three-dots'></i></div>
+							<div class='row w-100 p-0 m-0'>
+								<div class='col-6 p-1'>
+									<div data-bs-toggle='modal' data-bs-target='#playVideo' class='btn btn-danger w-100 playVideo' id='".str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])))."'><i class='bi bi-play-fill'></i></div>
+								</div>
+								<div class='col-6 p-1'>
+									<div data-bs-toggle='modal' data-bs-target='#threeDots' class='btn btn-warning w-100 threeDots' id='{$shows[$i]["href"]}'><i class='bi bi-three-dots'></i></div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				</div>
-				";
+			";
 		}
 		echo "</div>".$output;
 	}else{
 		$msg = "<h1 class='text-center mt-5'>No result.<h1>";
 		echo $msg;
 	}
+}
+
+function outputImage($imageUrl) {
+    $image = file_get_contents($imageUrl);
+    header('Content-Type: image/jpeg');
+    echo $image;
 }
 
 ?>

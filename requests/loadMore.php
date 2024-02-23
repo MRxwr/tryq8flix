@@ -50,13 +50,14 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
         $user = checkLogin();
 		$shows = searchShahid($_POST["more"]);
         $output = "<div class='row m-0 w-100'>";
+		/**/
         if( is_array($shows) && !empty($shows) ){
             for ( $i = 0 ; $i < sizeof($shows) ; $i++){
 				$output .= "
 					<div class='col-xl-3 col-lg-4 col-md-6 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
-						<img src='data:image/jpeg;base64,".base64_encode(file_get_contents($shows[$i]["image"]))."' style='width:100%;height:300px'>
+						<img src='requests/getImages.php?url=" . urlencode($shows[$i]["image"]) . "' style='width:100%;height:300px'>
 						<div style='height:225px; overflow:auto' >
 							<h2 class='card-title categoryTitle{$i}' ><b>{$shows[$i]["category"]}</b></h2>
 							<h3 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>

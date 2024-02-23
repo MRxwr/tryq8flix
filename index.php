@@ -42,7 +42,7 @@ $profileData = checkLogin();
         
         <?php require("templates/content.php"); ?>
     </div>
-    <?php require("templates/footer.php"); ?>
+    <?php //require("templates/footer.php"); ?>
 
     <?php require("templates/modals.php"); ?>
 

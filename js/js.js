@@ -89,11 +89,7 @@ function bodyLoad() {
     if ($.cookie('tryq8flix2')) {
         $("#profileOptions0").attr("style", "display:none");
         $("#profileOptions1").attr("style", "display:block");
-		$(".bi-gear-fill").attr("style","color:black");
-		$(".bi-film").attr("style","color:black");
-		$(".bi-tv").attr("style","color:black");
 		$(".bi-house-fill").attr("style","color:#9f8d5c");
-		$(".bi-search").attr("style","color:black");
 		$.post("requests/index.php?type=home", {
 			type: "get",
 		},
@@ -104,11 +100,7 @@ function bodyLoad() {
 		});
     } else {
 		$("#loading-screen").hide();
-		$(".bi-gear-fill").attr("style","color:black");
-		$(".bi-film").attr("style","color:black");
-		$(".bi-tv").attr("style","color:black");
 		$(".bi-house-fill").attr("style","color:#9f8d5c");
-		$(".bi-search").attr("style","color:black");
         $("#profileOptions0").attr("style", "display:block");
         $("#profileOptions1").attr("style", "display:none");
     }
@@ -316,12 +308,23 @@ $(document).on('click', '#historyLabel', function(e) {
 
 $(document).on('click', '#homeBtn', function(e) {
 	$("#loading-screen").show();
-	$(".bi-gear-fill").attr("style","color:black");
-	$(".bi-film").attr("style","color:black");
-	$(".bi-tv").attr("style","color:black");
-	$(".bi-house").attr("style","color:#9f8d5c");
-	$(".bi-emoji-dizzy").attr("style","color:black");
-	$(".bi-search").attr("style","color:black");
+	$("#animeBtn").attr("style","color:#000000");
+	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
+	
+	$("#settingBtn").attr("style","color:#000000");
+	$(".bi-gear-fill").addClass("bi-gear").removeClass("bi-gear-fill");
+	
+	$("#movieBtn").attr("style","color:#000000");
+	$(".bi-camera-reels-fill").addClass("bi-camera-reels").removeClass("bi-camera-reels-fill");
+	
+	$("#tvBtn").attr("style","color:#000000");
+	$(".bi-tv-fill").addClass("bi-tv").removeClass("bi-tv-fill");
+	
+	$("#homeBtn").attr("style","color:#9f8d5c");
+	$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
+	
+	$("#searchBtn").attr("style","color:#000000");
+	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
     $.post("requests/index.php?type=home", {
             type: "get",
         },
@@ -337,12 +340,23 @@ $(document).on('click', '#homeBtn', function(e) {
 
 $(document).on('click', '#tvBtn', function(e) {
 	$("#loading-screen").show();
-	$(".bi-gear-fill").attr("style","color:black");
-	$(".bi-film").attr("style","color:black");
-	$(".bi-tv").attr("style","color:#9f8d5c");
-	$(".bi-house").attr("style","color:black");
-	$(".bi-emoji-dizzy").attr("style","color:black");
-	$(".bi-search").attr("style","color:black");
+	$("#animeBtn").attr("style","color:#000000");
+	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
+	
+	$("#settingBtn").attr("style","color:#000000");
+	$(".bi-gear-fill").addClass("bi-gear").removeClass("bi-gear-fill");
+	
+	$("#movieBtn").attr("style","color:#000000");
+	$(".bi-camera-reels-fill").addClass("bi-camera-reels").removeClass("bi-camera-reels-fill");
+	
+	$("#tvBtn").attr("style","color:#9f8d5c");
+	$(".bi-tv").addClass("bi-tv-fill").removeClass("bi-tv");
+	
+	$("#homeBtn").attr("style","color:#000000");
+	$(".bi-house-fill").addClass("bi-house").removeClass("bi-house-fill");
+	
+	$("#searchBtn").attr("style","color:#000000");
+	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
     $.post("requests/index.php?type=home&collection=last_eps", {
             type: "get",
         },
@@ -358,12 +372,23 @@ $(document).on('click', '#tvBtn', function(e) {
 
 $(document).on('click', '#movieBtn', function(e) {
 	$("#loading-screen").show();
-	$(".bi-gear-fill").attr("style","color:black");
-	$(".bi-film").attr("style","color:#9f8d5c");
-	$(".bi-tv").attr("style","color:black");
-	$(".bi-emoji-dizzy").attr("style","color:black");
-	$(".bi-house").attr("style","color:black");
-	$(".bi-search").attr("style","color:black");
+	$("#animeBtn").attr("style","color:#000000");
+	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
+	
+	$("#settingBtn").attr("style","color:#000000");
+	$(".bi-gear-fill").addClass("bi-gear").removeClass("bi-gear-fill");
+	
+	$("#movieBtn").attr("style","color:#9f8d5c");
+	$(".bi-camera-reels").addClass("bi-camera-reels-fill").removeClass("bi-camera-reels");
+	
+	$("#tvBtn").attr("style","color:#000000");
+	$(".bi-tv-fill").addClass("bi-tv").removeClass("bi-tv-fill");
+	
+	$("#homeBtn").attr("style","color:#000000");
+	$(".bi-house-fill").addClass("bi-house").removeClass("bi-house-fill");
+	
+	$("#searchBtn").attr("style","color:#000000");
+	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
     $.post("requests/index.php?type=home&collection=last_films", {
             type: "get",
         },
@@ -379,12 +404,24 @@ $(document).on('click', '#movieBtn', function(e) {
 
 $(document).on('click', '#animeBtn', function(e) {
 	$("#loading-screen").show();
-	$(".bi-gear-fill").attr("style","color:black");
-	$(".bi-film").attr("style","color:black");
-	$(".bi-emoji-dizzy").attr("style","color:#9f8d5c");
-	$(".bi-tv").attr("style","color:black");
-	$(".bi-house").attr("style","color:black");
-	$(".bi-search").attr("style","color:black");
+	$("#animeBtn").attr("style","color:#9f8d5c");
+	$(".bi-emoji-dizzy").addClass("bi-emoji-dizzy-fill").removeClass("bi-emoji-dizzy");
+	
+	$("#settingBtn").attr("style","color:#000000");
+	$(".bi-gear-fill").addClass("bi-gear").removeClass("bi-gear-fill");
+	
+	$("#movieBtn").attr("style","color:#000000");
+	$(".bi-camera-reels-fill").addClass("bi-camera-reels").removeClass("bi-camera-reels-fill");
+	
+	$("#tvBtn").attr("style","color:#000000");
+	$(".bi-tv-fill").addClass("bi-tv").removeClass("bi-tv-fill");
+	
+	$("#homeBtn").attr("style","color:#000000");
+	$(".bi-house-fill").addClass("bi-house").removeClass("bi-house-fill");
+	
+	$("#searchBtn").attr("style","color:#000000");
+	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
+	
     $.post("requests/index.php?type=home&collection=last_eps&category=مسلسلات-انمي", {
             type: "get",
         },
@@ -414,12 +451,24 @@ $(document).on('click', '.loadMoreBtn', function(e) {
 });
 
 $(document).on('click', '#searchBtn', function(e) {
-	$(".bi-gear-fill").attr("style","color:black");
-	$(".bi-film").attr("style","color:black");
-	$(".bi-tv").attr("style","color:black");
-	$(".bi-house").attr("style","color:black");
-    $(".bi-emoji-dizzy").attr("style","color:black");
-	$(".bi-search").attr("style","color:#9f8d5c");
+	$("#animeBtn").attr("style","color:#000000");
+	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
+	
+	$("#settingBtn").attr("style","color:#000000");
+	$(".bi-gear-fill").addClass("bi-gear").removeClass("bi-gear-fill");
+	
+	$("#movieBtn").attr("style","color:#000000");
+	$(".bi-camera-reels-fill").addClass("bi-camera-reels").removeClass("bi-camera-reels-fill");
+	
+	$("#tvBtn").attr("style","color:#000000");
+	$(".bi-tv-fill").addClass("bi-tv").removeClass("bi-tv-fill");
+	
+	$("#homeBtn").attr("style","color:#000000");
+	$(".bi-house-fill").addClass("bi-house").removeClass("bi-house-fill");
+	
+	$("#searchBtn").attr("style","color:#9f8d5c");
+	$(".bi-search-heart").addClass("bi-search-heart-fill").removeClass("bi-search-heart");
+	
     $("#mainBody").html("<div class='p-3' id='searchBar' style='direction:ltr'><div class='input-group'><div class='input-group-prepend'><button class='btn btn-secondary' type='button' id='searchButton' style='background-color: #9f8d5c;'>بحث</button></div><input class='form-control' id='searchText' placeholder='إدخل كلمة البحث...' style='border-color: #9f8d5c;color: #9f8d5c;'></div></div><div id='searchBody'></div>");
 });
 
