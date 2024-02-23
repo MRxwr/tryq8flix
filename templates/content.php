@@ -1,8 +1,6 @@
 <?php
-/*
 include('simple_html_dom.php');
-/*
-@$html = file_get_contents($website);
+$html = file_get_contents($website);
 // Create a DOM object
 $dom = str_get_html($html);
 
@@ -43,7 +41,7 @@ $shows = $shows["shows"];
 // Clean up the DOM object
 $dom->clear();
 unset($dom);
-*/
+
 ?>
 <div id="content">
 
