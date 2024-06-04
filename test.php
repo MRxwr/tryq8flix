@@ -3,6 +3,30 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => array('id' => '87502','i' => '4'),
+  CURLOPT_HTTPHEADER => array(
+    'X-Requested-With: XMLHttpRequest',
+    'Referer: https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d8%a7%d9%84%d9%85%d9%83%d9%88%d9%86-%d8%a7%d9%84%d8%b3%d8%b1%d9%8a-secret-ingredient-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-6-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/'
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+
+/*
 function searchShahid(){
 	
 	$curl = curl_init();
