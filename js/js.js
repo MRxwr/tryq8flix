@@ -647,3 +647,20 @@ function sendIdToIframe(id) {
     var urlWithId = id;
     iframe.src = urlWithId;
 }
+
+function sendIdToIframe2(id) {
+    var iframe = document.getElementById('frame');
+    iframe.src = "";
+    var server = document.getElementById(id).getAttribute('data-server');
+    var url = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
+    var data = {
+        id: id,
+        server: server
+    };
+    $.post(url, data, function(response) {
+        var iframe = document.getElementById('frame');
+        var urlWithId = response;
+        iframe.src = urlWithId;
+        console.log(response);
+    })
+}
