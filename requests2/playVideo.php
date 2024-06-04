@@ -1,22 +1,8 @@
 <?php
-function extractDomain($url) {
-    $parsedUrl = parse_url($url);
-    
-    // Check if the URL is valid and contains the host
-    if ($parsedUrl && isset($parsedUrl['host'])) {
-        return $parsedUrl['host'];
-    } else {
-        // Handle invalid URLs or those without a host
-        return false;
-    }
-}
- 
-if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    // get episode link \\
-    //$html = file_get_contents($_POST["id"]);
+function searchServers($id){
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "{$_POST["id"]}/watch/",
+	  CURLOPT_URL => "{$id}/watch/",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
@@ -27,29 +13,57 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
-    var_dump($html);die();
-    // Extract server information using regular expressions
-    $pattern = '/let servers = JSON\.parse\(\'(.*?)\'\);/';
-    preg_match($pattern, $html, $matches);
-    if (isset($matches[1])) {
-        $serversData = json_decode($matches[1], true);
-        // Output the extracted server information
-        $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        echo 'Error: Server information not found.';
-		$server = json_encode(array());
-    }
+	
+	//$html = file_get_contents(getWebsite());
+	// Create a DOM object
+	$dom = str_get_html($html);
+	// Check if the DOM object is valid
+	if ($dom) {
+		$data = [
+			'servers' => []
+		];
+		// Loop through each show
+		foreach ($dom->find('.server--item') as $servers) {
+			// Extract background-image URL from style attribute
+			$id = $servers->getAttribute('data-id');
+            $server = $servers->getAttribute('data-server');
+            $title = $servers->find('.playIC + span', 0)->plaintext;
+			$jsonData = [
+				'title' => $title,
+				'id' => $id,
+				'i' => $server,
+			];
+
+			// Add the JSON data to the array
+			$data['servers'][] = $jsonData;
+		}
+
+		// Output the JSON array
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	} else {
+		echo 'Error: Invalid DOM object.';
+	}
+
+	$servers = ( isset($servers) && !empty($servers) ) ? json_decode($servers,true) : array() ;
+	return $shows = $shows["servers"];
+	// Clean up the DOM object
+	$dom->clear();
+	unset($dom);
+}
+ 
+if( isset($_POST["id"]) && !empty($_POST["id"]) ){
+    $server = searchServers($id);
     $servers = json_decode($server,true);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
 	$notWanted = ["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
 	$y = 1;
 	for( $i = 0; $i < sizeof($servers); $i++ ){
-		$domain = extractDomain($servers[$i]["url"]);
-		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["url"]) ){
-			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>Serv-{$y}</a></div>";
-			$server = $servers[$i]["url"];
-			$mainServer[] = $servers[$i]["url"]; 
+		$domain = strtolower($servers[$i]["title"]);
+		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["id"]) ){
+			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' data-server='{$servers[$i]["i"]}' id='{$servers[$i]["id"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>Serv-{$y}</a></div>";
+			$server = $servers[$i]["i"];
+			$mainServer[] = $servers[$i]["title"]; 
 			$y++;
 		}
 	}
