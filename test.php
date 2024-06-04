@@ -35,7 +35,7 @@ function searchShahid(){
 			$imageUrl = isset($matches[1]) ? $matches[1] : '';
 			$title = $show->find('.recent--block', 0)->title;
 			$url = $show->find('.recent--block', 0)->href;
-			$poster = $show->find('.Poster__image', 0)->data['src'];
+			$poster = $show->find('img', 0)->data['src'];
 			$genre = $show->find('.liList li', 0)->plaintext;
 			$resolution = $show->find('.liList li', 1)->plaintext;
 			$jsonData = [
