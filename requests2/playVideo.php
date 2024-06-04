@@ -52,7 +52,7 @@ function searchServers($id){
 }
  
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    $server = searchServers($id);
+    $server = searchServers($_POST["id"]);
     $servers = json_decode($server,true);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
