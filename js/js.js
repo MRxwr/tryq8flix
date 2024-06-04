@@ -17,7 +17,7 @@ $(document).on('click', '.playVideo', function(e) {
 	$("#loading-screen").show();
     var getId = $(this).attr("id");
 	var title = $(this).html();
-    $.post("requests/index.php?type=playVideo", {
+    $.post("requests2/index.php?type=playVideo", {
             id: getId
         },
         function(data) {

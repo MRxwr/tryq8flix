@@ -13,7 +13,20 @@ function extractDomain($url) {
  
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     // get episode link \\
-    $html = file_get_contents($_POST["id"]);
+    //$html = file_get_contents($_POST["id"]);
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => "{$_POST["id"]}",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => '',
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_FOLLOWLOCATION => true,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => 'GET',
+	));
+	$html = curl_exec($curl);
+	curl_close($curl);
     // Extract server information using regular expressions
     $pattern = '/let servers = JSON\.parse\(\'(.*?)\'\);/';
     preg_match($pattern, $html, $matches);
@@ -23,25 +36,29 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
         $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
         echo 'Error: Server information not found.';
+		$server = json_encode(array());
     }
     $servers = json_decode($server,true);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
-	$notWanted = ["vembed.net","uqload.co","iioo.vadbam.net","emma.viidshar.com","uptostream.com"];
+	$notWanted = ["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
+	$y = 1;
 	for( $i = 0; $i < sizeof($servers); $i++ ){
 		$domain = extractDomain($servers[$i]["url"]);
-		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["url"]) && @!empty(file_get_contents($servers[$i]["url"])) ){
-			$links .= "<div class='col-6 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>{$domain}</a></div>";
+		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["url"]) ){
+			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>Serv-{$y}</a></div>";
 			$server = $servers[$i]["url"];
-			if( $counter == 3 ){
-				break;
-			}else{
-				$counter++;
-			}
+			$mainServer[] = $servers[$i]["url"]; 
+			$y++;
 		}
 	}
 	$links .= "</div>";
-    $videoTag = "{$links}<iframe id='frame' src='{$server}' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-same-origin allow-scripts'></iframe>";
-    echo $videoTag;
+	if( isset($mainServer) && sizeof($mainServer) > 0){
+		$videoTag = "{$links}<iframe id='frame' src='{$mainServer[0]}' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
+		echo $videoTag;
+	}else{
+		echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+	}
+    
 }
 ?>
