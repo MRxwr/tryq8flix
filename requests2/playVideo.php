@@ -45,6 +45,7 @@ function searchServers($id){
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
+    var_dump($shows);die();
 	return $shows = $shows["servers"];
 	// Clean up the DOM object
 	$dom->clear();
