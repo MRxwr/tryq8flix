@@ -45,7 +45,6 @@ function searchServers($id){
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
-    var_dump($shows);die();
 	return $shows = $shows["servers"];
 	// Clean up the DOM object
 	$dom->clear();
@@ -53,8 +52,7 @@ function searchServers($id){
 }
  
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    $server = searchServers($_POST["id"]);
-    $servers = json_decode($server,true);
+    $servers = searchServers($_POST["id"]);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
 	$notWanted = ["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
