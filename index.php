@@ -59,7 +59,7 @@ $profileData = checkLogin();
             <div class="spinner"></div>
         </div>
 		<?php
-		echo "<div class='row m-0 p-0 w-100'>
+		echo "<div class='row m-0 p-0 w-100'> 
 				<div class='col p-1'>
 				<button id='https://shi4u.cam/' class='btn btn-danger changeIframeSrc w-100'>S4U</button>
 				</div>
