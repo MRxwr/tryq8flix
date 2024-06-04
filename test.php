@@ -1,6 +1,6 @@
 <?php
-require("includes/config.php");
-require("includes/functions.php");
+require("admin/includes/config.php");
+require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 function searchShahid(){
