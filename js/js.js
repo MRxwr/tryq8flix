@@ -652,22 +652,22 @@ function sendIdToIframe2(id) {
     var iframe = document.getElementById('frame');
     iframe.src = "";
     var server = document.getElementById(id).getAttribute('data-server');
+    var referer = document.getElementById(id).getAttribute('data-referer');
     var url = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
-    var data = {
-        id: id,
-        server: server
-    };
-
+    var data = new FormData();
+    data.append("id", id);
+    data.append("i", server);
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            // Handle the response from the server
-            var response = JSON.parse(xhr.responseText);
-            var iframeSrc = response.iframe_src; // Assuming the response contains an "iframe_src" property
+    xhr.withCredentials = true;
+    xhr.addEventListener("readystatechange", function() {
+        if (this.readyState === 4 && this.status === 200) {
+            var response = this.responseText;
+            var iframeSrc = response.match(/<iframe[^>]*src="([^"]+)"/)[1];
             iframe.src = iframeSrc;
         }
-    };
-    xhr.send(JSON.stringify(data));
+    });
+    xhr.open("POST", url);
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    xhr.setRequestHeader("Referer", referer);
+    xhr.send(data);
 }
