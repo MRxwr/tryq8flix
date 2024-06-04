@@ -1,11 +1,57 @@
 <?php
-function searchShahid(){
-	GLOBAL $website2, $_GET;
+function getWebsite(){
+	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = file_get_contents("{$website2}{$collection}{$category}");
-	var_dump($html);
-	//var_dump($html);
+	if( isset($_GET["collection"]) ){
+		$collection = "?order={$_GET["collection"]}";
+		if( isset($_GET["category"]) ){
+			$category = "&category={$_GET["category"]}";
+		}
+	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
+		$collection = "";
+		$category = "?category={$_GET["category"]}";
+	}else{
+		$collection = "";
+		$category = "";
+	}
+	return $website.$collection.$category;
+}
+
+function searchShahid(){
+	GLOBAL $website, $_GET;
+	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
+	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+	if( isset($_GET["collection"]) ){
+		$collection = "?order={$_GET["collection"]}";
+		if( isset($_GET["category"]) ){
+			$category = "&category={$_GET["category"]}";
+		}
+	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
+		$collection = "";
+		$category = "?category={$_GET["category"]}";
+	}else{
+		$collection = "";
+		$category = "";
+	}
+	
+	//var_dump($website.$collection.$category); die();
+	
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => "https://web5.topcinema.world/recent/",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => '',
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_FOLLOWLOCATION => true,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => 'GET',
+	));
+	$html = curl_exec($curl);
+	curl_close($curl);
+	
+	//$html = file_get_contents(getWebsite());
 	// Create a DOM object
 	$dom = str_get_html($html);
 	// Check if the DOM object is valid
@@ -14,33 +60,24 @@ function searchShahid(){
 			'shows' => []
 		];
 		// Loop through each show
-		foreach ($dom->find('ul#pm-grid li.col-xs-6.col-sm-4.col-md-3') as $show) {
-			// Find the anchor tag and extract the href attribute for the URL
-			$anchor = $show->find('a', 0);
-			$href = $anchor ? $anchor->href : '';
-
-			// Find the image tag and extract the src attribute for the image URL
-			$image = $show->find('img', 0);
-			$imageUrl = $image ? $image->src : '';
-
-			// Extract additional information like episode, category, title, and description if available
-			// This will depend on your actual HTML structure and where these pieces of information are located
-			// For this example, let's assume they are stored in data attributes or within specific elements
-			// You may need to adjust the selectors based on your actual HTML structure
-			$episode = $anchor ? trim($anchor->getAttribute('data-episode')) : ''; // Adjust selector if needed
-			$category = $anchor ? trim($anchor->getAttribute('data-category')) : ''; // Adjust selector if needed
-			$title = $anchor ? trim($anchor->getAttribute('title')) : ''; // Using the title attribute of the anchor
-			$description = $show->find('.description', 0) ? trim($show->find('.description', 0)->plaintext) : ''; // Adjust selector if needed
-
-			// Add the extracted information to the data array
-			$data['shows'][] = [
-				'href' => $href,
-				'image' => $imageUrl,
-				'episode' => $episode,
-				'category' => $category,
+		foreach ($dom->find('.Small--Box') as $show) {
+			// Extract background-image URL from style attribute
+			$title = $show->find('.recent--block', 0)->title;
+			$url = $show->find('.recent--block', 0)->href;
+			$poster = $show->find('img', 0)->getAttribute('data-src');
+			$genre = $show->find('.liList li', 0)->plaintext;
+			$resolution = $show->find('.liList li', 1)->plaintext;
+			$jsonData = [
+				'href' => $url,
+				'image' => trim($poster),
+				'episode' => $resolution,
+				'category' => $genre,
 				'title' => $title,
-				'description' => $description,
+				'description' => "",
 			];
+
+			// Add the JSON data to the array
+			$data['shows'][] = $jsonData;
 		}
 
 		// Output the JSON array
@@ -48,24 +85,32 @@ function searchShahid(){
 	} else {
 		echo 'Error: Invalid DOM object.';
 	}
-	var_dump($shows);
+
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
-	
 	return $shows = $shows["shows"];
 	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }
 
-if( isset($_POST["type"]) && !empty($_POST["type"]) ){
-    if( $_POST["type"] == "get" ){
-		$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
-		$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-        $user = checkLogin();
-		$shows = searchShahid();
-        outputData($shows); 
-		echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-primary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
-    }
+if( isset($_POST["type"]) && !empty($_POST["type"]) ){ 
+	$user = checkLogin();
+	if ( !empty($user["id"]) ){
+		if( $_POST["type"] == "get" ){
+			$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
+			$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+			$user = checkLogin();
+			$shows = searchShahid();
+			echo "<div class='row m-0 w-100' id='content'>";
+			outputData($shows); 
+			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
+			echo "</div>";
+		}
+		
+	}else{
+		$msg = "Please login first.";
+		echo $msg;
+	}
 }else{
     $msg = "something wrong happened, Please try again.";
     echo $msg;
