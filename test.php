@@ -3,6 +3,9 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
+header('Access-Control-Allow-Origin: *');
+
+
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
