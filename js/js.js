@@ -657,10 +657,17 @@ function sendIdToIframe2(id) {
         id: id,
         server: server
     };
-    $.post(url, data, function(response) {
-        var iframe = document.getElementById('frame');
-        var urlWithId = response;
-        iframe.src = urlWithId;
-        console.log(response);
-    })
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            // Handle the response from the server
+            var response = JSON.parse(xhr.responseText);
+            var iframeSrc = response.iframe_src; // Assuming the response contains an "iframe_src" property
+            iframe.src = iframeSrc;
+        }
+    };
+    xhr.send(JSON.stringify(data));
 }
