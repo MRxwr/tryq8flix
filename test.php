@@ -51,18 +51,22 @@ function searchShahid(){
 		}
 
 		// Output the JSON array
-		echo $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);die();
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
+	var_dump($shows);die();
 	return $shows = $shows["shows"];
 	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }
 
+$shows = searchShahid();
+outputData($shows); 
+/*
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){ 
 	$user = checkLogin();
 	if ( !empty($user["id"]) ){
