@@ -9,7 +9,7 @@ header('Access-Control-Allow-Origin: *');
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://wecima.show/',
+  CURLOPT_URL => 'https://www.imdb.com/',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
