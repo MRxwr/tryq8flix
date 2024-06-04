@@ -77,7 +77,7 @@ $profileData = checkLogin();
 				</div>
 			  </div>
 			";
-		?>
+		?> 
     <div id="mainBody">
         <?php require("templates/content.php"); ?>
     </div>
