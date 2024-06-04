@@ -60,7 +60,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	for( $i = 0; $i < sizeof($servers); $i++ ){
 		$domain = strtolower($servers[$i]["title"]);
 		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["id"]) ){
-			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' data-referer='{$_POST["id"]}/watch/' data-server='{$servers[$i]["i"]}' id='{$servers[$i]["id"]}' onclick='sendIdToIframe2(\"{$servers[$i]["id"]}\"); return false;'>Serv-{$y}</a></div>";
+			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["id"]}' onclick='sendIdToIframe(\"{$_POST["id"]}/watch/\"); return false;'>Serv-{$y}</a></div>";
 			$server = $servers[$i]["i"];
 			$mainServer[] = $servers[$i]["title"]; 
 			$y++;
