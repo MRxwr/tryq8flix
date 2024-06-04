@@ -17,7 +17,7 @@ $(document).on('click', '.playVideo', function(e) {
 	$("#loading-screen").show();
     var getId = $(this).attr("id");
 	var title = $(this).html();
-    $.post("requests2/index.php?type=playVideo", {
+    $.post("requests/index.php?type=playVideo", {
             id: getId
         },
         function(data) {
@@ -105,7 +105,7 @@ function bodyLoad() {
         $("#profileOptions1").attr("style", "display:block");
 		$("#homeBtn").attr("style","color:#9f8d5c");
 		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
-		$.post("requests2/index.php?type=home", {
+		$.post("requests/index.php?type=home", {
 			type: "get",
 		},
 		function(data) {
@@ -646,28 +646,4 @@ function sendIdToIframe(id) {
 	iframe.src = "";
     var urlWithId = id;
     iframe.src = urlWithId;
-}
-
-function sendIdToIframe2(id) {
-    var iframe = document.getElementById('frame');
-    iframe.src = "";
-    var server = document.getElementById(id).getAttribute('data-server');
-    var referer = document.getElementById(id).getAttribute('data-referer');
-    var url = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
-    var data = new FormData();
-    data.append("id", id);
-    data.append("i", server);
-    var xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-    xhr.addEventListener("readystatechange", function() {
-        if (this.readyState === 4 && this.status === 200) {
-            var response = this.responseText;
-            var iframeSrc = response.match(/<iframe[^>]*src="([^"]+)"/)[1];
-            iframe.src = iframeSrc;
-        }
-    });
-    xhr.open("POST", url);
-    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    xhr.setRequestHeader("Referer", referer);
-    xhr.send(data);
 }
