@@ -16,7 +16,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     //$html = file_get_contents($_POST["id"]);
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "{$_POST["id"]}",
+	  CURLOPT_URL => "{$_POST["id"]}/watch/",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
