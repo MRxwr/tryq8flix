@@ -44,7 +44,7 @@ function searchServers($id){
 		echo 'Error: Invalid DOM object.';
 	}
 
-	$servers = ( isset($servers) && !empty($servers) ) ? json_decode($servers,true) : array() ;
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["servers"];
 	// Clean up the DOM object
 	$dom->clear();
