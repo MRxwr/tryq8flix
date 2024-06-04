@@ -1,0 +1,40 @@
+{
+    "name": "TRYQ8FLiX 2.0",
+    "short_name": "TRYQ8FLiX",
+    "lang": "en-US",
+    "start_url": "index.php",
+    "display": "standalone",
+    "background_color": "white",
+    "theme_color": "black",
+    "icons": [{
+            "src": "https://i.imgur.com/6CBCStr.png",
+            "sizes": "48x48",
+            "type": "image/webp",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.imgur.com/6CBCStr.png",
+            "sizes": "72x72",
+            "type": "image/webp",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.imgur.com/6CBCStr.png",
+            "sizes": "144x144",
+            "type": "image/webp",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.imgur.com/6CBCStr.png",
+            "sizes": "512x512",
+            "type": "image/webp",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.imgur.com/6CBCStr.png",
+            "sizes": "640x1136",
+            "type": "image/webp",
+            "purpose": "maskable any"
+        }
+    ]
+}
