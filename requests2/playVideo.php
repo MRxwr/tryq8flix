@@ -27,6 +27,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
+    var_dump($html);die();
     // Extract server information using regular expressions
     $pattern = '/let servers = JSON\.parse\(\'(.*?)\'\);/';
     preg_match($pattern, $html, $matches);
