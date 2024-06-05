@@ -14,12 +14,16 @@ curl_setopt_array($curl, array(
   CURLOPT_FOLLOWLOCATION => true,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
+  CURLOPT_HTTPHEADER => array(
+    'Cookie: country=KW; lang=unknown'
+  ),
 ));
 
 $response = curl_exec($curl);
 
 curl_close($curl);
 echo $response;
+
 
 //echo file_get_contents("https://wecima.show/")
 
