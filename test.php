@@ -6,7 +6,7 @@ require('templates/simple_html_dom.php');
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://egydead.space/home/',
+  CURLOPT_URL => 'https://cimaclub.watch/',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
