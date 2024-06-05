@@ -6,7 +6,7 @@ require('templates/simple_html_dom.php');
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://wecima.show/',
+  CURLOPT_URL => 'https://mobile.alphacoders.com/?page=7&quickload=1',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
@@ -21,7 +21,7 @@ $response = curl_exec($curl);
 curl_close($curl);
 echo $response;
 
-echo file_get_contents("https://wecima.show/")
+//echo file_get_contents("https://wecima.show/")
 
 /*
 function searchShahid(){
