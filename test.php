@@ -21,6 +21,8 @@ $response = curl_exec($curl);
 curl_close($curl);
 echo $response;
 
+echo file_get_contents("https://cimaclub.watch/");
+
 /*
 function searchShahid(){
 	
