@@ -2,7 +2,6 @@
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
-<?php
 
 $curl = curl_init();
 
