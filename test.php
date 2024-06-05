@@ -22,7 +22,7 @@ curl_setopt_array($curl, array(
 $response = curl_exec($curl);
 
 curl_close($curl);
-echo $response;
+var_dump($response); die();
 
 
 //echo file_get_contents("https://wecima.show/")
