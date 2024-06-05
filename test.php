@@ -2,7 +2,8 @@
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
-/*
+<?php
+
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
@@ -14,14 +15,16 @@ curl_setopt_array($curl, array(
   CURLOPT_FOLLOWLOCATION => true,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
+  CURLOPT_HTTPHEADER => array(
+    'Cookie: __cf_bm=bOZEvz1eJB2dxd.Q9f7yLTj9Gu7mSJQBiuu6.Fk8thM-1717627685-1.0.1.1-pdzJYm4WGJ6oIHJQOWGk54plDBQ.jyrYudzRVhNnMf5MLAHr3ZENrTDmptr.1JFesLnOUUsdmtYHxDDT5KHVRg; XSRF-TOKEN=eyJpdiI6IlJ2dkpyQW9rUUFwZVptQStMQjlQUVE9PSIsInZhbHVlIjoiVlduVUdDa1FQR0JaWk56bDBJd2t3N2puTlwvbld3aHF3NldtN042SDQ3NmI3YUpmYVhsbDN0dmFhbGxVQ25YOGkiLCJtYWMiOiJhZjZkY2JlNDhkZjc5YTAwNDNmMjk0MDY1M2ZiYjA5NDdjZDkzNzQ4NmNiNjI0YjMzMzZkMzRhOTNiMWU4OGJmIn0%3D; laravelsession=eyJpdiI6IjFHM0NObVZHbEs1ZnoxRDA3RHhhN0E9PSIsInZhbHVlIjoiNFlKR3F6blVRSWJMYzRRT1JDRmFpNm9TamZQOUJsMnF0djdESkdsYWUrOWhPNXB5NFBIb1hXMm15SFRVdU81NTBxeERma3Q3OWhkOVVCZWVsK3U4dXg0UmRiOVJyWmN4WFBJVnR0UExhc3JBaUpwZFp3TGFZZHdPazM5bHR3c28iLCJtYWMiOiIzOGE4ZWMyNTQ4MGIwNjRiNWQ2ZmU0M2FlY2Y2NTQxNmE1NTA1MTQ2MjAxYjhiMmQxMzBkMjkxNDkyNmZhMjQyIn0%3D'
+  ),
 ));
 
 $response = curl_exec($curl);
 
 curl_close($curl);
 echo $response;
-*/
-echo file_get_contents("https://mobile.alphacoders.com/?page=7&quickload=1")
+
 
 /*
 function searchShahid(){
