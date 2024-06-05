@@ -4,7 +4,7 @@ require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 
-echo file_get_contents(urlencode("https://wallhaven.cc/search?q=one piece"));
+echo file_get_contents("https://wallhaven.cc/search?q=one piece");
 
 /*
 function searchShahid(){
