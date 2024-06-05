@@ -6,7 +6,7 @@ require('templates/simple_html_dom.php');
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://wall.alphacoders.com/',
+  CURLOPT_URL => 'https://wallpapers.com/one-piece',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
