@@ -3,29 +3,8 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
-$curl = curl_init();
 
-curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://wallhaven.cc/search?q=one piece',
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'GET',
-  CURLOPT_HTTPHEADER => array(
-    'Cookie: country=KW; lang=unknown'
-  ),
-));
-
-$response = curl_exec($curl);
-
-curl_close($curl);
-var_dump($response); die();
-
-
-//echo file_get_contents("https://wecima.show/")
+echo file_get_contents(urlencode("https://wallhaven.cc/search?q=one piece"));
 
 /*
 function searchShahid(){
