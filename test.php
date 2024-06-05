@@ -2,7 +2,7 @@
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
-
+/*
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
@@ -20,8 +20,8 @@ $response = curl_exec($curl);
 
 curl_close($curl);
 echo $response;
-
-//echo file_get_contents("https://wecima.show/")
+*/
+echo file_get_contents("https://mobile.alphacoders.com/?page=7&quickload=1")
 
 /*
 function searchShahid(){
