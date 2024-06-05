@@ -6,7 +6,7 @@ require('templates/simple_html_dom.php');
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://cimaclub.watch/%d8%a7%d9%86%d9%85%d9%8a-%d8%a7%d9%84%d9%85%d8%ad%d9%82%d9%82-%d9%83%d9%88%d9%86%d8%a7%d9%86-detective-conan-%d8%ad%d9%84%d9%82%d8%a9-1125-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/see/',
+  CURLOPT_URL => 'https://wecima.show/',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
@@ -21,7 +21,7 @@ $response = curl_exec($curl);
 curl_close($curl);
 echo $response;
 
-//echo file_get_contents("https://cimaclub.watch/");
+echo file_get_contents("https://wecima.show/")
 
 /*
 function searchShahid(){
