@@ -4,7 +4,6 @@ require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 
-//$article =  file_get_contents("https://www.kooora.com/?n=1332536&pg=1&o=n");
 $curl = curl_init();
 curl_setopt_array($curl, array(
     CURLOPT_URL => "https://www.kooora.com/?n=1332536&pg=1&o=n",
@@ -17,46 +16,24 @@ curl_setopt_array($curl, array(
     CURLOPT_CUSTOMREQUEST => 'GET',
     CURLOPT_HEADER => true, // Include headers in the output
 ));
-
 $response = curl_exec($curl);
-
 if ($response === false) {
     echo "cURL Error: " . curl_error($curl);
     curl_close($curl);
     exit;
 }
-
 $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 curl_close($curl);
-
-// Separate headers and body
 $headers = substr($response, 0, $header_size);
 $body = substr($response, $header_size);
-
-// Print headers to check Content-Type
-echo "Headers:\n";
-echo $headers . "\n";
-
-// Check for Content-Type header to determine the encoding
 $encoding = 'windows-1256'; // Default to windows-1256 if not specified
-
 if (preg_match('/Content-Type:\s*text\/html;\s*charset=([\w-]+)/i', $headers, $matches)) {
     $encoding = $matches[1];
 }
-
-echo "Detected encoding: $encoding\n";
-
-// Convert the body to UTF-8 using iconv
 $body_utf8 = iconv($encoding, 'UTF-8//IGNORE', $body);
-
-echo "Body:\n";
-echo $body_utf8;
-
-/*
-$article = mb_convert_encoding($article, 'UTF-8', 'windows-1256');
-$article = explode('article_content = "', $article);
-$article = explode('";', $article[1]);
-echo $article[0];
+$body_utf8 = explode('article_content = "', $body_utf8);
+$body_utf8 = explode('";', $body_utf8[1]);
+echo $body_utf8[0];
 //echo file_get_contents("https://wallhaven.cc/search?q=one piece");
 
 /*
