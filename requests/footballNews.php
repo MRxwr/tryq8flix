@@ -97,7 +97,7 @@ function articleBody($link){
     }
 
     // Output the text parts
-    echo "<p>";
+    echo "<p class='p-3'>";
     foreach ($text_parts as $part) {
         echo str_replace("<p>","",str_replace("</p>","",str_replace("<br>","",$part))) ;
     }
@@ -114,7 +114,10 @@ function articleBody($link){
 $user = checkLogin();
 
 if( !empty($user["id"]) ){
-	searchNews();
+    echo "<div class='row m-0 w-100' id='content'>";
+    searchNews(); 
+    echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
+    echo "</div>";
 }else{
 	echo "something wrong happened, Please try again.";
 }
