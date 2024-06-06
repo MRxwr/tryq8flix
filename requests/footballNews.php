@@ -114,6 +114,7 @@ function articleBody($link){
 $user = checkLogin();
 
 if( !empty($user["id"]) ){
+    var_dump($_POST);
     $more = ( isset($_POST["more"]) && !empty($_POST["more"]) ) ? $_POST["more"] : 0 ;
     searchNews($more); 
     echo "<div class='col-md-12 loadMoreNewsBtn mb-3' style='text-align-last: center;' id='0'><div class='btn btn-secondary w-75' >تابع</div></div>";

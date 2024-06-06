@@ -590,6 +590,7 @@ $(document).on('click', '.loadMoreNewsBtn', function(e) {
         }, 
         function(data) {
 			$("#loading-screen").hide();
+            $("#mainBody").html("");
             $("#mainBody").append(data);
         });
 });
