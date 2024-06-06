@@ -46,11 +46,12 @@ if (preg_match('/Content-Type:\s*text\/html;\s*charset=([\w-]+)/i', $headers, $m
 
 echo "Detected encoding: $encoding\n";
 
-// Convert the body to UTF-8
-$body_utf8 = mb_convert_encoding($body, 'UTF-8', $encoding);
+// Convert the body to UTF-8 using iconv
+$body_utf8 = iconv($encoding, 'UTF-8//IGNORE', $body);
 
 echo "Body:\n";
 echo $body_utf8;
+
 /*
 $article = mb_convert_encoding($article, 'UTF-8', 'windows-1256');
 $article = explode('article_content = "', $article);
