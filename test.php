@@ -18,7 +18,7 @@ curl_setopt_array($curl, array(
 ));
 $article = curl_exec($curl);
 curl_close($curl);
-$article = mb_convert_encoding($article, 'UTF-8', 'auto');
+$article = mb_convert_encoding($article, 'UTF-8', 'windows-1256');
 $article = explode('article_content = "', $article);
 $article = explode('";', $article[1]);
 echo $article[0];
