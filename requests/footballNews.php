@@ -56,7 +56,7 @@ function articleBody($link){
 
     $title = explode('he_article_title = "', $body_utf8);
     $title = explode('";', $title[1]);
-    echo "<h2>Title:</h2>";
+    echo "<div class='row p-3' style='background-color:#a28c5a;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'><div class='col-sm-12 text-center'>";
     echo $title = "<p>" . str_replace("\\","",$title[0]) . "</p>";
 
     $body = explode('article_content = "', $body_utf8);
@@ -91,16 +91,15 @@ function articleBody($link){
     }
 
     // Output the text parts
-    echo "<h2>Text Content:</h2>";
     foreach ($text_parts as $part) {
         echo "<p>" . $part . "</p>";
     }
 
     // Output the images
-    echo "<h2>Images:</h2>";
     foreach ($image_sources as $src) {
         echo '<img src="' . $src . '" style="width: 600px; height: 400px;" /><br>';
     }
+    echo "</div></div>";
 }
 
 if( isset($_POST["articleLink"]) && !empty($_POST["articleLink"]) ){
