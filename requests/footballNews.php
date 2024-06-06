@@ -115,9 +115,8 @@ $user = checkLogin();
 
 if( !empty($user["id"]) ){
     $more = ( isset($_POST["more"]) && !empty($_POST["more"]) ) ? $_POST["more"] : 1 ;
-    $nextPage = $more + 1;
     searchNews($more); 
-    echo "<div class='col-md-12 loadMoreNewsBtn mb-3' style='text-align-last: center;' id='{$nextPage}'><div class='btn btn-secondary w-75' >تابع</div></div>";
+    echo "<div class='col-md-12 loadMoreNewsBtn mb-3' style='text-align-last: center;' id='{$more}'><div class='btn btn-secondary w-75' >تابع</div></div>";
 }else{
 	echo "something wrong happened, Please try again.";
 }
