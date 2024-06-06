@@ -102,10 +102,12 @@ function articleBody($link){
         echo str_replace("<p>","",str_replace("</p>","",str_replace("<br>","",$part))) ;
     }
     echo "</p></div>";
+    /*
     // Output the images
     foreach ($image_sources as $src) {
         echo '<div class="col-6 p-3 text-center"><img src="' . $src . '" style="width:150px;height:150px" class="rounded" /></div>';
     }
+        */
     echo "</div></div></div>";
 }
 
