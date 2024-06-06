@@ -33,7 +33,47 @@ if (preg_match('/Content-Type:\s*text\/html;\s*charset=([\w-]+)/i', $headers, $m
 $body_utf8 = iconv($encoding, 'UTF-8//IGNORE', $body);
 $body_utf8 = explode('article_content = "', $body_utf8);
 $body_utf8 = explode('";', $body_utf8[1]);
-echo str_replace("\\","",$body_utf8[0]);
+$body_utf8 str_replace("\\","",$body_utf8[0]);
+
+// Load the HTML into a DOMDocument
+$dom = new DOMDocument;
+libxml_use_internal_errors(true);
+$dom->loadHTML('<?xml encoding="UTF-8">' . $body_utf8);
+libxml_clear_errors();
+
+// Create arrays to hold text and image sources
+$text_parts = [];
+$image_sources = [];
+
+// Loop through each <p> tag
+foreach ($dom->getElementsByTagName('p') as $p) {
+    // Extract text content
+    $text_content = '';
+    foreach ($p->childNodes as $node) {
+        if ($node->nodeType == XML_TEXT_NODE || $node->nodeType == XML_ELEMENT_NODE && $node->tagName == 'br') {
+            $text_content .= $dom->saveHTML($node);
+        }
+    }
+    $text_parts[] = $text_content;
+
+    // Extract images
+    foreach ($p->getElementsByTagName('img') as $img) {
+        $image_sources[] = $img->getAttribute('src');
+    }
+}
+
+// Output the text parts
+echo "<h2>Text Content:</h2>";
+foreach ($text_parts as $part) {
+    echo "<p>" . $part . "</p>";
+}
+
+// Output the images
+echo "<h2>Images:</h2>";
+foreach ($image_sources as $src) {
+    echo '<img src="' . $src . '" style="width: 600px; height: 400px;" /><br>';
+}
+
 //echo file_get_contents("https://wallhaven.cc/search?q=one piece");
 
 /*
