@@ -63,7 +63,7 @@ function articleBody($link){
     $image = explode('"', $image[1]);
     $image = explode('"', $image[1]);
     $image = str_replace("\\","",$image[0]);
-    echo "<img src='$image' style='width: 250px;height: 250px;object-fit: cover;'/>";
+    echo "<img src='$image' class='rounded' style='width: 250px;height: 250px;object-fit: cover;'/>";
 
     $body = explode('article_content = "', $body_utf8);
     $body = explode('";', $body[1]);
@@ -104,7 +104,7 @@ function articleBody($link){
     echo "</p></div>";
     // Output the images
     foreach ($image_sources as $src) {
-        echo '<div class="col-6 text-center"><img src="' . $src . '" style="width:150px;height:150px" class="rounded" /></div>';
+        echo '<div class="col-6 p-3 text-center"><img src="' . $src . '" style="width:200px;height:200px" class="rounded" /></div>';
     }
     echo "</div></div></div>";
 }
