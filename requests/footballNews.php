@@ -59,6 +59,11 @@ function articleBody($link){
     echo "<div class='row p-0 m-3'><div class='col-sm-12 mb-3'><div class='row p-3' style='background-color:#a28c5a;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'><div class='col-sm-12 text-center'>";
     echo $title = "<h3>" . str_replace("\\","",$title[0]) . "</h3>";
 
+    $image = explode('article_images = new Array ("', $body_utf8);
+    $image = explode('"', $image[1]);
+    $image = str_replace("\\","",$image[0]);
+    echo "<img src='$image' style='width: 100%;height: 200px;object-fit: cover;'/>";
+
     $body = explode('article_content = "', $body_utf8);
     $body = explode('";', $body[1]);
     $body = str_replace("\\","",$body[0]);
