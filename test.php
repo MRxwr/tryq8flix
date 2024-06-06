@@ -4,7 +4,19 @@ require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 
-$article =  file_get_contents("https://www.kooora.com/?n=1332536&pg=1&o=n");
+$curl = curl_init();
+curl_setopt_array($curl, array(
+	CURLOPT_URL => "https://web5.topcinema.world/recent/",
+	CURLOPT_RETURNTRANSFER => true,
+	CURLOPT_ENCODING => '',
+	CURLOPT_MAXREDIRS => 10,
+	CURLOPT_TIMEOUT => 0,
+	CURLOPT_FOLLOWLOCATION => true,
+	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	CURLOPT_CUSTOMREQUEST => 'GET',
+));
+$article = curl_exec($curl);
+curl_close($curl);
 $article = explode('article_content = "', $article);
 $article = explode('";', $article[1]);
 echo $article[0];
