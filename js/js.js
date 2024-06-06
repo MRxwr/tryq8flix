@@ -589,9 +589,11 @@ $(document).on('click', '.loadMoreNewsBtn', function(e) {
             more: parseInt(numbers)+1,
         }, 
         function(data) {
-			$("#loading-screen").hide();
-            $("#mainBody").html("");
-            $("#mainBody").append(data);
+			$("html, body").animate({ scrollTop: 0 }, "slow", function() {
+				$("#loading-screen").hide();
+				$("#mainBody").html("");
+				$("#mainBody").append(data);
+			});
         });
 });
 
