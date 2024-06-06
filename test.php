@@ -4,9 +4,10 @@ require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 
+//$article =  file_get_contents("https://www.kooora.com/?n=1332536&pg=1&o=n");
 $curl = curl_init();
 curl_setopt_array($curl, array(
-	CURLOPT_URL => "https://web5.topcinema.world/recent/",
+	CURLOPT_URL => "https://www.kooora.com/?n=1332536&pg=1&o=n",
 	CURLOPT_RETURNTRANSFER => true,
 	CURLOPT_ENCODING => '',
 	CURLOPT_MAXREDIRS => 10,
