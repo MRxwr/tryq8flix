@@ -2,7 +2,7 @@
 function searchNews($n){
     $curl = curl_init();
     curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://www.kooora.com/?n={$n}",
+        CURLOPT_URL => "https://www.kooora.com/?n=0&&pg={$n}",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -114,7 +114,6 @@ function articleBody($link){
 $user = checkLogin();
 
 if( !empty($user["id"]) ){
-    var_dump($_POST);
     $more = ( isset($_POST["more"]) && !empty($_POST["more"]) ) ? $_POST["more"] : 0 ;
     searchNews($more); 
     echo "<div class='col-md-12 loadMoreNewsBtn mb-3' style='text-align-last: center;' id='0'><div class='btn btn-secondary w-75' >تابع</div></div>";
