@@ -104,7 +104,7 @@ function articleBody($link){
     echo "</p></div>";
     // Output the images
     foreach ($image_sources as $src) {
-        echo '<div class="col-6 p-3 text-center"><img src="' . $src . '" style="width:100px;height:100px" class="rounded" /></div>';
+        echo '<div class="col-6 p-1 text-center"><img src="' . $src . '" style="width:150px;height:150px" class="rounded" /></div>';
     }
     echo "</div></div></div>";
 }
