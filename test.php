@@ -33,7 +33,7 @@ if (preg_match('/Content-Type:\s*text\/html;\s*charset=([\w-]+)/i', $headers, $m
 $body_utf8 = iconv($encoding, 'UTF-8//IGNORE', $body);
 $body_utf8 = explode('article_content = "', $body_utf8);
 $body_utf8 = explode('";', $body_utf8[1]);
-$body_utf8 str_replace("\\","",$body_utf8[0]);
+$body_utf8 = str_replace("\\","",$body_utf8[0]);
 
 // Load the HTML into a DOMDocument
 $dom = new DOMDocument;
