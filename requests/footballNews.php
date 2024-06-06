@@ -57,7 +57,7 @@ function articleBody($link){
     $title = explode('he_article_title = "', $body_utf8);
     $title = explode('";', $title[1]);
     echo "<div class='row p-0 m-3'><div class='col-sm-12 mb-3'><div class='row p-3' style='background-color:#a28c5a;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'><div class='col-sm-12 text-center'>";
-    echo $title = "<p>" . str_replace("\\","",$title[0]) . "</p>";
+    echo $title = "<h3>" . str_replace("\\","",$title[0]) . "</h3>";
 
     $body = explode('article_content = "', $body_utf8);
     $body = explode('";', $body[1]);
@@ -103,12 +103,6 @@ function articleBody($link){
     echo "</div></div></div>";
 }
 
-if( isset($_POST["articleLink"]) && !empty($_POST["articleLink"]) ){
-    articleBody($_POST["articleLink"]);
-}else{
-    $msg = "something wrong happened, Please try again.";
-    echo $msg;
-}
 $user = checkLogin();
 
 if( !empty($user["id"]) ){
