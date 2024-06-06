@@ -29,7 +29,7 @@
 			<div id="liveBtn"><p class="iconFoot"><i class="fa fa-futbol-o"></i></p>مباشر</div>
         </div>
         <div class="col pb-2 text-center">
-			<div id="newsBtn"><p class="iconFoot"><i class="fa fa-futbol-o"></i></p>اخبار</div>
+			<div id="newsBtn"><p class="iconFoot"><i class="fa fa-newspaper"></i></p>اخبار</div>
         </div>
     </div>
 </header>
