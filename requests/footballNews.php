@@ -1,4 +1,30 @@
 <?php
+function searchNews(){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://www.kooora.com/?n=0",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HEADER => true, // Include headers in the output
+    ));
+    $response = curl_exec($curl);
+    $array_string = explode('news = new Array (', $response);
+    $array_string = explode(');', $array_string[1]);
+    $array_string = str_replace("\\","",$array_string[0]);
+    preg_match_all('/"n=(\d+)"/', $array_string, $matches);
+    // Extract the n values
+    $n_values = $matches[1];
+    // Print the extracted n values
+    foreach ($n_values as $n) {
+        articleBody("https://www.kooora.com/?n=$n");
+    }
+}
+
 function articleBody($link){
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -83,5 +109,11 @@ if( isset($_POST["articleLink"]) && !empty($_POST["articleLink"]) ){
     $msg = "something wrong happened, Please try again.";
     echo $msg;
 }
+$user = checkLogin();
 
+if( !empty($user["id"]) ){
+	searchNews();
+}else{
+	echo "something wrong happened, Please try again.";
+}
 ?>
