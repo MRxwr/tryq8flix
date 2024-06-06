@@ -4,7 +4,8 @@ require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 
-echo file_get_contents("https://wallhaven.cc/search?q=one piece");
+echo file_get_contents("https://www.kooora.com/?n=1332536&pg=1&o=n");
+//echo file_get_contents("https://wallhaven.cc/search?q=one piece");
 
 /*
 function searchShahid(){
