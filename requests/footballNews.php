@@ -93,7 +93,7 @@ function articleBody($link){
     // Output the text parts
     echo "<p>";
     foreach ($text_parts as $part) {
-        echo $part ;
+        echo str_replace("<p>","",str_replace("</p>","",str_replace("<br>","",$part))) ;
     }
     echo "</p></div>";
     // Output the images
