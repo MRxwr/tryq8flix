@@ -28,5 +28,8 @@
         <div class="col pb-2 text-center">
 			<div id="liveBtn"><p class="iconFoot"><i class="fa fa-futbol-o"></i></p>مباشر</div>
         </div>
+        <div class="col pb-2 text-center">
+			<div id="newBtn"><p class="iconFoot"><i class="fa fa-futbol-o"></i></p>اخبار</div>
+        </div>
     </div>
 </header>

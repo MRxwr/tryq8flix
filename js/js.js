@@ -372,10 +372,48 @@ $(document).on('click', '.liveMatch', function(e) {
         });
 });
 
+$(document).on('click', '#newsBtn', function(e) {
+	$("#loading-screen").show();
+	
+	$("#newsBtn").attr("style","color:#9f8d5c");
+	
+	$("#liveBtn").attr("style","color:#000000");
+    
+	$("#animeBtn").attr("style","color:#000000");
+	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
+	
+	$("#settingBtn").attr("style","color:#000000");
+	$(".bi-gear-fill").addClass("bi-gear").removeClass("bi-gear-fill");
+	
+	$("#movieBtn").attr("style","color:#000000");
+	$(".bi-camera-reels-fill").addClass("bi-camera-reels").removeClass("bi-camera-reels-fill");
+	
+	$("#tvBtn").attr("style","color:#000000");
+	$(".bi-tv-fill").addClass("bi-tv").removeClass("bi-tv-fill");
+	
+	$("#homeBtn").attr("style","color:#000000");
+	$(".bi-house").addClass("bi-house").removeClass("bi-house-fill");
+	
+	$("#searchBtn").attr("style","color:#000000");
+	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
+    $.post("requests/index.php?type=news", {
+            type: "get",
+        },
+        function(data) {
+			$("html, body").animate({ scrollTop: 0 }, "slow", function() {
+				$("#loading-screen").hide();
+				$("#mainBody").html("");
+				$("#mainBody").append(data);
+			});
+        });
+});
+
 $(document).on('click', '#liveBtn', function(e) {
 	$("#loading-screen").show();
 	
 	$("#liveBtn").attr("style","color:#9f8d5c");
+
+    $("#newsBtn").attr("style","color:#000000");
 	
 	$("#animeBtn").attr("style","color:#000000");
 	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
@@ -412,6 +450,9 @@ $(document).on('click', '#liveBtn', function(e) {
 
 $(document).on('click', '#tvBtn', function(e) {
 	$("#loading-screen").show();
+
+    $("#newsBtn").attr("style","color:#000000");
+
 	$("#animeBtn").attr("style","color:#000000");
 	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
 	
@@ -447,6 +488,9 @@ $(document).on('click', '#tvBtn', function(e) {
 
 $(document).on('click', '#movieBtn', function(e) {
 	$("#loading-screen").show();
+
+    $("#newsBtn").attr("style","color:#000000");
+
 	$("#animeBtn").attr("style","color:#000000");
 	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
 	
@@ -482,6 +526,9 @@ $(document).on('click', '#movieBtn', function(e) {
 
 $(document).on('click', '#animeBtn', function(e) {
 	$("#loading-screen").show();
+
+    $("#newsBtn").attr("style","color:#000000");
+
 	$("#animeBtn").attr("style","color:#9f8d5c");
 	$(".bi-emoji-dizzy").addClass("bi-emoji-dizzy-fill").removeClass("bi-emoji-dizzy");
 	
