@@ -324,6 +324,9 @@ $(document).on('click', '#historyLabel', function(e) {
 
 $(document).on('click', '#homeBtn', function(e) {
 	$("#loading-screen").show();
+
+    $("#newsBtn").attr("style","color:#000000");
+
 	$("#animeBtn").attr("style","color:#000000");
 	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
 	
@@ -574,6 +577,20 @@ $(document).on('click', '.loadMoreBtn', function(e) {
         function(data) {
 			$("#loading-screen").hide();
             $("#content").append(data);
+        });
+});
+
+$(document).on('click', '.loadMoreNewsBtn', function(e) {
+	$("#loading-screen").show();
+	$(".loadMoreBtn").hide();
+	var numbers = $(this).attr("id");
+    $.post("requests/index.php?type=news", {
+            type: "get",
+            more: parseInt(numbers)+1,
+        }, 
+        function(data) {
+			$("#loading-screen").hide();
+            $("#mainBody").append(data);
         });
 });
 

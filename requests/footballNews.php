@@ -114,8 +114,9 @@ function articleBody($link){
 $user = checkLogin();
 
 if( !empty($user["id"]) ){
-    searchNews(0); 
-    echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id=''></div>";
+    $more ( isset($_POST["more"]) && !empty($_POST["more"]) ) ? $_POST["more"] : 0 ;
+    searchNews($more); 
+    echo "<div class='col-md-12 loadMoreNewsBtn mb-3' style='text-align-last: center;' id='0'><div class='btn btn-secondary w-75' >تابع</div></div>";
 }else{
 	echo "something wrong happened, Please try again.";
 }
