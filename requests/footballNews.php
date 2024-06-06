@@ -1,8 +1,8 @@
 <?php
-function searchNews(){
+function searchNews($n){
     $curl = curl_init();
     curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://www.kooora.com/?n=0",
+        CURLOPT_URL => "https://www.kooora.com/?n={$n}",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -114,10 +114,8 @@ function articleBody($link){
 $user = checkLogin();
 
 if( !empty($user["id"]) ){
-    echo "<div class='row m-0 w-100' id='content'>";
-    searchNews(); 
-    echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
-    echo "</div>";
+    searchNews(0); 
+    echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id=''></div>";
 }else{
 	echo "something wrong happened, Please try again.";
 }
