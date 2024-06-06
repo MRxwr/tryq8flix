@@ -4,7 +4,10 @@ require("admin/includes/functions.php");
 require('templates/simple_html_dom.php');
 
 
-echo file_get_contents("https://www.kooora.com/?n=1332536&pg=1&o=n");
+$article =  file_get_contents("https://www.kooora.com/?n=1332536&pg=1&o=n");
+$article = explode('article_content = "', $article);
+$article = explode('";', $article[1]);
+echo $article[0];
 //echo file_get_contents("https://wallhaven.cc/search?q=one piece");
 
 /*
