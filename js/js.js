@@ -613,6 +613,9 @@ $(document).on('click', '.loadMoreSearchBtn', function(e) {
 });
 
 $(document).on('click', '#searchBtn', function(e) {
+
+    $("#newsBtn").attr("style","color:#000000");
+    
 	$("#animeBtn").attr("style","color:#000000");
 	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");
 	
