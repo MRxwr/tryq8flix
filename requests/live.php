@@ -3,7 +3,7 @@ function searchMatches() {
 	GLOBAL $websiteLive;
     $curl = curl_init();
     curl_setopt_array($curl, array(
-      CURLOPT_URL => "https://yalla-live.im/",
+      CURLOPT_URL => "{$websiteLive}",
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -19,7 +19,7 @@ function searchMatches() {
         $data = [
             'matches' => []
         ];
-        foreach ($dom->find('.flexwraps .match-container') as $match) {
+        foreach ($dom->find('.albaflex .match-container') as $match) {
             // Assuming the match-link has both href and title (title as match name here)
             $matchLink = $match->find('a', 0);
 			if( !empty($matchLink) ){
