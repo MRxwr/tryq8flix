@@ -83,6 +83,23 @@ function liveMatch($view) {
     ));
     $html = curl_exec($curl);
     curl_close($curl);
+
+	$dom = new DOMDocument();
+
+	// Load the HTML content
+	libxml_use_internal_errors(true); // Suppress errors due to malformed HTML
+	$dom->loadHTML($html);
+	libxml_clear_errors();
+
+	// Find the iframe tag
+	$iframe = $dom->getElementsByTagName('iframe')->item(0);
+
+	// Get the src attribute
+	$iframe_src = $iframe->getAttribute('src');
+
+	// Print the src attribute
+	echo $iframe_src;
+/*
     $dom = str_get_html($html);
     if ($dom) {
 		$data = [
@@ -104,6 +121,7 @@ function liveMatch($view) {
 		echo 'Error: Invalid DOM object.';
 	} 
     return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
+	*/
 }
 
 $user = checkLogin();
