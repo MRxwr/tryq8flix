@@ -83,23 +83,6 @@ function liveMatch($view) {
     ));
     $html = curl_exec($curl);
     curl_close($curl);
-
-	$dom = new DOMDocument();
-
-	// Load the HTML content
-	libxml_use_internal_errors(true); // Suppress errors due to malformed HTML
-	$dom->loadHTML($html);
-	libxml_clear_errors();
-
-	// Find the iframe tag
-	$iframe = $dom->getElementsByTagName('iframe')->item(0);
-
-	// Get the src attribute
-	$iframe_src = $iframe->getAttribute('src');
-
-	// Print the src attribute
-	return $iframe_src;
-/*
     $dom = str_get_html($html);
     if ($dom) {
 		$data = [
@@ -121,7 +104,6 @@ function liveMatch($view) {
 		echo 'Error: Invalid DOM object.';
 	} 
     return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
-	*/
 }
 
 $user = checkLogin();
@@ -129,7 +111,7 @@ $user = checkLogin();
 if( !empty($user["id"]) ){
 	if( isset($_GET["view"]) ){
 		$matches = liveMatch($_GET["view"]);
-		@$output = "<iframe id='frame' src='{$matches}' style='width:100%;height:100vh;margin-top: 30px;' allowFullScreen></iframe>";
+		@$output = "<iframe id='frame' src='{$_GET["view"]}' style='width:100%;height:100vh;margin-top: 30px;' allowFullScreen></iframe>";
 	}else{
 		$matches = searchMatches();
 		$output = "<div class='row p-0 m-3'>";
