@@ -110,7 +110,7 @@ $user = checkLogin();
 
 if( !empty($user["id"]) ){
 	if( isset($_GET["view"]) ){
-		$matches = liveMatch($_GET["view"]);
+		var_dump($matches = liveMatch($_GET["view"]));
 		@$output = "<iframe id='frame' src='{$_GET["view"]}' style='width:100%;height:100vh;margin-top: 30px;' allowFullScreen></iframe>";
 	}else{
 		$matches = searchMatches();
