@@ -98,7 +98,7 @@ function liveMatch($view) {
 	$iframe_src = $iframe->getAttribute('src');
 
 	// Print the src attribute
-	echo $iframe_src;
+	return $iframe_src;
 /*
     $dom = str_get_html($html);
     if ($dom) {
