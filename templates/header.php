@@ -1,4 +1,4 @@
-<header class="sticky-top /*bg-white border*/" style="box-shadow:0px 0px 4px 1px rgba(0, 0, 0, 0.5); border-radius: 0px 0px 10px 10px;">
+<header class="sticky-top /*bg-white border*/" style="box-shadow:0px 0px 4px 1px rgba(0, 0, 0, 0.5); border-radius: 0px 0px 10px 10px;color:#5e5e5e">
     <div class="row m-0 pt-1 w-100">
 		<div class="col-1 p-1 text-center">
             <div data-bs-toggle="modal" data-bs-target="#settings" id="settingBtn"><p class="iconFoot"><i class="bi bi-gear"></i></p></div>
