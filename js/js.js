@@ -103,7 +103,7 @@ function bodyLoad() {
     if ($.cookie('tryq8flix2')) {
         $("#profileOptions0").attr("style", "display:none");
         $("#profileOptions1").attr("style", "display:block");
-		$("#homeBtn").attr("style","color:#9f8d5c");
+		$("#homeBtn").attr("style","color:#9f8d5c !important");
 		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
 		$.post("requests/index.php?type=home", {
 			type: "get",
