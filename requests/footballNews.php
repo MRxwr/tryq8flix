@@ -57,7 +57,7 @@ function articleBody($link){
     $title = explode('he_article_title = "', $body_utf8);
     $title = explode('";', $title[1]);
     echo "<div class='row p-0 m-3'><div class='col-sm-12 mb-3'><div class='row p-3' style='background-color:#a28c5a;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'><div class='col-sm-12 text-center'>";
-    echo $title = "<h3>" . str_replace("\\","",$title[0]) . "</h3>";
+    echo $title = "<h2>" . str_replace("\\","",$title[0]) . "</h2>";
 
     $image = explode('article_images = new Array (', $body_utf8);
     $image = explode('"', $image[1]);
@@ -97,11 +97,11 @@ function articleBody($link){
     }
 
     // Output the text parts
-    echo "<p class='p-3'>";
+    echo "<h5 class='p-3'>";
     foreach ($text_parts as $part) {
         echo str_replace("<p>","",str_replace("</p>","",str_replace("<br>","",$part))) ;
     }
-    echo "</p></div>";
+    echo "</h5></div>";
     // Output the images
     foreach ($image_sources as $src) {
         echo '<div class="col-6 col-md-3 p-1 text-center"><img src="' . $src . '" style="width:150px;height:150px" class="rounded" /></div>';
