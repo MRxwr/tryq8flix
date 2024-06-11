@@ -100,7 +100,7 @@
 </div>
 
 <div class="modal fade" id="login" tabindex="-1" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">تسجيل الدخول</h5>
@@ -133,7 +133,7 @@
 </div>
 
 <div class="modal fade" id="forget" tabindex="-1" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">نسيان كلمة المرور</h5>
@@ -159,7 +159,7 @@
 </div>
 
 <div class="modal fade" id="signup" tabindex="-1" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">التسجيل</h5>
@@ -204,7 +204,7 @@
 </div>
 
 <div class="modal fade profileLable" id="profile" tabindex="-1" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="profileLable">الملف الشخصي</h5>
@@ -260,7 +260,7 @@
 </div>
 
 <div class="modal fade" id="contactUs" tabindex="-1" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">تواصل معنا</h5>
@@ -292,7 +292,7 @@
 </div>
 
 <div class="modal fade" id="request" tabindex="-1" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">الطلب</h5>
