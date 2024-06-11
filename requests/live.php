@@ -29,7 +29,7 @@ function searchMatches() {
 				$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
 				@$matchTime = $match->find('.match-center #match-time', 0)->plaintext;
 				$matchDate = $match->find('.match-center .date', 0)->plaintext;
-				@$matchResult = $match->find('.match-center #result', 0)->plaintext;
+				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
 				$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
 
 				$jsonData = [
