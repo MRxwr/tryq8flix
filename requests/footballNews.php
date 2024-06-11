@@ -97,7 +97,7 @@ function articleBody($link){
     }
 
     // Output the text parts
-    echo "<h5 class='p-3'>";
+    echo "<h5 class='p-3 text-justify'>";
     foreach ($text_parts as $part) {
         echo str_replace("<p>","",str_replace("</p>","",str_replace("<br>","",$part))) ;
     }
