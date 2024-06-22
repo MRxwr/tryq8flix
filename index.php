@@ -29,8 +29,8 @@ $profileData = checkLogin();
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
-    <!--<script src="js/main.js?y=<?php echo md5(time()) ?>"></script>
-    <script src="js/js.js?y=<?php echo md5(time()) ?>"></script>-->
+    <script src="js/main.js?y=<?php echo md5(time()) ?>"></script>
+    <script src="js/js.js?y=<?php echo md5(time()) ?>"></script>
 	<style>
 	body{
 		background-color: #101010;
@@ -51,7 +51,7 @@ $profileData = checkLogin();
 	</style>
 </head>
 
-<body class="container-flex m-0 p-0" style="margin:auto;text-align: -webkit-center;">
+<body class="container-flex m-0 p-0" onload="bodyLoad();" style="margin:auto;text-align: -webkit-center;">
 	<div style="max-width:1300px;margin: auto;">
     <?php require("templates/header.php"); ?>
     <?php //require("templates/navbar.php"); ?> 
@@ -88,19 +88,6 @@ $profileData = checkLogin();
     <!-- calling js files -->
     </div>
     
-	<script>
-
-	const puppeteer = require('puppeteer');
-		(async () => {
-		const browser = await puppeteer.launch();
-		const page = await browser.newPage();
-		await page.goto('https://shed4u1.cam/');
-		// Get the page content
-		const content = await page.content();
-		console.log(content);
-		await browser.close();
-		})();
-	</script>
 
 </body>
 
