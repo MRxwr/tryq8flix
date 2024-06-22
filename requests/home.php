@@ -121,7 +121,6 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 		if( $_POST["type"] == "get" ){
 			$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
 			$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-			$user = checkLogin();
 			$shows = searchShahid();
 			echo "<div class='row m-0 w-100' id='content'>";
 			outputData($shows); 
