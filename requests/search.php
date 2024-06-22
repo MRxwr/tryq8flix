@@ -24,7 +24,20 @@ function getWebsite($search){
 
 function searchShahid($search){
 	GLOBAL $website;
-	@$html = file_get_contents("{$website}search?s={$search}");
+	//@$html = file_get_contents("{$website}search?s={$search}");
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key=IN9YLTOE0MBVC5BV5GASF63BEE472R7CRTLX4N77FWZBTNZL4L3XNANQ4XMZFDN82Z6IVRQ4BAVH8GR6&url=". urlencode("{$website}search?s={$search}"),
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => '',
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_FOLLOWLOCATION => true,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => 'GET',
+	));
+	$html = curl_exec($curl);
+	curl_close($curl);
 	// Create a DOM object
 	$dom = str_get_html($html);
 	// Check if the DOM object is valid
