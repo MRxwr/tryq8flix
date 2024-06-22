@@ -51,7 +51,7 @@ $profileData = checkLogin();
 	</style>
 </head>
 
-<body class="container-flex m-0 p-0" onload="bodyLoad();" style="margin:auto;text-align: -webkit-center;">
+<body class="container-flex m-0 p-0" style="margin:auto;text-align: -webkit-center;">
 	<div style="max-width:1300px;margin: auto;">
     <?php require("templates/header.php"); ?>
     <?php //require("templates/navbar.php"); ?> 
