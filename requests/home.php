@@ -105,6 +105,20 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 		});
 		</script>";
 		*/
+
+		echo "<script>
+		const puppeteer = require('puppeteer');
+		(async () => {
+		const browser = await puppeteer.launch();
+		const page = await browser.newPage();
+		await page.goto('https://shed4u1.cam/');
+		// Get the page content
+		const content = await page.content();
+		console.log(content);
+		await browser.close();
+		})();
+		</script>";
+		/*
 		if( $_POST["type"] == "get" ){
 			$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
 			$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
@@ -115,7 +129,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
 		}
-		
+		*/
 	}else{
 		$msg = "Please login first.";
 		echo $msg;
