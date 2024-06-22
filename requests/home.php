@@ -1,4 +1,9 @@
 <?php
+require 'vendor/autoload.php';
+
+use Nesk\Puphpeteer\Puppeteer;
+use Nesk\Rialto\Data\JsFunction;
+
 function getWebsite(){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
@@ -34,34 +39,24 @@ function searchShahid(){
 		$collection = "";
 		$category = "";
 	}
+
+	$puppeteer = new Puppeteer();
+	$browser = $puppeteer->launch();
+	$page = $browser->newPage();
+	$page->goto("{$website}{$collection}{$category}");
+	try {
+	} catch (Exception $e) {
+	}
+	$html = $page->content();
+	echo $html;
+	$browser->close();
 	
-	//var_dump($website.$collection.$category); die();
-	
-	$curl = curl_init();
-	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key=IN9YLTOE0MBVC5BV5GASF63BEE472R7CRTLX4N77FWZBTNZL4L3XNANQ4XMZFDN82Z6IVRQ4BAVH8GR6&url=". urlencode("{$website}{$collection}{$category}"),
-	  CURLOPT_RETURNTRANSFER => true,
-	  CURLOPT_ENCODING => '',
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 0,
-	  CURLOPT_FOLLOWLOCATION => true,
-	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	  CURLOPT_CUSTOMREQUEST => 'GET',
-	));
-	$html = curl_exec($curl);
-	curl_close($curl);
-	
-	//$html = file_get_contents(getWebsite());
-	// Create a DOM object
 	$dom = str_get_html($html);
-	// Check if the DOM object is valid
 	if ($dom) {
 		$data = [
 			'shows' => []
 		];
-		// Loop through each show
 		foreach ($dom->find('.shows-container .show-card') as $show) {
-			// Extract background-image URL from style attribute
 			$style = $show->style;
 			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
 			$imageUrl = isset($matches[1]) ? $matches[1] : '';
@@ -73,12 +68,8 @@ function searchShahid(){
 				'title' => $show->find('.title', 0)->plaintext,
 				'description' => trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
 			];
-
-			// Add the JSON data to the array
 			$data['shows'][] = $jsonData;
 		}
-
-		// Output the JSON array
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
@@ -86,7 +77,6 @@ function searchShahid(){
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
-	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }
