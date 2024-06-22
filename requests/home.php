@@ -36,7 +36,7 @@ function searchShahid(){
 	}
 	
 	//var_dump($website.$collection.$category); die();
-	
+	/*
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "{$website}{$collection}{$category}",
@@ -50,7 +50,20 @@ function searchShahid(){
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
-	
+	*/
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	CURLOPT_URL => "http://api.scraperapi.com?api_key=ab4a8e030c1a48956b52356ec985bf14&url=" . urlencode($website.$collection.$category),
+	CURLOPT_RETURNTRANSFER => true,
+	CURLOPT_ENCODING => '',
+	CURLOPT_MAXREDIRS => 10,
+	CURLOPT_TIMEOUT => 0,
+	CURLOPT_FOLLOWLOCATION => true,
+	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	CURLOPT_CUSTOMREQUEST => 'GET',
+	)); 
+	$html = curl_exec($curl);
+	curl_close($curl);
 	//$html = file_get_contents(getWebsite());
 	// Create a DOM object
 	$dom = str_get_html($html);
