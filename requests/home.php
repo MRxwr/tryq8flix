@@ -63,7 +63,7 @@ function searchShahid(){
 	CURLOPT_CUSTOMREQUEST => 'GET',
 	)); 
 	$html = curl_exec($curl);
-	var_dump($html);
+	var_dump($html);die();
 	curl_close($curl);
 	//$html = file_get_contents(getWebsite());
 	// Create a DOM object
