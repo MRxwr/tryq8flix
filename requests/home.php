@@ -35,7 +35,7 @@ function searchShahid(){
 		$category = "";
 	}
 	
-	//var_dump($website.$collection.$category); die();
+	var_dump($website.$collection.$category);
 	
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
@@ -49,6 +49,7 @@ function searchShahid(){
 	  CURLOPT_CUSTOMREQUEST => 'GET',
 	));
 	$html = curl_exec($curl);
+	var_dump($html);
 	curl_close($curl);
 	
 	//$html = file_get_contents(getWebsite());
