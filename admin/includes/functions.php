@@ -214,7 +214,7 @@ function validateInput($input) {
 }
 
 function outputData($shows){ 
-	//$user = checkLogin();
+	$user = checkLogin();
 	$output = "";
 	if( is_array($shows) && !empty($shows) && !empty($user["id"]) ){
 		for ($i = 0; $i < sizeof($shows); $i++) {
