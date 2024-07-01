@@ -51,7 +51,7 @@ function searchShahid(){
 	$html = curl_exec($curl);
 	curl_close($curl);
 	
-	//$html = file_get_contents(getWebsite());
+	$html = file_get_contents(getWebsite());
 	// Create a DOM object
 	$dom = str_get_html($html);
 	// Check if the DOM object is valid
@@ -114,7 +114,6 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
 		}
-		
 	}else{
 		$msg = "Please login first.";
 		echo $msg;
