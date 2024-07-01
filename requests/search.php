@@ -71,8 +71,8 @@ function searchShahid($search){
 		echo 'Error: Invalid DOM object.';
 	}
 
-	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
-	return @$shows = $shows["shows"];
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array("shows" => array());
+	return $shows = $shows["shows"];
 	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
