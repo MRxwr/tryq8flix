@@ -84,7 +84,7 @@ function searchShahid(){
 		echo 'Error: Invalid DOM object.';
 	}
 
-	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array("shows" => array());
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
 	// Clean up the DOM object
 	$dom->clear();
@@ -114,6 +114,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
 		}
+		
 	}else{
 		$msg = "Please login first.";
 		echo $msg;
