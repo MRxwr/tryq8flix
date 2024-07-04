@@ -17,7 +17,7 @@ $(document).on('click', '.playVideo', function(e) {
 	$("#loading-screen").show();
     var getId = $(this).attr("id");
 	var title = $(this).html();
-    $.post("requests/index.php?type=playVideo", {
+    $.post("requests2/index.php?type=playVideo", {
             id: getId
         },
         function(data) {
@@ -32,7 +32,7 @@ $(document).on('click', '.threeDots', function(e) {
 	$("#loading-screen").show();
     var getId = $(this).attr("id");
     //var title = $(".categoryTitle" + getId).html();
-    $.post("requests/index.php?type=more", {
+    $.post("requests2/index.php?type=more", {
 		id: getId
 	},
 	function(data) {
@@ -46,7 +46,7 @@ $(document).on('click', '.threeDots2', function(e) {
 	$("#loading-screen").show();
     var getId = $(this).attr("id");
     //var title = $(".categoryTitle" + getId).html();
-    $.post("requests/index.php?type=more", {
+    $.post("requests2/index.php?type=more", {
 		id: getId
 	},
 	function(data) {
@@ -61,7 +61,7 @@ $(document).on('click', '#regBtn', function(e) {
     var pass = $("input[name=regPass]").val();
     var rePass = $("input[name=regPass1]").val();
     var email = $("input[name=regEmail]").val();
-    $.post("requests/index.php?type=register", {
+    $.post("requests2/index.php?type=register", {
             username: username,
             pass: pass,
             rePass: rePass,
@@ -85,7 +85,7 @@ $(document).on('click', '#regBtn', function(e) {
 $(document).on('click', '#loginBtn', function(e) {
     var username = $("input[name=loginUser]").val();
     var pass = $("input[name=loginPass]").val();
-    $.post("requests/index.php?type=login", {
+    $.post("requests2/index.php?type=login", {
             username: username,
             pass: pass
         },
@@ -105,7 +105,7 @@ function bodyLoad() {
         $("#profileOptions1").attr("style", "display:block");
 		$("#homeBtn").attr("style","color:#9f8d5c");
 		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
-		$.post("requests/index.php?type=home", {
+		$.post("requests2/index.php?type=home", {
 			type: "get",
 		},
 		function(data) {
@@ -123,7 +123,7 @@ function bodyLoad() {
 }
 
 $(document).on('click', '#logoutLabel', function(e) {
-    $.post("requests/index.php?type=logout", {
+    $.post("requests2/index.php?type=logout", {
             type: "remove",
         },
         function(data) {
@@ -138,7 +138,7 @@ $(document).on('click', '#logoutLabel', function(e) {
 
 $(document).on('click', '#forgetBtn', function(e) {
     var email = $("input[name=forgetEmail]").val();
-    $.post("requests/index.php?type=forget", {
+    $.post("requests2/index.php?type=forget", {
             email: email,
         },
         function(data) {
@@ -164,7 +164,7 @@ $(document).on('click', '#profileBtn', function(e) {
     form_data.append('token', token);
     form_data.append('logo', logo);
     $.ajax({
-        url: 'requests/index.php?type=profile',
+        url: 'requests2/index.php?type=profile',
         dataType: 'text',
         cache: false,
         contentType: false,
@@ -188,7 +188,7 @@ $(document).on('click', '#profileBtn', function(e) {
 $(document).on('click', '#conBtn', function(e) {
     var title = $("input[name=conTitle]").val();
     var msg = $("textarea[name=conMsg]").val();
-    $.post("requests/index.php?type=contact", {
+    $.post("requests2/index.php?type=contact", {
             title: title,
             msg: msg
         },
@@ -208,7 +208,7 @@ $(document).on('click', '#reqBtn', function(e) {
     var title = $("input[name=reqTitle]").val();
     var imdb = $("input[name=reqIMDb]").val();
     var msg = $("textarea[name=reqMsg]").val();
-    $.post("requests/index.php?type=request", {
+    $.post("requests2/index.php?type=request", {
             title: title,
             imdb: imdb,
             msg: msg
@@ -228,7 +228,7 @@ $(document).on('click', '#reqBtn', function(e) {
 
 $(document).on('click', '.likedVidoes', function(e) {
     var id = $(this).attr("id");
-    $.post("requests/index.php?type=likedVidoes", {
+    $.post("requests2/index.php?type=likedVidoes", {
             type: "add",
             id: id
         },
@@ -237,7 +237,7 @@ $(document).on('click', '.likedVidoes', function(e) {
                 alert("Video has been added to your like list.");
             } else {
                 alert(data);
-				$.post("requests/index.php?type=likedVidoes", {
+				$.post("requests2/index.php?type=likedVidoes", {
                         type: "get",
                     },
                     function(data) {
@@ -249,7 +249,7 @@ $(document).on('click', '.likedVidoes', function(e) {
 });
 
 $(document).on('click', '#likedVideosLabel', function(e) {
-    $.post("requests/index.php?type=likedVidoes", {
+    $.post("requests2/index.php?type=likedVidoes", {
             type: "get",
         },
         function(data) {
@@ -260,7 +260,7 @@ $(document).on('click', '#likedVideosLabel', function(e) {
 
 $(document).on('click', '.disLikedVidoes', function(e) {
     var id = $(this).attr("id");
-    $.post("requests/index.php?type=disLikedVidoes", {
+    $.post("requests2/index.php?type=disLikedVidoes", {
             type: "add",
             id: id
         },
@@ -269,7 +269,7 @@ $(document).on('click', '.disLikedVidoes', function(e) {
                 alert("Video has been added to your dis like list.");
             } else {
                 alert(data);
-				$.post("requests/index.php?type=disLikedVidoes", {
+				$.post("requests2/index.php?type=disLikedVidoes", {
                         type: "get",
                     },
                     function(data) {
@@ -281,7 +281,7 @@ $(document).on('click', '.disLikedVidoes', function(e) {
 });
 
 $(document).on('click', '#disLikedVideosLabel', function(e) {
-    $.post("requests/index.php?type=disLikedVidoes", {
+    $.post("requests2/index.php?type=disLikedVidoes", {
             type: "get",
         },
         function(data) {
@@ -292,7 +292,7 @@ $(document).on('click', '#disLikedVideosLabel', function(e) {
 
 $(document).on('click', '.addToMyList', function(e) {
     var id = $(this).attr("id");
-    $.post("requests/index.php?type=myList", {
+    $.post("requests2/index.php?type=myList", {
             type: "add",
             id: id
         },
@@ -301,7 +301,7 @@ $(document).on('click', '.addToMyList', function(e) {
                 alert("You have added this show to your list successfully.");
             } else {
                 alert(data);
-                $.post("requests/index.php?type=myList", {
+                $.post("requests2/index.php?type=myList", {
                         type: "get",
                     },
                     function(data) {
@@ -313,7 +313,7 @@ $(document).on('click', '.addToMyList', function(e) {
 });
 
 $(document).on('click', '#historyLabel', function(e) {
-    $.post("requests/index.php?type=history", {
+    $.post("requests2/index.php?type=history", {
             type: "get",
         },
         function(data) {
@@ -347,7 +347,7 @@ $(document).on('click', '#homeBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests/index.php?type=home", {
+    $.post("requests2/index.php?type=home", {
             type: "get",
         },
         function(data) {
@@ -363,7 +363,7 @@ $(document).on('click', '#homeBtn', function(e) {
 $(document).on('click', '.liveMatch', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
-    $.post("requests/index.php?type=live&view="+id, {
+    $.post("requests2/index.php?type=live&view="+id, {
             type: "get",
         },
         function(data) {
@@ -399,7 +399,7 @@ $(document).on('click', '#newsBtn', function(e) {
 	
 	$("#searchBtn").attr("style","color:#5e5e5e");
 	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
-    $.post("requests/index.php?type=news", {
+    $.post("requests2/index.php?type=news", {
             type: "get",
         },
         function(data) {
@@ -435,7 +435,7 @@ $(document).on('click', '#liveBtn', function(e) {
 	
 	$("#searchBtn").attr("style","color:#5e5e5e");
 	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
-    $.post("requests/index.php?type=live", {
+    $.post("requests2/index.php?type=live", {
             type: "get",
         },
         function(data) {
@@ -476,7 +476,7 @@ $(document).on('click', '#tvBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests/index.php?type=home&collection=last_eps", {
+    $.post("requests2/index.php?type=home&collection=last_eps", {
             type: "get",
         },
         function(data) {
@@ -514,7 +514,7 @@ $(document).on('click', '#movieBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests/index.php?type=home&collection=last_films", {
+    $.post("requests2/index.php?type=home&collection=last_films", {
             type: "get",
         },
         function(data) {
@@ -552,7 +552,7 @@ $(document).on('click', '#animeBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests/index.php?type=home&collection=last_eps&category=مسلسلات-انمي", {
+    $.post("requests2/index.php?type=home&collection=last_eps&category=مسلسلات-انمي", {
             type: "get",
         },
         function(data) {
@@ -570,7 +570,7 @@ $(document).on('click', '.loadMoreBtn', function(e) {
 	$(".loadMoreBtn").hide();
 	var numbers = $(this).attr("id");
 	var collection = $(".getCollection").attr("id");
-    $.post("requests/index.php?type=loadMore&collection="+collection, {
+    $.post("requests2/index.php?type=loadMore&collection="+collection, {
             type: "get",
             more: parseInt(numbers)+1,
         }, 
@@ -584,7 +584,7 @@ $(document).on('click', '.loadMoreNewsBtn', function(e) {
 	$("#loading-screen").show();
 	$(".loadMoreBtn").hide();
 	var numbers = $(this).attr("id");
-    $.post("requests/index.php?type=news", {
+    $.post("requests2/index.php?type=news", {
             type: "get",
             more: parseInt(numbers)+1,
         }, 
@@ -602,7 +602,7 @@ $(document).on('click', '.loadMoreSearchBtn', function(e) {
 	$(".loadMoreSearchBtn").hide();
 	var numbers = $(this).attr("id");
 	var search = $(".getSearch").attr("id");
-    $.post("requests/index.php?type=loadMoreSearch&search="+search, {
+    $.post("requests2/index.php?type=loadMoreSearch&search="+search, {
             type: "get",
             more: parseInt(numbers)+1,
         }, 
@@ -649,7 +649,7 @@ $(document).on('keyup', '#searchText', function(event) {
 $(document).on('click', '#searchButton', function(e) {
     var search = $("input[id=searchText]").val();;
 	$("#loading-screen").show();
-    $.post("requests/index.php?type=search", {
+    $.post("requests2/index.php?type=search", {
             type: "get",
             search: search
         },
@@ -664,7 +664,7 @@ $(document).on('click', '.categoryTitleTv', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
 	
-    $.post("requests/index.php?type=home&collection=last_eps&category="+id, {
+    $.post("requests2/index.php?type=home&collection=last_eps&category="+id, {
             type: "get",
         },
         function(data) {
@@ -681,7 +681,7 @@ $(document).on('click', '.categoryTitlePost', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
 	
-    $.post("requests/index.php?type=home&category="+id, {
+    $.post("requests2/index.php?type=home&category="+id, {
             type: "get",
         },
         function(data) {
@@ -698,7 +698,7 @@ $(document).on('click', '.categoryTitleMovie', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
 	
-    $.post("requests/index.php?type=home&collection=last_films&category="+id, {
+    $.post("requests2/index.php?type=home&collection=last_films&category="+id, {
             type: "get",
         },
         function(data) {
