@@ -229,6 +229,7 @@ function outputData($shows){
 				$catgoryType = "categoryTitlePost";
 				$shows[$i]["episode"] = "تشغيل";
 			}
+			// i changed العنوان from episode to title
 			$realTitle = explode("الحلقة",$shows[$i]["title"]);
 			$output .= "
 				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
