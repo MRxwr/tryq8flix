@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    // Add event listeners for theme switch
     const themeSwitcher = document.getElementById('theme-switcher');
     themeSwitcher.addEventListener('change', function() {
         if (this.checked) {
@@ -11,4 +10,3 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 });
-

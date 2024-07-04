@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie App - Home</title>
-    <!-- Include Bootstrap and Custom CSS/JS here -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
-<body>
+<body class="light-theme">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Movie App</a>
         <div class="collapse navbar-collapse">
@@ -32,7 +33,7 @@
         <div id="trendingCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img class="d-block w-100" src="..." alt="First slide">
+                    <img class="d-block w-100" src="https://via.placeholder.com/800x400" alt="First slide">
                 </div>
                 <!-- Add more slides as needed -->
             </div>
@@ -59,15 +60,84 @@
         </ul>
         <div class="tab-content" id="categoryTabsContent">
             <div class="tab-pane fade show active" id="movies" role="tabpanel" aria-labelledby="movies-tab">
-                <!-- Movie content here -->
+                <div class="card-deck mt-3">
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="Movie 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Movie 1</h5>
+                            <p class="card-text">This is a brief description of Movie 1.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="Movie 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Movie 2</h5>
+                            <p class="card-text">This is a brief description of Movie 2.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="Movie 3">
+                        <div class="card-body">
+                            <h5 class="card-title">Movie 3</h5>
+                            <p class="card-text">This is a brief description of Movie 3.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane fade" id="tvshows" role="tabpanel" aria-labelledby="tvshows-tab">
-                <!-- TV Shows content here -->
+                <div class="card-deck mt-3">
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="TV Show 1">
+                        <div class="card-body">
+                            <h5 class="card-title">TV Show 1</h5>
+                            <p class="card-text">This is a brief description of TV Show 1.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="TV Show 2">
+                        <div class="card-body">
+                            <h5 class="card-title">TV Show 2</h5>
+                            <p class="card-text">This is a brief description of TV Show 2.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="TV Show 3">
+                        <div class="card-body">
+                            <h5 class="card-title">TV Show 3</h5>
+                            <p class="card-text">This is a brief description of TV Show 3.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane fade" id="anime" role="tabpanel" aria-labelledby="anime-tab">
-                <!-- Anime content here -->
+                <div class="card-deck mt-3">
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="Anime 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Anime 1</h5>
+                            <p class="card-text">This is a brief description of Anime 1.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="Anime 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Anime 2</h5>
+                            <p class="card-text">This is a brief description of Anime 2.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://via.placeholder.com/150x200" class="card-img-top" alt="Anime 3">
+                        <div class="card-body">
+                            <h5 class="card-title">Anime 3</h5>
+                            <p class="card-text">This is a brief description of Anime 3.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
