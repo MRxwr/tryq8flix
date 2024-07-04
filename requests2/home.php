@@ -31,7 +31,7 @@ function searchShahid(){
 			'shows' => []
 		];
 		foreach ($dom->find('.Small--Box') as $show) {
-			$title = $show->find('.title', 0)->title;
+			$title = $show->find('.title', 0)->plaintext;
 			$url = $show->find('.recent--block', 0)->href;
 			$poster = $show->find('img', 0)->getAttribute('data-src');
 			$genre = $show->find('.liList li', 0)->plaintext;
