@@ -36,6 +36,9 @@ function searchShahid(){
 	}
 	
 	//var_dump($website.$collection.$category); die();
+	/*
+	https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
+	*/
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key=IN9YLTOE0MBVC5BV5GASF63BEE472R7CRTLX4N77FWZBTNZL4L3XNANQ4XMZFDN82Z6IVRQ4BAVH8GR6&url=". urlencode("{$website}{$collection}{$category}"),
