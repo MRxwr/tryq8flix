@@ -399,7 +399,7 @@ $(document).on('click', '#newsBtn', function(e) {
 	
 	$("#searchBtn").attr("style","color:#5e5e5e");
 	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
-    $.post("requests2/index.php?type=news", {
+    $.post("requests/index.php?type=news", {
             type: "get",
         },
         function(data) {
@@ -435,7 +435,7 @@ $(document).on('click', '#liveBtn', function(e) {
 	
 	$("#searchBtn").attr("style","color:#5e5e5e");
 	$(".bi-search-heart-fill").addClass("bi-search-heart").removeClass("bi-search-heart-fill");
-    $.post("requests2/index.php?type=live", {
+    $.post("requests/index.php?type=live", {
             type: "get",
         },
         function(data) {
