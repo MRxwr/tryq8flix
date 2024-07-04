@@ -20,11 +20,15 @@ function getWebsite(){
 
 function searchShahid(){
 	GLOBAL $website, $_GET;
-	$type = (isset($_GET["collection"]) && $_GET["collection"] == "last_eps") ? "مسلسلات-اجنبي-1/?key=episodes" : (
-		isset($_GET["collection"]) && $_GET["collection"] == "last_films" ? "movies/" : (
-			isset($_GET["collection"]) && $_GET["collection"] == "last_eps&category=مسلسلات-انمي" ? "مسلسلات-انمي/?key=episodes" : ""
-		)
-	);
+	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
+		$type = "مسلسلات-اجنبي-1/?key=episodes";
+	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_films" ){
+		$type = "movies/";
+	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps&category=مسلسلات-انمي" ){
+		$type = "مسلسلات-انمي/?key=episodes";
+	}else{
+		$type = "";
+	}
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	if( isset($_GET["collection"]) ){
 		$collection = "?order={$_GET["collection"]}";
