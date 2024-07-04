@@ -2,15 +2,14 @@
 function searchShahid(){
 	GLOBAL $website, $_GET;
 	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
-		$type = "مسلسلات-اجنبي-1/?key=episodes";
+		$type = "category/مسلسلات-اجنبي-1/?key=episodes";
 	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_films" ){
 		$type = "movies/";
 	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps&category=مسلسلات-انمي" ){
-		$type = "مسلسلات-انمي/?key=episodes";
+		$type = "category/مسلسلات-انمي/?key=episodes";
 	}else{
 		$type = "recent/";
 	}
-	echo $url = ("https://web5.topcinema.world/{$type}") . "<br>";
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://web5.topcinema.world/{$type}",
