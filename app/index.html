@@ -204,6 +204,12 @@
         html.light-theme .btn-cta {
             color: #fff;
         }
+
+        .movie-poster {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
@@ -256,39 +262,8 @@
     <main class="container mt-5">
         <section class="trending">
             <h2 class="mb-4">Trending Now</h2>
-            <div class="row">
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="trending-item">
-                        <img src="https://example.com/stranger-things-poster.jpg" alt="Stranger Things" class="img-fluid">
-                        <div class="trending-item-overlay">
-                            <h5 class="mb-0">Stranger Things</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="trending-item">
-                        <img src="https://example.com/the-witcher-poster.jpg" alt="The Witcher" class="img-fluid">
-                        <div class="trending-item-overlay">
-                            <h5 class="mb-0">The Witcher</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="trending-item">
-                        <img src="https://example.com/attack-on-titan-poster.jpg" alt="Attack on Titan" class="img-fluid">
-                        <div class="trending-item-overlay">
-                            <h5 class="mb-0">Attack on Titan</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="trending-item">
-                        <img src="https://example.com/mandalorian-poster.jpg" alt="The Mandalorian" class="img-fluid">
-                        <div class="trending-item-overlay">
-                            <h5 class="mb-0">The Mandalorian</h5>
-                        </div>
-                    </div>
-                </div>
+            <div class="row" id="trendingMovies">
+                <!-- Movies will be dynamically inserted here -->
             </div>
         </section>
 
@@ -367,6 +342,35 @@
         }
 
         toggleSwitch.addEventListener('change', switchTheme, false);
+
+        // Fetch and display movies
+        const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjOGE0OGVjMiIsIm1iZiI6MTcyMDEzMjIzNC4zMDk2NzUsInN1YiI6IjY2ODcyMWYzYTEzNTI0MmVkOTI2NWZmYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.1iFjni19GsapIiKU1rKrN6iT8FATSXEWgSThl9yclWg'
+            }
+        };
+
+        fetch('https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc', options)
+            .then(response => response.json())
+            .then(data => {
+                const trendingMoviesContainer = document.getElementById('trendingMovies');
+                data.results.slice(0, 8).forEach(movie => {
+                    const movieElement = document.createElement('div');
+                    movieElement.className = 'col-md-3 col-sm-6 mb-4';
+                    movieElement.innerHTML = `
+                        <div class="trending-item">
+                            <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" class="movie-poster img-fluid">
+                            <div class="trending-item-overlay">
+                                <h5 class="mb-0">${movie.title}</h5>
+                            </div>
+                        </div>
+                    `;
+                    trendingMoviesContainer.appendChild(movieElement);
+                });
+            })
+            .catch(err => console.error(err));
     </script>
 </body>
 </html>
