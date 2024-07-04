@@ -1,23 +1,4 @@
 <?php
-function getWebsite(){
-	GLOBAL $website, $_GET;
-	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
-	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	if( isset($_GET["collection"]) ){
-		$collection = "?order={$_GET["collection"]}";
-		if( isset($_GET["category"]) ){
-			$category = "&category={$_GET["category"]}";
-		}
-	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
-		$collection = "";
-		$category = "?category={$_GET["category"]}";
-	}else{
-		$collection = "";
-		$category = "";
-	}
-	return $website.$collection.$category;
-}
-
 function searchShahid(){
 	GLOBAL $website, $_GET;
 	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
@@ -44,17 +25,12 @@ function searchShahid(){
 	$html = curl_exec($curl);
 	curl_close($curl);
 	
-	//$html = file_get_contents(getWebsite());
-	// Create a DOM object
 	$dom = str_get_html($html);
-	// Check if the DOM object is valid
 	if ($dom) {
 		$data = [
 			'shows' => []
 		];
-		// Loop through each show
 		foreach ($dom->find('.Small--Box') as $show) {
-			// Extract background-image URL from style attribute
 			$title = $show->find('.recent--block', 0)->title;
 			$url = $show->find('.recent--block', 0)->href;
 			$poster = $show->find('img', 0)->getAttribute('data-src');
@@ -68,12 +44,8 @@ function searchShahid(){
 				'title' => $title,
 				'description' => "",
 			];
-
-			// Add the JSON data to the array
 			$data['shows'][] = $jsonData;
 		}
-
-		// Output the JSON array
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
@@ -81,7 +53,6 @@ function searchShahid(){
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
-	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }
