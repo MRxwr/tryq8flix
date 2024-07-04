@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie App - Settings</title>
+    <!-- Include Bootstrap and Custom CSS/JS here -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="home.html">Movie App</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="home.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.html">Profile</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h2>Settings</h2>
+        <div class="form-group">
+            <label for="theme-switcher">Theme</label>
+            <select class="form-control" id="theme-switcher">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="language-switcher">Language</label>
+            <select class="form-control" id="language-switcher">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <!-- Add more languages as needed -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="notifications-switcher">Notifications</label>
+            <select class="form-control" id="notifications-switcher">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </select>
+        </div>
+    </div>
+</body>
+</html>
