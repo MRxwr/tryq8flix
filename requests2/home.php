@@ -27,24 +27,9 @@ function searchShahid(){
 	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps&category=مسلسلات-انمي" ){
 		$type = "مسلسلات-انمي/?key=episodes";
 	}else{
-		$type = "";
+		$type = "recent/";
 	}
-	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	if( isset($_GET["collection"]) ){
-		$collection = "?order={$_GET["collection"]}";
-		if( isset($_GET["category"]) ){
-			$category = "&category={$_GET["category"]}";
-		}
-	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
-		$collection = "";
-		$category = "?category={$_GET["category"]}";
-	}else{
-		$collection = "";
-		$category = "";
-	}
-	
-	//var_dump($website.$collection.$category); die();
-	
+		
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://web5.topcinema.world/{$type}",
