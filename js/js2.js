@@ -492,7 +492,7 @@ $(document).on('click', '#tvBtn', function(e) {
 $(document).on('click', '#movieBtn', function(e) {
 	$("#loading-screen").show();
 
-    $("#newsBtn").attr("style","color:#5e5e5e");
+    $("#newsBtn").attr("style","color:#5e5e5e"); 
 
 	$("#animeBtn").attr("style","color:#5e5e5e");
 	$(".bi-emoji-dizzy-fill").addClass("bi-emoji-dizzy").removeClass("bi-emoji-dizzy-fill");

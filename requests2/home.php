@@ -20,7 +20,11 @@ function getWebsite(){
 
 function searchShahid(){
 	GLOBAL $website, $_GET;
-	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
+	$type = (isset($_GET["collection"]) && $_GET["collection"] == "last_eps") ? "مسلسلات-اجنبي-1/?key=episodes" : (
+		isset($_GET["collection"]) && $_GET["collection"] == "last_films" ? "movies/" : (
+			isset($_GET["collection"]) && $_GET["collection"] == "last_eps&category=مسلسلات-انمي" ? "مسلسلات-انمي/?key=episodes" : ""
+		)
+	);
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	if( isset($_GET["collection"]) ){
 		$collection = "?order={$_GET["collection"]}";
@@ -39,7 +43,7 @@ function searchShahid(){
 	
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://web5.topcinema.world/recent/",
+	  CURLOPT_URL => "https://web5.topcinema.world/{$type}",
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
