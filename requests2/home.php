@@ -35,12 +35,14 @@ function searchShahid(){
 			$poster = $show->find('img', 0)->getAttribute('data-src');
 			$genre = $show->find('.liList li', 0)->plaintext;
 			$resolution = $show->find('.liList li', 1)->plaintext;
+			$imdbRating = $show->find('.liList li', 2)->plaintext;
 			$jsonData = [
 				'href' => $url,
 				'image' => trim($poster),
-				'episode' => $resolution,
+				'resolution' => $resolution,
 				'category' => $genre,
 				'title' => $title,
+				'imdbRating' => $imdbRating,
 				'description' => "",
 			];
 			$data['shows'][] = $jsonData;
