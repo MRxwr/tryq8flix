@@ -10,7 +10,7 @@ function searchShahid(){
 	}else{
 		$type = "recent/";
 	}
-		
+	echo $url = ("https://web5.topcinema.world/{$type}");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://web5.topcinema.world/{$type}",
