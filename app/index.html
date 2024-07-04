@@ -8,16 +8,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         :root {
-            --dark-bg: #121212;
-            --dark-bg-secondary: #1E1E1E;
+            --dark-bg: rgba(18, 18, 18, 0.9);
+            --dark-bg-secondary: rgba(30, 30, 30, 0.9);
             --light-text: #E0E0E0;
             --cta-blue: #4FC3F7;
         }
 
         body {
-            background-color: var(--dark-bg);
             color: var(--light-text);
             font-family: 'Roboto', sans-serif;
+            background-image: url('https://example.com/path-to-your-show-poster.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--dark-bg);
+            z-index: -1;
         }
 
         .navbar {
@@ -45,9 +59,7 @@
         }
 
         .hero {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('path/to/hero-image.jpg');
-            background-size: cover;
-            background-position: center;
+            background: rgba(0,0,0,0.5);
             height: 60vh;
             display: flex;
             align-items: center;
@@ -74,6 +86,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 0.25rem;
+            margin-bottom: 1rem;
         }
 
         .trending-item img {
@@ -157,29 +170,59 @@
         <section class="trending">
             <h2 class="mb-4">Trending Now</h2>
             <div class="row">
-                <!-- Repeat this for each trending item -->
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="trending-item">
-                        <img src="path/to/movie-poster.jpg" alt="Movie Title" class="img-fluid">
+                        <img src="https://example.com/stranger-things-poster.jpg" alt="Stranger Things" class="img-fluid">
                         <div class="trending-item-overlay">
-                            <h5 class="mb-0">Movie Title</h5>
+                            <h5 class="mb-0">Stranger Things</h5>
                         </div>
                     </div>
                 </div>
-                <!-- End repeat -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="trending-item">
+                        <img src="https://example.com/the-witcher-poster.jpg" alt="The Witcher" class="img-fluid">
+                        <div class="trending-item-overlay">
+                            <h5 class="mb-0">The Witcher</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="trending-item">
+                        <img src="https://example.com/attack-on-titan-poster.jpg" alt="Attack on Titan" class="img-fluid">
+                        <div class="trending-item-overlay">
+                            <h5 class="mb-0">Attack on Titan</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="trending-item">
+                        <img src="https://example.com/mandalorian-poster.jpg" alt="The Mandalorian" class="img-fluid">
+                        <div class="trending-item-overlay">
+                            <h5 class="mb-0">The Mandalorian</h5>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
         <section class="popular-discussions mt-5">
             <h2 class="mb-4">Popular Discussions</h2>
             <ul class="discussion-list">
-                <!-- Repeat this for each discussion item -->
                 <li class="discussion-item">
-                    <h5><a href="#" class="text-light">Discussion Title</a></h5>
-                    <p class="mb-1">Brief excerpt of the discussion...</p>
+                    <h5><a href="#" class="text-light">Stranger Things Season 4 Theories</a></h5>
+                    <p class="mb-1">What do you think will happen in the upcoming season?</p>
                     <small>Started by User123 | 42 replies</small>
                 </li>
-                <!-- End repeat -->
+                <li class="discussion-item">
+                    <h5><a href="#" class="text-light">Best Anime of 2024 So Far</a></h5>
+                    <p class="mb-1">Share your top picks for this year's anime releases!</p>
+                    <small>Started by AnimeGuru | 78 replies</small>
+                </li>
+                <li class="discussion-item">
+                    <h5><a href="#" class="text-light">Marvel's Upcoming Projects</a></h5>
+                    <p class="mb-1">Discuss the latest announcements from Marvel Studios</p>
+                    <small>Started by ComicsFan | 103 replies</small>
+                </li>
             </ul>
             <a href="#" class="btn btn-cta mt-3">View All Discussions</a>
         </section>
