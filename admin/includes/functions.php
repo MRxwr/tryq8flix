@@ -229,7 +229,6 @@ function outputData($shows){
 				$catgoryType = "categoryTitlePost";
 				$shows[$i]["episode"] = "تشغيل";
 			}
-			// i changed العنوان from episode to title
 			$realTitle = explode("الحلقة",$shows[$i]["title"]);
 			$output .= "
 				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
@@ -240,7 +239,7 @@ function outputData($shows){
 								<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h2>
 								<h5 class='card-title postTitle{$i}'>{$realTitle[0]}</h3>
 								<p class='card-text'>
-									<b>العنوان:</b> {$shows[$i]["title"]}<br>
+									<b>العنوان:</b> {$realTitle[1]}<br>
 									<b>التفاصيل:</b> {$shows[$i]["description"]}
 								</p>
 							</div>
