@@ -1,12 +1,12 @@
 <?php
 function searchShahid(){
 	GLOBAL $website, $_GET;
-	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" && !isset($_GET["category"])){
-		$type = "category/مسلسلات-اجنبي-1/?key=episodes";
+	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" && isset($_GET["category"]) && $_GET["category"] == "مسلسلات-انمي" ){
+		$type = "category/مسلسلات-انمي/?key=episodes";
 	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_films" ){
 		$type = "movies/";
-	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps&category=مسلسلات-انمي" ){
-		$type = "category/مسلسلات-انمي/?key=episodes";
+	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
+		$type = "category/مسلسلات-اجنبي-1/?key=episodes";
 	}else{
 		$type = "recent/";
 	}
