@@ -289,7 +289,7 @@ function outputData2($shows){
 								<h5 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>
 								<p class='card-text'>
 									<b>الجوده:</b> {$shows[$i]["resolution"]}<br>
-									<b>IMDB:</b> {$shows[$i]["imdbRating"]}
+									<b>التقييم:</b> {$shows[$i]["imdbRating"]}
 								</p>
 							</div>
 							<div class='row w-100 p-0 m-0'>
