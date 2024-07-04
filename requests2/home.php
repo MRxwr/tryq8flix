@@ -1,7 +1,7 @@
 <?php
 function searchShahid(){
 	GLOBAL $website, $_GET;
-	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
+	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" && !isset($_GET["category"])){
 		$type = "category/مسلسلات-اجنبي-1/?key=episodes";
 	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_films" ){
 		$type = "movies/";
