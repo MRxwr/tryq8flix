@@ -1,6 +1,6 @@
 <?php
 function openVideo($id,$i,$link) {
-	var_dump($id,$i,$link."/watch/");
+	var_dump($id,$i,$link."watch/");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
@@ -14,7 +14,7 @@ function openVideo($id,$i,$link) {
 	CURLOPT_POSTFIELDS => array('id' => $id,'i' => $i),
 	CURLOPT_HTTPHEADER => array(
 		'X-Requested-With: XMLHttpRequest',
-		"Referer: {$link}/watch/"
+		"Referer: {$link}watch/"
 	),
 	));
 	$response = curl_exec($curl);
