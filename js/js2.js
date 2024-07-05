@@ -697,6 +697,7 @@ $(document).on('click', '.categoryTitlePost', function(e) {
 $(document).on('click', '.categoryTitleMovie', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
+	https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php
     $.post("requests2/index.php?type=home&collection=last_films&category="+id, {
             type: "get",
         },
@@ -711,15 +712,8 @@ $(document).on('click', '.categoryTitleMovie', function(e) {
 });
 
 function sendIdToIframe(id) {
-    $("#loading-screen").show();
     var iframe = document.getElementById('frame');
-    iframe.src = "";
-    $.post("https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php", {
-        id: id,
-        i: num
-    },
-    function(data) {
-            $("#loading-screen").hide();
-            iframe.src = data;
-    });
+	iframe.src = "";
+    var urlWithId = id;
+    iframe.src = urlWithId;
 }
