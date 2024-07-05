@@ -1,6 +1,6 @@
 <?php
 function openVideo($id,$i,$link) {
-	$link = str_replace("web","web5",$link);
+	$link = str_replace("web","web5",str_repeat(".cam",".world",$link));
 	var_dump($id,$i,$link."watch/");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
