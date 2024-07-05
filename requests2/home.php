@@ -7,6 +7,8 @@ function searchShahid(){
 		$type = "movies/";
 	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
 		$type = "category/مسلسلات-اجنبي-1/?key=episodes";
+	}elseif( isset($_GET["genre"]) ){
+		$type = "genre/{$_GET["genre"]}";
 	}else{
 		$type = "recent/";
 	}

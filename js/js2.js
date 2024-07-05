@@ -584,7 +584,7 @@ $(document).on('click', '.loadMoreNewsBtn', function(e) {
 	$("#loading-screen").show();
 	$(".loadMoreBtn").hide();
 	var numbers = $(this).attr("id");
-    $.post("requests2/index.php?type=news", {
+    $.post("requests/index.php?type=news", {
             type: "get",
             more: parseInt(numbers)+1,
         }, 
@@ -664,7 +664,7 @@ $(document).on('click', '.categoryTitleTv', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
 	
-    $.post("requests2/index.php?type=home&collection=last_eps&category="+id, {
+    $.post("requests2/index.php?type=home&genre="+id, {
             type: "get",
         },
         function(data) {
