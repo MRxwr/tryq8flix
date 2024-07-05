@@ -697,7 +697,6 @@ $(document).on('click', '.categoryTitlePost', function(e) {
 $(document).on('click', '.categoryTitleMovie', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
-	https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php
     $.post("requests2/index.php?type=home&collection=last_films&category="+id, {
             type: "get",
         },

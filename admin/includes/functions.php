@@ -268,17 +268,9 @@ function outputData2($shows){
 	$output = "";
 	if( is_array($shows) && !empty($shows) && !empty($user["id"]) ){
 		for ($i = 0; $i < sizeof($shows); $i++) {
-			$checkVideoType = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])));
-			if( strstr($shows[$i]["href"],"episode") ){
-				$catgoryType = "categoryTitleTv";
-				$shows[$i]["episode"] = $shows[$i]["episode"];
-			}elseif( strstr($shows[$i]["href"],"film") ){
-				$catgoryType = "categoryTitleMovie";
-				$shows[$i]["episode"] = "تشغيل";
-			}else{
-				$catgoryType = "categoryTitlePost";
-				$shows[$i]["episode"] = "تشغيل";
-			}
+			$checkVideoType = str_replace("web","web5",$shows[$i]["href"]);
+			$catgoryType = "categoryTitlePost";
+			$shows[$i]["episode"] = "تشغيل";
 			$output .= "
 				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
 					<div class='card w-100'>
