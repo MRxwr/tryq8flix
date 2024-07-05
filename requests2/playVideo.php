@@ -1,24 +1,6 @@
 <?php
 function openVideo($id,$i,$link) {
-	
-	var_dump($link."watch/");
-	$curl = curl_init();
-	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "{$link}watch/",
-	  CURLOPT_RETURNTRANSFER => true,
-	  CURLOPT_ENCODING => '',
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 0,
-	  CURLOPT_FOLLOWLOCATION => true,
-	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	  CURLOPT_CUSTOMREQUEST => 'GET',
-	));
-	$html = curl_exec($curl);
-	curl_close($curl);
-	return $response;
-
 	$link = str_replace("web","web5",str_replace(".cam",".world",$link));
-	var_dump($id,$i,$link."watch/");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
@@ -29,16 +11,15 @@ function openVideo($id,$i,$link) {
 	CURLOPT_FOLLOWLOCATION => true,
 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	CURLOPT_CUSTOMREQUEST => 'POST',
-	CURLOPT_POSTFIELDS => array('id' => '93453','i' => '0'),
+	CURLOPT_POSTFIELDS => array('id' => $id,'i' => $i),
   CURLOPT_HTTPHEADER => array(
     'X-Requested-With: XMLHttpRequest',
-    'Referer: https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-douglas-is-cancelled-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-3-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/'
+    "Referer: {$link}watch/"
   ),
 ));
 	$response = curl_exec($curl);
 	curl_close($curl);
-	//die($response);
-	//return $response;
+	return $response;
 }
 
 function searchServers($id){
@@ -108,12 +89,12 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 			$link = explode('src="',$video);
 			$link = explode('"',$link[1]);
 			$video = $link[0];
-			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe($video);'>Serv-{$y}</a></div>";
+			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe({$_POST["id"]});'>Serv-{$y}</a></div>";
 			$server = $servers[$i]["i"];
 			$mainServer[] = $servers[$i]["title"]; 
 			$y++;
 		}
-		$liveVideo = $video;
+		$liveVideo = $_POST["id"];
 	}
 	$links .= "</div>";
 	if( isset($mainServer) && sizeof($mainServer) > 0){
