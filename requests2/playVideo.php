@@ -1,5 +1,6 @@
 <?php
 function openVideo($id,$i,$link) {
+	var_dump($id,$i,$link);
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
@@ -84,6 +85,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 		$domain = strtolower($servers[$i]["title"]);
 		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["id"]) ){
 			$video = openVideo($servers[$i]["id"],$servers[$i]["i"],$_POST["id"]);
+			var_dump($video);
 			$link = explode('src="',$video);
 			$link = explode('"',$link[1]);
 			$video = $link[0];
