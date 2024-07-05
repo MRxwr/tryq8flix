@@ -1,35 +1,43 @@
 <?php
 function searchShahid($search){
 	GLOBAL $website;
-	$html = file_get_contents("{$website}search?s={$search}");
-	// Create a DOM object
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => "https://web5.topcinema.world/?type=all&s={$search}",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => '',
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_FOLLOWLOCATION => true,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => 'GET',
+	));
+	$html = curl_exec($curl);
+	curl_close($curl);
+	
 	$dom = str_get_html($html);
-	// Check if the DOM object is valid
 	if ($dom) {
 		$data = [
 			'shows' => []
 		];
-		// Loop through each show
-		foreach ($dom->find('.shows-container .show-card') as $show) {
-			// Extract background-image URL from style attribute
-			$style = $show->style;
-			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
-			$imageUrl = isset($matches[1]) ? $matches[1] : '';
-
+		foreach ($dom->find('.Small--Box') as $show) {
+			$title = $show->find('.recent--block', 0)->title;
+			$url = $show->find('.recent--block', 0)->href;
+			$poster = $show->find('img', 0)->getAttribute('data-src');
+			$genre = $show->find('.liList li', 0)->plaintext;
+			@$resolution = $show->find('.liList li', 1)->plaintext;
+			@$imdbRating = $show->find('.liList li', 2)->plaintext;
 			$jsonData = [
-				'href' => $show->href,
-				'image' => trim($imageUrl),
-				'episode' => $show->find('.ep', 0)->plaintext,
-				'category' => $show->find('.categ', 0)->plaintext,
-				'title' => $show->find('.title', 0)->plaintext,
-				'description' => trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
+				'href' => $url,
+				'image' => trim($poster),
+				'resolution' => $resolution,
+				'category' => $genre,
+				'title' => $title,
+				'imdbRating' => $imdbRating,
+				'description' => "",
 			];
-
-			// Add the JSON data to the array
 			$data['shows'][] = $jsonData;
 		}
-
-		// Output the JSON array
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
@@ -37,7 +45,6 @@ function searchShahid($search){
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
-	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }
