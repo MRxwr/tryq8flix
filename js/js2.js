@@ -680,7 +680,7 @@ $(document).on('click', '.categoryTitleTv', function(e) {
 $(document).on('click', '.categoryTitlePost', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
-	
+	console.log(id);
     $.post("requests2/index.php?type=home&genre="+id, {
             type: "get",
         },
