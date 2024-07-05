@@ -89,7 +89,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 			$link = explode('src="',$video);
 			$link = explode('"',$link[1]);
 			$video = $link[0];
-			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe({$_POST["id"]});'>Serv-{$y}</a></div>";
+			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe({$_POST["id"]}watch/);'>Serv-{$y}</a></div>";
 			$server = $servers[$i]["i"];
 			$mainServer[] = $servers[$i]["title"]; 
 			$y++;
