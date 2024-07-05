@@ -1,9 +1,8 @@
 <?php
 function searchShahid($search){
-	GLOBAL $website;
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://web5.topcinema.world/?type=all&s={$search}",
+	  CURLOPT_URL => "https://web5.topcinema.world/?type=all&s=" . urlencode($search),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
