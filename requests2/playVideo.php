@@ -28,12 +28,12 @@ function openVideo($id,$i,$link) {
 	CURLOPT_FOLLOWLOCATION => true,
 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	CURLOPT_CUSTOMREQUEST => 'POST',
-	CURLOPT_POSTFIELDS => array('id' => $id,'i' => $i),
-	CURLOPT_HTTPHEADER => array(
-		'X-Requested-With: XMLHttpRequest',
-		"Referer: {$link}watch/"
-	),
-	));
+	CURLOPT_POSTFIELDS => array('id' => '93453','i' => '0'),
+  CURLOPT_HTTPHEADER => array(
+    'X-Requested-With: XMLHttpRequest',
+    'Referer: https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-douglas-is-cancelled-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-3-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/'
+  ),
+));
 	$response = curl_exec($curl);
 	curl_close($curl);
 	return $response;
