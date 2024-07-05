@@ -37,6 +37,7 @@ function openVideo($id,$i,$link) {
 	$response = curl_exec($curl);
 	curl_close($curl);
 	return $response;
+	die($response);
 }
 
 function searchServers($id){
