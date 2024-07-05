@@ -84,11 +84,10 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	for( $i = 0; $i < sizeof($servers); $i++ ){
 		$domain = strtolower($servers[$i]["title"]);
 		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["id"]) ){
-			$video = openVideo($servers[$i]["id"],$servers[$i]["i"],$_POST["id"]);
-			var_dump($video);
-			$link = explode('src="',$video);
-			$link = explode('"',$link[1]);
-			$video = $link[0];
+			@$video = openVideo($servers[$i]["id"],$servers[$i]["i"],$_POST["id"]);
+			@$link = explode('src="',$video);
+			@$link = explode('"',$link[1]);
+			@$video = $link[0];
 			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe({$_POST["id"]}watch/);'>Serv-{$y}</a></div>";
 			$server = $servers[$i]["i"];
 			$mainServer[] = $servers[$i]["title"]; 
