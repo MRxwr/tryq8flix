@@ -15,7 +15,8 @@ function openVideo($id,$i,$link) {
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
-die($html);
+	return $response;
+
 	$link = str_replace("web","web5",str_replace(".cam",".world",$link));
 	var_dump($id,$i,$link."watch/");
 	$curl = curl_init();
@@ -36,8 +37,8 @@ die($html);
 ));
 	$response = curl_exec($curl);
 	curl_close($curl);
-	die($response);
-	return $response;
+	//die($response);
+	//return $response;
 }
 
 function searchServers($id){
