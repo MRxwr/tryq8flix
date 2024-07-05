@@ -98,7 +98,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	}
 	$links .= "</div>";
 	if( isset($mainServer) && sizeof($mainServer) > 0){
-		$videoTag = "{$links}<iframe id='frame' src='{$liveVideo}' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
+		$videoTag = "{$links}<iframe id='frame' src='{$liveVideo}watch/' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
 		echo $videoTag;
 	}else{
 		echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
