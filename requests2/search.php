@@ -53,7 +53,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
     if( $_POST["type"] == "get" ){
         $user = checkLogin();
 		$shows = searchShahid($_POST["search"]);
-        outputData($shows);
+        outputData2($shows);
     }
 }else{
     $msg = "something wrong happened, Please try again.";
