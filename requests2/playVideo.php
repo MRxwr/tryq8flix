@@ -50,9 +50,9 @@ function searchServers($id){
 			// Extract background-image URL from style attribute
 			$id = $servers->getAttribute('data-id');
             $server = $servers->getAttribute('data-server');
-            $title = $servers->find('.playIC + span', 0)->plaintext;
+            //$title = $servers->find('.playIC + span', 0)->plaintext;
 			$jsonData = [
-				'title' => $title,
+				//'title' => $title,
 				'id' => $id,
 				'i' => $server,
 			];
