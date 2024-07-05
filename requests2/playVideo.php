@@ -1,7 +1,7 @@
 <?php
 function openVideo($id,$i,$link) {
 	
-	var_dump($id,$i,$link."watch/");
+	var_dump($link."watch/");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "{$link}watch/",
@@ -17,6 +17,7 @@ function openVideo($id,$i,$link) {
 	curl_close($curl);
 
 	$link = str_replace("web","web5",str_replace(".cam",".world",$link));
+	var_dump($id,$i,$link."watch/");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
