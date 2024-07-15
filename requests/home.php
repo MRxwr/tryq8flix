@@ -19,7 +19,7 @@ function getWebsite(){
 }
 
 function searchShahid(){
-	GLOBAL $website, $_GET;
+	GLOBAL $website, $_GET,$scrappingBeeToken;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	if( isset($_GET["collection"]) ){
@@ -41,7 +41,7 @@ function searchShahid(){
 	*/
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key=Y0U1YZ5TQUH84HVVU2U31E6II1D776MU2XAMLCGMDEF0YXCD0CWK4PLMG0S6FI0O5ZDILNYE63W3SWW4&url=". urlencode("{$website}{$collection}{$category}"),
+	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$website}{$collection}{$category}"),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,

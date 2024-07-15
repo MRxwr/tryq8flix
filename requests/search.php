@@ -23,11 +23,11 @@ function getWebsite($search){
 }
 
 function searchShahid($search){
-	GLOBAL $website;
+	GLOBAL $website,$scrappingBeeToken;
 	//@$html = file_get_contents("{$website}search?s={$search}");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key=Y0U1YZ5TQUH84HVVU2U31E6II1D776MU2XAMLCGMDEF0YXCD0CWK4PLMG0S6FI0O5ZDILNYE63W3SWW4&url=". urlencode("{$website}search?s={$search}"),
+	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$website}search?s={$search}"),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
