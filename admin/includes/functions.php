@@ -317,10 +317,12 @@ function scrapePage($url) {
 	
 	//var_dump($website.$collection.$category); die();
 	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
-	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=https%3A%2F%2Fshvip.cam%2F&stealth_proxy=true
+	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=https%3A%2F%2Fshvip.cam%2F
+	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=false&premium_proxy=true&country_code=kw&url=
+	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&stealth_proxy=true&url=
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&stealth_proxy=true&url=". urlencode("{$url}"),
+	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=false&premium_proxy=true&country_code=kw&url=". urlencode("{$url}"),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
