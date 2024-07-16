@@ -54,8 +54,8 @@ $rawHtml = fetchRawHtml($url, $proxy);
 if ($rawHtml !== false) {
     echo "Successfully retrieved the raw HTML. Here's the full content:\n\n";
     echo $rawHtml . "\n";
-    file_put_contents('rawhtml.txt', $rawHtml);
-    echo "\nFull HTML content has been saved to 'rawhtml.txt'\n";
+    //file_put_contents('rawhtml.txt', $rawHtml);
+    //echo "\nFull HTML content has been saved to 'rawhtml.txt'\n";
 } else {
     echo "Failed to retrieve the raw HTML.\n";
 }
