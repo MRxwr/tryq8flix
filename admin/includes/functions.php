@@ -331,6 +331,7 @@ function scrapePage($url) {
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);
+	var_dump($response);
 	
 /*
     $ch = curl_init();
