@@ -25,7 +25,7 @@ function checkWithProxy($url, $proxy) {
         echo "Error: $error\n";
     }
     echo "Response Preview:\n";
-    echo substr($response, 0, 500) . "...\n\n";
+    echo $response;
 }
 
 // Test URLs
