@@ -1,97 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScrapingBee Clone</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
+<?php
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
+function scrapeWebsite($url) {
+    // Initialize cURL session
+    $ch = curl_init();
 
-        h1 {
-            text-align: center;
-        }
+    // Set cURL options
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+    // Execute the request and get the response
+    $response = curl_exec($ch);
 
-        label, input {
-            margin-bottom: 10px;
-        }
+    // Check for errors
+    if (curl_errno($ch)) {
+        return 'Error: ' . curl_error($ch);
+    }
 
-        button {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    // Close cURL session
+    curl_close($ch);
 
-        button:hover {
-            background-color: #0056b3;
-        }
+    return $response;
+}
 
-        #result {
-            margin-top: 20px;
-            white-space: pre-wrap;
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>ScrapingBee Clone</h1>
-        <form id="scrapeForm" method="post">
-            <label for="url">Enter URL:</label>
-            <input type="text" id="url" name="url" required>
-            <button type="submit">Scrape</button>
-        </form>
-        <div id="result"><?php
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['url'])) {
-                $url = filter_var($_POST['url'], FILTER_VALIDATE_URL);
-                if ($url) {
-                    $nodeScript = <<<EOT
-const puppeteer = require('puppeteer');
+// Usage example
+$url = 'https://egydead.space';
+$html = scrapeWebsite($url);
+echo $html;
 
-(async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto('$url', { waitUntil: 'networkidle2' });
-    const content = await page.content();
-    console.log(content);
-    await browser.close();
-})();
-EOT;
-                    file_put_contents('scrape.js', $nodeScript);
-                    $output = shell_exec('node scrape.js 2>&1');
-                    echo htmlspecialchars($output);
-                    unlink('scrape.js');
-                } else {
-                    echo 'Error: Invalid URL.';
-                }
-            }
-        ?></div>
-    </div>
-</body>
-</html>
+?>
 
 
 <?php
