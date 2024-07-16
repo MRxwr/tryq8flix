@@ -313,33 +313,46 @@ function outputData2($shows){
 }
 
 function scrapePage($url) {
+	GLOBAL $scrappingBeeToken;
+	/*
+	//var_dump($website.$collection.$category); die();
+	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
+	
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$url}"),
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_ENCODING => '',
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_TIMEOUT => 0,
+	  CURLOPT_FOLLOWLOCATION => true,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => 'GET',
+	));
+	$response = curl_exec($curl);
+	curl_close($curl);
+	*/
+
     $ch = curl_init();
-    
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-    
     // Set cookies if needed (you might need to update these)
     // curl_setopt($ch, CURLOPT_COOKIE, 'cf_clearance=your_clearance_cookie_here');
-    
     $response = curl_exec($ch);
-    
     if (curl_errno($ch)) {
         echo 'Curl error: ' . curl_error($ch) . "\n";
         return false;
     }
-    
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    
     if ($httpCode != 200) {
         echo "HTTP Code: $httpCode\n";
         echo "Response Body:\n$response\n";
         return false;
     }
-    
     return $response;
 }
 

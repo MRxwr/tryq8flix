@@ -1,21 +1,6 @@
 <?php 
 function searchMatches() {
 	GLOBAL $websiteLive;
-	/*
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => "{$websiteLive}",
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'GET',
-    ));
-    $html = curl_exec($curl);
-    curl_close($curl);
-	*/
 	$html = scrapePage("{$websiteLive}");
     $dom = str_get_html($html);
     if ($dom) {
@@ -23,7 +8,6 @@ function searchMatches() {
             'matches' => []
         ];
         foreach ($dom->find('.albaflex .match-container') as $match) {
-            // Assuming the match-link has both href and title (title as match name here)
             $matchLink = $match->find('a', 0);
 			if( !empty($matchLink) ){
 				$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
@@ -34,7 +18,6 @@ function searchMatches() {
 				$matchDate = $match->find('.match-center .date', 0)->plaintext;
 				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
 				$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
-
 				$jsonData = [
 					'href' => isset($matchLink->href) ? $matchLink->href : '',
 					'matchName' => isset($matchLink->title) ? $matchLink->title : '',
@@ -72,35 +55,16 @@ function searchMatches() {
 }
 
 function liveMatch($view) {
-	GLOBAL $websiteLive;
-	/*
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => "{$view}",
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'GET',
-    ));
-    $html = curl_exec($curl);
-    curl_close($curl);
-	*/
 	$html = scrapePage("{$view}");
-	var_dump($view);
     $dom = str_get_html($html);
     if ($dom) {
 		$data = [
 			'matches' => []
 		];
 		foreach ($dom->find('.post-content-wrap .post-content') as $match) {
-			// Find the first iframe within the match
 			$matchLink = $match->find('iframe', 0);
-			if ($matchLink) { // Make sure the iframe was found
+			if ($matchLink) { 
 				$jsonData = [
-					// Correctly access the src attribute
 					'src' => $matchLink->getAttribute('src'),
 				];
 				$data['matches'][] = $jsonData;

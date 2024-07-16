@@ -34,37 +34,13 @@ function searchShahid(){
 		$collection = "";
 		$category = "";
 	}
-
 	$html = scrapePage($website.$collection.$category);
-	/*
-	//var_dump($website.$collection.$category); die();
-	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
-	
-	$curl = curl_init();
-	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$website}{$collection}{$category}"),
-	  CURLOPT_RETURNTRANSFER => true,
-	  CURLOPT_ENCODING => '',
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 0,
-	  CURLOPT_FOLLOWLOCATION => true,
-	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	  CURLOPT_CUSTOMREQUEST => 'GET',
-	));
-	$html = curl_exec($curl);
-	curl_close($curl);
-	*/
-	//$html = file_get_contents(getWebsite());
-	// Create a DOM object
 	$dom = str_get_html($html);
-	// Check if the DOM object is valid
 	if ($dom) {
 		$data = [
 			'shows' => []
 		];
-		// Loop through each show
 		foreach ($dom->find('.shows-container .show-card') as $show) {
-			// Extract background-image URL from style attribute
 			$style = $show->style;
 			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
 			$imageUrl = isset($matches[1]) ? $matches[1] : '';
@@ -76,12 +52,8 @@ function searchShahid(){
 				'title' => $show->find('.title', 0)->plaintext,
 				'description' => trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
 			];
-
-			// Add the JSON data to the array
 			$data['shows'][] = $jsonData;
 		}
-
-		// Output the JSON array
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
@@ -89,7 +61,6 @@ function searchShahid(){
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
-	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }

@@ -1,41 +1,19 @@
 <?php
 function extractDomain($url) {
     $parsedUrl = parse_url($url);
-    
-    // Check if the URL is valid and contains the host
     if ($parsedUrl && isset($parsedUrl['host'])) {
         return $parsedUrl['host'];
     } else {
-        // Handle invalid URLs or those without a host
         return false;
     }
 }
  
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    // get episode link \\
-    //$html = file_get_contents($_POST["id"]);
-	/*
-	$curl = curl_init();
-	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$_POST["id"]}"),
-	  CURLOPT_RETURNTRANSFER => true,
-	  CURLOPT_ENCODING => '',
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 0,
-	  CURLOPT_FOLLOWLOCATION => true,
-	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	  CURLOPT_CUSTOMREQUEST => 'GET',
-	));
-	$html = curl_exec($curl);
-	curl_close($curl);
-	*/
 	$html = scrapePage("{$_POST["id"]}");
-    // Extract server information using regular expressions
     $pattern = '/let servers = JSON\.parse\(\'(.*?)\'\);/';
     preg_match($pattern, $html, $matches);
     if (isset($matches[1])) {
         $serversData = json_decode($matches[1], true);
-        // Output the extracted server information
         $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
         echo 'Error: Server information not found.';
