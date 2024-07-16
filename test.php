@@ -26,11 +26,10 @@ function checkWithProxy($url, $proxy) {
     echo substr($response, 0, 500) . "...\n\n";
 }
 
-$url = "https://egydead.space/home";
+$url = "https://shvip.cam/";
 $proxies = [
     "15.236.106.236:3128",  // The proxy that worked before
     "162.245.85.220:80",  // Replace with actual proxies
-    "178.153.54.222:8080"
 ];
 
 foreach ($proxies as $proxy) {
