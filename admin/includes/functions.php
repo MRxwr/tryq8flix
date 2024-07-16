@@ -314,7 +314,7 @@ function outputData2($shows){
 
 function scrapePage($url) {
 	GLOBAL $scrappingBeeToken;
-	/*
+	
 	//var_dump($website.$collection.$category); die();
 	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
 	
@@ -331,8 +331,8 @@ function scrapePage($url) {
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);
-	*/
-
+	
+/*
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -343,16 +343,17 @@ function scrapePage($url) {
     // curl_setopt($ch, CURLOPT_COOKIE, 'cf_clearance=your_clearance_cookie_here');
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
-        /*echo 'Curl error: ' . curl_error($ch) . "\n";*/
+        echo 'Curl error: ' . curl_error($ch) . "\n";
         return false;
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($httpCode != 200) {
-        /*echo "HTTP Code: $httpCode\n";
-        echo "Response Body:\n$response\n";*/
+        echo "HTTP Code: $httpCode\n";
+        echo "Response Body:\n$response\n";
         return false;
     }
+*/
     return $response;
 }
 
