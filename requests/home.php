@@ -36,10 +36,10 @@ function searchShahid(){
 	}
 	$html = scrapePage($website.$collection.$category);
 	$dom = str_get_html($html);
+	$data = [
+		'shows' => []
+	];
 	if ($dom) {
-		$data = [
-			'shows' => []
-		];
 		foreach ($dom->find('.shows-container .show-card') as $show) {
 			$style = $show->style;
 			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
@@ -57,6 +57,7 @@ function searchShahid(){
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
