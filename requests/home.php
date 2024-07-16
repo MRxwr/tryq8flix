@@ -56,10 +56,10 @@ function searchShahid(){
 		}
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
-		return 'Error: Invalid DOM object.'; die();
+		echo 'Error: Invalid DOM object.';
 	}
 
-	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array("shows" => array()); ;
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
 	$dom->clear();
 	unset($dom);
@@ -84,10 +84,8 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 			$user = checkLogin();
 			$shows = searchShahid();
 			echo "<div class='row m-0 w-100' id='content'>";
-			if( !empty($shows) ){
-				outputData($shows);
-				echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
-			}
+			outputData($shows); 
+			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
 		}
 		
