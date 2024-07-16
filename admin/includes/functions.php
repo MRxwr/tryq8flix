@@ -317,10 +317,10 @@ function scrapePage($url) {
 	
 	//var_dump($website.$collection.$category); die();
 	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
-	/*
+	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=https%3A%2F%2Fshvip.cam%2F&stealth_proxy=true
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$url}"),
+	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&stealth_proxy=true&url=". urlencode("{$url}"),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => '',
 	  CURLOPT_MAXREDIRS => 10,
@@ -332,8 +332,8 @@ function scrapePage($url) {
 	$response = curl_exec($curl);
 	curl_close($curl);
 	var_dump($response);
-	*/
-
+	
+/*
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -342,7 +342,6 @@ function scrapePage($url) {
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     curl_setopt($ch, CURLOPT_COOKIE, "cf_clearance=3BwF3j7yPM8f3OT5hauw8Bh8nwAL_mK0YD0zYcl7_kg-1721167758-1.0.1.1-eHiuVVC73Y8p4TKxzMxdJDS4EJmiVtwQWwRLGaG4I9Z5_EKo9wQWbVRwmognJyVC78lAPa_unbSaMGmZ_wHl9g; XSRF-TOKEN=eyJpdiI6IitOR2xPeEQ0K3RIc3ZuVXlKV0ZLVHc9PSIsInZhbHVlIjoiR0pzNFBUWitOMFpHbkpPRXpPaklHZU9xd2dzUzhIeU5DREJQdWdlaGlEQjRJZGVnWS9aTDBCQjNTdmhxdVVWWlVLdjc0VTRVMmk5dVpSck5CMmtXUGZMM0lVMFZacllTb2h2ZWZSeS9hTGI5V3pJMUdEL1Jvb1J2ODVReVdyN1UiLCJtYWMiOiJjZDdhMDVhZjU2OTg1NGU5MDIzMWQ2ZjEyNjljMDM2YTk5NmEzNjc0YzZlMGMzZTIxNzE2ZGY1Y2RlNzljODBlIiwidGFnIjoiIn0%3D; laravel_session=eyJpdiI6InhWZzdFNjJqQVpjZmJwQVNFL3JXK0E9PSIsInZhbHVlIjoia0p5czJQOUw5ZjZGWmExTENiZDBkSE81ODJGekcxNzdxVHpocHFHTzBiajlGZmdkbkFFczNJV283Z2FPemQ2WGREVzlTTENWdjdMSkpuYzFvN0JUVGFSK2FJS3M0VjJQcnNhaDFtYm95MENIODhyRWgydHRIQWpOdjE4c3pVTXUiLCJtYWMiOiJkZTAwN2M1ZmYwOWIxYmIxMWM1NmM5MjFhZWIzZWFhNTdlNjEzZWViZmExMjdmZTdkZDE5OTkyNmRjMmFmZjkyIiwidGFnIjoiIn0%3D");
     $response = curl_exec($ch);
-	var_dump($response);
     if (curl_errno($ch)) {
         echo 'Curl error: ' . curl_error($ch) . "\n";
         return false;
@@ -354,6 +353,7 @@ function scrapePage($url) {
         echo "Response Body:\n$response\n";
         return false;
     }
+*/
     return $response;
 }
 
