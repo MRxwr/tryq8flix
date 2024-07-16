@@ -31,7 +31,7 @@ function checkWithProxy($url, $proxy) {
 // Test URLs
 $urls = [
     "https://egydead.space/home",
-    "http://egydead.space/home", // Try HTTP version
+    "https://shvip.cam/", // Try HTTP version
 ];
 
 // Proxies to test
