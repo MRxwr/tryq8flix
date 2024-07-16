@@ -330,9 +330,7 @@ function scrapePage($url) {
 	  CURLOPT_CUSTOMREQUEST => 'GET',
 	));
 	$response = curl_exec($curl);
-	curl_close($curl);
-	var_dump($response);
-	
+	curl_close($curl);	
 /*
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
