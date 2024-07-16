@@ -1,33 +1,51 @@
 <?php
 
-function scrapeWebsite($url) {
-    // Initialize cURL session
+function scrapePage($url) {
     $ch = curl_init();
-
-    // Set cURL options
+    
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
-
-    // Execute the request and get the response
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+    
+    // Set cookies if needed (you might need to update these)
+    curl_setopt($ch, CURLOPT_COOKIE, 'cf_clearance=your_clearance_cookie_here');
+    
     $response = curl_exec($ch);
-
-    // Check for errors
+    
     if (curl_errno($ch)) {
-        return 'Error: ' . curl_error($ch);
+        echo 'Curl error: ' . curl_error($ch);
+        return false;
     }
-
-    // Close cURL session
+    
     curl_close($ch);
-
+    
     return $response;
 }
 
-// Usage example
-$url = 'https://egydead.space';
-$html = scrapeWebsite($url);
-echo $html;
+function extractData($html) {
+    // Use a simple regex to extract all <p> tag contents
+    // You can modify this to extract specific data you need
+    preg_match_all('/<p>(.*?)<\/p>/s', $html, $matches);
+    
+    return $matches[1];
+}
+
+// Usage
+$url = "https://egydead.space";
+$html = scrapePage($url);
+
+if ($html) {
+    $data = extractData($html);
+    
+    echo "Scraped data:\n";
+    foreach ($data as $item) {
+        echo $item . "\n";
+    }
+} else {
+    echo "Failed to scrape the website.";
+}
 
 ?>
 
