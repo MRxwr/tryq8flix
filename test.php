@@ -39,7 +39,7 @@ function extractData($html) {
 }
 
 // Usage
-$url = "https://egydead.space";
+$url = "https://shvip.cam/";
 $html = scrapePage($url);
 
 if ($html !== false) {
