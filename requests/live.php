@@ -89,7 +89,7 @@ function liveMatch($view) {
     curl_close($curl);
 	*/
 	$html = scrapePage("{$view}");
-	var_dump($html);
+	var_dump($view);
     $dom = str_get_html($html);
     if ($dom) {
 		$data = [
