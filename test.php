@@ -1,5 +1,6 @@
 <?php
-function scrapePage($url, $proxies) {
+
+function fetchRawHtml($url, $proxies) {
     foreach ($proxies as $proxy) {
         echo "Trying proxy: $proxy\n";
         
@@ -13,7 +14,7 @@ function scrapePage($url, $proxies) {
         
         // Set proxy
         curl_setopt($ch, CURLOPT_PROXY, $proxy);
-        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);  // Changed to SOCKS5
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
         
         // Extend timeout for proxy connection
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
@@ -34,58 +35,55 @@ function scrapePage($url, $proxies) {
             $verboseLog = stream_get_contents($verbose);
             echo "Verbose information:\n", htmlspecialchars($verboseLog), "\n";
             curl_close($ch);
+            
+            // Wait for 5 seconds before trying the next proxy
+            sleep(5);
+            
             continue;  // Try next proxy
         }
         
         curl_close($ch);
         
+        echo "HTTP Code: $httpCode\n";
+        
         if ($httpCode == 200) {
-            return $response;  // Successful, return the response
+            return $response;  // Successful, return the raw HTML
         }
         
-        echo "HTTP Code: $httpCode\n";
         rewind($verbose);
         $verboseLog = stream_get_contents($verbose);
         echo "Verbose information:\n", htmlspecialchars($verboseLog), "\n";
+        
+        // Wait for 5 seconds before trying the next proxy
+        sleep(5);
     }
     
     return false;  // All proxies failed
 }
 
-function extractData($html) {
-    // Use a simple regex to extract all <p> tag contents
-    preg_match_all('/<p>(.*?)<\/p>/s', $html, $matches);
-    
-    return $html;//$matches[1] ?? [];
-}
-
-// List of proxies
+// List of proxies (replace these with working proxies)
 $proxies = [
-    "89.35.237.187:4145",  // The SOCKS5 proxy you provided
-    // Add more proxies here in the same format, for example:
-    // "IP_ADDRESS:PORT",
+    "89.35.237.187:4145",  // The original SOCKS5 proxy
+    "98.162.96.53:10663",  // Additional SOCKS5 proxy
+    "162.241.12.242:32598", // Another SOCKS5 proxy
+    // Add more proxies here
 ];
 
 // Usage
 $url = "https://shvip.cam/";//"https://egydead.space/home";
 
-$html = scrapePage($url, $proxies);
+$rawHtml = fetchRawHtml($url, $proxies);
 
-if ($html !== false) {
-    $data = extractData($html);
-    echo $data;/*
-    if (empty($data)) {
-        echo "No <p> tags found. Here's a sample of the HTML:\n";
-        echo substr($html, 0, 500) . "...\n";
-    } else {
-        echo "Scraped data:\n";
-        foreach ($data as $item) {
-            echo $item . "\n";
-        }
-    }
-		*/
+if ($rawHtml !== false) {
+    echo "Successfully retrieved the raw HTML. Here's a preview of the first 500 characters:\n\n";
+    echo substr($rawHtml, 0, 500) . "...\n";
+    
+    // Optionally, save the full HTML to a file
+    //file_put_contents('rawhtml.txt', $rawHtml);
+    echo "\nFull HTML content has been saved to 'rawhtml.txt'\n";
 } else {
-    echo "Failed to scrape the website with all available proxies.";
+    echo "Failed to retrieve the raw HTML with all available proxies.";
 }
 
+?>
 ?>
