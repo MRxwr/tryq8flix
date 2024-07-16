@@ -64,7 +64,7 @@ $profileData = checkLogin();
 				<button id='{$website}' class='btn btn-danger changeIframeSrc w-100'>S4U</button>
 				</div>
 				<div class='col p-1'>
-				<button id='https://w.tuktokcinema.com/' class='btn btn-dark changeIframeSrc w-100'>Tuk</button>
+				<button id='https://www.tuktukcima.com/' class='btn btn-dark changeIframeSrc w-100'>Tuk</button>
 				</div>
 				<div class='col p-1'>
 				<button id='https://e.3sk.media/' class='btn btn-danger changeIframeSrc w-100'>3SQ</button>
