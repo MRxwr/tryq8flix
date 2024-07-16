@@ -29,8 +29,6 @@ function fetchRawHtml($url, $proxy) {
 $urls = [
     "https://egydead.space/home",
     "https://shvip.cam",
-    "http://egydead.space/home",
-    "http://shvip.cam"
 ];
 $proxy = "15.236.106.236:3128";
 
