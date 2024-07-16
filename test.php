@@ -74,11 +74,11 @@ $rawHtml = fetchRawHtml($url, $proxies);
 
 if ($rawHtml !== false) {
     echo "Successfully retrieved the raw HTML. Here's a preview of the first 500 characters:\n\n";
-    echo substr($rawHtml, 0, 500) . "...\n";
+    echo $rawHtml;
     
     // Optionally, save the full HTML to a file
     //file_put_contents('rawhtml.txt', $rawHtml);
-    echo "\nFull HTML content has been saved to 'rawhtml.txt'\n";
+    //echo "\nFull HTML content has been saved to 'rawhtml.txt'\n";
 } else {
     echo "Failed to retrieve the raw HTML with all available proxies.";
 }
