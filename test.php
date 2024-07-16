@@ -1,5 +1,5 @@
 <?php
-
+/*
 function scrapePage($url) {
     $ch = curl_init();
     
@@ -53,12 +53,12 @@ if ($html !== false) {
 		echo $data;/*
         foreach ($data as $item) {
             echo $item . "\n";
-        }*/
+        
     }
 } else {
     echo "Failed to scrape the website.";
 }
-
+*/
 ?>
 
 
