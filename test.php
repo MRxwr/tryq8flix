@@ -13,17 +13,17 @@ function checkWithProxy($url, $proxy) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Ignore SSL certificate issues
 
     $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
+    //$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    //$error = curl_error($ch);
     
     curl_close($ch);
     
     echo "URL: $url\n";
     echo "Proxy: $proxy\n";
-    echo "HTTP Code: $httpCode\n";
-    if ($error) {
-        echo "Error: $error\n";
-    }
+    //echo "HTTP Code: $httpCode\n";
+    //if ($error) {
+    //    echo "Error: $error\n";
+    //}
     echo "Response Preview:\n";
     echo $response;
 }
