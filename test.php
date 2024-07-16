@@ -64,8 +64,8 @@ function fetchRawHtml($url, $proxies) {
 // List of proxies (replace these with working proxies)
 $proxies = [
     "89.35.237.187:4145",  // The original SOCKS5 proxy
-    "98.162.96.53:10663",  // Additional SOCKS5 proxy
-    "162.241.12.242:32598", // Another SOCKS5 proxy
+    "89.35.237.187:999",  // Additional SOCKS5 proxy
+    "41.128.148.72:1981", // Another SOCKS5 proxy
     // Add more proxies here
 ];
 
