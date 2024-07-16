@@ -35,7 +35,7 @@ function extractData($html) {
     // Use a simple regex to extract all <p> tag contents
     preg_match_all('/<p>(.*?)<\/p>/s', $html, $matches);
     
-    return $matches[1] ?? [];
+    return $html;//$matches[1] ?? [];
 }
 
 // Usage
