@@ -50,9 +50,10 @@ if ($html !== false) {
         echo substr($html, 0, 500) . "...\n";
     } else {
         echo "Scraped data:\n";
+		echo $data;/*
         foreach ($data as $item) {
             echo $item . "\n";
-        }
+        }*/
     }
 } else {
     echo "Failed to scrape the website.";
