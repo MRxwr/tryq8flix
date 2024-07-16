@@ -34,11 +34,12 @@ function searchShahid(){
 		$collection = "";
 		$category = "";
 	}
-	
-	//var_dump($website.$collection.$category); die();
+
+	$html = scrapePage($website.$collection.$category);
 	/*
-	https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
-	*/
+	//var_dump($website.$collection.$category); die();
+	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
+	
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$website}{$collection}{$category}"),
@@ -52,7 +53,7 @@ function searchShahid(){
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
-	
+	*/
 	//$html = file_get_contents(getWebsite());
 	// Create a DOM object
 	$dom = str_get_html($html);
