@@ -353,6 +353,7 @@ function scrapePage($url) {
         echo "Response Body:\n$response\n";
         return false;
     }
+	var_dump($response);
 
     return $response;
 }
