@@ -1,6 +1,7 @@
 <?php 
 function searchMatches() {
 	GLOBAL $websiteLive;
+	/*
     $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => "{$websiteLive}",
@@ -14,6 +15,8 @@ function searchMatches() {
     ));
     $html = curl_exec($curl);
     curl_close($curl);
+	*/
+	$html = scrapePage("{$websiteLive}");
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
