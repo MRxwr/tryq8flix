@@ -10,38 +10,49 @@ function scrapePage($url) {
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     
     // Set cookies if needed (you might need to update these)
-    curl_setopt($ch, CURLOPT_COOKIE, 'cf_clearance=your_clearance_cookie_here');
+    // curl_setopt($ch, CURLOPT_COOKIE, 'cf_clearance=your_clearance_cookie_here');
     
     $response = curl_exec($ch);
     
     if (curl_errno($ch)) {
-        echo 'Curl error: ' . curl_error($ch);
+        echo 'Curl error: ' . curl_error($ch) . "\n";
         return false;
     }
     
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+    
+    if ($httpCode != 200) {
+        echo "HTTP Code: $httpCode\n";
+        echo "Response Body:\n$response\n";
+        return false;
+    }
     
     return $response;
 }
 
 function extractData($html) {
     // Use a simple regex to extract all <p> tag contents
-    // You can modify this to extract specific data you need
     preg_match_all('/<p>(.*?)<\/p>/s', $html, $matches);
     
-    return $matches[1];
+    return $matches[1] ?? [];
 }
 
 // Usage
 $url = "https://egydead.space";
 $html = scrapePage($url);
 
-if ($html) {
+if ($html !== false) {
     $data = extractData($html);
     
-    echo "Scraped data:\n";
-    foreach ($data as $item) {
-        echo $item . "\n";
+    if (empty($data)) {
+        echo "No <p> tags found. Here's a sample of the HTML:\n";
+        echo substr($html, 0, 500) . "...\n";
+    } else {
+        echo "Scraped data:\n";
+        foreach ($data as $item) {
+            echo $item . "\n";
+        }
     }
 } else {
     echo "Failed to scrape the website.";
