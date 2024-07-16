@@ -56,7 +56,7 @@ function searchShahid(){
 		}
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
-		echo 'Error: Invalid DOM object.';
+		return 'Error: Invalid DOM object.'; die();
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array("shows" => array()); ;

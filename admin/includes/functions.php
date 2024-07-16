@@ -343,14 +343,14 @@ function scrapePage($url) {
     // curl_setopt($ch, CURLOPT_COOKIE, 'cf_clearance=your_clearance_cookie_here');
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
-        echo 'Curl error: ' . curl_error($ch) . "\n";
+        /*echo 'Curl error: ' . curl_error($ch) . "\n";*/
         return false;
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($httpCode != 200) {
-        echo "HTTP Code: $httpCode\n";
-        echo "Response Body:\n$response\n";
+        /*echo "HTTP Code: $httpCode\n";
+        echo "Response Body:\n$response\n";*/
         return false;
     }
     return $response;
