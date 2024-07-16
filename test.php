@@ -39,13 +39,20 @@ echo "Response Preview:\n" . substr($result['response'], 0, 500) . "...\n\n";
 // Test 3: Proxied request to a known good site
 echo "Test 3: Proxied Request to Known Good Site\n";
 $proxy = '15.236.106.236:3128'; // Replace with your proxy
-$result = makeRequest('https://example.com', true, $proxy);
+$result = makeRequest('https://shvip.cam/', true, $proxy);
 echo "HTTP Code: " . $result['http_code'] . "\n";
 echo "Response Preview:\n" . substr($result['response'], 0, 500) . "...\n\n";
 
 // Test 4: Direct request to the target site
 echo "Test 4: Direct Request to Target Site\n";
 $result = makeRequest('https://egydead.space/home');
+echo "HTTP Code: " . $result['http_code'] . "\n";
+echo "Response Preview:\n" . substr($result['response'], 0, 500) . "...\n\n";
+
+// Test 3: Proxied request to a known good site
+echo "Test 3: Proxied Request to Known Good Site\n";
+$proxy = '15.236.106.236:3128'; // Replace with your proxy
+$result = makeRequest('https://egydead.space/home', true, $proxy);
 echo "HTTP Code: " . $result['http_code'] . "\n";
 echo "Response Preview:\n" . substr($result['response'], 0, 500) . "...\n\n";
 
