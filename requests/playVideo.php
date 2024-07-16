@@ -14,6 +14,7 @@ function extractDomain($url) {
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     // get episode link \\
     //$html = file_get_contents($_POST["id"]);
+	/*
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$_POST["id"]}"),
@@ -27,6 +28,8 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
+	*/
+	$html = scrapePage("{$_POST["id"]}");
     // Extract server information using regular expressions
     $pattern = '/let servers = JSON\.parse\(\'(.*?)\'\);/';
     preg_match($pattern, $html, $matches);

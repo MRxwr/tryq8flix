@@ -3,6 +3,7 @@ function searchShahid($more){
 	GLOBAL $website, $_GET, $scrappingBeeToken;
 	$collection = ( isset($_GET["collection"]) ) ? "order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+	/*
 	//$html = file_get_contents("");
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
@@ -16,8 +17,8 @@ function searchShahid($more){
 	  CURLOPT_CUSTOMREQUEST => 'GET',
 	));
 	$html = curl_exec($curl);
-	curl_close($curl);
-	
+	curl_close($curl);*/
+	$html = scrapePage("{$website}?page={$more}&{$collection}{$category}");
 	// Create a DOM object
 	$dom = str_get_html($html);
 	// Check if the DOM object is valid

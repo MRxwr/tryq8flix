@@ -1,6 +1,7 @@
 <?php
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     //$html = file_get_contents($_POST["id"]);
+    /*
     $curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$_POST["id"]}"),
@@ -15,6 +16,8 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	$html = curl_exec($curl);
 	curl_close($curl);
     // Load HTML
+    */
+    $html = scrapePage("{$_POST["id"]}");
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     foreach ($htmlDom->find('div.items a.epss') as $linkNode) {

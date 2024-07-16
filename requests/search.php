@@ -25,6 +25,7 @@ function getWebsite($search){
 function searchShahid($search){
 	GLOBAL $website,$scrappingBeeToken;
 	//@$html = file_get_contents("{$website}search?s={$search}");
+	/*
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=". urlencode("{$website}search?s={$search}"),
@@ -39,6 +40,8 @@ function searchShahid($search){
 	$html = curl_exec($curl);
 	curl_close($curl);
 	// Create a DOM object
+	*/
+	$html = scrapePage("{$website}search?s={$search}");
 	$dom = str_get_html($html);
 	// Check if the DOM object is valid
 	if ($dom) {
