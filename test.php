@@ -53,7 +53,7 @@ foreach ($userAgents as $userAgent) {
     if ($result['error']) {
         echo "Error: " . $result['error'] . "\n";
     } else {
-        echo "Response Preview:\n" . substr($result['response'], 0, 500) . "...\n";
+        echo "Response Preview:\n" .$result['response'] . "...\n";
     }
     echo "\n";
 }
