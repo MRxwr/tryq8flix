@@ -341,6 +341,22 @@ function scrapePage($url) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     curl_setopt($ch, CURLOPT_COOKIE, "cf_clearance=3BwF3j7yPM8f3OT5hauw8Bh8nwAL_mK0YD0zYcl7_kg-1721167758-1.0.1.1-eHiuVVC73Y8p4TKxzMxdJDS4EJmiVtwQWwRLGaG4I9Z5_EKo9wQWbVRwmognJyVC78lAPa_unbSaMGmZ_wHl9g; XSRF-TOKEN=eyJpdiI6IitOR2xPeEQ0K3RIc3ZuVXlKV0ZLVHc9PSIsInZhbHVlIjoiR0pzNFBUWitOMFpHbkpPRXpPaklHZU9xd2dzUzhIeU5DREJQdWdlaGlEQjRJZGVnWS9aTDBCQjNTdmhxdVVWWlVLdjc0VTRVMmk5dVpSck5CMmtXUGZMM0lVMFZacllTb2h2ZWZSeS9hTGI5V3pJMUdEL1Jvb1J2ODVReVdyN1UiLCJtYWMiOiJjZDdhMDVhZjU2OTg1NGU5MDIzMWQ2ZjEyNjljMDM2YTk5NmEzNjc0YzZlMGMzZTIxNzE2ZGY1Y2RlNzljODBlIiwidGFnIjoiIn0%3D; laravel_session=eyJpdiI6InhWZzdFNjJqQVpjZmJwQVNFL3JXK0E9PSIsInZhbHVlIjoia0p5czJQOUw5ZjZGWmExTENiZDBkSE81ODJGekcxNzdxVHpocHFHTzBiajlGZmdkbkFFczNJV283Z2FPemQ2WGREVzlTTENWdjdMSkpuYzFvN0JUVGFSK2FJS3M0VjJQcnNhaDFtYm95MENIODhyRWgydHRIQWpOdjE4c3pVTXUiLCJtYWMiOiJkZTAwN2M1ZmYwOWIxYmIxMWM1NmM5MjFhZWIzZWFhNTdlNjEzZWViZmExMjdmZTdkZDE5OTkyNmRjMmFmZjkyIiwidGFnIjoiIn0%3D");
+	curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Host: shvip.cam',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8',
+        'Accept-Language: en-US,en;q=0.5',
+        'Accept-Encoding: gzip, deflate, br, zstd',
+        'Referer: https://shvip.cam/watch/%D9%85%D8%B3%D9%84%D8%B3%D9%84-my-adventures-with-superman-%D8%A7%D9%84%D9%85%D9%88%D8%B3%D9%85-%D8%A7%D9%84%D8%A7%D9%88%D9%84-%D8%A7%D9%84%D8%AD%D9%84%D9%82%D8%A9-1-%D9%85%D8%AA%D8%B1%D8%AC%D9%85%D8%A9',
+        'Connection: keep-alive',
+        'Upgrade-Insecure-Requests: 1',
+        'Sec-Fetch-Dest: document',
+        'Sec-Fetch-Mode: navigate',
+        'Sec-Fetch-Site: same-origin',
+        'Sec-Fetch-User: ?1',
+        'Sec-GPC: 1',
+        'Priority: u=0, i'
+    ]);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $response = curl_exec($ch);
