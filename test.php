@@ -7,8 +7,8 @@ function makeRequest($url, $proxy) {
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_PROXY, $proxy);
-    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    //curl_setopt($ch, CURLOPT_PROXY, $proxy);
+    //curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     
     // Set headers to mimic the browser request
@@ -45,7 +45,7 @@ function makeRequest($url, $proxy) {
 }
 
 $url = 'https://tuktukcima.art/';
-$proxy = '15.236.106.236:3128';  // Your proxy
+//$proxy = '15.236.106.236:3128';  // Your proxy
 
 $result = makeRequest($url, $proxy);
 
