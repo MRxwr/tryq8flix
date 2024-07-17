@@ -1,6 +1,6 @@
 <?php
 
-function makeRequest($url, $proxy) {
+function makeRequest($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -47,7 +47,7 @@ function makeRequest($url, $proxy) {
 $url = 'https://tuktukcima.art/';
 //$proxy = '15.236.106.236:3128';  // Your proxy
 
-$result = makeRequest($url, $proxy);
+$result = makeRequest($url);
 
 echo "HTTP Code: " . $result['http_code'] . "\n";
 if ($result['error']) {
