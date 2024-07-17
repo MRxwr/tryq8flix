@@ -45,7 +45,7 @@ function makeRequest($url, $proxy) {
 }
 
 $url = 'https://shvip.cam/';
-$proxy = '15.236.106.236:3128';  // Your proxy
+$proxy = 'http://45.8.21.156:80';  // Your proxy
 
 $result = makeRequest($url, $proxy);
 
