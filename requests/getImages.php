@@ -1,7 +1,7 @@
 <?php
 // Function to output the image
 function outputImage($imageUrl) {
-    $image = file_get_contents($imageUrl);
+    $image = scrapePage($imageUrl);
     header('Content-Type: image/jpeg');
     echo $image;
 }
