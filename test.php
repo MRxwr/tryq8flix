@@ -44,7 +44,7 @@ function makeRequest($url) {
     ];
 }
 
-$url = 'https://tuktukcima.art/';
+$url = 'https://shvip.cam/';
 //$proxy = '15.236.106.236:3128';  // Your proxy
 
 $result = file_get_contents($url);
