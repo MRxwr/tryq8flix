@@ -47,13 +47,13 @@ function makeRequest($url) {
 $url = 'https://tuktukcima.art/';
 //$proxy = '15.236.106.236:3128';  // Your proxy
 
-$result = makeRequest($url);
+$result = file_get_contents($url);
 
-echo "HTTP Code: " . $result['http_code'] . "\n";
+echo "HTTP Code: " . $result . "\n";
 if ($result['error']) {
-    echo "Error: " . $result['error'] . "\n";
+    echo "Error: " . $result . "\n";
 } else {
-    echo "Response Preview:\n" . $result['response'] . "...\n";
+    echo "Response Preview:\n" . $result . "...\n";
 }
 
 ?>
