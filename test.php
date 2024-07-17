@@ -7,8 +7,8 @@ function makeRequest($url, $proxy) {
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    //curl_setopt($ch, CURLOPT_PROXY, $proxy);
-    //curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+    curl_setopt($ch, CURLOPT_PROXY, $proxy);
+    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     
     // Set headers to mimic the browser request
