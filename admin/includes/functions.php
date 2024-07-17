@@ -347,7 +347,7 @@ function scrapePage($url) {
         'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8',
         'Accept-Language: en-US,en;q=0.5',
         'Accept-Encoding: gzip, deflate, br, zstd',
-        'Referer: https://shvip.cam/watch/%D9%85%D8%B3%D9%84%D8%B3%D9%84-my-adventures-with-superman-%D8%A7%D9%84%D9%85%D9%88%D8%B3%D9%85-%D8%A7%D9%84%D8%A7%D9%88%D9%84-%D8%A7%D9%84%D8%AD%D9%84%D9%82%D8%A9-1-%D9%85%D8%AA%D8%B1%D8%AC%D9%85%D8%A9',
+        'Referer: https://shvip.cam/',
         'Connection: keep-alive',
         'Upgrade-Insecure-Requests: 1',
         'Sec-Fetch-Dest: document',
