@@ -69,16 +69,7 @@ function searchShahid(){
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){ 
 	$user = checkLogin();
 	if ( !empty($user["id"]) ){
-		/*echo "<iframe id='frame' src='".getWebsite()."' style='width:100%;height:100vh;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>
-		<script>
-		$(document).ready(function() {
-			$('.changeIframeSrc').on('click', function() {
-				var link = $(this).attr('id');
-				$('#frame').attr('src', link);
-			});
-		});
-		</script>";
-		*/
+		
 		if( $_POST["type"] == "get" ){
 			$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
 			$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
@@ -88,6 +79,16 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 			outputData($shows); 
 			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
+		}else{
+			echo "<iframe id='frame' src='".getWebsite()."' style='width:100%;height:100vh;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>
+			<script>
+			$(document).ready(function() {
+				$('.changeIframeSrc').on('click', function() {
+					var link = $(this).attr('id');
+					$('#frame').attr('src', link);
+				});
+			});
+			</script>";
 		}
 		
 	}else{
