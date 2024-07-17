@@ -106,7 +106,7 @@ function bodyLoad() {
 		$("#homeBtn").attr("style","color:#9f8d5c");
 		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
 		$.post("requests/index.php?type=home", {
-			type: "0",
+			type: "1",
 		},
 		function(data) {
 			$("#loading-screen").hide();
