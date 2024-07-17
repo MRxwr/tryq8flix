@@ -25,11 +25,6 @@ function makeRequest($url, $useProxy = false, $proxy = '') {
     ];
 }
 
-// Test 1: Local PHP info
-echo "Test 1: Local PHP Info\n";
-phpinfo();
-echo "\n\n";
-
 // Test 2: Direct request to a known good site
 echo "Test 2: Direct Request to Known Good Site\n";
 $result = makeRequest('https://shvip.cam/');
