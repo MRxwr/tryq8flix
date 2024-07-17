@@ -346,7 +346,7 @@ function scrapePage($url) {
     curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    $response = curl_exec($ch);
+    var_dump($response = curl_exec($ch));
     if (curl_errno($ch)) {
         echo 'Curl error: ' . curl_error($ch) . "\n";
         return false;
