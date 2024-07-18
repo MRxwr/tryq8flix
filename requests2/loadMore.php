@@ -40,7 +40,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 		$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
         $user = checkLogin();
 		$shows = searchShahid($_POST["more"]);
-        $output .= outputData2($shows);
+        $output = outputData2($shows);
 		echo $output;
 		echo '<div class="col-md-12 loadMoreBtn mb-3" style="text-align-last: center;" id="'.$_POST["more"].'"><div class="btn btn-primary w-75" >تابع</div></div><div style="display:none" class="getCollection" id="'.$collection.$category.'"></div>';
         }else{
