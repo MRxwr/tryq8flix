@@ -15,7 +15,7 @@ if (!$dbconnect) {
 date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
 $website = "https://shvip.cam/";//"https://shed4u1.cam/";//"https://shid4u.cam/"; 
-$website2 = "https://tuktukcima.art/recent/";
+$website2 = "https://tuktukcima.art/recent";
 $websiteLive = "https://shootz.yalla-shoot-tv.live/home18/";
 $scrappingBeeToken = "Y0U1YZ5TQUH84HVVU2U31E6II1D776MU2XAMLCGMDEF0YXCD0CWK4PLMG0S6FI0O5ZDILNYE63W3SWW4";
 ?>
