@@ -10,7 +10,7 @@ function extractDomain($url) {
 
 if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $html = file_get_contents("{$_POST["id"]}watch/");
-	var_dump($html);
+	var_dump("{$_POST["id"]}watch/");
     $dom = new DOMDocument();
     @$dom->loadHTML($html);
     $xpath = new DOMXPath($dom);
