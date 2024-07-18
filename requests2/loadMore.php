@@ -42,6 +42,18 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 		$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
         $user = checkLogin();
 		$shows = searchShahid($_POST["more"]);
+		$checkVideoType = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])));
+		if( strstr($shows[$i]["href"],"episode") ){
+			$catgoryType = "categoryTitleTv";
+			$shows[$i]["episode"] = $shows[$i]["episode"];
+		}elseif( strstr($shows[$i]["href"],"film") ){
+			$catgoryType = "categoryTitleMovie";
+			$shows[$i]["episode"] = "تشغيل";
+		}else{
+			$catgoryType = "categoryTitlePost";
+			$shows[$i]["episode"] = "تشغيل";
+		}
+		
         $output = "<div class='row m-0 w-100'>";
         if( is_array($shows) && !empty($shows) ){
             for ( $i = 0 ; $i < sizeof($shows) ; $i++){
