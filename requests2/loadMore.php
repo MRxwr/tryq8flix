@@ -4,41 +4,34 @@ function searchShahid($more){
 	$collection = ( isset($_GET["collection"]) ) ? "order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	$html = file_get_contents("{$website2}/page/{$more}&{$collection}{$category}");
-	// Create a DOM object
 	$dom = str_get_html($html);
-	// Check if the DOM object is valid
+	$data = [
+		'shows' => []
+	];
 	if ($dom) {
-		$data = [
-			'shows' => []
-		];
-		// Loop through each show
-		foreach ($dom->find('.shows-container .show-card') as $show) {
-			// Extract background-image URL from style attribute
-			$style = $show->style;
-			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
-			$imageUrl = isset($matches[1]) ? $matches[1] : '';
+		foreach ($dom->find('.Block--Item') as $show) {
+			$link = $show->find('a', 0);
+			$image = $show->find('img', 0);
+			$genre = $show->find('.Genres li', 0);
+			$title = $show->find('h3', 0);
 			$jsonData = [
-				'href' => $show->href,
-				'image' => trim($imageUrl),
-				'episode' => $show->find('.ep', 0)->plaintext,
-				'category' => $show->find('.categ', 0)->plaintext,
-				'title' => $show->find('.title', 0)->plaintext,
-				'description' => trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
+				'href' => $link->href,
+				'image' => $image->getAttribute('data-src'),
+				'episode' => '', // Not present in the provided HTML
+				'category' => $genre ? $genre->plaintext : '',
+				'title' => $title ? $title->plaintext : '',
+				'description' => '', // Not present in the provided HTML
 			];
-
-			// Add the JSON data to the array
 			$data['shows'][] = $jsonData;
 		}
-
-		// Output the JSON array
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
-	// Clean up the DOM object
 	$dom->clear();
 	unset($dom);
 }
