@@ -20,21 +20,13 @@ function getWebsite(){
 
 function searchShahid(){
 	GLOBAL $website2, $_GET;
-	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
-	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	if( isset($_GET["collection"]) ){
-		$collection = "?order={$_GET["collection"]}";
-		if( isset($_GET["category"]) ){
-			$category = "&category={$_GET["category"]}";
-		}
-	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
-		$collection = "";
-		$category = "?category={$_GET["category"]}";
+	$url = $website2;
+	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
+		$url .= "/category/{$_GET["category"]}";
 	}else{
-		$collection = "";
-		$category = "";
+		$url .= "/recent";
 	}
-	$html = file_get_contents("{$website2}/recent");
+	$html = file_get_contents($url);
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
