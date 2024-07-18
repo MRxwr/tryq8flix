@@ -287,10 +287,6 @@ function outputData2($shows){
 							<div style='height:250px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
 								<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h2>
 								<h5 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>
-								<p class='card-text'>
-									<b>الجوده:</b> {$shows[$i]["resolution"]}<br>
-									<b>التقييم:</b> {$shows[$i]["imdbRating"]}
-								</p>
 							</div>
 							<div class='row w-100 p-0 m-0'>
 								<div class='col-6 p-1'>
