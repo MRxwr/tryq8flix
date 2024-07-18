@@ -283,7 +283,7 @@ function outputData2($shows){
 				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
-							<img src='requests/getImages.php?url=" . urlencode($shows[$i]["image"]) . "' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+							<img src='requests?type=getImages&url={$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
 							<div style='height:250px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
 								<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h2>
 								<h5 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>
