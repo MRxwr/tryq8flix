@@ -1,57 +1,67 @@
 <?php
-function searchShahid(){
+function getWebsite(){
 	GLOBAL $website, $_GET;
-	if( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" && isset($_GET["category"]) && $_GET["category"] == "مسلسلات-انمي" ){
-		$type = "category/مسلسلات-انمي/?key=episodes";
-	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_films" ){
-		$type = "movies/";
-	}elseif( isset($_GET["collection"]) && $_GET["collection"] == "last_eps" ){
-		$type = "category/مسلسلات-اجنبي-1/?key=episodes";
-	}elseif( isset($_GET["genre"]) ){
-		$type = "genre/{$_GET["genre"]}";
+	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
+	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+	if( isset($_GET["collection"]) ){
+		$collection = "?order={$_GET["collection"]}";
+		if( isset($_GET["category"]) ){
+			$category = "&category={$_GET["category"]}";
+		}
+	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
+		$collection = "";
+		$category = "?category={$_GET["category"]}";
 	}else{
-		$type = "recent/";
+		$collection = "";
+		$category = "";
 	}
-	$curl = curl_init();
-	curl_setopt_array($curl, array(
-	  CURLOPT_URL => "https://web5.topcinema.world/{$type}",
-	  CURLOPT_RETURNTRANSFER => true,
-	  CURLOPT_ENCODING => '',
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 0,
-	  CURLOPT_FOLLOWLOCATION => true,
-	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	  CURLOPT_CUSTOMREQUEST => 'GET',
-	));
-	$html = curl_exec($curl);
-	curl_close($curl);
-	
+	return $website.$collection.$category;
+}
+
+function searchShahid(){
+	GLOBAL $website2, $_GET;
+	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
+	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+	if( isset($_GET["collection"]) ){
+		$collection = "?order={$_GET["collection"]}";
+		if( isset($_GET["category"]) ){
+			$category = "&category={$_GET["category"]}";
+		}
+	}elseif( !isset($_GET["collection"]) && isset($_GET["category"])){
+		$collection = "";
+		$category = "?category={$_GET["category"]}";
+	}else{
+		$collection = "";
+		$category = "";
+	}
+	$html = file_get_contents($website2);
 	$dom = str_get_html($html);
+	$data = [
+		'shows' => []
+	];
+
 	if ($dom) {
-		$data = [
-			'shows' => []
-		];
-		foreach ($dom->find('.Small--Box') as $show) {
-			$title = $show->find('.recent--block', 0)->title;
-			$url = $show->find('.recent--block', 0)->href;
-			$poster = $show->find('img', 0)->getAttribute('data-src');
-			$genre = $show->find('.liList li', 0)->plaintext;
-			@$resolution = $show->find('.liList li', 1)->plaintext;
-			@$imdbRating = $show->find('.liList li', 2)->plaintext;
+		foreach ($dom->find('.Block--Item') as $show) {
+			$link = $show->find('a', 0);
+			$image = $show->find('img', 0);
+			$genre = $show->find('.Genres li', 0);
+			$title = $show->find('h3', 0);
 			$jsonData = [
-				'href' => $url,
-				'image' => trim($poster),
-				'resolution' => $resolution,
-				'category' => $genre,
-				'title' => $title,
-				'imdbRating' => $imdbRating,
-				'description' => "",
+				'href' => $link->href,
+				'image' => $image->getAttribute('data-src'),
+				'episode' => '', // Not present in the provided HTML
+				'category' => $genre ? $genre->plaintext : '',
+				'title' => $title ? $title->plaintext : '',
+				'description' => '', // Not present in the provided HTML
 			];
 			$data['shows'][] = $jsonData;
 		}
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+		echo $shows;
 	} else {
 		echo 'Error: Invalid DOM object.';
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+		echo $shows;
 	}
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
@@ -63,15 +73,26 @@ function searchShahid(){
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){ 
 	$user = checkLogin();
 	if ( !empty($user["id"]) ){
+		
 		if( $_POST["type"] == "get" ){
 			$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
 			$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 			$user = checkLogin();
 			$shows = searchShahid();
 			echo "<div class='row m-0 w-100' id='content'>";
-			outputData2($shows); 
+			outputData($shows); 
 			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
+		}else{
+			echo "<iframe id='frame' src='".getWebsite()."' style='width:100%;height:100vh;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>
+			<script>
+			$(document).ready(function() {
+				$('.changeIframeSrc').on('click', function() {
+					var link = $(this).attr('id');
+					$('#frame').attr('src', link);
+				});
+			});
+			</script>";
 		}
 		
 	}else{
