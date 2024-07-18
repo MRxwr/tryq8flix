@@ -26,6 +26,7 @@ function searchShahid(){
 	}else{
 		$url .= "/recent";
 	}
+	echo $url;
 	$html = curlCall($url);
 	$dom = str_get_html($html);
 	$data = [
