@@ -24,7 +24,7 @@ function searchShahid(){
 	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
 		$url .= "/category/{$_GET["category"]}";
 	}else{
-		$url .= "/recent";
+		$url .= "/recenT";
 	}
 	echo $url;
 	$html = curlCall($url);

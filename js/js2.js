@@ -552,7 +552,7 @@ $(document).on('click', '#animeBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests2/index.php?type=home&category=مسلسلات-كرتون", {
+    $.post("requests2/index.php?type=home&category=مسلسلات-انمي/?key=episodes", {
             type: "get",
         },
         function(data) {
