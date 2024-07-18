@@ -347,7 +347,7 @@ $(document).on('click', '#homeBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests2/index.php?type=home&page=recent", {
+    $.post("requests2/index.php?type=home", {
             type: "get",
         },
         function(data) {
