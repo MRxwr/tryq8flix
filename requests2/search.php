@@ -14,7 +14,7 @@ function searchShahid($search){
 			$title = $show->find('h3', 0);
 			$jsonData = [
 				'href' => $link->href,
-				'image' => $image->getAttribute('data-src'),
+				'image' => $image->getAttribute('src'),
 				'episode' => '', // Not present in the provided HTML
 				'category' => $genre ? $genre->plaintext : '',
 				'title' => $title ? $title->plaintext : '',
