@@ -1,9 +1,9 @@
 <?php
 function searchShahid($more){
-	GLOBAL $website, $_GET;
+	GLOBAL $website2, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = file_get_contents("{$website}?page={$more}&{$collection}{$category}");
+	$html = file_get_contents("{$website2}/page/{$more}&{$collection}{$category}");
 	// Create a DOM object
 	$dom = str_get_html($html);
 	// Check if the DOM object is valid
