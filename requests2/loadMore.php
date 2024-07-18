@@ -3,7 +3,7 @@ function searchShahid($more){
 	GLOBAL $website2, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	var_dump("{$website2}/page/{$more}&{$collection}{$category}");
+	var_dump("{$website2}/recent/page/{$more}&{$collection}{$category}");
 	$html = file_get_contents("{$website2}/page/{$more}&{$collection}{$category}");
 	$dom = str_get_html($html);
 	$data = [

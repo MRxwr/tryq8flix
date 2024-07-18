@@ -34,7 +34,7 @@ function searchShahid(){
 		$collection = "";
 		$category = "";
 	}
-	$html = file_get_contents($website2);
+	$html = file_get_contents("{$website2}/recent");
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
