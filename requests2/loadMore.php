@@ -4,7 +4,7 @@ function searchShahid($more){
 	$collection = ( isset($_GET["collection"]) ) ? "order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	var_dump("{$website2}/recent/page/{$more}");
-	$html = file_get_contents("{$website2}/page/{$more}");
+	$html = file_get_contents("{$website2}/recent/page/{$more}");
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
