@@ -3,7 +3,10 @@ function searchShahid($more){
 	GLOBAL $website2, $_GET;
 	$url = $website2;
 	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
-		$url .= "/category/page/{$more}/{$_GET["category"]}";
+		$category = explode("?", $_GET["category"]);
+		$key = ( isset($category[1]) && !empty($category[1]) ) ? "?{$category[1]}" : "" ;
+		$category = ( isset($category[0]) && !empty($category[0]) ) ? $category[0] : $$category;
+		$url .= "/category/{$category}/page/{$more}/{$key}";
 	}else{
 		$url .= "/recenT/page/{$more}";
 	}
