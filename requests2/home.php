@@ -33,10 +33,10 @@ function searchShahid(){
 	];
 
 	if ($dom) {
-		foreach ($dom->find('.Block--Item') as $show) {
+		foreach ($dom->find('.Posts--List .Small--Box') as $show) {
 			$link = $show->find('a', 0);
 			$image = $show->find('img', 0);
-			$genre = $show->find('.Genres li', 0);
+			$genre = $show->find('.liList li', 0);
 			$title = $show->find('h3', 0);
 			$jsonData = [
 				'href' => $link->href,
