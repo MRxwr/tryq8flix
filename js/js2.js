@@ -476,7 +476,7 @@ $(document).on('click', '#tvBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests2/index.php?type=home&collection=last_eps", {
+    $.post("requests2/index.php?type=home&category=مسلسلات-اجنبي/?key=episodes", {
             type: "get",
         },
         function(data) {
