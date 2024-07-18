@@ -10,7 +10,6 @@ function searchShahid($more){
 	}else{
 		$url .= "/recenT/page/{$more}";
 	}
-	echo $url;
 	$html = curlCall($url);
 	return domTopCinema(str_get_html($html));
 }
