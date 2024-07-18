@@ -283,7 +283,7 @@ function outputData2($shows){
 				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
-							<img src='".convertImage("{$shows[$i]["image"]}")."' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+							<img src='{$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
 							<div style='height:150px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
 								<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h2>
 								<h5 class='card-title postTitle{$i}'>{$shows[$i]["title"]}</h3>
@@ -328,30 +328,20 @@ function scrapePage($url) {
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);	
-/*
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-    curl_setopt($ch, CURLOPT_COOKIE, "cf_clearance=3BwF3j7yPM8f3OT5hauw8Bh8nwAL_mK0YD0zYcl7_kg-1721167758-1.0.1.1-eHiuVVC73Y8p4TKxzMxdJDS4EJmiVtwQWwRLGaG4I9Z5_EKo9wQWbVRwmognJyVC78lAPa_unbSaMGmZ_wHl9g; XSRF-TOKEN=eyJpdiI6IitOR2xPeEQ0K3RIc3ZuVXlKV0ZLVHc9PSIsInZhbHVlIjoiR0pzNFBUWitOMFpHbkpPRXpPaklHZU9xd2dzUzhIeU5DREJQdWdlaGlEQjRJZGVnWS9aTDBCQjNTdmhxdVVWWlVLdjc0VTRVMmk5dVpSck5CMmtXUGZMM0lVMFZacllTb2h2ZWZSeS9hTGI5V3pJMUdEL1Jvb1J2ODVReVdyN1UiLCJtYWMiOiJjZDdhMDVhZjU2OTg1NGU5MDIzMWQ2ZjEyNjljMDM2YTk5NmEzNjc0YzZlMGMzZTIxNzE2ZGY1Y2RlNzljODBlIiwidGFnIjoiIn0%3D; laravel_session=eyJpdiI6InhWZzdFNjJqQVpjZmJwQVNFL3JXK0E9PSIsInZhbHVlIjoia0p5czJQOUw5ZjZGWmExTENiZDBkSE81ODJGekcxNzdxVHpocHFHTzBiajlGZmdkbkFFczNJV283Z2FPemQ2WGREVzlTTENWdjdMSkpuYzFvN0JUVGFSK2FJS3M0VjJQcnNhaDFtYm95MENIODhyRWgydHRIQWpOdjE4c3pVTXUiLCJtYWMiOiJkZTAwN2M1ZmYwOWIxYmIxMWM1NmM5MjFhZWIzZWFhNTdlNjEzZWViZmExMjdmZTdkZDE5OTkyNmRjMmFmZjkyIiwidGFnIjoiIn0%3D");
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    $response = curl_exec($ch);
-    if (curl_errno($ch)) {
-        echo 'Curl error: ' . curl_error($ch) . "\n";
-        return false;
-    }
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    if ($httpCode != 200) {
-        echo "HTTP Code: $httpCode\n";
-        echo "Response Body:\n$response\n";
-        return false;
-    }
-*/
     return $response;
+}
+
+function curlCall($url) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+	$response = curl_exec($ch);
+	return $response;
 }
 
 function outputImage($imageUrl) {
