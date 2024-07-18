@@ -355,4 +355,35 @@ function convertImage($imageUrl) {
 	$image = file_get_contents($imageUrl);
 	return base64_encode($image);
 }
+
+function domTopCinema($dom) {
+	$data = [
+		'shows' => []
+	];
+	if ($dom) {
+		foreach ($dom->find('.Posts--List .Small--Box') as $show) {
+			$link = $show->find('a', 0);
+			$image = $show->find('img', 0);
+			$genre = $show->find('.liList li', 0);
+			$title = $show->find('h3', 0);
+			$jsonData = [
+				'href' => $link->href,
+				'image' => $image->getAttribute('data-src'),
+				'episode' => '', // Not present in the provided HTML
+				'category' => $genre ? $genre->plaintext : '',
+				'title' => $title ? $title->plaintext : '',
+				'description' => '', // Not present in the provided HTML
+			];
+			$data['shows'][] = $jsonData;
+		}
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	} else {
+		echo 'Error: Invalid DOM object.';
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	}
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
+	$dom->clear();
+	unset($dom);
+	return $shows = $shows["shows"];
+}
 ?>
