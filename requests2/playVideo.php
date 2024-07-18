@@ -42,9 +42,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
         echo 'Error: Invalid DOM object.';
         $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
-	var_dump($servers);
     $servers = json_decode($servers, true);
-	var_dump($servers);
     $links = "<div class='row m-0'>";
     $counter = 0;
     $notWanted = ["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
