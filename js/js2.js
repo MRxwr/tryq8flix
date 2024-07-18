@@ -552,7 +552,7 @@ $(document).on('click', '#animeBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests2/index.php?type=home&collection=last_eps&category=مسلسلات-انمي", {
+    $.post("requests2/index.php?type=home&category=مسلسلات-كرتون", {
             type: "get",
         },
         function(data) {
