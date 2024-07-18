@@ -8,6 +8,30 @@ function extractDomain($url) {
     }
 }
 
+function getIframeURL($url) {
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('id' => $url["id"],'i' => $url["i"]),
+    CURLOPT_HTTPHEADER => array(
+        'X-Requested-With: XMLHttpRequest',
+        'Referer: https://web5.topcinema.world/'
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $output = explode('src="', $response);
+    $output = explode('"', $output[1]);
+    return $output[0];
+}
+
 if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $html = curlCall("{$_POST["id"]}watch/");
     $dom = str_get_html($html);
@@ -16,11 +40,11 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     ];
     if ($dom) {
         foreach ($dom->find('.server--item') as $server) {
-            $link = $server->getAttribute('data-link');
-            $title = $server->find('span', 0)->plaintext;
+            $id = $server->getAttribute('data-id');
+            $i = $server->getAttribute('data-server');
             $jsonData = [
-                'url' => $link,
-                'name' => $title,
+                'id' => $id,
+                'i' => $i,
             ];
             $data['shows'][] = $jsonData;
         }
@@ -32,16 +56,13 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $servers = json_decode($servers, true);
     $links = "<div class='row m-0'>";
     $counter = 0;
-    $notWanted = ["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
     $y = 1;
     $mainServer = [];
     for ($i = 0; $i < sizeof($servers); $i++) {
-        $domain = extractDomain($servers[$i]["url"]);
-        if (!in_array(strtolower($domain), $notWanted) && isset($servers[$i]["url"])) {
-            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>Serv-{$y}</a></div>";
-            $mainServer[] = $servers[$i]["url"];
-            $y++;
-        }
+        $url = getIframeURL($servers[$i]);
+        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$url}' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
+        $mainServer[] = $url;
+        $y++;
     }
     $links .= "</div>";
     if (isset($mainServer) && sizeof($mainServer) > 0) {
