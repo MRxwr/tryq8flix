@@ -514,7 +514,7 @@ $(document).on('click', '#movieBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests2/index.php?type=home&collection=last_films", {
+    $.post("requests2/index.php?type=home&category=افلام-اجنبي", {
             type: "get",
         },
         function(data) {
