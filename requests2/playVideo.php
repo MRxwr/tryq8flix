@@ -23,17 +23,24 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
 	));
 	$html = curl_exec($curl);
 	curl_close($curl);
-	var_dump("$html");
-    $dom = new DOMDocument();
-    @$dom->loadHTML($html);
-    $xpath = new DOMXPath($dom);
-    $servers = [];
-    $serverItems = $xpath->query("//li[@class='server--item']");
-    foreach ($serverItems as $item) {
-        $servers[] = [
-            "url" => $item->getAttribute("data-link"),
-            "name" => $xpath->evaluate("string(./span)", $item)
-        ];
+    $dom = str_get_html($html);
+    $data = [
+        'shows' => []
+    ];
+    if ($dom) {
+        foreach ($dom->find('.server--item') as $server) {
+            $link = $server->getAttribute('data-link');
+            $title = $server->find('span', 0)->plaintext;
+            $jsonData = [
+                'url' => $link,
+                'name' => $title,
+            ];
+            $data['shows'][] = $jsonData;
+        }
+        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Invalid DOM object.';
+        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
     $server = json_encode($servers, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     $servers = json_decode($server, true);
