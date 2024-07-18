@@ -42,6 +42,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
         echo 'Error: Invalid DOM object.';
         $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
+	var_dump($data);
     $server = json_encode($servers, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     $servers = json_decode($server, true);
     $links = "<div class='row m-0'>";
