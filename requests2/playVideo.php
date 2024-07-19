@@ -27,6 +27,7 @@ function getIframeURL($url) {
     ));
     $response = curl_exec($curl);
     curl_close($curl);
+    var_dump($response);die();
     $output = explode('src="', $response);
     $output = explode('"', $output[1]);
     return $output[0];
@@ -54,7 +55,6 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
         $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
     $servers = json_decode($servers, true);
-    var_dump($servers);die();
     $links = "<div class='row m-0'>";
     $counter = 0;
     $y = 1;
