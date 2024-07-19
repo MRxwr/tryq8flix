@@ -1,5 +1,28 @@
 <?php
+$curl = curl_init();
 
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => array('id' => '97124','i' => '1'),
+  CURLOPT_HTTPHEADER => array(
+    'X-Requested-With: XMLHttpRequest',
+    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
+    'Referer: https://web5.topcinema.world/'
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+/*
 function makeRequest($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -15,7 +38,7 @@ function makeRequest($url) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Host: shvip.cam',
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8',
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,;q=0.8',
         'Accept-Language: en-US,en;q=0.5',
         'Accept-Encoding: gzip, deflate, br, zstd',
         'Referer: https://google.com',
@@ -55,5 +78,5 @@ if ($result['error']) {
 } else {
     echo "Response Preview:\n" . $result . "...\n";
 }
-
+*/
 ?>
