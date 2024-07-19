@@ -345,7 +345,7 @@ function curlCall($url) {
 }
 
 function outputImage($imageUrl) {
-    $image = scrapePage($imageUrl);
+    $image = file_get_contents($imageUrl);
     header('Content-Type: image/jpeg');
     echo $image;
 }
