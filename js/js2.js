@@ -728,6 +728,7 @@ $(document).on('click', '.playServer', function(e) {
         },
         function(data) {
 			$("#loading-screen").hide();
+            console.log(data);
             iframe.src = data;
         }
     );

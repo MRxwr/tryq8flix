@@ -5,8 +5,8 @@ if( isset($_GET["type"]) && !empty($_GET["type"]) && $_GET["type"] == "getServer
     $link = $data["link"];
     unset($data["link"]);
     $postData = $data;
-    return $url = makeRequest($ajaxUrl, $postData, $link);
+    echo $url = makeRequest($ajaxUrl, $postData, $link);
 }else{
-    return "";
+    echo "";
 }
 ?>
