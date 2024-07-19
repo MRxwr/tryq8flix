@@ -1,6 +1,7 @@
 <?php
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     $html = curlCall($_POST["id"]);
+    var_dump($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     foreach ($htmlDom->find('section.allseasonss .Small--Box.Season') as $seasonBox) {
