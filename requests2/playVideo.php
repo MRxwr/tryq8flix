@@ -10,16 +10,17 @@ function extractDomain($url) {
 
 function getIframeURL($url, $link) {
     GLOBAL $website2;
+    $link = str_replace("web","web5",str_replace("cam","world",$link));
     $postData = array(
         'id' => $url["id"],
         'i' => $url["i"]
     );
     $headers = array(
-        "Referer: " . str_replace("web","web5",str_replace("cam","world",$link)),
+        "Referer: {$link}",
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         'X-Requested-With: XMLHttpRequest',
     );
-    //var_dump($postData); var_dump($headers); var_dump($link); var_dump($website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
+    var_dump($postData); var_dump($headers); var_dump($link); var_dump($website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
     $curl = curl_init();
     curl_setopt_array($curl, array(
     CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
