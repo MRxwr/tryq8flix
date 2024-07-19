@@ -10,15 +10,15 @@ $headers = array(
     //'Origin: https://web5.topcinema.world',
     //'Priority: u=0',
     "Referer: https://web5.topcinema.world/%d9%81%d9%8a%d9%84%d9%85-horizon-an-american-saga-chapter-1-2024-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/watch/",
-    //'Sec-Fetch-Dest: empty',
-    //'Sec-Fetch-Mode: cors',
+    'Sec-Fetch-Dest: empty',
+    'Sec-Fetch-Mode: cors',
     'Sec-Fetch-Site: same-origin',
     'Sec-GPC: 1',
     'TE: trailers',
     'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
     'X-Requested-With: XMLHttpRequest',
 );
-echo "2";
+echo "3";
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
