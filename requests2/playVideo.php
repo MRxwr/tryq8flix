@@ -34,7 +34,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $mainServer[] = $url;
         }
         $serverDetails = json_encode($servers[$i]);
-        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$serverDetails}' onclick='sendIdToIframeJson(\"{$serverDetails}\"); return false;'>Serv-{$y}</a></div>";
+        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$serverDetails}' onclick='sendIdToIframeJson();'>Serv-{$y}</a></div>";
         $y++;
     }
     $links .= "</div>";
