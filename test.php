@@ -1,19 +1,19 @@
 <?php
 $cookieJar = tempnam('/tmp', 'cookie');
 
-// Function to make a request
 function makeRequest($url, $postData = null, $cookieJar) {
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER => true, // This line is added to get the headers
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_COOKIEJAR => $cookieJar,
         CURLOPT_COOKIEFILE => $cookieJar,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         CURLOPT_HTTPHEADER => [
             'Accept: */*',
-            'Accept-Encoding: gzip, deflate, br, zstd',
+            'Accept-Encoding: gzip, deflate, br',
             'Accept-Language: en-US,en;q=0.5',
             'Connection: keep-alive',
             'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
@@ -23,8 +23,6 @@ function makeRequest($url, $postData = null, $cookieJar) {
             'Sec-Fetch-Dest: empty',
             'Sec-Fetch-Mode: cors',
             'Sec-Fetch-Site: same-origin',
-            'Sec-GPC: 1',
-            'TE: trailers',
             'X-Requested-With: XMLHttpRequest',
         ],
     ]);
@@ -35,28 +33,47 @@ function makeRequest($url, $postData = null, $cookieJar) {
     }
 
     $response = curl_exec($ch);
+    $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $header = substr($response, 0, $headerSize);
+    $body = substr($response, $headerSize);
     $info = curl_getinfo($ch);
     curl_close($ch);
 
-    return ['response' => $response, 'info' => $info];
+    return ['header' => $header, 'body' => $body, 'info' => $info];
 }
 
-// Step 1: Fetch the main page (optional, but might set necessary cookies)
-$mainPageUrl = 'https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/';
-$mainPageResult = makeRequest($mainPageUrl, null, $cookieJar);
+function decodeResponse($body, $contentEncoding) {
+    if (strpos($contentEncoding, 'gzip') !== false) {
+        return gzdecode($body);
+    } elseif (strpos($contentEncoding, 'deflate') !== false) {
+        return gzinflate($body);
+    } elseif (strpos($contentEncoding, 'br') !== false && function_exists('brotli_uncompress')) {
+        return brotli_uncompress($body);
+    }
+    return $body;
+}
 
-// Step 2: Make the AJAX request
 $ajaxUrl = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
 $postData = ['id' => '97124', 'i' => '1'];
-$ajaxResult = makeRequest($ajaxUrl, $postData, $cookieJar);
+$result = makeRequest($ajaxUrl, $postData, $cookieJar);
 
-if ($ajaxResult['info']['http_code'] != 200) {
-    echo "Error: HTTP status code " . $ajaxResult['info']['http_code'] . "\n";
-} else {
-    echo $ajaxResult['response'];
+echo "HTTP Status Code: " . $result['info']['http_code'] . "\n\n";
+echo "Response Headers:\n" . $result['header'] . "\n\n";
+
+$contentEncoding = '';
+if (preg_match('/Content-Encoding: (.+)/', $result['header'], $matches)) {
+    $contentEncoding = $matches[1];
 }
 
-unlink($cookieJar);  // Clean up the temporary cookie file
+$decodedBody = decodeResponse($result['body'], $contentEncoding);
+
+echo "Decoded Response Body:\n";
+var_dump($decodedBody);
+
+echo "\nRaw Response Body:\n";
+var_dump($result['body']);
+
+unlink($cookieJar);  // C
 /*
 function makeRequest($url) {
     $ch = curl_init();
