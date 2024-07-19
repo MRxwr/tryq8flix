@@ -23,8 +23,6 @@ function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_COOKIEJAR => $cookieJar,
-        CURLOPT_COOKIEFILE => $cookieJar,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_ENCODING => '',
