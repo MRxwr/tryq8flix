@@ -386,4 +386,48 @@ function domTopCinema($dom) {
 	unset($dom);
 	return $shows = $shows["shows"];
 }
+
+function makeRequest($url, $postData = null, $referer = null) {
+    $ch = curl_init();
+    $headers = [
+        'Accept: */*',
+        'Accept-Language: en-US,en;q=0.5',
+        'Accept-Encoding: gzip, deflate',
+        'X-Requested-With: XMLHttpRequest',
+        'Connection: keep-alive',
+        'Sec-Fetch-Dest: empty',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-origin',
+    ];
+    if ($referer) {
+        $headers[] = 'Referer: ' . $referer;
+    }
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER => false,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_ENCODING => '',
+    ]);
+    if ($postData) {
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+    }
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $link = extractLink($response);
+    return $link;
+}
+
+function extractLink($html) {
+    if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
+        return $matches[1];
+    }
+    if (preg_match('/https?:\/\/[^\s<>"]+/', $html, $matches)) {
+        return $matches[0];
+    }
+    return "";
+}
 ?>

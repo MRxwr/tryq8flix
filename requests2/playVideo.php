@@ -68,8 +68,10 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $counter = 0;
     $y = 1;
     $mainServer = [];
+    $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
     for ($i = 0; $i < sizeof($servers); $i++) {
-        $url = getIframeURL($servers[$i], "{$_POST["id"]}watch/");
+        $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
+        //$url = getIframeURL($servers[$i], "{$_POST["id"]}watch/");
         $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$url}' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
         $mainServer[] = $url;
         $y++;
