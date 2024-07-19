@@ -14,10 +14,11 @@ $headers = array(
     //'Sec-Fetch-Mode: cors',
     'Sec-Fetch-Site: same-origin',
     //'Sec-GPC: 1',
-    //'TE: trailers',
+    'TE: trailers',
     'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
     'X-Requested-With: XMLHttpRequest',
 );
+echo "1";
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
