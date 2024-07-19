@@ -1,43 +1,32 @@
 <?php
+$link = "https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%b1%d8%a7%d8%a8%d8%b9-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/";
+$link = str_replace("web","web5",str_replace("cam","world",$link));
+$postData = array(
+    'id' => $url["id"],
+    'i' => $url["i"]
+);
 $headers = array(
-    //'Accept: */*',
-    //'Accept-Encoding: gzip, deflate, br, zstd',
-    //'Accept-Language: en-US,en;q=0.5',
-    //'Connection: keep-alive',
-    //'Content-Length: 12',
-    //'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-    //'Host: web5.topcinema.world',
-    //'Origin: https://web5.topcinema.world',
-    //'Priority: u=0',
-    "Referer: https://web5.topcinema.world/%d9%81%d9%8a%d9%84%d9%85-horizon-an-american-saga-chapter-1-2024-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/watch/",
-    'Sec-Fetch-Dest: empty',
-    'Sec-Fetch-Mode: cors',
-    'Sec-Fetch-Site: same-origin',
-    'Sec-GPC: 1',
-    'TE: trailers',
+    "Referer: {$link}",
     'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
     'X-Requested-With: XMLHttpRequest',
 );
-echo "3";
+var_dump($postData); var_dump($headers); var_dump($link); var_dump("https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
 $curl = curl_init();
-
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'POST',
-  CURLOPT_POSTFIELDS => array('id' => '96643','i' => '0'),
-  CURLOPT_HTTPHEADER => $headers
+CURLOPT_URL => "https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
+CURLOPT_RETURNTRANSFER => true,
+CURLOPT_ENCODING => '',
+CURLOPT_MAXREDIRS => 10,
+CURLOPT_TIMEOUT => 0,
+CURLOPT_FOLLOWLOCATION => true,
+CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+CURLOPT_CUSTOMREQUEST => 'POST',
+CURLOPT_POSTFIELDS => $postData,
+CURLOPT_HTTPHEADER => $headers,
 ));
-
 $response = curl_exec($curl);
-
 curl_close($curl);
-var_dump($response);
+var_dump($response);die();
 /*
 function makeRequest($url) {
     $ch = curl_init();
