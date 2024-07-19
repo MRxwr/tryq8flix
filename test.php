@@ -1,7 +1,5 @@
 <?php
-$cookieJar = tempnam('/tmp', 'cookie');
-
-function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
+function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
     $headers = [
         'Accept: */*',
@@ -36,8 +34,8 @@ function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
     $response = curl_exec($ch);
     $info = curl_getinfo($ch);
     curl_close($ch);
-
-    return ['body' => $response, 'info' => $info];
+    $link = extractLink($result['body']);
+    return $link;
 }
 
 function extractLink($html) {
@@ -45,20 +43,16 @@ function extractLink($html) {
     if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
         return $matches[1];
     }
-    
     // If no iframe, try to find any URL in the response
     if (preg_match('/https?:\/\/[^\s<>"]+/', $html, $matches)) {
         return $matches[0];
     }
-    
     // If no URL found, return the entire response
-    return $html;
+    return "";
 }
 
 $mainPageUrl = 'https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/';
-$mainPageResult = makeRequest($mainPageUrl, null, $cookieJar);
-
-sleep(rand(3, 7));
+$mainPageResult = makeRequest($mainPageUrl, null);
 
 $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
 $postData = [
@@ -66,18 +60,8 @@ $postData = [
     'i' => '1',
 ];
 
-$result = makeRequest($ajaxUrl, $postData, $cookieJar, $mainPageUrl);
+echo $result = makeRequest($ajaxUrl, $postData, $mainPageUrl);
 
-if ($result['info']['http_code'] == 200) {
-    $extractedLink = extractLink($result['body']);
-    echo "Extracted Link: " . $extractedLink . "\n";
-} else {
-    echo "Failed to retrieve data. Status code: " . $result['info']['http_code'] . "\n";
-    echo "Response Body:\n";
-    var_dump($result['body']);
-}
-
-unlink($cookieJar);
 /*
 function makeRequest($url) {97124
     $ch = curl_init();
