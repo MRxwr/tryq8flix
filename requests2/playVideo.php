@@ -35,7 +35,7 @@ function getIframeURL($url, $link) {
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    var_dump($response);die();
+    var_dump($response);
     $output = explode('src="', $response);
     $output = explode('"', $output[1]);
     return $output[0];
