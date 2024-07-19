@@ -9,7 +9,7 @@ function extractDomain($url) {
 }
 
 function getIframeURL($url, $link) {
-    GLOBAL $website2;
+    GLOBAL $website2, $scrappingBeeToken;
     $postData = array(
         'id' => $url["id"],
         'i' => $url["i"]
@@ -36,7 +36,7 @@ function getIframeURL($url, $link) {
     //var_dump($postData); var_dump($headers); var_dump($link); var_dump($website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
+    CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=true&url=".urlencode("{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php"),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
