@@ -16,7 +16,7 @@ function getIframeURL($url, $link) {
         'i' => $url["i"]
     );
     $headers = array(
-        "Referer: {$link}",
+        "Referer: https://web5.topcinema.world/",
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         'X-Requested-With: XMLHttpRequest',
     );
