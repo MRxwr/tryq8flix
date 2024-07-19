@@ -9,9 +9,20 @@ function extractDomain($url) {
 }
 
 function getIframeURL($url, $link) {
+    GLOBAL $website2;
+    $postData = array(
+        'id' => $url["id"],
+        'i' => $url["i"]
+    );
+    $headers = array(
+        'X-Requested-With: XMLHttpRequest',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
+        "Referer: {$link}"
+    );
+    print_r($postData . "\n" . $headers . "\n" . $link . "\n" . $website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+    CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
@@ -19,12 +30,8 @@ function getIframeURL($url, $link) {
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => array('id' => $url["id"],'i' => $url["i"]),
-    CURLOPT_HTTPHEADER => array(
-        'X-Requested-With: XMLHttpRequest',
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-        "Referer: {$link}"
-      ),
+    CURLOPT_POSTFIELDS => $postData,
+    CURLOPT_HTTPHEADER => $headers,
     ));
     $response = curl_exec($curl);
     curl_close($curl);
