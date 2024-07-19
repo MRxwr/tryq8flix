@@ -1,47 +1,4 @@
 <?php
-function extractDomain($url) {
-    $parsedUrl = parse_url($url);
-    if ($parsedUrl && isset($parsedUrl['host'])) {
-        return $parsedUrl['host'];
-    } else {
-        return false;
-    }
-}
-
-function getIframeURL($url, $link) {
-    GLOBAL $website2;
-    $link = str_replace("web","web5",str_replace("cam","world",$link));
-    $postData = array(
-        'id' => $url["id"],
-        'i' => $url["i"]
-    );
-    $headers = array(
-        "Referer: https://web5.topcinema.world/",
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-        'X-Requested-With: XMLHttpRequest',
-    );
-    var_dump($postData); var_dump($headers); var_dump($link); var_dump($website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-    CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => '',
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 0,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => $postData,
-    CURLOPT_HTTPHEADER => $headers,
-    ));
-    $response = curl_exec($curl);
-    curl_close($curl);
-    var_dump($response);die();
-    $output = explode('src="', $response);
-    $output = explode('"', $output[1]);
-    return $output[0];
-}
-
 if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $html = curlCall("{$_POST["id"]}watch/");
     $dom = str_get_html($html);
@@ -70,10 +27,11 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $mainServer = [];
     $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
     for ($i = 0; $i < sizeof($servers); $i++) {
-        $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
-        //$url = getIframeURL($servers[$i], "{$_POST["id"]}watch/");
-        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$url}' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
-        $mainServer[] = $url;
+        if ( $i == 0 ){
+            $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
+            $mainServer[] = $url;
+        }
+        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]}' onclick='sendIdToIframeJson(\"{$servers[$i]}\"); return false;'>Serv-{$y}</a></div>";
         $y++;
     }
     $links .= "</div>";
