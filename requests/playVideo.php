@@ -10,7 +10,8 @@ function extractDomain($url) {
  
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
 	$html = scrapePage("{$_POST["id"]}");
-    $pattern = '/let servers = JSON\.parse\(\'(.*?)\'\);/';
+	var_dump($html);
+    $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
     preg_match($pattern, $html, $matches);
     if (isset($matches[1])) {
         $serversData = json_decode($matches[1], true);
