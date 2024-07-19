@@ -1,4 +1,5 @@
 <?php
+
 function getRandomUserAgent() {
     $userAgents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -9,6 +10,17 @@ function getRandomUserAgent() {
 }
 
 $curl = curl_init();
+$headers = array(
+    'X-Requested-With: XMLHttpRequest',
+    'User-Agent: ' . getRandomUserAgent(),
+    'Referer: https://web5.topcinema.world/%d9%81%d9%8a%d9%84%d9%85-horizon-an-american-saga-chapter-1-2024-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/watch/',
+    'Origin: https://web5.topcinema.world',
+    'Accept: */*',
+    'Accept-Language: en-US,en;q=0.5',
+    'Content-Type: application/x-www-form-urlencoded',
+    'X-Forwarded-For: ' . mt_rand(0, 255) . '.' . mt_rand(0, 255) . '.' . mt_rand(0, 255) . '.' . mt_rand(0, 255)
+);
+
 curl_setopt_array($curl, array(
     CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
     CURLOPT_RETURNTRANSFER => true,
@@ -19,21 +31,8 @@ curl_setopt_array($curl, array(
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
     CURLOPT_POSTFIELDS => http_build_query(array('id' => '96643', 'i' => '1')),
-    CURLOPT_HTTPHEADER => array(
-        'X-Requested-With: XMLHttpRequest',
-        'User-Agent: ' . getRandomUserAgent(),
-        'Referer: https://web5.topcinema.world/%d9%81%d9%8a%d9%84%d9%85-horizon-an-american-saga-chapter-1-2024-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/watch/',
-        'Origin: https://web5.topcinema.world',
-        'Accept: */*',
-        'Accept-Language: en-US,en;q=0.5',
-        'Content-Type: application/x-www-form-urlencoded',
-    ),
+    CURLOPT_HTTPHEADER => $headers,
 ));
-
-// Use a random IP address for X-Forwarded-For
-curl_setopt($curl, CURLOPT_HTTPHEADER, array_merge(curl_getinfo($curl, CURLINFO_HTTPHEADER), [
-    'X-Forwarded-For: ' . mt_rand(0, 255) . '.' . mt_rand(0, 255) . '.' . mt_rand(0, 255) . '.' . mt_rand(0, 255)
-]));
 
 $response = curl_exec($curl);
 
