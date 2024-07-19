@@ -22,8 +22,9 @@ function getIframeURL($url) {
     CURLOPT_POSTFIELDS => array('id' => $url["id"],'i' => $url["i"]),
     CURLOPT_HTTPHEADER => array(
         'X-Requested-With: XMLHttpRequest',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         'Referer: https://web5.topcinema.world/'
-    ),
+      ),
     ));
     $response = curl_exec($curl);
     curl_close($curl);
