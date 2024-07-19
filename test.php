@@ -22,6 +22,8 @@ function makeRequest($url, $postData = null, $cookieJar) {
             'Sec-Fetch-Site: none',
             'Sec-Fetch-User: ?1',
             'Cache-Control: max-age=0',
+            "Referer: https://web5.topcinema.world/",
+            'X-Requested-With: XMLHttpRequest',
         ],
         CURLOPT_ENCODING => '',  // This tells cURL to automatically handle compression
     ]);
