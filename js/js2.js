@@ -719,9 +719,9 @@ function sendIdToIframe(id) {
 $(document).on('click', '.playServer', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
+    var iframe = document.getElementById('frame');
     console.log(id);
     iframe.src = "";
-    var iframe = document.getElementById('frame');
     $.post("requests2/index.php?type=getServer", {
             type: "get",
             data: id,
