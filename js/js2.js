@@ -720,7 +720,6 @@ $(document).on('click', '.playServer', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
     var iframe = document.getElementById('frame');
-    console.log(id);
     iframe.src = "";
     $.post("requests2/index.php?type=getServer", {
             type: "get",
@@ -728,7 +727,6 @@ $(document).on('click', '.playServer', function(e) {
         },
         function(data) {
 			$("#loading-screen").hide();
-            console.log(data);
             iframe.src = data;
         }
     );
