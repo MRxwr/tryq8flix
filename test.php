@@ -45,10 +45,10 @@ function extractLink($html) {
     // If no URL found, return the entire response
     return "";
 }
-/*
+
 $mainPageUrl = 'https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/';
-$mainPageResult = makeRequest($mainPageUrl, null);
-*/
+//$mainPageResult = makeRequest($mainPageUrl, null);
+
 $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
 $postData = [
     'id' => '97124',
