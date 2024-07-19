@@ -8,7 +8,7 @@ function extractDomain($url) {
     }
 }
 
-function getIframeURL($url) {
+function getIframeURL($url, $link) {
     $curl = curl_init();
     curl_setopt_array($curl, array(
     CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
@@ -23,7 +23,7 @@ function getIframeURL($url) {
     CURLOPT_HTTPHEADER => array(
         'X-Requested-With: XMLHttpRequest',
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-        'Referer: https://web5.topcinema.world/'
+        "Referer: {$link}"
       ),
     ));
     $response = curl_exec($curl);
@@ -61,7 +61,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $y = 1;
     $mainServer = [];
     for ($i = 0; $i < sizeof($servers); $i++) {
-        $url = getIframeURL($servers[$i]);
+        $url = getIframeURL($servers[$i], "{$_POST["id"]}watch/");
         $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$url}' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
         $mainServer[] = $url;
         $y++;
