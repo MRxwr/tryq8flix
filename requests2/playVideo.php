@@ -9,20 +9,34 @@ function extractDomain($url) {
 }
 
 function getIframeURL($url, $link) {
-    GLOBAL $website2, $scrappingBeeToken;
+    GLOBAL $website2;
     $postData = array(
         'id' => $url["id"],
         'i' => $url["i"]
     );
     $headers = array(
+        'Accept: */*',
+        'Accept-Encoding: gzip, deflate, br, zstd',
+        'Accept-Language: en-US,en;q=0.5',
+        'Connection: keep-alive',
+        'Content-Length: 12',
+        'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+        'Host: web5.topcinema.world',
+        'Origin: https://web5.topcinema.world',
+        'Priority: u=0',
         "Referer: {$link}",
+        'Sec-Fetch-Dest: empty',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-origin',
+        'Sec-GPC: 1',
+        'TE: trailers',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         'X-Requested-With: XMLHttpRequest',
     );
-    echo "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=true&url=".urlencode("{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php");
     //var_dump($postData); var_dump($headers); var_dump($link); var_dump($website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=true&url=".urlencode("{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php"),
+    CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
@@ -35,7 +49,7 @@ function getIframeURL($url, $link) {
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    var_dump($response);die();
+    var_dump($response);
     $output = explode('src="', $response);
     $output = explode('"', $output[1]);
     return $output[0];
@@ -69,7 +83,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $mainServer = [];
     for ($i = 0; $i < sizeof($servers); $i++) {
         $url = getIframeURL($servers[$i], "{$_POST["id"]}watch/");
-        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='".json_encode($servers[$i])."' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
+        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$url}' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
         $mainServer[] = $url;
         $y++;
     }
