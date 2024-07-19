@@ -38,6 +38,8 @@ if( isset($_GET["type"]) && $_GET["type"] == "playVideo" ){
     require("logout.php");
 }elseif( isset($_GET["type"]) && $_GET["type"] == "loadMoreSearch" ){
     require("loadMoreSearch.php");
+}elseif( isset($_GET["type"]) && $_GET["type"] == "getServer" ){
+    require("getServer.php");
 }
 
 ?>

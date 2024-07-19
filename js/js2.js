@@ -715,3 +715,18 @@ function sendIdToIframe(id) {
     var urlWithId = id;
     iframe.src = urlWithId;
 }
+
+$(document).on('click', '.playServer', function(e) {
+	$("#loading-screen").show();
+	var id = $(this).attr("id");
+    iframe.src = "";
+    var iframe = document.getElementById('frame');
+    $.post("requests2/index.php?type=getServer", {
+            type: "get",
+            data: id,
+        },
+        function(data) {
+			$("#loading-screen").hide();
+            iframe.src = data;
+        });
+});

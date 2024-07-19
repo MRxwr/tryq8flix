@@ -12,6 +12,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $jsonData = [
                 'id' => $id,
                 'i' => $i,
+                'link' => "{$_POST["id"]}watch/",
             ];
             $data['shows'][] = $jsonData;
         }
@@ -28,6 +29,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
     for ($i = 0; $i < sizeof($servers); $i++) {
         if ( $i == 0 ){
+            unset($servers[$i]["link"]);
             $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
             $mainServer[] = $url;
         }
