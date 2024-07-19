@@ -1,6 +1,7 @@
 <?php
 function searchShahid($search){
 	GLOBAL $website2;
+	$search = str_replace(' ','+',$search);
 	$html = curlCall("{$website2}/?s={$search}");
 	return domTopCinema(str_get_html($html));
 }
