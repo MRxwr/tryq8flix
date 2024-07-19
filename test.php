@@ -11,11 +11,9 @@ function makeRequest($url, $postData = null, $referer = null) {
         'Sec-Fetch-Mode: cors',
         'Sec-Fetch-Site: same-origin',
     ];
-    
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
     }
-
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
@@ -25,16 +23,13 @@ function makeRequest($url, $postData = null, $referer = null) {
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_ENCODING => '',
     ]);
-
     if ($postData) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     }
-
     $response = curl_exec($ch);
-    $info = curl_getinfo($ch);
     curl_close($ch);
-    $link = extractLink($result['body']);
+    $link = extractLink($response);
     return $link;
 }
 
