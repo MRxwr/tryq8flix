@@ -4,6 +4,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     var_dump($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
+    $episodesData = [];
     foreach ($htmlDom->find('section.allseasonss .Small--Box.Season') as $seasonBox) {
         $link = $seasonBox->find('a', 0)->href;
         $title = trim($seasonBox->find('.title', 0)->plaintext);
