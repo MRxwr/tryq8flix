@@ -1,27 +1,49 @@
 <?php
-$curl = curl_init();
+function getRandomUserAgent() {
+    $userAgents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+    ];
+    return $userAgents[array_rand($userAgents)];
+}
 
+$curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'POST',
-  CURLOPT_POSTFIELDS => array('id' => '96643','i' => '1'),
-  CURLOPT_HTTPHEADER => array(
-    'X-Requested-With: XMLHttpRequest',
-    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-    'Referer: https://web5.topcinema.world/%d9%81%d9%8a%d9%84%d9%85-horizon-an-american-saga-chapter-1-2024-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/watch/'
-  ),
+    CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => http_build_query(array('id' => '96643', 'i' => '1')),
+    CURLOPT_HTTPHEADER => array(
+        'X-Requested-With: XMLHttpRequest',
+        'User-Agent: ' . getRandomUserAgent(),
+        'Referer: https://web5.topcinema.world/%d9%81%d9%8a%d9%84%d9%85-horizon-an-american-saga-chapter-1-2024-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/watch/',
+        'Origin: https://web5.topcinema.world',
+        'Accept: */*',
+        'Accept-Language: en-US,en;q=0.5',
+        'Content-Type: application/x-www-form-urlencoded',
+    ),
 ));
+
+// Use a random IP address for X-Forwarded-For
+curl_setopt($curl, CURLOPT_HTTPHEADER, array_merge(curl_getinfo($curl, CURLINFO_HTTPHEADER), [
+    'X-Forwarded-For: ' . mt_rand(0, 255) . '.' . mt_rand(0, 255) . '.' . mt_rand(0, 255) . '.' . mt_rand(0, 255)
+]));
 
 $response = curl_exec($curl);
 
+if ($response === false) {
+    echo 'cURL Error: ' . curl_error($curl);
+} else {
+    echo $response;
+}
+
 curl_close($curl);
-echo $response;
 /*
 function makeRequest($url) {
     $ch = curl_init();
