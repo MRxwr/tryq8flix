@@ -6,24 +6,22 @@ function makeRequest($url, $postData = null, $cookieJar) {
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER => true, // This line is added to get the headers
+        CURLOPT_HEADER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_COOKIEJAR => $cookieJar,
         CURLOPT_COOKIEFILE => $cookieJar,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         CURLOPT_HTTPHEADER => [
-            'Accept: */*',
-            'Accept-Encoding: gzip, deflate, br',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language: en-US,en;q=0.5',
+            'Accept-Encoding: gzip, deflate, br',
             'Connection: keep-alive',
-            'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-            'Host: web5.topcinema.world',
-            'Origin: https://web5.topcinema.world',
-            'Referer: https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/',
-            'Sec-Fetch-Dest: empty',
-            'Sec-Fetch-Mode: cors',
-            'Sec-Fetch-Site: same-origin',
-            'X-Requested-With: XMLHttpRequest',
+            'Upgrade-Insecure-Requests: 1',
+            'Sec-Fetch-Dest: document',
+            'Sec-Fetch-Mode: navigate',
+            'Sec-Fetch-Site: none',
+            'Sec-Fetch-User: ?1',
+            'Cache-Control: max-age=0',
         ],
     ]);
 
@@ -42,30 +40,28 @@ function makeRequest($url, $postData = null, $cookieJar) {
     return ['header' => $header, 'body' => $body, 'info' => $info];
 }
 
-function decodeResponse($body, $contentEncoding) {
-    if (strpos($contentEncoding, 'gzip') !== false) {
-        return gzdecode($body);
-    } elseif (strpos($contentEncoding, 'deflate') !== false) {
-        return gzinflate($body);
-    } elseif (strpos($contentEncoding, 'br') !== false && function_exists('brotli_uncompress')) {
-        return brotli_uncompress($body);
-    }
-    return $body;
-}
+// First, visit the main page to set any necessary cookies
+$mainPageUrl = 'https://web.topcinema.cam';
+$mainPageResult = makeRequest($mainPageUrl, null, $cookieJar);
 
-$ajaxUrl = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
+// Sleep for a few seconds to mimic human behavior
+sleep(rand(3, 7));
+
+// Now make the AJAX request
+$ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
 $postData = ['id' => '97124', 'i' => '1'];
 $result = makeRequest($ajaxUrl, $postData, $cookieJar);
 
+echo "Final URL after redirects: " . $result['info']['url'] . "\n\n";
 echo "HTTP Status Code: " . $result['info']['http_code'] . "\n\n";
 echo "Response Headers:\n" . $result['header'] . "\n\n";
 
-$contentEncoding = '';
-if (preg_match('/Content-Encoding: (.+)/', $result['header'], $matches)) {
-    $contentEncoding = $matches[1];
+$decodedBody = $result['body'];
+if (strpos($result['header'], 'content-encoding: br') !== false) {
+    $decodedBody = brotli_uncompress($result['body']);
+} elseif (strpos($result['header'], 'content-encoding: gzip') !== false) {
+    $decodedBody = gzdecode($result['body']);
 }
-
-$decodedBody = decodeResponse($result['body'], $contentEncoding);
 
 echo "Decoded Response Body:\n";
 var_dump($decodedBody);
@@ -73,9 +69,9 @@ var_dump($decodedBody);
 echo "\nRaw Response Body:\n";
 var_dump($result['body']);
 
-unlink($cookieJar);  // C
+unlink($cookieJar);  // Clean up the temporary cookie file
 /*
-function makeRequest($url) {
+function makeRequest($url) {97124
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
