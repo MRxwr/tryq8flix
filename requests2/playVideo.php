@@ -18,6 +18,7 @@ function getIframeURL($url, $link) {
         "Referer: {$link}",
         'X-Requested-With: XMLHttpRequest',
     );
+    echo "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=true&url=".urlencode("{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php");
     //var_dump($postData); var_dump($headers); var_dump($link); var_dump($website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php\n");
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -34,7 +35,7 @@ function getIframeURL($url, $link) {
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    var_dump($response);
+    var_dump($response);die();
     $output = explode('src="', $response);
     $output = explode('"', $output[1]);
     return $output[0];
@@ -68,7 +69,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $mainServer = [];
     for ($i = 0; $i < sizeof($servers); $i++) {
         $url = getIframeURL($servers[$i], "{$_POST["id"]}watch/");
-        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$url}' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
+        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='".json_encode($servers[$i])."' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
         $mainServer[] = $url;
         $y++;
     }
