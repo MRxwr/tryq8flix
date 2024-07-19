@@ -14,7 +14,6 @@ function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
         'Sec-Fetch-Site: same-origin',
     ];
     
-    // Explicitly add the Referer header if provided
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
     }
@@ -22,7 +21,7 @@ function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER => true,
+        CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_COOKIEJAR => $cookieJar,
         CURLOPT_COOKIEFILE => $cookieJar,
@@ -37,54 +36,50 @@ function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
     }
 
     $response = curl_exec($ch);
-    $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    $header = substr($response, 0, $headerSize);
-    $body = substr($response, $headerSize);
     $info = curl_getinfo($ch);
     curl_close($ch);
 
-    return ['header' => $header, 'body' => $body, 'info' => $info];
+    return ['body' => $response, 'info' => $info];
 }
 
-// First, visit the main page to set any necessary cookies
+function extractLink($html) {
+    // Try to extract src from iframe
+    if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
+        return $matches[1];
+    }
+    
+    // If no iframe, try to find any URL in the response
+    if (preg_match('/https?:\/\/[^\s<>"]+/', $html, $matches)) {
+        return $matches[0];
+    }
+    
+    // If no URL found, return the entire response
+    return $html;
+}
+
 $mainPageUrl = 'https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/';
 $mainPageResult = makeRequest($mainPageUrl, null, $cookieJar);
 
-echo "Main page visited. Status Code: " . $mainPageResult['info']['http_code'] . "\n\n";
-
-// Sleep for a few seconds to mimic human behavior
 sleep(rand(3, 7));
 
-// Now make the AJAX request
 $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
 $postData = [
     'id' => '97124',
     'i' => '1',
 ];
 
-// Use the main page URL as the referer for the AJAX request
 $result = makeRequest($ajaxUrl, $postData, $cookieJar, $mainPageUrl);
 
-echo "AJAX request made with Referer: $mainPageUrl\n\n";
-echo "Final URL after redirects: " . $result['info']['url'] . "\n\n";
-echo "HTTP Status Code: " . $result['info']['http_code'] . "\n\n";
-echo "Response Headers:\n" . $result['header'] . "\n\n";
-
-echo "Response Body:\n";
-var_dump($result['body']);
-
-// If the response is still empty, let's try to get more debug information
-if (empty(trim($result['body']))) {
-    echo "\n\nDebug Information:\n";
-    echo "cURL Info:\n";
-    print_r($result['info']);
-    
-    echo "\nCookies:\n";
-    $cookies = file_get_contents($cookieJar);
-    echo $cookies;
+if ($result['info']['http_code'] == 200) {
+    $extractedLink = extractLink($result['body']);
+    echo "Extracted Link: " . $extractedLink . "\n";
+} else {
+    echo "Failed to retrieve data. Status code: " . $result['info']['http_code'] . "\n";
+    echo "Response Body:\n";
+    var_dump($result['body']);
 }
 
-unlink($cookieJar);  // Clean up the temporary cookie file
+unlink($cookieJar);
 /*
 function makeRequest($url) {97124
     $ch = curl_init();
