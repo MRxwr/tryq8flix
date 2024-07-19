@@ -1,37 +1,9 @@
 <?php
 function searchShahid($search,$more){
 	GLOBAL $website2;
-	$html = file_get_contents("{$website2}/?s={$search}&page={$more}");
-	$dom = str_get_html($html);
-	$data = [
-		'shows' => []
-	];
-	if ($dom) {
-		foreach ($dom->find('.Block--Item') as $show) {
-			$link = $show->find('a', 0);
-			$image = $show->find('img', 0);
-			$genre = $show->find('.Genres li', 0);
-			$title = $show->find('h3', 0);
-			$jsonData = [
-				'href' => $link->href,
-				'image' => $image->getAttribute('src'),
-				'episode' => '', // Not present in the provided HTML
-				'category' => $genre ? $genre->plaintext : '',
-				'title' => $title ? $title->plaintext : '',
-				'description' => '', // Not present in the provided HTML
-			];
-			$data['shows'][] = $jsonData;
-		}
-		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-	} else {
-		echo 'Error: Invalid DOM object.';
-		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-	}
-
-	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
-	return $shows = $shows["shows"];
-	$dom->clear();
-	unset($dom);
+	$search = str_replace(' ','+',$search);
+	$html = curlCall("{$website2}/page/{$more}/?s={$search}");
+	return domTopCinema(str_get_html($html));
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){
