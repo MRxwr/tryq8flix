@@ -29,7 +29,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
     for ($i = 0; $i < sizeof($servers); $i++) {
         if ( $i == 1 ){
-            unset($servers[$i]["link"]);
+            //unset($servers[$i]["link"]);
             $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
             $mainServer[] = $url;
         }
