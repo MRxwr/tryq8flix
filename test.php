@@ -1,8 +1,24 @@
 <?php
 $cookieJar = tempnam('/tmp', 'cookie');
 
-function makeRequest($url, $postData = null, $cookieJar) {
+function makeRequest($url, $postData = null, $cookieJar, $referer = null) {
     $ch = curl_init();
+    $headers = [
+        'Accept: */*',
+        'Accept-Language: en-US,en;q=0.5',
+        'Accept-Encoding: gzip, deflate',
+        'X-Requested-With: XMLHttpRequest',
+        'Connection: keep-alive',
+        'Sec-Fetch-Dest: empty',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-origin',
+    ];
+    
+    // Explicitly add the Referer header if provided
+    if ($referer) {
+        $headers[] = 'Referer: ' . $referer;
+    }
+
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
@@ -11,21 +27,8 @@ function makeRequest($url, $postData = null, $cookieJar) {
         CURLOPT_COOKIEJAR => $cookieJar,
         CURLOPT_COOKIEFILE => $cookieJar,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-        CURLOPT_HTTPHEADER => [
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language: en-US,en;q=0.5',
-            'Accept-Encoding: gzip, deflate',  // Removed 'br' to avoid Brotli compression
-            'Connection: keep-alive',
-            'Upgrade-Insecure-Requests: 1',
-            'Sec-Fetch-Dest: document',
-            'Sec-Fetch-Mode: navigate',
-            'Sec-Fetch-Site: none',
-            'Sec-Fetch-User: ?1',
-            'Cache-Control: max-age=0',
-            "Referer: https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/",
-            'X-Requested-With: XMLHttpRequest',
-        ],
-        CURLOPT_ENCODING => '',  // This tells cURL to automatically handle compression
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_ENCODING => '',
     ]);
 
     if ($postData) {
@@ -44,23 +47,42 @@ function makeRequest($url, $postData = null, $cookieJar) {
 }
 
 // First, visit the main page to set any necessary cookies
-$mainPageUrl = 'https://web5.topcinema.world';
+$mainPageUrl = 'https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/';
 $mainPageResult = makeRequest($mainPageUrl, null, $cookieJar);
+
+echo "Main page visited. Status Code: " . $mainPageResult['info']['http_code'] . "\n\n";
 
 // Sleep for a few seconds to mimic human behavior
 sleep(rand(3, 7));
 
 // Now make the AJAX request
-$ajaxUrl = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
-$postData = ['id' => '97124', 'i' => '1'];
-$result = makeRequest($ajaxUrl, $postData, $cookieJar);
+$ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
+$postData = [
+    'id' => '97124',
+    'i' => '1',
+];
 
+// Use the main page URL as the referer for the AJAX request
+$result = makeRequest($ajaxUrl, $postData, $cookieJar, $mainPageUrl);
+
+echo "AJAX request made with Referer: $mainPageUrl\n\n";
 echo "Final URL after redirects: " . $result['info']['url'] . "\n\n";
 echo "HTTP Status Code: " . $result['info']['http_code'] . "\n\n";
 echo "Response Headers:\n" . $result['header'] . "\n\n";
 
 echo "Response Body:\n";
 var_dump($result['body']);
+
+// If the response is still empty, let's try to get more debug information
+if (empty(trim($result['body']))) {
+    echo "\n\nDebug Information:\n";
+    echo "cURL Info:\n";
+    print_r($result['info']);
+    
+    echo "\nCookies:\n";
+    $cookies = file_get_contents($cookieJar);
+    echo $cookies;
+}
 
 unlink($cookieJar);  // Clean up the temporary cookie file
 /*
