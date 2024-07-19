@@ -14,7 +14,7 @@ function makeRequest($url, $postData = null, $cookieJar) {
         CURLOPT_HTTPHEADER => [
             'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language: en-US,en;q=0.5',
-            'Accept-Encoding: gzip, deflate, br',
+            'Accept-Encoding: gzip, deflate',  // Removed 'br' to avoid Brotli compression
             'Connection: keep-alive',
             'Upgrade-Insecure-Requests: 1',
             'Sec-Fetch-Dest: document',
@@ -23,6 +23,7 @@ function makeRequest($url, $postData = null, $cookieJar) {
             'Sec-Fetch-User: ?1',
             'Cache-Control: max-age=0',
         ],
+        CURLOPT_ENCODING => '',  // This tells cURL to automatically handle compression
     ]);
 
     if ($postData) {
@@ -56,17 +57,7 @@ echo "Final URL after redirects: " . $result['info']['url'] . "\n\n";
 echo "HTTP Status Code: " . $result['info']['http_code'] . "\n\n";
 echo "Response Headers:\n" . $result['header'] . "\n\n";
 
-$decodedBody = $result['body'];
-if (strpos($result['header'], 'content-encoding: br') !== false) {
-    $decodedBody = brotli_uncompress($result['body']);
-} elseif (strpos($result['header'], 'content-encoding: gzip') !== false) {
-    $decodedBody = gzdecode($result['body']);
-}
-
-echo "Decoded Response Body:\n";
-var_dump($decodedBody);
-
-echo "\nRaw Response Body:\n";
+echo "Response Body:\n";
 var_dump($result['body']);
 
 unlink($cookieJar);  // Clean up the temporary cookie file
