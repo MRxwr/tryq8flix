@@ -2,8 +2,8 @@
 $link = "https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%b1%d8%a7%d8%a8%d8%b9-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/";
 $link = str_replace("web","web5",str_replace("cam","world",$link));
 $postData = array(
-    'id' => $url["id"],
-    'i' => $url["i"]
+    'id' => "96713",
+    'i' => "1"
 );
 $headers = array(
     "Referer: {$link}",
