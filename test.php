@@ -22,7 +22,7 @@ function makeRequest($url, $postData = null, $cookieJar) {
             'Sec-Fetch-Site: none',
             'Sec-Fetch-User: ?1',
             'Cache-Control: max-age=0',
-            "Referer: https://web5.topcinema.world/",
+            "Referer: https://web5.topcinema.world/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/",
             'X-Requested-With: XMLHttpRequest',
         ],
         CURLOPT_ENCODING => '',  // This tells cURL to automatically handle compression
@@ -44,14 +44,14 @@ function makeRequest($url, $postData = null, $cookieJar) {
 }
 
 // First, visit the main page to set any necessary cookies
-$mainPageUrl = 'https://web.topcinema.cam';
+$mainPageUrl = 'https://web5.topcinema.world';
 $mainPageResult = makeRequest($mainPageUrl, null, $cookieJar);
 
 // Sleep for a few seconds to mimic human behavior
 sleep(rand(3, 7));
 
 // Now make the AJAX request
-$ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
+$ajaxUrl = 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
 $postData = ['id' => '97124', 'i' => '1'];
 $result = makeRequest($ajaxUrl, $postData, $cookieJar);
 
