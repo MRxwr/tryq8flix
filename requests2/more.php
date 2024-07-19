@@ -1,44 +1,34 @@
 <?php
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    $html = file_get_contents($_POST["id"]);
-    // Load HTML
+    $html = curlCall($_POST["id"]);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
-    foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
-        $link = $linkNode->href;
-        $title = trim($linkNode->find('h3', 0)->plaintext); // Remove extra spaces from the title
-        
-        // Check if the link contains "season"
-        if (stripos($link, 'season') !== false) {
-            $seasonsData[] = [
-                'link' => $link,
-                'title' => $title,
-            ];
-        }
+    foreach ($htmlDom->find('section.allseasonss .Small--Box.Season') as $seasonBox) {
+        $link = $seasonBox->find('a', 0)->href;
+        $title = trim($seasonBox->find('.title', 0)->plaintext);
+        $seasonNumber = trim($seasonBox->find('.epnum', 0)->plaintext);
+        $seasonNumber = preg_replace('/[^0-9]/', '', $seasonNumber); // Extract only the number
+
+        $seasonsData[] = [
+            'link' => $link,
+            'title' => $title,
+            'season_number' => $seasonNumber
+        ];
     }
-    // Output the extracted data
-    //echo json_encode($seasonsData, JSON_UNESCAPED_UNICODE);
-    
-    
-    //$html = file_get_contents($_POST["id"]);
-    // Load HTML
-    //$htmlDom = str_get_html($html);
-    $episodesData = [];
-    foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
-        $link = $linkNode->href;
-        $title = trim($linkNode->find('h3', 0)->plaintext); // Remove extra spaces from the title
-        
-        // Check if the link does not contain "season"
-        if (stripos($link, 'season') === false) {
-            $episodesData[] = [
-                'link' => $link,
-                'title' => $title,
-            ];
-			
-        }
+
+    // Scrape episodes
+    foreach ($htmlDom->find('section.allepcont .row a') as $episodeLink) {
+        $link = $episodeLink->href;
+        $title = trim($episodeLink->find('.ep-info h2', 0)->plaintext);
+        $episodeNumber = trim($episodeLink->find('.epnum', 0)->plaintext);
+        $episodeNumber = preg_replace('/[^0-9]/', '', $episodeNumber); // Extract only the number
+
+        $episodesData[] = [
+            'link' => $link,
+            'title' => $title,
+            'episode_number' => $episodeNumber
+        ];
     }
-    // Output the extracted data
-    //echo json_encode($episodesData, JSON_UNESCAPED_UNICODE);
 	if (strpos(strtolower($_POST["id"]), 'season') === false){
 		$episodesData = array_reverse($episodesData);
 		$seasonsData = array_reverse($seasonsData);
