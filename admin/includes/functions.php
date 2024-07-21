@@ -340,7 +340,7 @@ function scrapePage($url) {
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 	$response = curl_exec($ch);
 */
-    return file_get_contents($url);
+    return file_get_html($url);
 }
 
 function curlCall($url) {
