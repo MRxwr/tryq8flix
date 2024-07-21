@@ -234,7 +234,7 @@ function outputData($shows){
 				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
-							<img src='{$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+							<img src='requests?type=getImages&url={$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
 							<div style='height:250px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
 								<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h2>
 								<h5 class='card-title postTitle{$i}'>{$realTitle[0]}</h3>
@@ -310,7 +310,7 @@ function outputData2($shows){
 
 function scrapePage($url) {
 	GLOBAL $scrappingBeeToken;
-	
+/*	
 	//var_dump($website.$collection.$category); die();
 	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
 	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=https%3A%2F%2Fshvip.cam%2F
@@ -340,7 +340,7 @@ function scrapePage($url) {
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 	$response = curl_exec($ch);
 */
-    return $response;
+    return file_get_contents($url);
 }
 
 function curlCall($url) {
@@ -357,9 +357,9 @@ function curlCall($url) {
 }
 
 function outputImage($imageUrl) {
-    //$image = file_get_contents($imageUrl);
+    $image = file_get_contents($imageUrl);
     header('Content-Type: image/jpeg');
-    echo $imageUrl;
+    echo $image;
 }
 
 // make function to convert image url to base64
