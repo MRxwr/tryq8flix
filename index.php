@@ -16,7 +16,7 @@ $profileData = checkLogin();
     <meta content="origin" name="referrer">
     <meta name="description" content="Put your description here.">
     <meta http-equiv="Cache-control" content="public">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src 'self' https://vidtube.pro;">
+	<meta http-equiv="Content-Security-Policy" content="frame-src 'self' https://vidtube.pro;">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <link rel="manifest" href="manifest.json">
