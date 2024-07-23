@@ -12,7 +12,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $jsonData = [
                 'id' => $id,
                 'i' => $i,
-                'link' => "{$_POST["id"]}watch/",
+                'link' => "https://cors-anywhere.herokuapp.com/{$_POST["id"]}watch/",
             ];
             $data['shows'][] = $jsonData;
         }
