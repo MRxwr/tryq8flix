@@ -1,6 +1,6 @@
 <?php
 
-echo file_get_html('https://egydead.space/');
+echo file_get_contents('https://egydead.space/');
 
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
