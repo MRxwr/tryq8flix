@@ -1,6 +1,6 @@
 <?php
 
-echo file_get_contents('https://corsproxy.io/?'.urlencode("https://egydead.space/"));
+echo file_get_contents('https://corsproxy.io/?'.urlencode("https://wecima.show/"));
 
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
