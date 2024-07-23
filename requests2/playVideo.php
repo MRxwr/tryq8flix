@@ -27,15 +27,18 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $y = 1;
     $mainServer = [];
     $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
+    $notListed = [0,2,3,4];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if ( $i == 1 ){
             //unset($servers[$i]["link"]);
             $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
             $mainServer[] = $url;
         }
-        $serverDetails = json_encode($servers[$i]);
-        $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' id='{$serverDetails}'>Serv-{$y}</a></div>";
-        $y++;
+        if( !in_array($i, $notListed) ){
+            $serverDetails = json_encode($servers[$i]);
+            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' id='{$serverDetails}'>Serv-{$y}</a></div>";
+            $y++;
+        }
     }
     $links .= "</div>";
     if (isset($mainServer) && sizeof($mainServer) > 0) {
