@@ -357,6 +357,12 @@ function curlCall($url) {
 	return $response;
 }
 
+function outputImage($imageUrl) {
+    $image = file_get_contents($imageUrl);
+    header('Content-Type: image/jpeg');
+    echo $image;
+}
+
 // make function to convert image url to base64
 function convertImage($imageUrl) {
 	$image = file_get_contents($imageUrl);
