@@ -36,7 +36,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
         }
         if( !in_array($i, $notListed) ){
             $serverDetails = $servers[$i]["link"];//json_encode($servers[$i]);
-            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' onclick='sendIdToIframe({$serverDetails})'>Serv-{$y}</a></div>";
+            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' onclick='sendIdToIframe(\"{$serverDetails}\")'>Serv-{$y}</a></div>";
             $y++;
         }
     }
