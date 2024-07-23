@@ -12,7 +12,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $jsonData = [
                 'id' => $id,
                 'i' => $i,
-                'link' => "https://cors-anywhere.herokuapp.com/{$_POST["id"]}watch/",
+                'link' => "{$_POST["id"]}watch/",
             ];
             $data['shows'][] = $jsonData;
         }
@@ -27,7 +27,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $y = 1;
     $mainServer = [];
     $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    $notListed = [];//[0,2,3,4];
+    $notListed = [0,2,3,4];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if ( $i == 1 ){
             //unset($servers[$i]["link"]);
@@ -35,8 +35,8 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $mainServer[] = $url;
         }
         if( !in_array($i, $notListed) ){
-            $serverDetails = $servers[$i]["link"];//json_encode($servers[$i]);
-            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe(\"{$serverDetails}\")'>Serv-{$y}</a></div>";
+            $serverDetails = json_encode($servers[$i]);
+            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' id='{$serverDetails}'>Serv-{$y}</a></div>";
             $y++;
         }
     }
