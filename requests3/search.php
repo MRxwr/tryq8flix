@@ -1,9 +1,10 @@
 <?php
 function searchShahid($search){
-	GLOBAL $website2;
+	GLOBAL $website3;
 	$search = str_replace(' ','+',$search);
-	$html = curlCall("{$website2}/?s={$search}");
-	return domTopCinema(str_get_html($html));
+	$html = scrapeWecima("{$website3}/search/");
+	$html = json_decode($html, true);
+	return $html["shows"];
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){
