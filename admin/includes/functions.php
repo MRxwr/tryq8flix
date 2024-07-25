@@ -443,4 +443,51 @@ function extractLink($html) {
     }
     return "";
 }
+
+function scrapeWecima($url) {
+    $url = ( !isset($url) || empty($url) ) ? 'https://wecima.show' : $url;
+    $html = file_get_contents('https://wecima.show');
+    $dom = str_get_html($html);
+    if ($dom) {
+        $data = [
+            'shows' => []
+        ];
+        foreach ($dom->find('.Grid--WecimaPosts .GridItem') as $item) {
+            $thumbDiv = $item->find('.Thumb--GridItem', 0);
+            $link = $thumbDiv->find('a', 0);
+            $bgSpan = $thumbDiv->find('.BG--GridItem', 0);
+            $titleStrong = $thumbDiv->find('strong', 0);
+
+            // Extract image URL from data-lazy-style attribute
+            $imageUrl = '';
+            if ($bgSpan) {
+                preg_match('/url\((.*?)\)/', $bgSpan->getAttribute('data-lazy-style'), $matches);
+                $imageUrl = isset($matches[1]) ? $matches[1] : '';
+            }
+
+            // Extract year from the title
+            $year = '';
+            $title = '';
+            if ($titleStrong) {
+                $title = $titleStrong->plaintext;
+                preg_match('/\((\d{4})\)/', $title, $matches);
+                $year = isset($matches[1]) ? $matches[1] : '';
+                $title = trim(preg_replace('/\(\d{4}\)/', '', $title));
+            }
+
+            $jsonData = [
+				'href' => $link ? $link->href : '',
+				'image' => trim($imageUrl),
+				'episode' => '',
+				'category' => '',
+				'title' => $title,
+				'description' => $year,
+			];
+            $data['shows'][] = $jsonData;
+        }
+        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        return 'Error: Invalid DOM object.';
+    }
+}
 ?>

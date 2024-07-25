@@ -1,52 +1,10 @@
 <?php
 require("templates/simple_html_dom.php");
-function scrapeWecima($html) {
-    $dom = str_get_html($html);
-    if ($dom) {
-        $data = [
-            'movies' => []
-        ];
-        foreach ($dom->find('.Grid--WecimaPosts .GridItem') as $item) {
-            $thumbDiv = $item->find('.Thumb--GridItem', 0);
-            $link = $thumbDiv->find('a', 0);
-            $bgSpan = $thumbDiv->find('.BG--GridItem', 0);
-            $titleStrong = $thumbDiv->find('strong', 0);
-
-            // Extract image URL from data-lazy-style attribute
-            $imageUrl = '';
-            if ($bgSpan) {
-                preg_match('/url\((.*?)\)/', $bgSpan->getAttribute('data-lazy-style'), $matches);
-                $imageUrl = isset($matches[1]) ? $matches[1] : '';
-            }
-
-            // Extract year from the title
-            $year = '';
-            $title = '';
-            if ($titleStrong) {
-                $title = $titleStrong->plaintext;
-                preg_match('/\((\d{4})\)/', $title, $matches);
-                $year = isset($matches[1]) ? $matches[1] : '';
-                $title = trim(preg_replace('/\(\d{4}\)/', '', $title));
-            }
-
-            $jsonData = [
-                'href' => $link ? $link->href : '',
-                'image' => trim($imageUrl),
-                'title' => $title,
-                'year' => $year,
-            ];
-            $data['movies'][] = $jsonData;
-        }
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        return 'Error: Invalid DOM object.';
-    }
-}
+require("admin/includes/config.php");
+require("admin/includes/functions.php");
 
 // Usage
-$html = file_get_contents('https://wecima.show'); // Replace with the actual URL
-$movies = scrapeWecima($html);
-echo $movies;
+echo scrapeWecima($html);
 
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
