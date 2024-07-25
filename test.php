@@ -6,52 +6,6 @@ require("admin/includes/functions.php");
 // Usage
 echo scrapeWecima($html);
 
-function makeRequest($url, $postData = null, $referer = null) {
-    $ch = curl_init();
-    $headers = [
-        'Accept: */*',
-        'Accept-Language: en-US,en;q=0.5',
-        'Accept-Encoding: gzip, deflate',
-        'X-Requested-With: XMLHttpRequest',
-        'Connection: keep-alive',
-        'Sec-Fetch-Dest: empty',
-        'Sec-Fetch-Mode: cors',
-        'Sec-Fetch-Site: same-origin',
-    ];
-    if ($referer) {
-        $headers[] = 'Referer: ' . $referer;
-    }
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER => false,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
-        CURLOPT_HTTPHEADER => $headers,
-        CURLOPT_ENCODING => '',
-    ]);
-    if ($postData) {
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-    }
-    $response = curl_exec($ch);
-    curl_close($ch);
-    $link = extractLink($response);
-    return $link;
-}
-
-function extractLink($html) {
-    // Try to extract src from iframe
-    if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
-        return $matches[1];
-    }
-    // If no iframe, try to find any URL in the response
-    if (preg_match('/https?:\/\/[^\s<>"]+/', $html, $matches)) {
-        return $matches[0];
-    }
-    // If no URL found, return the entire response
-    return "";
-}
 /*
 $mainPageUrl = 'https://web.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-glee-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ab%d8%a7%d9%86%d9%8a-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-22-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/';
 //$mainPageResult = makeRequest($mainPageUrl, null);
