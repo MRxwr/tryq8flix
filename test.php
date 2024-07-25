@@ -1,5 +1,5 @@
 <?php
-
+require("templates/simple_html_dom.php");
 function scrapeWecima($html) {
     $dom = str_get_html($html);
     if ($dom) {
