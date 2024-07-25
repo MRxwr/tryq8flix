@@ -266,8 +266,6 @@ function outputData($shows){
 function outputData2($shows){ 
 	$user = checkLogin();
 	$output = "";
-	$shows = json_decode($shows, true);
-	var_dump($shows);/*
 	if( is_array($shows) && !empty($shows) && !empty($user["id"]) ){
 		for ($i = 0; $i < sizeof($shows); $i++) {
 			$checkVideoType = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])));
@@ -308,7 +306,6 @@ function outputData2($shows){
 		$msg = "<h1 class='text-center mt-5'>No result.<h1>";
 		echo $msg;
 	}
-		*/
 }
 
 function scrapePage($url) {
