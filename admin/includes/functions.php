@@ -446,7 +446,9 @@ function extractLink($html) {
 
 function scrapeWecima($url) {
     $url = ( !isset($url) || empty($url) ) ? 'https://wecima.show' : $url;
+	echo $url;
     $html = file_get_contents($url);
+	echo $html;
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
