@@ -27,7 +27,7 @@ function searchShahid(){
 		$url .= "/";
 	}
 	$html = scrapeWecima($url);
-	return domTopCinema(str_get_html($html));
+	return $html;
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){ 
