@@ -266,7 +266,7 @@ function outputData($shows){
 function outputData2($shows){ 
 	$user = checkLogin();
 	$output = "";
-	var_dump($shows);
+	$shows = json_decode($shows, true);
 	if( is_array($shows) && !empty($shows) && !empty($user["id"]) ){
 		for ($i = 0; $i < sizeof($shows); $i++) {
 			$checkVideoType = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])));
