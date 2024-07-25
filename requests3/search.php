@@ -5,6 +5,7 @@ function searchShahid($search){
 	echo "{$website3}/search/{$search}";
 	$html = scrapeWecima("{$website3}/search/");
 	$html = json_decode($html, true);
+	var_dump($html["shows"]);
 	return $html["shows"];
 }
 
