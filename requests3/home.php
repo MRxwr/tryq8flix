@@ -26,7 +26,7 @@ function searchShahid(){
 	}else{
 		$url .= "/";
 	}
-	$html = scrapeWecima($url);
+	var_dump($html = scrapeWecima($url));
 	return $html;
 }
 
