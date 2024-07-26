@@ -1,20 +1,21 @@
 <?php
 if (isset($_POST["id"]) && !empty($_POST["id"])) {
-    $html = curlCall("{$_POST["id"]}watch/");
+    $html = file_get_contents("{$_POST["id"]}");
     $dom = str_get_html($html);
     $data = [
         'shows' => []
     ];
     if ($dom) {
-        foreach ($dom->find('.server--item') as $server) {
-            $id = $server->getAttribute('data-id');
-            $i = $server->getAttribute('data-server');
-            $jsonData = [
-                'id' => $id,
-                'i' => $i,
-                'link' => "{$_POST["id"]}watch/",
-            ];
-            $data['shows'][] = $jsonData;
+        foreach ($dom->find('.WatchServersList ul li') as $server) {
+            $btn = $server->find('btn', 0);
+            if ($btn) {
+                $title = $btn->find('strong', 0)->plaintext;
+                $dataUrl = $btn->getAttribute('data-url');
+                $jsonData = [
+                    'link' => $dataUrl
+                ];
+                $data['shows'][] = $jsonData;
+            }
         }
         $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
@@ -26,19 +27,12 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $counter = 0;
     $y = 1;
     $mainServer = [];
-    $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    $notListed = [0,2,3,4];
     for ($i = 0; $i < sizeof($servers); $i++) {
-        if ( $i == 1 ){
-            //unset($servers[$i]["link"]);
-            $url = makeRequest($ajaxUrl, $servers[$i], "{$_POST["id"]}watch/");
-            $mainServer[] = $url;
-        }
-        if( !in_array($i, $notListed) ){
+            $url = $servers[$i]["link"];
             $serverDetails = json_encode($servers[$i]);
-            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' id='{$serverDetails}'>Serv-{$y}</a></div>";
+            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100 playServer' style='color:white' href='#' onclick='sendIdToIframe(\"{$url}\")'>Serv-{$y}</a></div>";
+            $mainServer[] = $url;
             $y++;
-        }
     }
     $links .= "</div>";
     if (isset($mainServer) && sizeof($mainServer) > 0) {
