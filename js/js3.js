@@ -476,7 +476,7 @@ $(document).on('click', '#tvBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests3/index.php?type=home&category=مسلسلات-اجنبي-1/?key=episodes", {
+    $.post("requests3/index.php?type=home&category=seriestv", {
             type: "get",
         },
         function(data) {
