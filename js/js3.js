@@ -716,6 +716,16 @@ function sendIdToIframe(id) {
     iframe.src = urlWithId;
 }
 
+function sendIdToIframe2(id) {
+    var iframe = document.getElementById('frame');
+    iframe.src = "";
+    var urlWithId = id;
+        if (urlWithId.toLowerCase().indexOf('wecima') === -1) {
+        urlWithId = 'videoPlay.php?link=' + encodeURIComponent(urlWithId);
+    }
+    iframe.src = urlWithId;
+}
+
 $(document).on('click', '.playServer', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
