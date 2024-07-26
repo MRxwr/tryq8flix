@@ -22,7 +22,7 @@ function searchShahid(){
 	GLOBAL $website3, $_GET;
 	$url = $website3;
 	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
-		$url .= "/category/{$_GET["category"]}";
+		$url .= "/{$_GET["category"]}";
 	}else{
 		$url .= "/";
 	}
