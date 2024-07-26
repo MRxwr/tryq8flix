@@ -15,7 +15,7 @@ function getUrlBase($url) {
 }
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-    if ( strpos($_GET["link"], "bam") === false ) {
+    if ( strpos($_GET["link"], "embed-") === false ) {
         $_GET["link"] = getUrlBase($_GET["link"]);
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:300px' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
     }else{
