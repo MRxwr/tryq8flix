@@ -27,7 +27,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $counter = 0;
     $y = 1;
     $mainServer = [];
-    for ($i = 0; $i < sizeof($servers); 3) {
+    for ($i = 0; $i < 3; $i++) {
             $url = $servers[$i]["link"];
             $serverDetails = json_encode($servers[$i]);
             $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe2(\"{$url}\")'>Serv-{$y}</a></div>";
