@@ -12,7 +12,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
                 $title = $btn->find('strong', 0)->plaintext;
                 $dataUrl = $btn->getAttribute('data-url');
                 $jsonData = [
-                    'link' => $dataUrl
+                    'link' => str_replace(" ", "", $dataUrl)
                 ];
                 $data['shows'][] = $jsonData;
             }
