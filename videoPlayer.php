@@ -28,7 +28,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     $response = curl_exec($curl);
     curl_close($curl);
     $_GET["link"] = extractVideoSource($response);
-    echo "<video id='video' controls style='width:100%;height:300px;margin-top: 30px;'><source src='{$_GET["link"]}' type='video/mp4'></video>";
+    echo "<video id='video' controls style='width:100%;'><source src='{$_GET["link"]}' type='video/mp4'></video>";
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
