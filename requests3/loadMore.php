@@ -1,17 +1,18 @@
 <?php
 function searchShahid($more){
-	GLOBAL $website2, $_GET;
-	$url = $website2;
+	GLOBAL $website3, $_GET;
+	$url = $website3;
 	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
 		$category = explode("?", $_GET["category"]);
 		$key = ( isset($category[1]) && !empty($category[1]) ) ? "?{$category[1]}" : "" ;
 		$category = ( isset($category[0]) && !empty($category[0]) ) ? $category[0] : $$category;
 		$url .= "/category/{$category}/page/{$more}/{$key}";
 	}else{
-		$url .= "/recenT/page/{$more}";
+		$url .= "/page/{$more}";
 	}
-	$html = curlCall($url);
-	return domTopCinema(str_get_html($html));
+	$html = scrapeWecima($url);
+	$html = json_decode($html, true);
+	return $html["shows"];
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){
