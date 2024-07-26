@@ -48,6 +48,10 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         $response = curl_exec($curl);
         curl_close($curl);
         $_GET["link"] = extractVideoSource($response);
+        // crop after .m3u8
+        if (strpos($_GET["link"], ".m3u8") !== false) {
+            $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8"));
+        }
         //echo "<video id='video' controls style='width:100%;'><source src='{$_GET["link"]}' type='video/mp4'></video>";
     //}
 }else{
