@@ -1,28 +1,24 @@
 <?php
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    $html = curlCall($_POST["id"]);
+    $html = file_get_contents($_POST["id"]);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
-    foreach ($htmlDom->find('section.allseasonss .Small--Box.Season') as $seasonBox) {
-        $link = $seasonBox->find('a', 0)->href;
-        $title = trim($seasonBox->find('.title', 0)->plaintext);
-        $seasonNumber = trim($seasonBox->find('.epnum', 0)->plaintext);
-        $seasonNumber = preg_replace('/[^0-9]/', '', $seasonNumber); // Extract only the number
-
+    foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
+        $link = $seasonLink->href;
+        $title = trim($seasonLink->plaintext);
+        $seasonNumber = preg_replace('/[^0-9]/', '', $title);
         $seasonsData[] = [
             'link' => $link,
             'title' => $title,
             'season_number' => $seasonNumber
         ];
     }
-
     // Scrape episodes
-    foreach ($htmlDom->find('section.allepcont .row a') as $episodeLink) {
+    foreach ($htmlDom->find('.Episodes--Seasons--Episodes a') as $episodeLink) {
         $link = $episodeLink->href;
-        $title = trim($episodeLink->find('.ep-info h2', 0)->plaintext);
-        $episodeNumber = trim($episodeLink->find('.epnum', 0)->plaintext);
-        $episodeNumber = preg_replace('/[^0-9]/', '', $episodeNumber); // Extract only the number
+        $title = trim($episodeLink->find('episodetitle', 0)->plaintext);
+        $episodeNumber = preg_replace('/[^0-9]/', '', $title);
 
         $episodesData[] = [
             'link' => $link,
@@ -30,6 +26,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
             'episode_number' => $episodeNumber
         ];
     }
+
 	if (strpos(strtolower($_POST["id"]), 'season') === false){
 		$episodesData = array_reverse($episodesData);
 		$seasonsData = array_reverse($seasonsData);
