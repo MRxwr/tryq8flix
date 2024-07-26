@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <video id="videoPlayer" controls></video>
+    <video id="videoPlayer" controls style='width:100%;'></video>
 
 <?php 
 require("admin/includes/config.php");
@@ -55,7 +55,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         //echo "<video id='video' controls style='width:100%;'><source src='{$_GET["link"]}' type='video/mp4'></video>";
     //}
 }else{
-    //echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+    echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
 ?>
 
