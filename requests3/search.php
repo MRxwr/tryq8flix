@@ -10,7 +10,7 @@ function searchShahid($search){
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){
     if( $_POST["type"] == "get" ){
         $user = checkLogin();
-		$shows = searchShahid($_POST["search"]);
+		$shows = searchShahid($_POST["search"],$_POST["searchType"]);
 		echo "<div class='row m-0 w-100' id='content'>";
         outputData2($shows);
 		echo '<div class="col-md-12 loadMoreSearchBtn mb-3" style="text-align-last: center;" id="1"><div class="btn btn-secondary w-75" >تابع</div></div><div style="display:none" class="getSearch" id="'.$_POST["search"].'"></div></div>';
