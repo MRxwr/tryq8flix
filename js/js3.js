@@ -44,6 +44,7 @@ $(document).on('click', '.threeDots', function(e) {
 
 $(document).on('click', '.threeDots2', function(e) {
 	$("#loading-screen").show();
+    $('#threeDots2').modal('hide');
     var getId = $(this).attr("id");
     //var title = $(".categoryTitle" + getId).html();
     $.post("requests3/index.php?type=more", {
@@ -51,6 +52,7 @@ $(document).on('click', '.threeDots2', function(e) {
 	},
 	function(data) {
 		$("#loading-screen").hide();
+        $('#threeDots2').modal('show');
 		$("#moreBody2").html(data);
 		$("#moreTitle2").html();
 	});
