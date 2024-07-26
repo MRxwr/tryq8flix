@@ -1,8 +1,8 @@
 <?php
-function searchShahid($search){
+function searchShahid($search, $searchType){
 	GLOBAL $website3;
 	$search = str_replace(' ','+',$search);
-	$html = scrapeWecima("{$website3}/search/{$search}");
+	$html = scrapeWecima("{$website3}/search/{$search}{$searchType}");
 	$html = json_decode($html, true);
 	return $html["shows"];
 }
