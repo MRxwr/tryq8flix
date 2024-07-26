@@ -30,7 +30,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     for ($i = 0; $i < sizeof($servers); $i++) {
             $url = $servers[$i]["link"];
             $serverDetails = json_encode($servers[$i]);
-            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' onclick='sendIdToIframe2(\"{$url}\")'>Serv-{$y}</a></div>";
+            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe2(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
             $mainServer[] = $url;
             $y++;
             if( $i == 3 ){
