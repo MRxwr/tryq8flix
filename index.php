@@ -107,7 +107,7 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
 		$('#checkJs').attr('src', btnId);
 		// refresh page and send $_GET["js"] = btnId
 		window.location.href = "?js=" + btnId;
-		
+		$("#loading-screen").show();
 	});
 </script>
 </body>
