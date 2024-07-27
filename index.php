@@ -56,7 +56,7 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
 	<div style="max-width:1300px;margin: auto;">
     <?php require("templates/header.php"); ?>
     <?php //require("templates/navbar.php"); ?> 
-	    <div id="loading-screen">
+	    <div id="loading-screen" style="display:none">
             <div class="spinner"></div>
         </div>
 		<?php
