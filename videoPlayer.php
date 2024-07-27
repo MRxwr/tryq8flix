@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <video id="videoPlayer" controls autoplay="false" style='width:100%;height:280px'></video>
+    <video id="videoPlayer" controls autoplay="0" style='width:100%;height:280px' poster="/images/w3html5.gif"></video>
 
 <?php 
 require("admin/includes/config.php");
