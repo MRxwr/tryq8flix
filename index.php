@@ -52,7 +52,7 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
 	</style>
 </head>
 
-<body class="container-flex m-0 p-0" style="margin:auto;text-align: -webkit-center;">
+<body class="container-flex m-0 p-0" <?php if( isset($_GET["js"]) ){ echo "onload='bodyLoad();'";} ?> style="margin:auto;text-align: -webkit-center;">
 	<div style="max-width:1300px;margin: auto;">
     <?php require("templates/header.php"); ?>
     <?php //require("templates/navbar.php"); ?> 
@@ -60,7 +60,6 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
             <div class="spinner"></div>
         </div>
 		<?php
-		//onload="bodyLoad();"
 		echo "<div class='row m-0 p-0 w-100'> 
 				<div class='col p-1'>
 				<button id='{$website}' class='btn btn-danger changeIframeSrc w-100'>S4U</button>
