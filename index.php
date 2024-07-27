@@ -2,6 +2,7 @@
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 $profileData = checkLogin();
+$js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time());
 ?>
 <!doctype html>
 <html lang="en" style="direction:rtl">
@@ -30,7 +31,7 @@ $profileData = checkLogin();
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
     <script src="js/main.js?y=<?php echo md5(time()) ?>"></script>
-    <script id='checkJs' src="js/js3.js?y=<?php echo md5(time()) ?>"></script>
+    <script id='checkJs' src="<?php echo $js . "?y=" . md5(time()) ?>"></script>
 	<style>
 	body{
 		background-color: #101010;
@@ -81,14 +82,14 @@ $profileData = checkLogin();
 		?> 
     <div id="mainBody">
 		<div class="row m-0 p-o w-100">
-			<div class="col-4">
-				<button class="btn btn-warning rounded scrapBtn" id="js/js.js?y=<?php echo md5(time()) ?>">Server 1</button>
+			<div class="col-md-4">
+				<button class="btn btn-warning rounded scrapBtn" id="<?php echo urlencode("js/js.js") ?>">Server 1</button>
 			</div>
-			<div class="col-4">
-				<button class="btn btn-warning rounded scrapBtn" id="js/js2.js?y=<?php echo md5(time()) ?>">Server 2</button>
+			<div class="col-md-4">
+				<button class="btn btn-warning rounded scrapBtn" id="<?php echo urlencode("js/js2.js") ?>">Server 2</button>
 			</div>
-			<div class="col-4">
-				<button class="btn btn-warning rounded scrapBtn" id="js/js3.js?y=<?php echo md5(time()) ?>">Server 3</button>
+			<div class="col-md-4">
+				<button class="btn btn-warning rounded scrapBtn" id="<?php echo urlencode("js/js3.js") ?>">Server 3</button>
 			</div>
 		</div>
         <?php require("templates/content.php"); ?>
@@ -105,6 +106,9 @@ $profileData = checkLogin();
 	$(document).on('click', '.scrapBtn', function() {
 		var btnId = $(this).attr('id');
 		$('#checkJs').attr('src', btnId);
+		// refresh page and send $_GET["js"] = btnId
+		window.location.href = "?js=" + btnId;
+		
 	});
 </script>
 </body>
