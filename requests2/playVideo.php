@@ -27,7 +27,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $y = 1;
     $mainServer = [];
     $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    $notListed = [0,2,3,4];
+    $notListed = [];//[0,2,3,4];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if ( $i == 1 ){
             //unset($servers[$i]["link"]);
