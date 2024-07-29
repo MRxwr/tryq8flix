@@ -401,6 +401,7 @@ function domTopCinema($dom) {
 }
 
 function makeRequest($url, $postData = null, $referer = null) {
+	GLOBAL $website2;
     $ch = curl_init();
     $headers = [
         'Accept: */*',
@@ -411,10 +412,8 @@ function makeRequest($url, $postData = null, $referer = null) {
         'Sec-Fetch-Dest: empty',
         'Sec-Fetch-Mode: cors',
         'Sec-Fetch-Site: same-origin',
+		'Referer: ' . $website2
     ];
-    if ($referer) {
-        $headers[] = 'Referer: ' . $referer;
-    }
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,

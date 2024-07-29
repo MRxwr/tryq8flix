@@ -25,12 +25,6 @@ function getUrlBase($url) {
 }
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-    /*
-    if ( strpos($_GET["link"], "embed-") === false ) {
-        $_GET["link"] = getUrlBase($_GET["link"]);
-        //echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:300px' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
-    }else{
-    */
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "{$_GET["link"]}",
@@ -52,8 +46,6 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         if (strpos($_GET["link"], ".m3u8") !== false) {
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
         }
-        //echo "<video id='video' controls style='width:100%;'><source src='{$_GET["link"]}' type='video/mp4'></video>";
-    //}
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
@@ -95,16 +87,12 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             });
         }
 
-        // Function to load video
         function loadVideo(url) {
             var videoElement = document.getElementById('videoPlayer');
             setupVideoPlayer(videoElement, url);
         }
 
-        // You can call this function whenever you have the video URL
          loadVideo('<?php echo $_GET["link"] ?>');
-        // or
-        // loadVideo('https://example.com/video.mp4');
     </script>
     </body>
 </html>
