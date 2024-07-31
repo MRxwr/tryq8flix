@@ -39,6 +39,8 @@ if( isset($_GET["type"]) && $_GET["type"] == "playVideo" ){
     require("loadMoreSearch.php");
 }elseif( isset($_GET["type"]) && $_GET["type"] == "getServer" ){
     require("getServer.php");
+}elseif( isset($_GET["type"]) && $_GET["type"] == "getImages" ){
+    require("getImages.php");
 }
 
 ?>
