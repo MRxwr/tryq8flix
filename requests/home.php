@@ -70,7 +70,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 	$user = checkLogin();
 	if ( !empty($user["id"]) ){
 		
-		if( $_POST["type"] == "get" ){
+		if( $_POST["type"] == "home" ){
 			$collection = ( isset($_GET["collection"]) ) ? "{$_GET["collection"]}" : "" ;
 			$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 			$user = checkLogin();
