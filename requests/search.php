@@ -24,6 +24,7 @@ function getWebsite($search){
 
 function searchShahid($search){
 	GLOBAL $website;
+	$search = urlencode($search);
 	$html = scrapePage("{$website}search?s={$search}");
 	$dom = str_get_html($html);
 	if ($dom) {
