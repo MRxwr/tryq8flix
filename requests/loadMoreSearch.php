@@ -1,6 +1,7 @@
 <?php
 function searchShahid($search,$more){
 	GLOBAL $website;
+	$search = urlencode("$search");
 	$html = scrapePage("{$website}search?s={$search}&page={$more}");
 	$dom = str_get_html($html);
 	if ($dom) {
