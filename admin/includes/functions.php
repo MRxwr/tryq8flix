@@ -316,7 +316,7 @@ function scrapePage($url) {
 	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=https%3A%2F%2Fshvip.cam%2F
 	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&render_js=false&premium_proxy=true&country_code=kw&url=
 	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&stealth_proxy=true&url=
-	*/
+	
 	$curl = curl_init();
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => "https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&stealth_proxy=true&url=". urlencode("{$url}"),
@@ -330,7 +330,7 @@ function scrapePage($url) {
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);	
-/*
+/**/
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -341,7 +341,7 @@ function scrapePage($url) {
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 	$response = curl_exec($ch);
 	curl_close($ch);
-*/
+
     return $response;
 }
 
