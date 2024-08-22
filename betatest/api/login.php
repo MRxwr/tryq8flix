@@ -40,8 +40,6 @@ if( !isset($_POST['user']) OR $_POST['user'] == ""){
 		$response['ok'] = true;
 		$response['status']= $succeed;
 		$response['msg']="Login Successful.";
-		$response['details']['id'] = $row["id"];
-		$response['details']['username'] = $row["username"];
 		$response['details']['token'] = $coockiecode;
 	}else{
 		$response['ok'] = false;
