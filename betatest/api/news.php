@@ -11,7 +11,7 @@ function searchShahid(){
 	}
 	$html = scrapeWecima($url);
 	$html = json_decode($html, true);
-	return json_encode($html["shows"]);
+	return $html["shows"];
 }
 
 if ( $result = searchShahid() ){
