@@ -10,6 +10,7 @@ function searchShahid(){
 		$url .= "/";
 	}
 	$html = scrapeWecima($url);
+	$html = json_decode($html, true);
 	return $html;
 }
 
