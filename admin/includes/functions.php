@@ -488,7 +488,7 @@ function scrapeWecima($url) {
         }
         return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
-        return 'Error: Invalid DOM object.';
+        return 0;
     }
 }
 ?>

@@ -29,5 +29,11 @@ if ( $headerAPI != "Q8FLiX" ){
 	$response['msg']="Please check your API KEY";
 	echo json_encode($response);die();
 }
+
+$website = "https://shed4u1.com/"; 
+$website2 = "https://web5.topcinema.world";//"https://tuktukcima.art";
+$website3 = "https://wecima.show";
+$websiteLive = "https://shootz.yalla-shoot-tv.live/home18/";
+
 require('../../admin/includes/functions.php');
 ?>
