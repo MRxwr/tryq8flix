@@ -17,7 +17,7 @@ if( !isset($_POST['user']) OR $_POST['user'] == ""){
 }else{
 	$user = $_POST["user"];
 	$pass = $_POST["pass"];
-	$pass = md5($pass);
+	$pass = sha1($pass);
 	$sql = "SELECT 
 			* 
 			FROM 
