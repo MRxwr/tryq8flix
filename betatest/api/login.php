@@ -42,7 +42,7 @@ if( !isset($_POST['user']) OR $_POST['user'] == ""){
 		$response['msg']="Login Successful.";
 		$response['details']['id'] = $row["id"];
 		$response['details']['username'] = $row["username"];
-		$response['details']['newCookies'] = $GenerateNewCC;
+		$response['details']['token'] = $coockiecode;
 	}else{
 		$response['ok'] = false;
 		$response['status']= $error;
