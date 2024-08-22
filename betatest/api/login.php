@@ -1,7 +1,6 @@
 <?php
 require('constants.php');
 
-
 if( !isset($_POST['user']) OR $_POST['user'] == ""){
 	$response['msg']="please enter user username.";
 	echo json_encode($response);die();
@@ -52,5 +51,4 @@ if( !isset($_POST['user']) OR $_POST['user'] == ""){
 }
 
 echo json_encode($response);
-
 ?>
