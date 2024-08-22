@@ -30,35 +30,12 @@ if( !isset($_POST['user']) OR $_POST['user'] == ""){
 	$result = $dbconnect->query($sql);
 	$row = $result->fetch_assoc();
 	if ( $result->num_rows == 1 ){
-		$coockiecode = $row["keepalive"];
-		$coockiecode = explode(',',$coockiecode);
-		$GenerateNewCC = md5(rand());
-		if ( sizeof($coockiecode) <= 3 ){
-			$coockiecodenew = array();
-			if (!isset($coockiecode[2])){
-				$coockiecodenew[1] = $GenerateNewCC ;
-				}else{
-					$coockiecodenew[0] = $coockiecode[1];
-					}
-			if (!isset ($coockiecode[1])){
-				$coockiecodenew[0] = $GenerateNewCC ;
-				}else{
-					$coockiecodenew[1] = $coockiecode[2];
-					}
-			if (!isset ($coockiecode[0])){
-				$coockiecodenew[2] = $GenerateNewCC ;
-				}else{
-					$coockiecodenew[2] = $GenerateNewCC;
-					}
-		}
-		$coockiecode = $coockiecodenew[0] . "," . $coockiecodenew[1] . "," . $coockiecodenew[2];
+		$coockiecode = md5(rand());
 		$sql = "UPDATE `users`
 				SET 
-				`keepalive` = '$coockiecode' 
+				`keepalive` = '{$coockiecode}' 
 				WHERE 
-				`username` LIKE '".$user."'
-				AND
-				`password` LIKE '".$pass."'
+				`id` = {$row["id"]}
 				";
 		$result = $dbconnect->query($sql);
 		$response['ok'] = true;
