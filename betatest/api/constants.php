@@ -36,4 +36,5 @@ $website3 = "https://wecima.show";
 $websiteLive = "https://shootz.yalla-shoot-tv.live/home18/";
 
 require('../../admin/includes/functions.php');
+require("../../templates/simple_html_dom.php");
 ?>
