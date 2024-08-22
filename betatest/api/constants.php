@@ -1,6 +1,5 @@
 <?php
 header('Content-type: application/json');
-
 $servername = "localhost";
 $username = "u905492195_mrnsr";
 $password = "N@b$90949089";
@@ -30,5 +29,5 @@ if ( $headerAPI != "Q8FLiX" ){
 	$response['msg']="Please check your API KEY";
 	echo json_encode($response);die();
 }
-
+require('../../admin/includes/functions.php');
 ?>
