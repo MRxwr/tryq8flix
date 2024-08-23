@@ -18,6 +18,11 @@ if ( $result = searchShahid() ){
     $response['ok'] = true;
     $response['status']= $succeed;
     $response['msg']="Data Retrieval Successful.";
+	for( $i = 0; $i < count($result); $i++ ){
+		$response['details']['image'][] = $result[$i]['image'];
+		$response['details']['title'][] = $result[$i]['title'];
+		$response['details']['href'][] = $result[$i]['href'];
+	}
     $response['details']['shows'] = $result;
 }else{
     $response['ok'] = false;
