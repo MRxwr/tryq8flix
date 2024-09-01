@@ -310,7 +310,7 @@ function outputData2($shows){
 
 function scrapePage($url) {
 	GLOBAL $scrappingBeeToken;
-	
+/*
 	//var_dump($website.$collection.$category); die();
 	//https://api.scraperapi.com/?api_key=ab4a8e030c1a48956b52356ec985bf14&render=true&follow_redirect=false&url=
 	//https://app.scrapingbee.com/api/v1/?api_key={$scrappingBeeToken}&url=https%3A%2F%2Fshvip.cam%2F
@@ -330,7 +330,7 @@ function scrapePage($url) {
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);	
-/*
+*/
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -341,7 +341,7 @@ function scrapePage($url) {
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 	$response = curl_exec($ch);
 	curl_close($ch);
-*/
+
     return $response;
 }
 
