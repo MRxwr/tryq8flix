@@ -10,14 +10,14 @@ function searchMatches() {
         foreach ($dom->find('.albaflex .match-container') as $match) {
             $matchLink = $match->find('a', 0);
 			if( !empty($matchLink) ){
-				$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
-				$leftTeamName = $match->find('.left-team .team-name', 0)->plaintext;
-				$rightTeamLogo = $match->find('.right-team .team-logo img', 0)->getAttribute('data-src');
-				$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
+				@$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
+				@$leftTeamName = $match->find('.left-team .team-name', 0)->plaintext;
+				@$rightTeamLogo = $match->find('.right-team .team-logo img', 0)->getAttribute('data-src');
+				@$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
 				@$matchTime = $match->find('.match-center #match-time', 0)->plaintext;
-				$matchDate = $match->find('.match-center .date', 0)->plaintext;
+				@$matchDate = $match->find('.match-center .date', 0)->plaintext;
 				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
-				$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
+				@$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
 				$jsonData = [
 					'href' => isset($matchLink->href) ? $matchLink->href : '',
 					'matchName' => isset($matchLink->title) ? $matchLink->title : '',
