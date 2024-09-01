@@ -366,7 +366,7 @@ $(document).on('click', '#homeBtn', function(e) {
 $(document).on('click', '.liveMatch', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
-    $.post("requests3/index.php?type=live&view="+id, {
+    $.post("requests/index.php?type=live&view="+id, {
             type: "get",
         },
         function(data) {
@@ -725,7 +725,7 @@ function sendIdToIframe2(id) {
     var iframe = document.getElementById('frame');
     iframe.src = "";
     var urlWithId = id;
-        if (urlWithId.toLowerCase().indexOf('wecima') === -1) {
+    if (urlWithId.toLowerCase().indexOf('wecima') === -1) {
         urlWithId = 'videoPlayer.php?link=' + encodeURIComponent(urlWithId);
     }
     iframe.src = urlWithId;

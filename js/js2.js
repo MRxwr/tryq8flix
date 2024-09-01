@@ -364,7 +364,7 @@ $(document).on('click', '#homeBtn', function(e) {
 $(document).on('click', '.liveMatch', function(e) {
 	$("#loading-screen").show();
 	var id = $(this).attr("id");
-    $.post("requests2/index.php?type=live&view="+id, {
+    $.post("requests/index.php?type=live&view="+id, {
             type: "get",
         },
         function(data) {
