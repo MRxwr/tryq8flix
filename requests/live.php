@@ -92,7 +92,7 @@ if( !empty($user["id"]) ){
 				$formattedTime = date("g:i A", strtotime( str_replace("T"," ",$inputTime[0])));
 				$output .= "
 				<div class='col-sm-12 mb-3'>
-					<a class='liveMatch' id='{$matches[$i]["href"]}' style='text-decoration: none;color: black;'>
+					<a class='liveMatch' id='{$matches[$i]["href"]}?serv=0' style='text-decoration: none;color: black;'>
 					<div class='row p-3' style='background-color:#a28c5a;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'>
 						<div class='col-4 text-center' style='align-self: center;'>{$matches[$i]["rightTeamName"]}</div>
 						<div class='col-4 text-center' style='align-self: center;'></div>
