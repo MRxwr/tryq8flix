@@ -14,7 +14,7 @@ if (!$dbconnect) {
 }
 date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
-$website = "https://shed4u1.com/"; 
+$website = "https://shed4u1.net/"; 
 $website2 = "https://web5.topcinema.world";//"https://tuktukcima.art";
 $website3 = "https://wecima.show";
 $websiteLive = "https://shootz.yalla-shoot-tv.live/home18/"; //"https://www.yalla-kooora.live/";
