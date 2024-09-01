@@ -1,7 +1,7 @@
 <?php 
 function searchMatches() {
 	GLOBAL $websiteLive;
-	$html = scrapePage("{$websiteLive}");
+	$html = curlCall("{$websiteLive}");
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
@@ -55,7 +55,7 @@ function searchMatches() {
 }
 
 function liveMatch($view) {
-	$html = scrapePage("{$view}");
+	$html = curlCall("{$view}");
     $dom = str_get_html($html);
     if ($dom) {
 		$data = [
