@@ -231,7 +231,7 @@ function outputData($shows){
 			}
 			$realTitle = explode("الحلقة",$shows[$i]["title"]);
 			$output .= "
-				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
+				<div class='col-xl-3 col-lg-4 col-md-6 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
 							<img src='requests?type=getImages&url={$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
@@ -280,7 +280,7 @@ function outputData2($shows){
 				$shows[$i]["episode"] = "تشغيل";
 			}
 			$output .= "
-				<div class='col-xl-3 col-lg-4 col-md-4 col-sm-12 p-3'>
+				<div class='col-xl-3 col-lg-4 col-md-6 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
 							<img src='{$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
