@@ -36,7 +36,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'GET',
         CURLOPT_HTTPHEADER => array(
-            "referer: {$website3}",
+            "referer: {$website}",
         ),
         ));
         $response = curl_exec($curl);
