@@ -718,3 +718,13 @@ function sendIdToIframe(id) {
     var urlWithId = id;
     iframe.src = urlWithId;
 }
+
+function sendIdToIframe2(id) {
+    var iframe = document.getElementById('frame');
+    iframe.src = "";
+    var urlWithId = id;
+    if (urlWithId.toLowerCase().indexOf('wecima') === -1) {
+        urlWithId = 'videoPlayer.php?link=' + encodeURIComponent(urlWithId);
+    }
+    iframe.src = urlWithId;
+}
