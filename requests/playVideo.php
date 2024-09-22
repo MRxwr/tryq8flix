@@ -22,7 +22,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     $servers = json_decode($server,true);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
-	$notWanted = [2,3,4,6,7];//[0,1,5,8];//["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
+	$notWanted = [];//[2,3,4,6,7];//[0,1,5,8];//["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
 	$y = 1;
 	for( $i = 0; $i < sizeof($servers); $i++ ){
 		$domain = extractDomain($servers[$i]["url"]);
