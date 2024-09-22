@@ -36,16 +36,16 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'GET',
         CURLOPT_HTTPHEADER => array(
-            "referer: {$website}",
+            "referer: {$website3}",
         ),
         ));
         $response = curl_exec($curl);
         curl_close($curl);
         $_GET["link"] = extractVideoSource($response);
-        // crop after .m3u8
+        /*// crop after .m3u8
         if (strpos($_GET["link"], ".m3u8") !== false) {
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
-        }
+        }*/
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
