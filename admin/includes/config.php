@@ -16,7 +16,7 @@ date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
 $website = "https://shed4u1.net/"; 
 $website2 = "https://web5.topcinema.world";//"https://tuktukcima.art";
-$website3 = "https://shed4u1.net/"; //"https://wecima.show";
+$website3 = "https://wecima.show";
 $websiteLive = "https://shootz.yalla-shoot-tv.live/home18/"; //"https://www.yalla-kooora.live/";
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 //"Y0U1YZ5TQUH84HVVU2U31E6II1D776MU2XAMLCGMDEF0YXCD0CWK4PLMG0S6FI0O5ZDILNYE63W3SWW4";
