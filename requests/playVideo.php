@@ -22,12 +22,12 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     $servers = json_decode($server,true);
 	$links = "<div class='row m-0' >";
 	$counter = 0;
-	$notWanted = [];//[2,3,4,6,7];//[0,1,5,8];//["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
+	$notWanted = ["vembed.net","uqload.co","uqload.com","iioo.vadbam.net","emma.viidshar.com","uptostream.com", "embedv.net", "fdewsdc.sbs","ok.ru", "doodstream.com"];
 	$y = 1;
 	for( $i = 0; $i < sizeof($servers); $i++ ){
 		$domain = extractDomain($servers[$i]["url"]);
-		if( !in_array($i,$notWanted) && isset($servers[$i]["url"]) ){
-			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe2(\"{$servers[$i]["url"]}\"); return false;'>Serv-{$y}</a></div>";
+		if( !in_array(strtolower($domain),$notWanted) && isset($servers[$i]["url"]) ){
+			$links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' id='{$servers[$i]["url"]}' onclick='sendIdToIframe(\"{$servers[$i]["url"]}\"); return false;'>Serv-{$y}</a></div>";
 			$server = $servers[$i]["url"];
 			$mainServer[] = $servers[$i]["url"]; 
 			$y++;
