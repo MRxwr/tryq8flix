@@ -7,9 +7,9 @@ function extractSeasonUrl($html) {
 }
 
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    echo $html = curlCall($html);
-    echo $html = extractSeasonUrl($html);
-    echo $html = curlCall($html);
+    $html = curlCall($html);
+    $html = extractSeasonUrl($html);
+    $html = curlCall($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
