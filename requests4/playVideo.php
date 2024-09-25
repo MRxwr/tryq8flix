@@ -13,10 +13,10 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     CURLOPT_CUSTOMREQUEST => 'POST',
     CURLOPT_POSTFIELDS => array('View' => '1'),
     ));
-
     $html = curl_exec($curl);
     curl_close($curl);
     $dom = str_get_html($html);
+    var_dump($html);
     $data = [
         'shows' => []
     ];
