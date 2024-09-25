@@ -9,6 +9,9 @@ function extractSeasonUrl($html) {
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     // check if url contains the word season or not
     $html = $_POST["id"];
+    if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
+        echo "<div>لا يوجد المزيد من الحلقات ... شاهد الفيديو مباشرة</div>"; die();
+    }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
         $html = curlCall($_POST["id"]);
         $html = extractSeasonUrl($html);
@@ -17,9 +20,7 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
-    if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
-        echo "<div>لا يوجد المزيد من الحلقات ... شاهد الفيديو مباشرة</div>"; die();
-    }
+    
     // Scrape seasons
     foreach ($htmlDom->find('.seasons-list .movieItem') as $seasonItem) {
         $seasonLink = $seasonItem->find('a', 0);
