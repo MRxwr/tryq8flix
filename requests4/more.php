@@ -9,9 +9,6 @@ function extractSeasonUrl($html) {
     if (preg_match('/<li class="movieItem">\s*<a href="(https:\/\/[^"]*\/season\/[^"]*)"[^>]*>/', $html, $matches)) {
         return $matches[1];
     }
-    
-    // If still not found, return null
-    return null;
 }
 
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
