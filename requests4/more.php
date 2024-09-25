@@ -1,14 +1,25 @@
 <?php
-function extractSeasonUrl($html) {
+function extractSeasonUrl($htmlDom) {
     // First, try to find the season URL in the breadcrumbs
-    if (preg_match('/<a[^>]*href="(https:\/\/[^"]*\/season\/[^"]*)"[^>]*>([^<]+)<\/a>/', $html, $matches)) {
-        return $matches[1];
+    $breadcrumbs = $htmlDom->find('.breadcrumbs-single ul', 0);
+    if ($breadcrumbs) {
+        $seasonLink = $breadcrumbs->find('a[href*="/season/"]', 0);
+        if ($seasonLink) {
+            return $seasonLink->href;
+        }
     }
     
     // If not found in breadcrumbs, try to find it in the seasons list
-    if (preg_match('/<li class="movieItem">\s*<a href="(https:\/\/[^"]*\/season\/[^"]*)"[^>]*>/', $html, $matches)) {
-        return $matches[1];
+    $seasonsList = $htmlDom->find('.seasons-list', 0);
+    if ($seasonsList) {
+        $seasonLink = $seasonsList->find('.movieItem a', 0);
+        if ($seasonLink) {
+            return $seasonLink->href;
+        }
     }
+    
+    // If still not found, return null
+    return null;
 }
 
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
