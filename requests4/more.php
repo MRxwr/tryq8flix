@@ -7,8 +7,8 @@ function extractSeasonUrl($html) {
 }
 
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    $html = curlCall($_POST["id"]);
-    $html = scrapEgyDead($html);
+    $html = extractSeasonUrl($_POST["id"]);
+    $html = curlCall($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
