@@ -413,7 +413,6 @@ function scrapEgyDead($url) {
 		'shows' => []
 	];
 	if ($dom) {
-		$mainSection = $dom->find('.main-section', 0);
 		if ($mainSection) {
 			foreach ($mainSection->find('.movieItem') as $movie) {
 				$link = $movie->find('a', 0);
