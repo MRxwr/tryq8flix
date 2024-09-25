@@ -1,5 +1,12 @@
 <?php
-function extractSeasonUrl($htmlDom) {
+function extractSeasonUrl($input) {
+    // Check if input is a string (HTML content) or a DOM object
+    if (is_string($input)) {
+        $htmlDom = str_get_html($input);
+    } else {
+        $htmlDom = $input;
+    }
+
     // First, try to find the season URL in the breadcrumbs
     $breadcrumbs = $htmlDom->find('.breadcrumbs-single ul', 0);
     if ($breadcrumbs) {
