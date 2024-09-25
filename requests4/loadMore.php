@@ -10,8 +10,8 @@ function searchShahid($more){
 		$url .= "/?page={$more}";
 	}
 	$html = scrapEgyDead($url);
-	$html = json_decode($html, true);
-	return $html["shows"];
+	//$html = json_decode($html, true);
+	return $html;
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){
