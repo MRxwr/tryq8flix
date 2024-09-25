@@ -1,8 +1,16 @@
 <?php
 function extractSeasonUrl($html) {
-    if (preg_match('/<a itemprop="url" href="(https:\/\/[^"]*\/season\/[^"]*)"/', $html, $matches)) {
+    // First, try to find the season URL in the breadcrumbs
+    if (preg_match('/<a[^>]*href="(https:\/\/[^"]*\/season\/[^"]*)"[^>]*>([^<]+)<\/a>/', $html, $matches)) {
         return $matches[1];
     }
+    
+    // If not found in breadcrumbs, try to find it in the seasons list
+    if (preg_match('/<li class="movieItem">\s*<a href="(https:\/\/[^"]*\/season\/[^"]*)"[^>]*>/', $html, $matches)) {
+        return $matches[1];
+    }
+    
+    // If still not found, return null
     return null;
 }
 
