@@ -90,6 +90,9 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
 			<div class="col-12 p-3">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js.js") ?>">Server 3</button>
 			</div>
+			<div class="col-12 p-3">
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js4.js") ?>">Server 4</button>
+			</div>
 		</div>
         <?php require("templates/content.php"); ?>
     </div>
