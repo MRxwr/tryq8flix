@@ -403,6 +403,7 @@ function domTopCinema($dom) {
 
 function scrapEgyDead($url) {
 	$html = curlCall($url);
+	var_dump($html);
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
