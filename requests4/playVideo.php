@@ -16,7 +16,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     $html = curl_exec($curl);
     curl_close($curl);
     $dom = str_get_html($html);
-    var_dump($html);
+    echo "<pre>$html</pre>";
     $data = [
         'shows' => []
     ];
