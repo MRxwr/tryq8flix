@@ -49,9 +49,6 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
             $mainServer[] = $url;
             $y++;
-            if( $i == 3 ){
-                break;
-            }
     }
     $links .= "</div>";
     if (isset($mainServer) && sizeof($mainServer) > 0) {
