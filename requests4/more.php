@@ -1,38 +1,15 @@
 <?php
-function extractSeasonUrl($input) {
-    // Check if input is a string (HTML content) or a DOM object
-    if (is_string($input)) {
-        $htmlDom = str_get_html($input);
-    } else {
-        $htmlDom = $input;
+function extractSeasonUrl($html) {
+    if (preg_match('/<a itemprop="url" href="(https:\/\/[^"]*\/season\/[^"]*)"/', $html, $matches)) {
+        return $matches[1];
     }
-
-    // First, try to find the season URL in the breadcrumbs
-    $breadcrumbs = $htmlDom->find('.breadcrumbs-single ul', 0);
-    if ($breadcrumbs) {
-        $seasonLink = $breadcrumbs->find('a[href*="/season/"]', 0);
-        if ($seasonLink) {
-            return $seasonLink->href;
-        }
-    }
-    
-    // If not found in breadcrumbs, try to find it in the seasons list
-    $seasonsList = $htmlDom->find('.seasons-list', 0);
-    if ($seasonsList) {
-        $seasonLink = $seasonsList->find('.movieItem a', 0);
-        if ($seasonLink) {
-            return $seasonLink->href;
-        }
-    }
-    
-    // If still not found, return null
     return null;
 }
 
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    echo $_POST["id"];
-    echo $html = extractSeasonUrl($_POST["id"]);
-    echo $html = curlCall($html);die();
+    echo $html = curlCall($html);
+    echo $html = extractSeasonUrl($html);
+    echo $html = curlCall($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
