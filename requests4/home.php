@@ -40,7 +40,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 			$user = checkLogin();
 			$shows = searchShahid();
 			echo "<div class='row m-0 w-100' id='content'>";
-			outputData2($shows); 
+			outputData3($shows); 
 			echo "<div class='col-md-12 loadMoreBtn mb-3' style='text-align-last: center;' id='1'><div class='btn btn-secondary w-75' >تابع</div></div><div style='display:none' class='getCollection' id='{$collection}{$category}'></div>";
 			echo "</div>";
 		}else{
