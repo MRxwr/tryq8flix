@@ -406,7 +406,6 @@ function scrapEgyDead($url) {
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
-		$html = $html;
 		$mainSection = $dom->find('.cat-page', 0);
 	}
 	$data = [
