@@ -7,8 +7,12 @@ function extractSeasonUrl($html) {
 }
 
 if( isset($_POST["id"]) && !empty($_POST["id"]) ){
-    $html = curlCall($_POST["id"]);
-    $html = extractSeasonUrl($html);
+    // check if url contains the word season or not
+    $html = $_POST["id"];
+    if (strpos(strtolower($_POST["id"]), 'season') === false) {
+        $html = curlCall($_POST["id"]);
+        $html = extractSeasonUrl($html);
+    }
     $html = curlCall($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
