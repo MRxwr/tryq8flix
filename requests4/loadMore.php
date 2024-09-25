@@ -1,15 +1,15 @@
 <?php
 function searchShahid($more){
-	GLOBAL $website3, $_GET;
-	$url = $website3;
+	GLOBAL $website4, $_GET;
+	$url = $website4;
 	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
 		$category = explode("?", $_GET["category"]);
 		$category = ( isset($category[0]) && !empty($category[0]) ) ? $category[0] : $$category;
-		$url .= "/{$category}/page/{$more}";
+		$url .= "/{$category}/?page={$more}";
 	}else{
-		$url .= "/page/{$more}";
+		$url .= "/?page={$more}";
 	}
-	$html = scrapeWecima($url);
+	$html = scrapEgyDead($url);
 	$html = json_decode($html, true);
 	return $html["shows"];
 }

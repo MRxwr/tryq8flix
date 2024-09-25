@@ -19,8 +19,8 @@ function getWebsite(){
 }
 
 function searchShahid(){
-	GLOBAL $website3, $_GET;
-	$url = $website3;
+	GLOBAL $website4, $_GET;
+	$url = $website4;
 	if( isset($_GET["category"]) && !empty($_GET["category"]) ){
 		$url .= "/{$_GET["category"]}";
 	}else{
