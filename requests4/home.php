@@ -26,6 +26,7 @@ function searchShahid(){
 	}else{
 		$url .= "/";
 	}
+	echo $url;
 	$html = scrapEgyDead($url);
 	//$html = json_decode($html, true);
 	return $html;
