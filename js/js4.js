@@ -479,7 +479,7 @@ $(document).on('click', '#tvBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests4/index.php?type=home&category=seriestv", {
+    $.post("requests4/index.php?type=home&category=series-category/مسلسلات-اجنبي/", {
             type: "get",
         },
         function(data) {
@@ -555,7 +555,7 @@ $(document).on('click', '#animeBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $.post("requests4/index.php?type=home&category=category/مسلسلات-كرتون/", {
+    $.post("requests4/index.php?type=home&category=series-category/مسلسلات-انمي/", {
             type: "get",
         },
         function(data) {
