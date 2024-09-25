@@ -1,5 +1,4 @@
 <?php
-
 require("../admin/includes/config.php");
 require("../admin/includes/functions.php");
 require("../templates/simple_html_dom.php");
@@ -36,12 +35,10 @@ if( isset($_GET["type"]) && $_GET["type"] == "playVideo" ){
     require("loadMore.php");
 }elseif( isset($_GET["type"]) && $_GET["type"] == "logout" ){
     require("logout.php");
-}elseif( isset($_GET["type"]) && $_GET["type"] == "live" ){
-    require("live.php");
-}elseif( isset($_GET["type"]) && $_GET["type"] == "news" ){
-    require("footballNews.php");
 }elseif( isset($_GET["type"]) && $_GET["type"] == "loadMoreSearch" ){
     require("loadMoreSearch.php");
+}elseif( isset($_GET["type"]) && $_GET["type"] == "getServer" ){
+    require("getServer.php");
 }elseif( isset($_GET["type"]) && $_GET["type"] == "getImages" ){
     require("getImages.php");
 }

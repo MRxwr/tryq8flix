@@ -401,6 +401,45 @@ function domTopCinema($dom) {
 	return $shows = $shows["shows"];
 }
 
+function scrapEgyDead($url) {
+	$html = curlCall($url);
+	$dom = str_get_html($html);
+	$data = [
+		'shows' => []
+	];
+	if ($dom) {
+		$mainSection = $dom->find('.main-section', 0);
+		if ($mainSection) {
+			foreach ($mainSection->find('.movieItem') as $movie) {
+				$link = $movie->find('a', 0);
+				$image = $movie->find('img', 0);
+				$title = $movie->find('.BottomTitle', 0);
+				$category = $movie->find('.cat_name', 0);
+				$episode = $movie->find('.number_episode em', 0);
+				$label = $movie->find('.label', 0);
+
+				$movieData = [
+					'href' => $link ? $link->href : '',
+					'image' => $image ? $image->src : '',
+					'title' => $title ? $title->plaintext : '',
+					'category' => $category ? $category->plaintext : '',
+					'episode' => $episode ? $episode->plaintext : '',
+					'label' => $label ? $label->plaintext : '',
+				];
+				$data['shows'][] = $movieData;
+			}
+		}
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	} else {
+		echo 'Error: Invalid DOM object.';
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	}
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
+	$dom->clear();
+	unset($dom);
+	return $shows = $shows["shows"];
+}
+
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
     $headers = [
