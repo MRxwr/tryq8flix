@@ -81,18 +81,24 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
 		?> 
     <div id="mainBody">
 		<div class="row m-0 p-o w-100">
+			<?php
+			if ( !empty($profileData["id"]) ){
+				?>
 			<div class="col-12 p-3">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js3.js") ?>">Server 1</button>
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js3.js") ?>">Server 1 [WeCima]</button>
 			</div>
 			<div class="col-12 p-3">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js2.js") ?>">Server 2</button>
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js4.js") ?>">Server 2 [EgyDead]</button>
 			</div>
 			<div class="col-12 p-3">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js.js") ?>">Server 3</button>
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js2.js") ?>">Server 3 [TopCenima]</button>
 			</div>
 			<div class="col-12 p-3">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js4.js") ?>">Server 4</button>
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js.js") ?>">Server 4 [Shahid4u]</button>
 			</div>
+			<?php
+			}
+			?>
 		</div>
         <?php require("templates/content.php"); ?>
     </div>
