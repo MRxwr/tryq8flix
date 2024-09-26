@@ -453,6 +453,9 @@ function scrapEgyDead($url) {
 	if (strpos($url, 'category') !== false) {
 		$mainSection = $dom->find('.cat-page', 0);
 	}
+	if (strpos($url, '?s=') !== false) {
+		$mainSection = $dom->find('.posts-list', 0);
+	}
 	$data = [
 		'shows' => []
 	];
