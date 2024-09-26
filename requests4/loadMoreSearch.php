@@ -4,8 +4,7 @@ function searchShahid($search,$more){
 	$search = str_replace(' ','+',$search);
     $url = "{$website4}/page/{$more}/s?={$search}";
     $html = scrapEgyDead($url);
-	$html = json_decode($html, true);
-	return $html["shows"];
+	return $html;
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){

@@ -3,8 +3,7 @@ function searchShahid($search){
 	GLOBAL $website4;
 	$search = str_replace(' ','+',$search);
 	$html = scrapEgyDead("{$website4}?s={$search}");
-	$html = json_decode($html, true);
-	return $html["shows"];
+	return $html;
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){
