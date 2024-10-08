@@ -213,6 +213,11 @@ function validateInput($input) {
   return true;
 }
 
+//random letter
+function randomLetter(){
+	return substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),0,1);
+}
+
 function outputData($shows){ 
 	$user = checkLogin();
 	$output = "";
