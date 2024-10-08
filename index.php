@@ -16,8 +16,6 @@ $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="origin" name="referrer">
     <meta name="description" content="Put your description here.">
-    <meta http-equiv="Cache-control" content="public">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <link rel="manifest" href="manifest.json">
     <link rel="shortcut icon" href="https://i.imgur.com/6CBCStr.png" type="image/x-icon">
