@@ -1,6 +1,10 @@
 var cacheName = 'TRYQ8FLiX 2.0';
 var filesToCache = [
     '/',
+    'index.php',
+    'css/style.css',
+    'js/main.js',
+    'js/js.js'
 ];
 self.addEventListener('install', function(e) {
     e.waitUntil(
