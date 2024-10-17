@@ -3,6 +3,8 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 $profileData = checkLogin();
 $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time());
+$x  = randomLetter();
+$xValue = md5(time());
 ?>
 <!doctype html>
 <html lang="en" style="direction:rtl">
