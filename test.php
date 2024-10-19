@@ -3,7 +3,6 @@ require("templates/simple_html_dom.php");
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 
-
 function scrapeInstagramPost($url) {
     $ch = curl_init();
     curl_setopt_array($ch, [
