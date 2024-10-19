@@ -4,7 +4,6 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 
 
-
 function scrapeInstagramPost($url) {
     $ch = curl_init();
     curl_setopt_array($ch, [
@@ -39,12 +38,22 @@ function scrapeInstagramPost($url) {
         return json_encode(['error' => "HTTP error: " . $info['http_code']]);
     }
 
+    echo "First 1000 characters of the response:\n";
+    echo substr($response, 0, 1000) . "\n\n";
+
+    echo "Last 1000 characters of the response:\n";
+    echo substr($response, -1000) . "\n\n";
+
     // Extract all meta tags
     preg_match_all('/<meta[^>]+>/i', $response, $matches);
 
     echo "Meta tags found:\n";
-    foreach ($matches[0] as $meta_tag) {
-        echo $meta_tag . "\n";
+    if (!empty($matches[0])) {
+        foreach ($matches[0] as $meta_tag) {
+            echo $meta_tag . "\n";
+        }
+    } else {
+        echo "No meta tags found.\n";
     }
 
     // Try to find og:title specifically
@@ -76,7 +85,7 @@ function scrapeInstagramPost($url) {
     }
 }
 
-// Usage
+// Usage with the provided Instagram post URL
 $instagram_post_url = 'https://www.instagram.com/trendylegend_kw/p/C-RThToIKXc/';
 $result = scrapeInstagramPost($instagram_post_url);
 echo $result;
