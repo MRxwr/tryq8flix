@@ -23,12 +23,17 @@ function scrapeInstagramPost($url) {
         return json_encode(['error' => "HTTP error: $httpCode"]);
     }
 
+    // Output the first 1000 characters of the HTML for debugging
+    echo "First 1000 characters of HTML:\n" . substr($html, 0, 1000) . "\n\n";
+
     // Regular expression to match the og:title meta tag
     $pattern = '/<meta property="og:title" content="(.*?)"/';
 
     // Extract the content of the og:title meta tag
     if (preg_match($pattern, $html, $matches)) {
         $content = html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
+        echo "Extracted og:title content:\n" . $content . "\n\n";
 
         // Split the content into title and description
         $parts = explode(' : ', $content, 2);
@@ -51,6 +56,10 @@ function scrapeInstagramPost($url) {
 
         return json_encode($json_object, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
+
+    // If we couldn't find the og:title meta tag, let's see what meta tags are present
+    preg_match_all('/<meta[^>]+>/', $html, $meta_matches);
+    echo "All meta tags found:\n" . implode("\n", $meta_matches[0]) . "\n\n";
 
     return json_encode(['error' => 'Failed to extract og:title content']);
 }
