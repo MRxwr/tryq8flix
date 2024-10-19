@@ -4,6 +4,7 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 
 
+
 function scrapeInstagramPost($url) {
     $ch = curl_init();
     curl_setopt_array($ch, [
@@ -32,21 +33,47 @@ function scrapeInstagramPost($url) {
 
     echo "HTTP Status Code: " . $info['http_code'] . "\n";
     echo "Content Type: " . $info['content_type'] . "\n";
-    echo "Total Time: " . $info['total_time'] . " seconds\n";
-    echo "First 1000 characters of response:\n" . substr($response, 0, 1000) . "\n\n";
+    echo "Total Time: " . $info['total_time'] . " seconds\n\n";
 
     if ($info['http_code'] != 200) {
         return json_encode(['error' => "HTTP error: " . $info['http_code']]);
     }
 
-    if (strpos($info['content_type'], 'application/json') !== false) {
-        return json_encode(['error' => "Received JSON response instead of HTML. Instagram might be blocking the request."]);
+    // Extract all meta tags
+    preg_match_all('/<meta[^>]+>/i', $response, $matches);
+
+    echo "Meta tags found:\n";
+    foreach ($matches[0] as $meta_tag) {
+        echo $meta_tag . "\n";
     }
 
-    // Rest of the function remains the same...
-    // (The part that extracts og:title and processes it)
+    // Try to find og:title specifically
+    preg_match('/<meta property="og:title" content="(.*?)"/i', $response, $og_title_match);
 
-    return json_encode(['error' => 'Failed to extract og:title content']);
+    if (!empty($og_title_match)) {
+        $og_title = html_entity_decode($og_title_match[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        echo "\nog:title content: " . $og_title . "\n";
+
+        // Process the og:title content as before...
+        $parts = explode(' : ', $og_title, 2);
+        $title = $parts[0];
+        $description = isset($parts[1]) ? $parts[1] : '';
+
+        preg_match_all('/#(\w+)/', $description, $hashtag_matches);
+        $hashtags = $hashtag_matches[1];
+
+        $description = preg_replace('/#\w+\s?/', '', $description);
+
+        $json_object = [
+            'title' => $title,
+            'description' => trim($description),
+            'hashtags' => $hashtags
+        ];
+
+        return json_encode($json_object, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    } else {
+        return json_encode(['error' => 'Failed to extract og:title content']);
+    }
 }
 
 // Usage
