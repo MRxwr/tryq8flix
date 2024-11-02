@@ -452,8 +452,7 @@ function domTopCinema($dom) {
 }
 
 function scrapEgyDead($url) {
-	$html = file_get_contents($url);
-	var_dump($html);
+	$html = curlCall($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
