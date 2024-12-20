@@ -180,6 +180,49 @@
             }, 2500);
         };
 
+        // Function to detect non-English text
+        const isNonEnglish = (text) => {
+            // Check for non-English characters and common English patterns
+            const englishPattern = /^[A-Za-z0-9\s.,!?-]+$/;
+            return !englishPattern.test(text);
+        };
+
+        const translateAndSubmit = async (text) => {
+            if (!isNonEnglish(text)) {
+                submitBtn.click();
+                return;
+            }
+
+            try {
+                const response = await fetch('https://libretranslate.de/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        q: text,
+                        source: 'auto',
+                        target: 'en'
+                    })
+                });
+                const data = await response.json();
+                showToast("Text translated to English");
+                promptInput.value = data.translatedText;
+                submitBtn.click();
+            } catch (error) {
+                showToast("Translation failed, using original text");
+                submitBtn.click();
+            }
+        };
+
+        // Update prompt input handler
+        promptInput.addEventListener("input", function() {
+            const text = this.value.trim();
+            if (isNonEnglish(text)) {
+                showToast("Non-English text detected - will translate");
+            }
+        });
+
         submitBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
             if (!prompt) return;
@@ -296,5 +339,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
-
-
