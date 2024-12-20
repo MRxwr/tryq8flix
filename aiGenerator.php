@@ -129,17 +129,40 @@
         const promptCookieName = "savedPrompts";
 
         const showToast = (message) => {
+            // Create blocking overlay
+            const overlay = document.createElement("div");
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+            `;
+
+            // Create centered toast
             const toast = document.createElement("div");
             toast.className = "toast align-items-center text-white bg-success border-0 show";
             toast.role = "alert";
-            toast.style.width = "100%";
-            toast.style.opacity = "0";
-            toast.style.transition = "opacity 0.5s ease-in-out";
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                min-width: 300px;
+                z-index: 2001;
+                opacity: 0;
+                transition: opacity 0.5s ease-in-out;
+            `;
+            
             toast.innerHTML = `
                 <div class="d-flex">
                     <div class="toast-body">${message}</div>
                 </div>`;
-            toastContainer.appendChild(toast);
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(toast);
             
             // Fade in
             setTimeout(() => {
@@ -149,8 +172,10 @@
             // Fade out and remove
             setTimeout(() => {
                 toast.style.opacity = "0";
+                overlay.style.opacity = "0";
                 setTimeout(() => {
                     toast.remove();
+                    overlay.remove();
                 }, 500);
             }, 2500);
         };
