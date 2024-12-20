@@ -255,7 +255,21 @@
             showHistoryMessage("<p>Cookies cleared!</p>");
             showToast("Cookies cleared!");
         });
+        promptInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                submitBtn.click();
+            }
+        });
+        // Add input event for mobile devices
+        promptInput.addEventListener("input", function(event) {
+            if (event.inputType === "insertLineBreak") {
+                event.preventDefault();
+                submitBtn.click();
+            }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
+
+
