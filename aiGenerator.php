@@ -94,7 +94,7 @@
             <div class="col-12 pt-3 text-center">
                 <button id="submitBtn" class="btn btn-primary w-100">Generate Image</button>
             </div>
-            <div id="toastContainer" class="col-12 pt-2"></div>
+            <div id="toastContainer" class="col-12 pt-2 text-center"></div>
             <div class="col-12"><hr></div>
             <div class="col-12 pt-3" id="returnImage">
                 <img style="width: 100%; border-radius: 10px;" id="frame" src="">
