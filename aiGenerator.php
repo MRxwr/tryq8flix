@@ -215,12 +215,23 @@
             }
         });
 
+        // Helper function to handle historyList messages
+        const showHistoryMessage = (message) => {
+            historyList.style.display = 'block';
+            historyList.innerHTML = message;
+            setTimeout(() => {
+                historyList.style.display = 'none';
+            }, 10000);
+        };
+
         viewHistoryBtn.addEventListener("click", function () {
             const savedPrompts = JSON.parse(localStorage.getItem(promptCookieName)) || [];
             if (savedPrompts.length === 0) {
-                historyList.innerHTML = "<p>No prompts found!</p>";
+                showHistoryMessage("<p>No prompts found!</p>");
                 return;
             }
+            
+            historyList.style.display = 'block';
             historyList.innerHTML = "<h5>Prompt History:</h5>";
             savedPrompts.forEach((prompt, index) => {
                 const btn = document.createElement("button");
@@ -232,11 +243,14 @@
                 };
                 historyList.appendChild(btn);
             });
+            setTimeout(() => {
+                historyList.style.display = 'none';
+            }, 10000);
         });
 
         clearCookiesBtn.addEventListener("click", function () {
             localStorage.removeItem(promptCookieName);
-            historyList.innerHTML = "<p>Cookies cleared!</p>";
+            showHistoryMessage("<p>Cookies cleared!</p>");
             showToast("Cookies cleared!");
         });
     </script>
