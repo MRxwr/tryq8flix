@@ -28,14 +28,6 @@
             text-shadow: 2px 2px #000;
         }
 
-        .container-fluid {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 30px auto;
-            max-width: 800px;
-        }
-
         footer {
             text-align: center;
             margin-top: 20px;
@@ -86,8 +78,8 @@
     <h1>AI Art Generator</h1>
     <h2>Transform Your Imagination Into Stunning Art</h2>
     <div class="container-fluid">
-        <h3 class="text-center">Enter Your Prompt</h3>
-        <div class="row text-center">
+        <div class="row text-center" style="background: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 20px;margin: 30px auto;max-width: 800px;">
+          <div class="col-12"><h3 class="text-center">Enter Your Prompt</h3></div>
             <div class="col-12">
                 <input name="prompt" id="prompt" value="" class="form-control" placeholder="Describe your art (e.g., a futuristic city)">
             </div>
