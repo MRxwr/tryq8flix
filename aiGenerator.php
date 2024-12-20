@@ -221,7 +221,7 @@
             historyList.innerHTML = message;
             setTimeout(() => {
                 historyList.style.display = 'none';
-            }, 10000);
+            }, 3000);
         };
 
         viewHistoryBtn.addEventListener("click", function () {
