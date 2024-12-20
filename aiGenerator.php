@@ -180,72 +180,21 @@
             }, 2500);
         };
 
-        // Function to detect non-English text
-        const isNonEnglish = (text) => {
-            const englishPattern = /^[A-Za-z0-9\s.,!?-]+$/;
-            return !englishPattern.test(text);
-        };
+        submitBtn.addEventListener("click", function () {
+            const prompt = promptInput.value.trim();
+            if (!prompt) return;
 
-        const handlePromptSubmission = async () => {
-            const text = promptInput.value.trim();
-            if (!text) return;
-
-            if (isNonEnglish(text)) {
-                showToast("Translating to English...");
-                try {
-                    const response = await fetch('https://libretranslate.de/translate', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            q: text,
-                            source: 'auto',
-                            target: 'en'
-                        })
-                    });
-                    const data = await response.json();
-                    promptInput.value = data.translatedText;
-                    showToast("Translation complete");
-                    generateImage();
-                } catch (error) {
-                    showToast("Translation failed, using original text");
-                    generateImage();
-                }
-            } else {
-                generateImage();
-            }
-        };
-
-        const generateImage = () => {
             loading.style.display = "block";
-            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptInput.value.trim())}?width=2048&height=2048&nologo=true`;
-        };
+            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=2048&height=2048&nologo=true`;
 
-        // Event Listeners
-        submitBtn.addEventListener("click", handlePromptSubmission);
-
-        promptInput.addEventListener("keyup", function(event) {
-            if (event.key === "Enter" || event.keyCode === 13) {
-                event.preventDefault();
-                handlePromptSubmission();
-            }
+            frame.onload = () => {
+                loading.style.display = "none";
+                downloadBtn.disabled = false;
+                savePromptBtn.disabled = false;
+                shareBtn.disabled = false;
+                showToast("Image generated successfully!");
+            };
         });
-
-        promptInput.addEventListener("input", function(event) {
-            if (event.inputType === "insertLineBreak") {
-                event.preventDefault();
-                handlePromptSubmission();
-            }
-        });
-
-        frame.onload = () => {
-            loading.style.display = "none";
-            downloadBtn.disabled = false;
-            savePromptBtn.disabled = false;
-            shareBtn.disabled = false;
-            showToast("Image generated successfully!");
-        };
 
         savePromptBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
@@ -347,3 +296,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
+
+
