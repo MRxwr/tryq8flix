@@ -75,8 +75,8 @@
     </style>
   </head>
   <body>
-    <h1>AI Art Generator</h1>
-    <h2>Transform Your Imagination Into Stunning Art</h2>
+    <h1>AI Art</h1>
+    <h6>Transform Your Imagination Into Stunning Art</h6>
     <div class="container-fluid">
         <div class="row text-center" style="background: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 20px;margin: 30px auto;max-width: 800px;">
           <div class="col-12"><h3 class="text-center">Enter Your Prompt</h3></div>
@@ -95,8 +95,8 @@
                 <button id="downloadBtn" class="btn btn-success w-100 mb-2" disabled>Download</button>
                 <button id="shareBtn" class="btn btn-warning w-100 mb-2" disabled>Share</button>
                 <button id="savePromptBtn" class="btn btn-info w-100 mb-2" disabled>Save Prompt</button>
-                <button id="viewHistoryBtn" class="btn btn-secondary w-100 mt-2">View Prompt History</button>
-                <button id="clearCookiesBtn" class="btn btn-danger w-100 mt-2">Clear Cookies</button>
+                <button id="viewHistoryBtn" class="btn btn-secondary w-100 mt-2">Prompts History</button>
+                <button id="clearCookiesBtn" class="btn btn-danger w-100 mt-2">Clear Prompts</button>
                 <div id="historyList"></div>
             </div>
         </div>
@@ -277,8 +277,8 @@
 
         clearCookiesBtn.addEventListener("click", function () {
             localStorage.removeItem(promptCookieName);
-            showHistoryMessage("<p>Cookies cleared!</p>");
-            showToast("Cookies cleared!");
+            //showHistoryMessage("<p>Prompts cleared!</p>");
+            showToast("Prompts cleared!");
         });
         promptInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
