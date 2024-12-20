@@ -22,7 +22,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        h1, h2 {
+        h1, h2, h6 {
             text-align: center;
             margin-top: 20px;
             text-shadow: 2px 2px #000;
