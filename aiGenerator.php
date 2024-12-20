@@ -94,6 +94,7 @@
             <div class="col-12 pt-3 text-center">
                 <button id="submitBtn" class="btn btn-primary w-100">Generate Image</button>
             </div>
+            <div id="toastContainer" class="col-12 pt-2"></div>
             <div class="col-12"><hr></div>
             <div class="col-12 pt-3" id="returnImage">
                 <img style="width: 100%; border-radius: 10px;" id="frame" src="">
@@ -119,7 +120,6 @@
         <div class="spinner"></div>
         <p>Generating Your Art... Please Wait</p>
     </div>
-    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;"></div>
     <script>
         const promptInput = document.getElementById("prompt");
         const submitBtn = document.getElementById("submitBtn");
@@ -140,7 +140,7 @@
             const toast = document.createElement("div");
             toast.className = "toast align-items-center text-white bg-success border-0 show";
             toast.role = "alert";
-            toast.style.minWidth = "250px";
+            toast.style.width = "100%";
             toast.innerHTML = `
                 <div class="d-flex">
                     <div class="toast-body">${message}</div>
