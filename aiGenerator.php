@@ -141,16 +141,26 @@
             toast.className = "toast align-items-center text-white bg-success border-0 show";
             toast.role = "alert";
             toast.style.width = "100%";
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.5s ease-in-out";
             toast.innerHTML = `
                 <div class="d-flex">
                     <div class="toast-body">${message}</div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>`;
             toastContainer.appendChild(toast);
-
+            
+            // Fade in
             setTimeout(() => {
-                toast.remove();
-            }, 3000);
+                toast.style.opacity = "1";
+            }, 50);
+
+            // Fade out and remove
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+            }, 2500);
         };
 
         submitBtn.addEventListener("click", function () {
