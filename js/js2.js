@@ -92,7 +92,7 @@ $(document).on('click', '#loginBtn', function(e) {
         function(data) {
             if (data == 0) {
                 alert("You have been logged in successfully");
-                location.reload(true);
+                window.location.href = window.location.href;
             } else {
                 alert(data);
             }
