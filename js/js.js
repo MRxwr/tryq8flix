@@ -102,7 +102,7 @@ $(document).on('click', '#loginBtn', function(e) {
 function bodyLoad() {
     $("#loading-screen").show();
     alert($.cookie('tryq8flix2'))
-    if ($.cookie('tryq8flix2')) {
+    if ($.cookie('tryq8flix2') != null) {
         $("#profileOptions0").attr("style", "display:none");
         $("#profileOptions1").attr("style", "display:block");
 		$("#homeBtn").attr("style","color:#9f8d5c");
@@ -114,7 +114,7 @@ function bodyLoad() {
 			$("#loading-screen").hide();
 			$("#mainBody").html("");
 			$("#mainBody").append(data);
-		});
+		}); 
     } else {
 		$("#loading-screen").hide();
 		$("#homeBtn").attr("style","color:#9f8d5c");
