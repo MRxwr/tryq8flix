@@ -52,7 +52,7 @@ $xValue = md5(time());
 	</style>
 </head>
 
-<body class="container-flex m-0 p-0" <?php if( isset($_GET["js"]) ){ echo "onload='bodyLoad();'";} ?> style="margin:auto;text-align: -webkit-center;">
+<body class="container-flex m-0 p-0" onload='bodyLoad();' style="margin:auto;text-align: -webkit-center;">
 	<div style="max-width:1300px;margin: auto;">
     <?php require("templates/header.php"); ?>
     <?php //require("templates/navbar.php"); ?> 
