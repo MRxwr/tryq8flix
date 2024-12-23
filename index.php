@@ -81,9 +81,6 @@ $xValue = md5(time());
 		?> 
     <div id="mainBody">
 		<div class="row m-0 p-o w-100">
-			<?php
-			if ( !empty($profileData["id"]) ){
-				?>
 			<div class="col-12 p-3">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js3.js") ?>">Server 1 [WeCima]</button>
 			</div>
@@ -96,9 +93,6 @@ $xValue = md5(time());
 			<div class="col-12 p-3">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js.js") ?>">Server 4 [Shahid4u]</button>
 			</div>
-			<?php
-			}
-			?>
 		</div>
         <?php require("templates/content.php"); ?>
     </div>
