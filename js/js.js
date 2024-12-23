@@ -104,16 +104,17 @@ function bodyLoad() {
     if ($.cookie('tryq8flix2') != null) {
         $("#profileOptions0").attr("style", "display:none");
         $("#profileOptions1").attr("style", "display:block");
-		$("#homeBtn").attr("style","color:#9f8d5c");
-		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
-		$.post("requests/index.php?type=home", {
+		//$("#homeBtn").attr("style","color:#9f8d5c");
+		//$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
+        $("#loading-screen").hide();
+		/*$.post("requests/index.php?type=home", {
 			type: "get",
 		},
 		function(data) {
 			$("#loading-screen").hide();
 			$("#mainBody").html("");
 			$("#mainBody").append(data);
-		}); 
+		}); */
     } else {
 		$("#loading-screen").hide();
 		$("#homeBtn").attr("style","color:#9f8d5c");
