@@ -2,7 +2,7 @@
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 $profileData = checkLogin();
-$js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js.js' . md5(time());
+$js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js.js';
 $x  = randomLetter();
 $xValue = md5(time());
 ?>
