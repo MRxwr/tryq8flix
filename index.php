@@ -78,7 +78,7 @@ $xValue = md5(time());
 			  </div>
 			";
 		?> 
-    <div id="mainBody" >
+    <div id="mainBody" style="display:block">
 		<div class="row m-0 p-o w-100">
 			<?php
 			if ( !empty($profileData["id"]) ){
