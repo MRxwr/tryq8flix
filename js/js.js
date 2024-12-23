@@ -92,7 +92,8 @@ $(document).on('click', '#loginBtn', function(e) {
         function(data) {
             if (data == 0) {
                 alert("You have been logged in successfully");
-                window.location.href = window.location.href;            } else {
+                window.location = window.location;
+            } else {
                 alert(data);
             }
         });
