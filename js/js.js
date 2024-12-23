@@ -101,7 +101,6 @@ $(document).on('click', '#loginBtn', function(e) {
 
 function bodyLoad() {
     $("#loading-screen").show();
-    alert($.cookie('tryq8flix2'));
     if ($.cookie('tryq8flix2')) {
         $("#profileOptions0").attr("style", "display:none");
         $("#profileOptions1").attr("style", "display:block");
