@@ -102,8 +102,6 @@ $(document).on('click', '#loginBtn', function(e) {
 function bodyLoad() {
     $("#loading-screen").show();
     if ($.cookie('tryq8flix2') != null) {
-        $("#profileOptions0").attr("style", "display:none");
-        $("#profileOptions1").attr("style", "display:block");
 		$("#homeBtn").attr("style","color:#9f8d5c");
 		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
 		$.post("requests/index.php?type=home", {
@@ -118,10 +116,18 @@ function bodyLoad() {
 		$("#loading-screen").hide();
 		$("#homeBtn").attr("style","color:#9f8d5c");
 		$(".bi-house").addClass("bi-house-fill").removeClass("bi-house");
+    }
+}
+
+$(document).on('load', function(e) {
+    if ($.cookie('tryq8flix2') != null) {
+        $("#profileOptions0").attr("style", "display:none");
+        $("#profileOptions1").attr("style", "display:block");
+    } else {
         $("#profileOptions0").attr("style", "display:block");
         $("#profileOptions1").attr("style", "display:none");
     }
-}
+});
 
 $(document).on('click', '#logoutLabel', function(e) {
     $.post("requests/index.php?type=logout", {
