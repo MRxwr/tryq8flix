@@ -1,6 +1,7 @@
 <?php
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
+$profileData = checkLogin();
 $js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js3.js?y=' . md5(time());
 $x  = randomLetter();
 $xValue = md5(time());
@@ -78,7 +79,7 @@ $xValue = md5(time());
 			  </div>
 			";
 		?> 
-    <div id="mainBody" style="display:block">
+    <div id="mainBody">
 		<div class="row m-0 p-o w-100">
 			<?php
 			if ( !empty($profileData["id"]) ){
