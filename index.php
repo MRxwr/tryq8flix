@@ -49,6 +49,15 @@ $xValue = md5(time());
 		background-color: #211f20 ;
 		color: white;
 	}
+	.nextBtn:focus {
+    outline: none;
+}
+
+.nextBtn.selected {
+    box-shadow: 0 0 0 3px #fff;
+    position: relative;
+    z-index: 1;
+}
 	</style>
 </head>
 
@@ -112,12 +121,43 @@ $xValue = md5(time());
 		window.location.href = "?js=" + btnId;
 		$("#loading-screen").show();
 	});
-	// i want to move from div to div that has nextBtn as class using keyboard arrow keys and on enter key press
-	$(document).keydown(function(e) {
-		if (e.keyCode == 39) {
-			$('.nextBtn').click();
-		}
-	});
+	// Add this script at the bottom of your index.php
+$(document).ready(function() {
+    let currentIndex = 0;
+    const buttons = $('.nextBtn');
+    
+    // Add initial highlight to first button
+    buttons.eq(currentIndex).css('box-shadow', '0 0 0 3px #fff');
+    
+    $(document).keydown(function(e) {
+        // Remove highlight from current button
+        buttons.eq(currentIndex).css('box-shadow', 'none');
+        
+        switch(e.keyCode) {
+            case 37: // left arrow
+            case 38: // up arrow
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : buttons.length - 1;
+                break;
+                
+            case 39: // right arrow
+            case 40: // down arrow
+                currentIndex = (currentIndex < buttons.length - 1) ? currentIndex + 1 : 0;
+                break;
+                
+            case 13: // enter key
+                buttons.eq(currentIndex).click();
+                break;
+        }
+        
+        // Add highlight to new current button
+        buttons.eq(currentIndex).css('box-shadow', '0 0 0 3px #fff');
+        
+        // Prevent page scroll when using arrow keys
+        if([37,38,39,40].indexOf(e.keyCode) > -1) {
+            e.preventDefault();
+        }
+    });
+});
 </script>
 </body>
 
