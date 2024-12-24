@@ -88,17 +88,17 @@ $xValue = md5(time());
 		?> 
     <div id="mainBody">
 		<div class="row m-0 p-o w-100">
-			<div class="col-12 p-3 nextBtn">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js3.js") ?>">Server 1 [WeCima]</button>
+			<div class="col-12 p-3">
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5 nextBtn" id="<?php echo urlencode("js/js3.js") ?>">Server 1 [WeCima]</button>
 			</div>
-			<div class="col-12 p-3 nextBtn">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js4.js") ?>">Server 2 [EgyDead]</button>
+			<div class="col-12 p-3">
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5 nextBtn" id="<?php echo urlencode("js/js4.js") ?>">Server 2 [EgyDead]</button>
 			</div>
-			<div class="col-12 p-3 nextBtn">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js2.js") ?>">Server 3 [TopCenima]</button>
+			<div class="col-12 p-3">
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5 nextBtn" id="<?php echo urlencode("js/js2.js") ?>">Server 3 [TopCenima]</button>
 			</div>
-			<div class="col-12 p-3 nextBtn">
-				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js.js") ?>">Server 4 [Shahid4u]</button>
+			<div class="col-12 p-3">
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5 nextBtn" id="<?php echo urlencode("js/js.js") ?>">Server 4 [Shahid4u]</button>
 			</div>
 		</div>
         <?php require("templates/content.php"); ?>
