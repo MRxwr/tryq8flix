@@ -117,12 +117,12 @@ $xValue = md5(time());
 		if (e.keyCode == 37) {
 			var nextBtn = $('.nextBtn');
 			if (nextBtn.length > 0) {
-				nextBtn[0].click();
+				nextBtn[0].focus();
 			}
 		} else if (e.keyCode == 39) {
 			var prevBtn = $('.prevBtn');
 			if (prevBtn.length > 0) {
-				prevBtn[0].click();
+				prevBtn[0].focus();
 			}
 		}
 	});
