@@ -122,13 +122,22 @@ $xValue = md5(time());
 
 	$(document).ready(function() {
     let currentIndex = 0;
-    const buttons = $('.nextBtn');
     
-    $(document).keydown(function(e) {
+    // Use event delegation for dynamically loaded content
+    $(document).on('keydown', function(e) {
+        const buttons = $('.nextBtn'); // Get fresh collection of buttons
+        console.log('-------------------');
+        console.log('Total buttons found:', buttons.length);
         console.log('Key pressed:', e.keyCode);
+        console.log('Current index:', currentIndex);
         
+        if(buttons.length === 0) {
+            console.log('No buttons found yet - waiting for content');
+            return;
+        }
+
         // Remove previous highlights
-        $('.nextBtn').removeClass('active-btn');
+        buttons.removeClass('active-btn');
         
         switch(e.keyCode) {
             case 37: // left
@@ -150,47 +159,22 @@ $xValue = md5(time());
                 break;
         }
 
-        // Add highlight to current button
         const currentButton = buttons.eq(currentIndex);
         if(currentButton.length) {
             currentButton.addClass('active-btn');
-            const element = currentButton.get(0);
-            if(element) {
-                element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
+            console.log('Selected button ID:', currentButton.attr('id'));
+            currentButton[0]?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
         }
         
-        // Prevent default scroll
         if([37,38,39,40].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
     });
 });
 
-
-$(document).ready(function() {
-    let currentIndex = 0;
-    const buttons = $('.nextBtn');
-    
-    console.log('Total buttons found:', buttons.length);
-    console.log('Initial setup complete');
-    
-    $(document).keydown(function(e) {
-        console.log('-------------------');
-        console.log('Key pressed:', e.keyCode);
-        console.log('Current index before:', currentIndex);
-        console.log('Current button ID:', buttons.eq(currentIndex).attr('id'));
-        
-        // Rest of your existing code...
-        
-        console.log('New index after:', currentIndex);
-        console.log('New button ID:', buttons.eq(currentIndex).attr('id'));
-        console.log('-------------------');
-    });
-});
 </script>
 </body>
 
