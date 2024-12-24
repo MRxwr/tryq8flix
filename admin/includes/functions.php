@@ -299,7 +299,7 @@ function outputData2($shows){
 								</div>
 								<div class='col-6 p-1'>
 									<div data-bs-toggle='modal' data-bs-target='#threeDots' class='btn btn-warning w-100 threeDots' id='{$shows[$i]["href"]}'><i class='bi bi-three-dots'></i></div>
-								</div>
+								</div> 
 							</div>
 						</div>
 					</div>
