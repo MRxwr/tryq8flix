@@ -88,16 +88,16 @@ $xValue = md5(time());
 		?> 
     <div id="mainBody">
 		<div class="row m-0 p-o w-100">
-			<div class="col-12 p-3">
+			<div class="col-12 p-3 nextBtn">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js3.js") ?>">Server 1 [WeCima]</button>
 			</div>
-			<div class="col-12 p-3">
+			<div class="col-12 p-3 nextBtn">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js4.js") ?>">Server 2 [EgyDead]</button>
 			</div>
-			<div class="col-12 p-3">
+			<div class="col-12 p-3 nextBtn">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js2.js") ?>">Server 3 [TopCenima]</button>
 			</div>
-			<div class="col-12 p-3">
+			<div class="col-12 p-3 nextBtn">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5" id="<?php echo urlencode("js/js.js") ?>">Server 4 [Shahid4u]</button>
 			</div>
 		</div>
@@ -126,13 +126,13 @@ $xValue = md5(time());
     // Use event delegation for dynamically loaded content
     $(document).on('keydown', function(e) {
         const buttons = $('.nextBtn'); // Get fresh collection of buttons
-        console.log('-------------------');
-        console.log('Total buttons found:', buttons.length);
-        console.log('Key pressed:', e.keyCode);
-        console.log('Current index:', currentIndex);
+        //console.log('-------------------');
+        //console.log('Total buttons found:', buttons.length);
+        //console.log('Key pressed:', e.keyCode);
+        //console.log('Current index:', currentIndex);
         
         if(buttons.length === 0) {
-            console.log('No buttons found yet - waiting for content');
+            //console.log('No buttons found yet - waiting for content');
             return;
         }
 
@@ -162,7 +162,7 @@ $xValue = md5(time());
         const currentButton = buttons.eq(currentIndex);
         if(currentButton.length) {
             currentButton.addClass('active-btn');
-            console.log('Selected button ID:', currentButton.attr('id'));
+            //console.log('Selected button ID:', currentButton.attr('id'));
             currentButton[0]?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
@@ -181,7 +181,7 @@ $(document).ready(function() {
     // Reset index when mainBody content changes
     const mainBodyObserver = new MutationObserver(function(mutations) {
         currentIndex = 0;
-        console.log('Content changed - Reset index to:', currentIndex);
+        ////console.log('Content changed - Reset index to:', currentIndex);
         // Highlight first button after content loads
         const buttons = $('.nextBtn');
         if(buttons.length) {
