@@ -49,13 +49,13 @@ $xValue = md5(time());
 		background-color: #211f20 ;
 		color: white;
 	}
-	.nextBtn {
-    transition: outline 0.2s ease;
+	.active-btn {
+    outline: 3px dashed white !important;
+    outline-offset: 3px;
+    position: relative;
+    z-index: 1;
 }
 
-.nextBtn:focus {
-    outline: none;
-}
 	</style>
 </head>
 
@@ -119,83 +119,76 @@ $xValue = md5(time());
 		window.location.href = "?js=" + btnId;
 		$("#loading-screen").show();
 	});
+
 	$(document).ready(function() {
     let currentIndex = 0;
     const buttons = $('.nextBtn');
     
-    // Add initial highlight to first button
-    highlightButton(currentIndex);
-    
     $(document).keydown(function(e) {
-        // Remove highlight from all buttons
-        buttons.css('outline', 'none');
+        console.log('Key pressed:', e.keyCode);
+        
+        // Remove previous highlights
+        $('.nextBtn').removeClass('active-btn');
         
         switch(e.keyCode) {
-            case 37: // left arrow
+            case 37: // left
                 currentIndex = (currentIndex > 0) ? currentIndex - 1 : buttons.length - 1;
                 break;
-                
-            case 39: // right arrow
+            case 39: // right
                 currentIndex = (currentIndex < buttons.length - 1) ? currentIndex + 1 : 0;
                 break;
-                
-            case 38: // up arrow
-                currentIndex = Math.max(0, currentIndex - 2); // Move up by skipping 2 buttons
+            case 38: // up
+                currentIndex = Math.max(0, currentIndex - 2);
                 break;
-                
-            case 40: // down arrow
-                currentIndex = Math.min(buttons.length - 1, currentIndex + 2); // Move down by skipping 2 buttons
+            case 40: // down
+                currentIndex = Math.min(buttons.length - 1, currentIndex + 2);
                 break;
-                
-            case 13: // enter key
-                buttons.eq(currentIndex).click();
+            case 13: // enter
+                if(buttons[currentIndex]) {
+                    buttons[currentIndex].click();
+                }
                 break;
         }
+
+        // Add highlight to current button
+        const currentButton = buttons.eq(currentIndex);
+        if(currentButton.length) {
+            currentButton.addClass('active-btn');
+            const element = currentButton.get(0);
+            if(element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        }
         
-        highlightButton(currentIndex);
-        
-        // Scroll selected button into view
-        buttons.eq(currentIndex)[0].scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
-        
-        // Prevent page scroll
+        // Prevent default scroll
         if([37,38,39,40].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
     });
-    
-    function highlightButton(index) {
-        buttons.eq(index).css({
-            'outline': '3px dashed #fff',
-            'outline-offset': '3px'
-        });
-    }
 });
 
+
 $(document).ready(function() {
-    // Test keyboard detection
+    let currentIndex = 0;
+    const buttons = $('.nextBtn');
+    
+    console.log('Total buttons found:', buttons.length);
+    console.log('Initial setup complete');
+    
     $(document).keydown(function(e) {
+        console.log('-------------------');
         console.log('Key pressed:', e.keyCode);
+        console.log('Current index before:', currentIndex);
+        console.log('Current button ID:', buttons.eq(currentIndex).attr('id'));
         
-        switch(e.keyCode) {
-            case 37:
-                console.log('Left arrow pressed');
-                break;
-            case 38:
-                console.log('Up arrow pressed');
-                break;
-            case 39:
-                console.log('Right arrow pressed');
-                break;
-            case 40:
-                console.log('Down arrow pressed');
-                break;
-            case 13:
-                console.log('Enter pressed');
-                break;
-        }
+        // Rest of your existing code...
+        
+        console.log('New index after:', currentIndex);
+        console.log('New button ID:', buttons.eq(currentIndex).attr('id'));
+        console.log('-------------------');
     });
 });
 </script>
