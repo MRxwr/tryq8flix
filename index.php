@@ -112,18 +112,10 @@ $xValue = md5(time());
 		window.location.href = "?js=" + btnId;
 		$("#loading-screen").show();
 	});
-	// i want to move from div to div that has nextBtn as class using keyboard arrow keys
-	$(document).on('keydown', function(e) {
-		if (e.keyCode == 37) {
-			var nextBtn = $('.nextBtn');
-			if (nextBtn.length > 0) {
-				nextBtn[0].focus();
-			}
-		} else if (e.keyCode == 39) {
-			var prevBtn = $('.prevBtn');
-			if (prevBtn.length > 0) {
-				prevBtn[0].focus();
-			}
+	// i want to move from div to div that has nextBtn as class using keyboard arrow keys and on enter key press
+	$(document).keydown(function(e) {
+		if (e.keyCode == 39) {
+			$('.nextBtn').click();
 		}
 	});
 </script>
