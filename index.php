@@ -69,19 +69,19 @@ $xValue = md5(time());
 		<?php
 		echo "<div class='row m-0 p-0 w-100'> 
 				<div class='col p-1'>
-				<button id='{$website}' class='btn btn-danger changeIframeSrc w-100'>S4U</button>
+				<button id='{$website}' class='btn btn-danger changeIframeSrc w-100 nextBtn'>S4U</button>
 				</div>
 				<div class='col p-1'>
-				<button id='https://www.tuktukcima.com/' class='btn btn-dark changeIframeSrc w-100'>Tuk</button>
+				<button id='https://www.tuktukcima.com/' class='btn btn-dark changeIframeSrc w-100 nextBtn'>Tuk</button>
 				</div>
 				<div class='col p-1'>
-				<button id='https://e.3sk.media/' class='btn btn-danger changeIframeSrc w-100'>3SQ</button>
+				<button id='https://e.3sk.media/' class='btn btn-danger changeIframeSrc w-100 nextBtn'>3SQ</button>
 				</div>
 				<div class='col p-1'>
-				<button id='https://bollyrulez.info/' class='btn btn-dark changeIframeSrc w-100'>WWE</button>
+				<button id='https://bollyrulez.info/' class='btn btn-dark changeIframeSrc w-100 nextBtn'>WWE</button>
 				</div>
 				<div class='col p-1'>
-				<button id='https://anime4up.ch/' class='btn btn-danger changeIframeSrc w-100'>Anime</button>
+				<button id='https://anime4up.ch/' class='btn btn-danger changeIframeSrc w-100 nextBtn'>Anime</button>
 				</div>
 			  </div>
 			";
