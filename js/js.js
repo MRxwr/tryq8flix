@@ -120,7 +120,6 @@ function bodyLoad() {
 }
 
 $(function() {
-    alert($.cookie('tryq8flix2'));
     if ($.cookie('tryq8flix2') != null) {
         $("#profileOptions0").attr("style", "display:none");
         $("#profileOptions1").attr("style", "display:block");
