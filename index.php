@@ -173,6 +173,31 @@ $xValue = md5(time());
         });
     }
 });
+
+$(document).ready(function() {
+    // Test keyboard detection
+    $(document).keydown(function(e) {
+        console.log('Key pressed:', e.keyCode);
+        
+        switch(e.keyCode) {
+            case 37:
+                console.log('Left arrow pressed');
+                break;
+            case 38:
+                console.log('Up arrow pressed');
+                break;
+            case 39:
+                console.log('Right arrow pressed');
+                break;
+            case 40:
+                console.log('Down arrow pressed');
+                break;
+            case 13:
+                console.log('Enter pressed');
+                break;
+        }
+    });
+});
 </script>
 </body>
 
