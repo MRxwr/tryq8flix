@@ -175,6 +175,29 @@ $xValue = md5(time());
     });
 });
 
+$(document).ready(function() {
+    let currentIndex = 0;
+    
+    // Reset index when mainBody content changes
+    const mainBodyObserver = new MutationObserver(function(mutations) {
+        currentIndex = 0;
+        console.log('Content changed - Reset index to:', currentIndex);
+        // Highlight first button after content loads
+        const buttons = $('.nextBtn');
+        if(buttons.length) {
+            buttons.removeClass('active-btn');
+            buttons.eq(0).addClass('active-btn');
+        }
+    });
+
+    mainBodyObserver.observe(document.querySelector('#mainBody'), {
+        childList: true,
+        subtree: true
+    });
+
+    // Rest of your existing keyboard navigation code...
+});
+
 </script>
 </body>
 
