@@ -42,7 +42,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">Settings</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100">
@@ -57,38 +57,38 @@
                         <img src="<?php echo $image ?>" class="profileLogo rounded-circle" style="width:100px;height:100px">
                     </div>
                     <div id="profileOptions0" style="display:block">
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#login">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#login">
                         الدخول
                     </div>
                     <hr>
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#signup">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#signup">
                         التسجيل
                     </div>
                     <hr>
                     </div>
                     <div id="profileOptions1" style="display:none">
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#profile">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#profile">
                         الملف الشخصي
                     </div>
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#likedVidoesModal"  style="display:none">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#likedVidoesModal"  style="display:none">
                         <label id="likedVideosLabel">Liked Videos</label>
                     </div>
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#disLikedVidoesModal"  style="display:none">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#disLikedVidoesModal"  style="display:none">
                     <label id="disLikedVideosLabel">Dis-Liked Videos</label>
                     </div>
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#history" style="display:none">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#history" style="display:none">
                         <label id="historyLabel">History</label>
                     </div>
                     <hr>
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#request">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#request">
                         إطلب
                     </div>
                     <hr>
-                    <div class="col" data-bs-toggle="modal" data-bs-target="#contactUs">
+                    <div class="col nextBtn" data-bs-toggle="modal" data-bs-target="#contactUs">
                         تواصل معنا
                     </div>
                     <hr>
-                    <div class="col">
+                    <div class="col nextBtn">
                         <label id="logoutLabel">الخروج</label>
                     </div>
                     <hr>
@@ -104,7 +104,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">تسجيل الدخول</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100 m-0">
@@ -112,18 +112,18 @@
                         إسم المستخدم
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="loginUser">
+                        <input class="form-control nextBtn" type="text" name="loginUser">
                     </div>
                     <div class="col-12 mt-2">
                         كلمة المرور
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="password" name="loginPass">
+                        <input class="form-control nextBtn" type="password" name="loginPass">
                     </div>
                     <div class="col-12 mt-3">
                         <div class="row w-100 m-0 p-0">
-                            <div class="col-6"><div class="btn btn-primary w-100" id="loginBtn">دخول</div></div>
-                            <div class="col-6"><div data-bs-toggle="modal" data-bs-target="#forget" class="btn btn-secondary w-100">نسيان</div></div>
+                            <div class="col-6"><div class="btn btn-primary w-100 nextBtn" id="loginBtn">دخول</div></div>
+                            <div class="col-6"><div data-bs-toggle="modal" data-bs-target="#forget" class="btn btn-secondary w-100 nextBtn">نسيان</div></div>
                         </div>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">نسيان كلمة المرور</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100 m-0">
@@ -145,11 +145,11 @@
                         البريد الإلكتروني
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="email" name="forgetEmail">
+                        <input class="form-control nextBtn" type="email" name="forgetEmail">
                     </div>
                     <div class="col-12 mt-3">
                         <div class="row w-100 m-0 p-0">
-                            <div class="col-12"><div class="btn btn-primary w-100" id="forgetBtn">أرسل كلمة مرور جديده</div></div>
+                            <div class="col-12"><div class="btn btn-primary w-100 nextBtn" id="forgetBtn">أرسل كلمة مرور جديده</div></div>
                         </div>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">التسجيل</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100 m-0">
@@ -171,30 +171,30 @@
                         إسم المستخدم
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="regUser">
+                        <input class="form-control nextBtn" type="text" name="regUser">
                     </div>
                     <div class="col-12">
                         البريد الإلكتروني
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="email" name="regEmail">
+                        <input class="form-control nextBtn" type="email" name="regEmail">
                     </div>
                     <div class="col-12 mt-2">
                         كلمة المرور
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="password" name="regPass">
+                        <input class="form-control nextBtn" type="password" name="regPass">
                     </div>
                     <div class="col-12 mt-2">
                         إعادة كلمة المرور
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="password" name="regPass1">
+                        <input class="form-control nextBtn" type="password" name="regPass1">
                     </div>
                     <div class="col-12 mt-3">
                         <div class="row w-100 m-0 p-0">
-                            <div class="col-6"><div class="btn btn-primary w-100" id="regBtn">التسجيل</div></div>
-                            <div class="col-6"><div class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#login">الدخول</div></div>
+                            <div class="col-6"><div class="btn btn-primary w-100 nextBtn" id="regBtn">التسجيل</div></div>
+                            <div class="col-6"><div class="btn btn-secondary w-100 nextBtn" data-bs-toggle="modal" data-bs-target="#login">الدخول</div></div>
                         </div>
                     </div>
                 </div>
@@ -208,7 +208,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="profileLable">الملف الشخصي</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100 m-0">
@@ -216,41 +216,41 @@
                         إسم المستخدم
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="profileUser" value="<?php echo $profileData["username"] ?>" disabled>
+                        <input class="form-control nextBtn" type="text" name="profileUser" value="<?php echo $profileData["username"] ?>" disabled>
                     </div>
                     <div class="col-12">
                         البريد الإلكتروني
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="email" name="profileEmail" value="<?php echo $profileData["email"] ?>" disabled>
+                        <input class="form-control nextBtn" type="email" name="profileEmail" value="<?php echo $profileData["email"] ?>" disabled>
                     </div>
                     <div class="col-12 mt-2">
                         كلمة المرور
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="password" name="profilePass">
+                        <input class="form-control nextBtn" type="password" name="profilePass">
                     </div>
                     <div class="col-12 mt-2">
                         إعادة كلمة المرور
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="password" name="profilePass1">
+                        <input class="form-control nextBtn" type="password" name="profilePass1">
                     </div>
                     <div class="col-12">
                         UptoBox Token
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="profileToken" value="<?php echo $profileData["uptobox"] ?>">
+                        <input class="form-control nextBtn" type="text" name="profileToken" value="<?php echo $profileData["uptobox"] ?>">
                     </div>
                     <div class="col-12">
                         الصورة الشخصية
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="file" name="profileImage" id="profileLogo">
+                        <input class="form-control nextBtn" type="file" name="profileImage" id="profileLogo">
                     </div>
                     <div class="col-12 mt-3">
                         <div class="row w-100 m-0 p-0">
-                            <div class="col-12"><div class="btn btn-primary w-100" id="profileBtn">أرسل</div></div>
+                            <div class="col-12"><div class="btn btn-primary w-100 nextBtn" id="profileBtn">أرسل</div></div>
                         </div>
                     </div>
                 </div>
@@ -264,7 +264,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">تواصل معنا</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100 m-0">
@@ -272,17 +272,17 @@
                         العنوان
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="conTitle">
+                        <input class="form-control nextBtn" type="text" name="conTitle">
                     </div>
                     <div class="col-12">
                         الرسالة
                     </div>
                     <div class="col-12">
-                        <textarea class="form-control" name="conMsg"></textarea>
+                        <textarea class="form-control nextBtn" name="conMsg"></textarea>
                     </div>
                     <div class="col-12 mt-3">
                         <div class="row w-100 m-0 p-0">
-                            <div class="col-12"><div class="btn btn-primary w-100" id="conBtn">أرسل</div></div>
+                            <div class="col-12"><div class="btn btn-primary w-100 nextBtn" id="conBtn">أرسل</div></div>
                         </div>
                     </div>
                 </div>
@@ -296,7 +296,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="">الطلب</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close nextBtn" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row w-100 m-0">
@@ -304,23 +304,23 @@
                         العنوان
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="reqTitle">
+                        <input class="form-control nextBtn" type="text" name="reqTitle">
                     </div>
                     <div class="col-12">
                         رابط للصورة او لصفحة الفلم
                     </div>
                     <div class="col-12">
-                        <input class="form-control" type="text" name="reqIMDb">
+                        <input class="form-control nextBtn" type="text" name="reqIMDb">
                     </div>
                     <div class="col-12">
                         معلومات اخرى
                     </div>
                     <div class="col-12">
-                        <textarea class="form-control" name="reqMsg"></textarea>
+                        <textarea class="form-control nextBtn" name="reqMsg"></textarea>
                     </div>
                     <div class="col-12 mt-3">
                         <div class="row w-100 m-0 p-0">
-                            <div class="col-12"><div class="btn btn-primary w-100" id="reqBtn">أرسل</div></div>
+                            <div class="col-12"><div class="btn btn-primary w-100 nextBtn" id="reqBtn">أرسل</div></div>
                         </div>
                     </div>
                 </div>
