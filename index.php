@@ -49,14 +49,12 @@ $xValue = md5(time());
 		background-color: #211f20 ;
 		color: white;
 	}
-	.nextBtn:focus {
-    outline: none;
+	.nextBtn {
+    transition: outline 0.2s ease;
 }
 
-.nextBtn.selected {
-    box-shadow: 0 0 0 3px #fff;
-    position: relative;
-    z-index: 1;
+.nextBtn:focus {
+    outline: none;
 }
 	</style>
 </head>
@@ -121,27 +119,32 @@ $xValue = md5(time());
 		window.location.href = "?js=" + btnId;
 		$("#loading-screen").show();
 	});
-	// Add this script at the bottom of your index.php
-$(document).ready(function() {
+	$(document).ready(function() {
     let currentIndex = 0;
     const buttons = $('.nextBtn');
     
     // Add initial highlight to first button
-    buttons.eq(currentIndex).css('box-shadow', '0 0 0 3px #fff');
+    highlightButton(currentIndex);
     
     $(document).keydown(function(e) {
-        // Remove highlight from current button
-        buttons.eq(currentIndex).css('box-shadow', 'none');
+        // Remove highlight from all buttons
+        buttons.css('outline', 'none');
         
         switch(e.keyCode) {
             case 37: // left arrow
-            case 38: // up arrow
                 currentIndex = (currentIndex > 0) ? currentIndex - 1 : buttons.length - 1;
                 break;
                 
             case 39: // right arrow
-            case 40: // down arrow
                 currentIndex = (currentIndex < buttons.length - 1) ? currentIndex + 1 : 0;
+                break;
+                
+            case 38: // up arrow
+                currentIndex = Math.max(0, currentIndex - 2); // Move up by skipping 2 buttons
+                break;
+                
+            case 40: // down arrow
+                currentIndex = Math.min(buttons.length - 1, currentIndex + 2); // Move down by skipping 2 buttons
                 break;
                 
             case 13: // enter key
@@ -149,14 +152,26 @@ $(document).ready(function() {
                 break;
         }
         
-        // Add highlight to new current button
-        buttons.eq(currentIndex).css('box-shadow', '0 0 0 3px #fff');
+        highlightButton(currentIndex);
         
-        // Prevent page scroll when using arrow keys
+        // Scroll selected button into view
+        buttons.eq(currentIndex)[0].scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+        
+        // Prevent page scroll
         if([37,38,39,40].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
     });
+    
+    function highlightButton(index) {
+        buttons.eq(index).css({
+            'outline': '3px dashed #fff',
+            'outline-offset': '3px'
+        });
+    }
 });
 </script>
 </body>
