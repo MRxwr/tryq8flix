@@ -643,7 +643,7 @@ $(document).on('click', '#searchBtn', function(e) {
 	
 	$("#liveBtn").attr("style","color:#5e5e5e");
 	
-    $("#mainBody").html("<div class='p-3' id='searchBar' style='direction:ltr'><div class='input-group'><div class='input-group-prepend'><button class='btn btn-secondary' type='button' id='searchButton' style='background-color: #9f8d5c;'>بحث</button></div><input class='form-control' id='searchText' placeholder='إدخل كلمة البحث...' style='border-color: #9f8d5c;color: #9f8d5c;'></div></div><div id='searchBody'></div>");
+    $("#mainBody").html("<div class='p-3' id='searchBar' style='direction:ltr'><div class='input-group'><div class='input-group-prepend'><button class='btn btn-secondary nextBtn' type='button' id='searchButton' style='background-color: #9f8d5c;'>بحث</button></div><input class='form-control nextBtn' id='searchText' placeholder='إدخل كلمة البحث...' style='border-color: #9f8d5c;color: #9f8d5c;'></div></div><div id='searchBody'></div>");
 });
 
 $(document).on('keyup', '#searchText', function(event) {
