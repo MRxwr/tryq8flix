@@ -241,18 +241,18 @@ function outputData($shows){
 						<div class='card-body'>
 							<div class='row w-100 p-0 m-0'>
 								<div class='col-4 p-1'>
-							<img src='requests?type=getImages&url={$shows[$i]["image"]}' style='width:100%;height:150px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
-							</div>
-							<div class='col-8 p-1'>
-							<div style='height:250px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
-								<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h4>
-								<h5 class='card-title postTitle{$i}'>{$realTitle[0]}</h5>
-								<p class='card-text'>
-									<b>العنوان:</b> {$shows[$i]["episode"]}<br>
-									<b>التفاصيل:</b> {$shows[$i]["description"]}
-								</p>
-							</div>
-							</div>
+									<img src='requests?type=getImages&url={$shows[$i]["image"]}' style='width:100%;height:150px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+								</div>
+								<div class='col-8 p-1'>
+									<div style='height:250px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
+										<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h4>
+										<h5 class='card-title postTitle{$i}'>{$realTitle[0]}</h5>
+										<p class='card-text'>
+											<b>العنوان:</b> {$shows[$i]["episode"]}<br>
+											<b>التفاصيل:</b> {$shows[$i]["description"]}
+										</p>
+									</div>
+								</div>
 							</div>
 							<div class='row w-100 p-0 m-0'>
 								<div class='col-6 p-1'>
