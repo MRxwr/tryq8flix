@@ -245,8 +245,8 @@ function outputData($shows){
 								</div>
 								<div class='col-8 p-1'>
 									<div style='height:250px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
-										<h4 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h4>
-										<h5 class='card-title postTitle{$i}'>{$realTitle[0]}</h5>
+										<h6 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h6>
+										<h6 class='card-title postTitle{$i}'>{$realTitle[0]}</h6>
 										<p class='card-text'>
 											<b>العنوان:</b> {$shows[$i]["episode"]}<br>
 											<b>التفاصيل:</b> {$shows[$i]["description"]}
