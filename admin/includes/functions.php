@@ -245,7 +245,7 @@ function outputData($shows){
 								<h5 class='card-title postTitle{$i}'>{$realTitle[0]}</h3>
 								<p class='card-text'>
 									<b>العنوان:</b> {$shows[$i]["episode"]}<br>
-									<b>التفاصيل:</b> {$shows[$i]["description"]}
+									<b>التفاصيل:</b> {".substr($shows[$i]["description"],0,75)."}...
 								</p>
 							</div>
 							<div class='row w-100 p-0 m-0'>
