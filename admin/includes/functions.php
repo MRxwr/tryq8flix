@@ -236,7 +236,7 @@ function outputData($shows){
 			}
 			$realTitle = explode("الحلقة",$shows[$i]["title"]);
 			$output .= "
-				<div class='col-xl-2 col-lg-4 col-md-6 col-sm-12 p-3'>
+				<div class='col-xl-3 col-lg-4 col-md-6 col-sm-12 p-3'>
 					<div class='card w-100'>
 						<div class='card-body'>
 							<div class='row w-100 p-0 m-0'>
@@ -253,8 +253,6 @@ function outputData($shows){
 										</p>
 									</div>
 								</div>
-							</div>
-							<div class='row w-100 p-0 m-0'>
 								<div class='col-6 p-1'>
 									<div data-bs-toggle='modal' data-bs-target='#playVideo' class='btn btn-danger w-100 playVideo nextBtn' id='{$checkVideoType}'><i class='bi bi-play-fill'></i> {$shows[$i]["episode"]}</div>
 								</div>
