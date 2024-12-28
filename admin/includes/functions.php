@@ -236,7 +236,7 @@ function outputData($shows){
 			}
 			$realTitle = explode("الحلقة",$shows[$i]["title"]);
 			$output .= "
-				<div class='col-xl-4 col-lg-4 col-md-6 col-sm-12 p-3'>
+				<div class='col-xl-4 col-lg-4 col-md-6 col-sm-12 p-1'>
 					<div class='card w-100'>
 						<div class='card-body'>
 							<div class='row w-100 p-0 m-0'>
