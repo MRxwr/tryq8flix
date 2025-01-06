@@ -18,7 +18,7 @@ function getWebsite(){
 	return $website.$collection.$category;
 }
 
-function searchSite()
+function searchShahid()
 {
     GLOBAL $website, $_GET;
 
