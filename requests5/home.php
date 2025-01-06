@@ -20,8 +20,8 @@ function getWebsite(){
 
 function searchShahid()
 {
-    GLOBAL $website, $_GET;
-
+    GLOBAL $_GET;
+	$website = "https://shahid4u.ink/";
     // Handle collection/category from query string (same as your original logic)
     $collection = (isset($_GET["collection"])) ? "?order={$_GET["collection"]}" : "";
     $category   = (isset($_GET["category"]))   ? "&category={$_GET["category"]}" : "";
