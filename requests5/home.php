@@ -41,7 +41,6 @@ function searchShahid()
 
     // Scrape the final URL
     $html = scrapePage($website . $collection . $category);
-var_dump($html);
     // Parse HTML
     $dom = str_get_html($html);
     $data = [
