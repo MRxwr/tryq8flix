@@ -70,11 +70,12 @@ function searchShahid()
 
             // Prepare data for each show
             $jsonData = [
-                'href'       => trim($href),
-                'image'      => trim($image),
+                'href'       => trim("$website".$href),
+                'image'      => trim("$website".$image),
                 'episode'    => trim($episode),
                 'views'      => trim($views),
                 'title'      => trim($title),
+                'category'   => "",
                 'description'=> '' // This site doesn't appear to include a show description
             ];
 
