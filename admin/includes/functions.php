@@ -339,19 +339,19 @@ function outputData3($shows) {
             $realTitle = explode("الحلقة", $shows[$i]["title"]);
 
             $output .= "
-                <div class='col-xl-3 col-lg-4 col-md-6 col-sm-12 p-3'>
+                <div class='col-xl-4 col-lg-6 col-md-6 col-sm-12 p-1'>
                     <div class='card w-100'>
                         <div class='card-body'>
-                            <img src='{$shows[$i]["image"]}' style='width:100%;height:300px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
-                            <div style='height:150px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
-                                <h6 class='card-title {$catgoryType}' id='" . str_replace(' ', '-', $shows[$i]["category"]) . "' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h6>
-                                <h6 class='card-title postTitle{$i}'>{$realTitle[0]}</h6>
-                                <p class='card-text'>
-                                    <b>العنوان:</b> {$shows[$i]["episode"]}<br>
-                                    <b>التفاصيل:</b> " . substr($shows[$i]["description"], 0, 100) . "...
-                                </p>
-                            </div>
                             <div class='row w-100 p-0 m-0'>
+                                <div class='col-4 p-1'>
+                                    <img src='{$shows[$i]["image"]}' style='width:100%;height:170px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+                                </div>
+                                <div class='col-8 p-1'>
+                                    <div style='height:170px; overflow:auto; text-align: -webkit-right;' class='pt-2'>
+                                        <h6 class='card-title {$catgoryType}' id='" . str_replace(' ', '-', $shows[$i]["category"]) . "' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h6>
+                                        <h6 class='card-title postTitle{$i}'>{$realTitle[0]}</h6>
+                                    </div>
+                                </div>
                                 <div class='col-6 p-1'>
                                     <div data-bs-toggle='modal' data-bs-target='#playVideo' class='btn btn-danger w-100 playVideo nextBtn' id='{$checkVideoType}'><i class='bi bi-play-fill'></i> {$shows[$i]["episode"]}</div>
                                 </div>
