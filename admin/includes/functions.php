@@ -606,4 +606,48 @@ function scrapeWecima($url) {
         return 0;
     }
 }
+
+function getJsonDataApi($shows) { 
+    $user = checkLogin();
+    
+    if (!is_array($shows) || empty($shows) || empty($user["id"])) {
+        return json_encode(["error" => "No result."]);
+    }
+
+    $output = [];
+
+    foreach ($shows as $i => $show) {
+        $checkVideoType = str_replace(
+            ["film", "post", "episode"], 
+            "watch", 
+            $show["href"]
+        );
+
+        if (strstr($show["href"], "episode")) {
+            $categoryType = "categoryTitleTv";
+            $episode = $show["episode"];
+        } elseif (strstr($show["href"], "film")) {
+            $categoryType = "categoryTitleMovie";
+            $episode = "تشغيل";
+        } else {
+            $categoryType = "categoryTitlePost";
+            $episode = "تشغيل";
+        }
+
+        $realTitle = explode("الحلقة", $show["title"])[0];
+
+        $output[] = [
+            "category" => $show["category"],
+            "categoryType" => $categoryType,
+            "title" => $realTitle,
+            "image" => $show["image"],
+            "href" => $show["href"],
+            "videoType" => $checkVideoType,
+            "episode" => $episode,
+            "description" => substr($show["description"], 0, 100) . "..."
+        ];
+    }
+
+    return json_encode($output, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+}
 ?>
