@@ -2,7 +2,7 @@
 function searchShahid($search){
 	GLOBAL $website4;
 	$search = str_replace(' ','+',$search);
-	$html = scrapEgyDead("{$website4}/?s={$search}");
+	$html = scrapEgyDead("https://9zb63om0bp.sbs/?s={$search}");
 	return $html;
 }
 
