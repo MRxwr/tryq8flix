@@ -119,7 +119,7 @@ $xValue = md5(time());
 		window.location.href = "?js=" + btnId;
 		$("#loading-screen").show();
 	});
-/*
+
 	$(document).ready(function() {
     let currentIndex = 0;
     
@@ -197,7 +197,7 @@ $(document).ready(function() {
 
     // Rest of your existing keyboard navigation code...
 });
-*/
+
 </script>
 </body>
 
