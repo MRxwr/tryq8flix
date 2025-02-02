@@ -2,7 +2,7 @@
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 $profileData = checkLogin();
-$js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js.js';
+$js = (isset($_GET['js'])) ? urldecode($_GET['js']) : 'js/js4.js';
 $x  = randomLetter();
 $xValue = md5(time());
 ?>
@@ -119,7 +119,7 @@ $xValue = md5(time());
 		window.location.href = "?js=" + btnId;
 		$("#loading-screen").show();
 	});
-
+/*
 	$(document).ready(function() {
     let currentIndex = 0;
     
@@ -197,7 +197,7 @@ $(document).ready(function() {
 
     // Rest of your existing keyboard navigation code...
 });
-
+*/
 </script>
 </body>
 
