@@ -9,7 +9,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
     }elseif( $_GET["action"] == "view" ){
         if( isset($_GET["server"]) && !empty($_GET["server"]) ){
             if( $_GET["server"] == 1 ){
-                $data = scrapeWecima($url);
+                $data = scrapeWecima("{$website3}");
                 $data = json_decode($data, true);
                 echo dataOutput($data);die();
             }else{
