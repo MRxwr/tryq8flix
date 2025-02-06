@@ -1,5 +1,5 @@
 <?php
-if( $_GET["endpoint"] == "login" ){
+if( $_GET["action"] == "login" ){
     if( !isset($_POST["username"]) || empty($_POST["username"]) ){
         echo dataError(array("msg" => "Username is required"));die();
     }
@@ -13,7 +13,7 @@ if( $_GET["endpoint"] == "login" ){
     }else{
         echo dataError(array("msg" => "Invalid Username or Password"));die();
     }
-}elseif( $_GET["endpoint"] == "register" ){
+}elseif( $_GET["action"] == "register" ){
     if( !isset($_POST["username"]) || empty($_POST["username"]) ){
         echo dataError(array("msg" => "Username is required"));die();
     }
@@ -46,7 +46,7 @@ if( $_GET["endpoint"] == "login" ){
             echo dataError(array("msg" => "Something went wrong, please try again"));die();
         }
     }
-}elseif( $_GET["endpoint"] == "logout" ){
+}elseif( $_GET["action"] == "logout" ){
     if( empty($token) ){
         echo dataError(array("msg" => "token is required"));die();
     }
@@ -60,7 +60,7 @@ if( $_GET["endpoint"] == "login" ){
     }else{
         echo dataError(array("msg" => "Invalid token"));die();
     }
-}elseif( $_GET["endpoint"] == "forget" ){
+}elseif( $_GET["action"] == "forget" ){
     if( !isset($_POST["email"]) || empty($_POST["email"]) ){
         echo dataError(array("msg" => "Email is required"));die();
     }
@@ -84,6 +84,6 @@ if( $_GET["endpoint"] == "login" ){
         echo dataError(array("msg" => "Email not found"));die();
     }
 }else{
-    echo dataError(array("msg" => "404 endpoint Not Found"));die();
+    echo dataError(array("msg" => "404 action Not Found"));die();
 }
 ?>
