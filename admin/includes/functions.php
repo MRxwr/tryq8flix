@@ -632,7 +632,7 @@ function wecimaListing($url) {
         ];
     }
 
-	if (strpos(strtolower($_POST["id"]), 'season') === false){
+	if (strpos(strtolower($url), 'season') === false){
 		$episodesData = array_reverse($episodesData);
 		$seasonsData = array_reverse($seasonsData);
 	}
