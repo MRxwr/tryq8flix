@@ -603,6 +603,48 @@ function extractLink($html) {
     return "";
 }
 
+//get list of seasons and episodes wecima
+function wecimaListing($url) {
+	$html = file_get_contents($url);
+    $htmlDom = str_get_html($html);
+    $seasonsData = [];
+    $episodesData = [];
+    foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
+        $link = $seasonLink->href;
+        $title = trim($seasonLink->plaintext);
+        $seasonNumber = preg_replace('/[^0-9]/', '', $title);
+        $seasonsData[] = [
+            'link' => $link,
+            'title' => $title,
+            'season_number' => $seasonNumber
+        ];
+    }
+    // Scrape episodes
+    foreach ($htmlDom->find('.Episodes--Seasons--Episodes a') as $episodeLink) {
+        $link = $episodeLink->href;
+        $title = trim($episodeLink->find('episodetitle', 0)->plaintext);
+        $episodeNumber = preg_replace('/[^0-9]/', '', $title);
+
+        $episodesData[] = [
+            'link' => $link,
+            'title' => $title,
+            'episode_number' => $episodeNumber
+        ];
+    }
+
+	if (strpos(strtolower($_POST["id"]), 'season') === false){
+		$episodesData = array_reverse($episodesData);
+		$seasonsData = array_reverse($seasonsData);
+	}
+	$data = [
+		'seasons' => $seasonsData,
+		'episodes' => $episodesData
+	];
+	$htmlDom->clear();
+	unset($htmlDom);
+	return $data;
+}
+
 //get we cima video list servers 
 function scrapeWecimaServers($url) {
 	$html = file_get_contents("{$url}");
