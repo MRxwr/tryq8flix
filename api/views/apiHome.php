@@ -11,6 +11,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             if( $_GET["server"] == 1 ){
                 $url = $website3;
                 if( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
                     $url .= "/search/{$_GET["search"]}";
                 }
                 if( isset($_GET["page"]) && !empty($_GET["page"]) ){
