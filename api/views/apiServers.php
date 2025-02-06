@@ -8,7 +8,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             echo dataError(array("msg" => "href is required"));die();
         }
         $url = $_GET["href"];
-        scrapeWecimaServers($url);
+        $data = scrapeWecimaServers($url);
         echo dataOutput($data);die();
     }elseif( $_GET["action"] == "view" ){
         
