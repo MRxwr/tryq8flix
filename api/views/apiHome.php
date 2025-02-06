@@ -10,6 +10,9 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
         if( isset($_GET["server"]) && !empty($_GET["server"]) ){
             if( $_GET["server"] == 1 ){
                 $url = $website3;
+                if( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $url .= "/search/{$_GET["search"]}";
+                }
                 if( isset($_GET["page"]) && !empty($_GET["page"]) ){
                     $url .= "/page/{$_GET["page"]}";
                 }
