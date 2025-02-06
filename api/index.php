@@ -13,6 +13,6 @@ if( isset($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['HTTP_AUTHORIZATION
 if( isset($_GET["endpoint"]) && searchFile("views","api{$_GET["endpoint"]}.php") ){
 	require_once("views/".searchFile("views","api{$_GET["endpoint"]}.php"));
 }else{
-	echo outputError(array("msg" => "404 endpoint Not Found"));die();
+	echo dataOutput(array("msg" => "404 endpoint Not Found"));die();
 }
 ?>
