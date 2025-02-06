@@ -603,6 +603,35 @@ function extractLink($html) {
     return "";
 }
 
+//get we cima video list servers 
+function scrapeWecimaServers($url) {
+	$html = file_get_contents("{$url}");
+    $dom = str_get_html($html);
+    $data = [
+        'shows' => []
+    ];
+    if ($dom) {
+        foreach ($dom->find('.WatchServersList ul li') as $server) {
+            $btn = $server->find('btn', 0);
+            if ($btn) {
+                $title = $btn->find('strong', 0)->plaintext;
+                $dataUrl = $btn->getAttribute('data-url');
+                $jsonData = [
+                    'link' => str_replace(" ", "", $dataUrl)
+                ];
+                $data['shows'][] = $jsonData;
+            }
+        }
+        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Invalid DOM object.';
+        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+    $servers = json_decode($servers, true);
+	$dom->clear();
+	unset($dom);
+	return $servers;
+}
 function scrapeWecima($url) {
     $url = ( !isset($url) || empty($url) ) ? 'https://wecima.show' : $url;
     $html = file_get_contents($url);
