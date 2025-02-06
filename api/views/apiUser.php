@@ -83,6 +83,29 @@ if( $_GET["action"] == "login" ){
     }else{
         echo dataError(array("msg" => "Email not found"));die();
     }
+}elseif( $_GET["action"] == "change" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        if( !isset($_POST["password"]) || empty($_POST["password"]) ){
+            echo dataError(array("msg" => "Password is required"));die();
+        }
+        if( !isset($_POST["confirmPassword"]) || empty($_POST["confirmPassword"]) ){
+            echo dataError(array("msg" => "Confirm Password is required"));die();
+        }
+        if( $_POST["password"] != $_POST["confirmPassword"] ){
+            echo dataError(array("msg" => "Password and Confirm Password do not match"));die();
+        }
+        $data = array("password" => sha1($_POST["password"]));
+        if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+            echo dataOutput(array("msg" => "Password changed successfully"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
 }else{
     echo dataError(array("msg" => "404 action Not Found"));die();
 }
