@@ -570,7 +570,6 @@ function makeRequest($url, $postData = null, $referer = null) {
         'Sec-Fetch-Dest: empty',
         'Sec-Fetch-Mode: cors',
         'Sec-Fetch-Site: same-origin',
-		'content-type: application/x-www-form-urlencoded',
     ];
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
