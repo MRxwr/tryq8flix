@@ -33,7 +33,7 @@ function getTopCimaUrl($postData, $link){
     curl_close($curl);
     print_r($headers);
     print_r($postData);
-    print_r($response);die();
+    var_dump($response);die();
     return $response;
 }
 
