@@ -4,36 +4,37 @@ $website2 = "https://web5.topcinema.world";
 function getTopCimaUrl($postData, $link) {
     GLOBAL $website2;
     
-    // Ensure no trailing slash
+    // Remove any trailing slash from $website2
     $website2 = rtrim($website2, '/');
     
     // Build the URL
     $url = $website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
     echo $url . "\n"; // Debug output
     
-    // Convert POST data to a URL-encoded string
+    // Convert POST data to URL-encoded string
     $postDataString = http_build_query($postData);
 
-    // Prepare headers to mimic Chrome as closely as possible
+    // Prepare headers to mimic a browser (adjust these values if you capture the exact headers)
     $headers = array(
-        "Accept: */*",
+        // Using an Accept header similar to what Chrome might send
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
         "Accept-Encoding: gzip, deflate", // Only encodings supported by libcurl
         "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
+        "Cache-Control: max-age=0",
+        "DNT: 1",
         "Content-Type: application/x-www-form-urlencoded; charset=UTF-8",
-        // Use cookies from a valid session if needed
+        // Make sure the cookie string is current (if session cookies are needed, update accordingly)
         "Cookie: _gid=GA1.2.1165536105.1739483465; _ga=GA1.1.1382703612.1739483465; _ga_6ZDPCTTMZN=GS1.1.1739483464.1.1.1739486025.0.0.0",
         "Origin: https://web5.topcinema.world",
         "Referer: {$link}",
         "Sec-Fetch-Dest: empty",
         "Sec-Fetch-Mode: cors",
         "Sec-Fetch-Site: same-origin",
+        "Sec-Fetch-User: ?1",
+        "Priority: u=1, i",
+        "Connection: keep-alive",
         "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0",
-        "X-Requested-With: XMLHttpRequest",
-        // Additional headers to better mimic a modern browser
-        "Sec-CH-UA: \"Not A;Brand\";v=\"99\", \"Chromium\";v=\"99\", \"Google Chrome\";v=\"99\"",
-        "Sec-CH-UA-Mobile: ?1",
-        "Sec-CH-UA-Platform: \"iOS\"",
-        "Upgrade-Insecure-Requests: 1"
+        "X-Requested-With: XMLHttpRequest"
     );
 
     $curl = curl_init();
@@ -54,9 +55,11 @@ function getTopCimaUrl($postData, $link) {
     ));
 
     $response = curl_exec($curl);
+
     if ($response === false) {
         echo 'Curl error: ' . curl_error($curl);
     }
+
     curl_close($curl);
 
     // Debug output for headers, post data, and response
