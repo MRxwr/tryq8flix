@@ -7,6 +7,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) && $_POST["type"] == "get" )
     unset($data["link"]);
     $postData = $data;
     echo $url = makeRequest($ajaxUrl, $postData, $link);
+    var_dump($url);
 }else{
     echo "error";
 }
