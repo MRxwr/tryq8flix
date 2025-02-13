@@ -16,7 +16,7 @@ function getTopCimaUrl($postData, $link){
         "Referer: {$link}",
         'x-requested-with: XMLHttpRequest',
         'content-type: application/x-www-form-urlencoded',
-        //'content-length: 13',
+        'content-length: 13',
     ),
     ));
     $response = curl_exec($curl);
@@ -39,7 +39,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) && $_POST["type"] == "get" )
     $data = json_decode($_POST["data"], true);
     $link = str_replace("web2.topcinema.cam","web5.topcinema.world",$data["link"]);
     unset($data["link"]);
-    echo $url = extractLinkTopCima(getTopCimaUrl($data, $link));
+    echo $url = (getTopCimaUrl($data, $link));
 }else{
     echo "error";
 }
