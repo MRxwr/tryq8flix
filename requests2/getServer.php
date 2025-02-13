@@ -35,7 +35,7 @@ function getTopCimaUrl($postData, $link){
     print_r($headers);
     print_r($postData);
     if ($response === false) {
-        echo 'Curl error: ' . curl_error($ch);
+        echo 'Curl error: ' . curl_error($curl);
     }
     var_dump($response);die();
     return $response;
