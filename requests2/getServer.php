@@ -1,6 +1,6 @@
 <?php 
 var_dump($_REQUEST);
-if( isset($_GET["type"]) && !empty($_GET["type"]) && $_GET["type"] == "getServer" ){
+if( isset($_POST["type"]) && !empty($_POST["type"]) && $_POST["type"] == "getServer" ){
     $ajaxUrl = 'https://web.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php';
     $data = json_decode($_POST["data"], true);
     $link = $data["link"];
