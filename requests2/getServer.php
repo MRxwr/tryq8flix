@@ -1,5 +1,4 @@
 <?php 
-<?php
 
 $website2 = "https://web5.topcinema.world";
 
