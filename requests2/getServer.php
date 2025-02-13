@@ -1,6 +1,11 @@
 <?php 
-function getTopCimaUrl($postData, $link){
+function getTopCimaUrl($postData, $link) {
     GLOBAL $website2;
+
+    // Build the POST data string
+    $postDataString = http_build_query($postData);
+
+    // Prepare headers without the hardcoded content-length header.
     $headers = array(
         'Accept: */*',
         'Accept-Language: en-US,en;q=0.5',
@@ -12,34 +17,46 @@ function getTopCimaUrl($postData, $link){
         "Referer: {$link}",
         'x-requested-with: XMLHttpRequest',
         'content-type: application/x-www-form-urlencoded',
-        'content-length: 13',
         'user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0',
         'origin: https://web5.topcinema.world'
     );
-    echo "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+
+    $url = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    echo $url;
+    
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => '',
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 0,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => $postData,
-    CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $postDataString,
+        CURLOPT_HTTPHEADER => $headers,
+        // Optional: Enable verbose logging for debugging
+        CURLOPT_VERBOSE => true,
     ));
+
     $response = curl_exec($curl);
-    curl_close($curl);
-    print_r($headers);
-    print_r($postData);
+
     if ($response === false) {
         echo 'Curl error: ' . curl_error($curl);
     }
-    var_dump($response);die();
+
+    curl_close($curl);
+
+    // Optional debugging output
+    print_r($headers);
+    print_r($postData);
+    var_dump($response);
+    die();
+
     return $response;
 }
+
 
 function extractLinkTopCima($html) {
     if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
