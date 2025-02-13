@@ -16,7 +16,7 @@ function getTopCimaUrl($postData, $link){
         "Referer: {$link}",
         'x-requested-with: XMLHttpRequest',
         'content-type: application/x-www-form-urlencoded',
-        'content-length: 13',
+        //'content-length: 13',
     ),
     ));
     $response = curl_exec($curl);
