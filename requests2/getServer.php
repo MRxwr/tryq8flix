@@ -8,6 +8,6 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) && $_POST["type"] == "getSer
     $postData = $data;
     echo $url = makeRequest($ajaxUrl, $postData, $link);
 }else{
-    echo "";
+    echo "error";
 }
 ?>
