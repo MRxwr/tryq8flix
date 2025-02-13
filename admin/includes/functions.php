@@ -590,7 +590,7 @@ function makeRequest($url, $postData = null, $referer = null) {
     $response = curl_exec($ch);
     curl_close($ch);
     $link = extractLink($response);
-    return $response;
+    return $headers;
 }
 
 function extractLink($html) {
