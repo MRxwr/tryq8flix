@@ -31,7 +31,8 @@ function getTopCimaUrl($postData, $link){
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    print_r($response)
+    print_r($headers);
+    print_r($postData);
     print_r($response);die();
     return $response;
 }
