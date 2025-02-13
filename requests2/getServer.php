@@ -13,11 +13,6 @@ function getTopCimaUrl($postData, $link){
     CURLOPT_CUSTOMREQUEST => 'POST',
     CURLOPT_POSTFIELDS => $postData,
     CURLOPT_HTTPHEADER => array(
-        "Referer: {$link}",
-        'x-requested-with: XMLHttpRequest',
-        'content-type: application/x-www-form-urlencoded',
-        'content-length: 13',
-        'user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0',
         'Accept: */*',
         'Accept-Language: en-US,en;q=0.5',
         'Accept-Encoding: gzip, deflate',
@@ -25,6 +20,11 @@ function getTopCimaUrl($postData, $link){
         'Sec-Fetch-Dest: empty',
         'Sec-Fetch-Mode: cors',
         'Sec-Fetch-Site: same-origin',
+        "Referer: {$link}",
+        'x-requested-with: XMLHttpRequest',
+        'content-type: application/x-www-form-urlencoded',
+        'content-length: 13',
+        'user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0',
     ),
     ));
     $response = curl_exec($curl);
