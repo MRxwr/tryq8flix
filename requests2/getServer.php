@@ -1,7 +1,5 @@
 <?php 
 function getTopCimaUrl($postData, $link){
-    print_r($postData);
-    print_r($link);
     GLOBAL $website2;
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -21,6 +19,7 @@ function getTopCimaUrl($postData, $link){
     ));
     $response = curl_exec($curl);
     curl_close($curl);
+    print_r($response);
     return $response;
 }
 
