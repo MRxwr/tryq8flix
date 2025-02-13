@@ -582,11 +582,15 @@ function makeRequest($url, $postData = null, $referer = null) {
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_ENCODING => '',
+		CURLOPT_CUSTOMREQUEST => 'POST',
+		CURLOPT_POSTFIELDS => $postData,
     ]);
+	/*
     if ($postData) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     }
+		*/
     $response = curl_exec($ch);
     curl_close($ch);
     $link = extractLink($response);
