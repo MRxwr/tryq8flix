@@ -16,6 +16,7 @@ function getTopCimaUrl($postData, $link){
         'user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0',
         'origin: https://web5.topcinema.world'
     );
+    echo "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
     $curl = curl_init();
     curl_setopt_array($curl, array(
     CURLOPT_URL => "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
