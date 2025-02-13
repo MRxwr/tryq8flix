@@ -2,33 +2,38 @@
 function getTopCimaUrl($postData, $link) {
     GLOBAL $website2;
 
-    // Build the POST data string
+    // Convert the POST data to a URL-encoded string
     $postDataString = http_build_query($postData);
 
-    // Prepare headers without the hardcoded content-length header.
+    // Build the URL (using https as observed in your headers)
+    $url = "https://{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    echo $url . "\n";
+
+    // Prepare headers to match the browser's request
     $headers = array(
-        'Accept: */*',
-        'Accept-Language: en-US,en;q=0.5',
-        'Accept-Encoding: gzip, deflate',
-        'Connection: keep-alive',
-        'Sec-Fetch-Dest: empty',
-        'Sec-Fetch-Mode: cors',
-        'Sec-Fetch-Site: same-origin',
+        "Accept: */*",
+        "Accept-Encoding: gzip, deflate, br, zstd",
+        "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
+        // Let cURL handle content-length automatically by commenting it out,
+        // or if you need to set it manually, uncomment the next line:
+        //"Content-Length: " . strlen($postDataString),
+        "Content-Type: application/x-www-form-urlencoded; charset=UTF-8",
+        "Cookie: _gid=GA1.2.1165536105.1739483465; _ga=GA1.1.1382703612.1739483465; _ga_6ZDPCTTMZN=GS1.1.1739483464.1.1.1739486025.0.0.0",
+        "Origin: https://web5.topcinema.world",
         "Referer: {$link}",
-        'x-requested-with: XMLHttpRequest',
-        'content-type: application/x-www-form-urlencoded',
-        'user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0',
-        'origin: https://web5.topcinema.world'
+        "Sec-Fetch-Dest: empty",
+        "Sec-Fetch-Mode: cors",
+        "Sec-Fetch-Site: same-origin",
+        "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/133.0.0.0",
+        "X-Requested-With: XMLHttpRequest"
     );
 
-    $url = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    echo $url;
-    
     $curl = curl_init();
+
     curl_setopt_array($curl, array(
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
+        CURLOPT_ENCODING => '', // handle all encodings
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
@@ -36,7 +41,7 @@ function getTopCimaUrl($postData, $link) {
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => $postDataString,
         CURLOPT_HTTPHEADER => $headers,
-        // Optional: Enable verbose logging for debugging
+        // Optional: Enable verbose logging for debugging; remove/comment when done
         CURLOPT_VERBOSE => true,
     ));
 
@@ -48,7 +53,7 @@ function getTopCimaUrl($postData, $link) {
 
     curl_close($curl);
 
-    // Optional debugging output
+    // Debug output if needed
     print_r($headers);
     print_r($postData);
     var_dump($response);
