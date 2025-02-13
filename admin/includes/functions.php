@@ -562,7 +562,14 @@ function scrapEgyDead($url) {
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
     $headers = [
-    	'x-requested-with: XMLHttpRequest'
+        'Accept: */*',
+        'Accept-Language: en-US,en;q=0.5',
+        'Accept-Encoding: gzip, deflate',
+        'X-Requested-With: XMLHttpRequest',
+        'Connection: keep-alive',
+        'Sec-Fetch-Dest: empty',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
@@ -572,7 +579,7 @@ function makeRequest($url, $postData = null, $referer = null) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/129.0',
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_ENCODING => '',
     ]);
@@ -583,7 +590,7 @@ function makeRequest($url, $postData = null, $referer = null) {
     $response = curl_exec($ch);
     curl_close($ch);
     $link = extractLink($response);
-    return $response;
+    return $link;
 }
 
 function extractLink($html) {
