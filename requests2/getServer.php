@@ -1,22 +1,24 @@
 <?php 
+$website2 = "https://web5.topcinema.world";
+
 function getTopCimaUrl($postData, $link) {
     GLOBAL $website2;
 
-    // Convert the POST data to a URL-encoded string
-    $postDataString = http_build_query($postData);
+    // Remove any trailing slash from $website2 if present
+    $website2 = rtrim($website2, '/');
+    
+    // Build the URL (since $website2 already includes "https://")
+    $url = $website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    echo $url . "\n"; // Debug output to verify the URL
 
-    // Build the URL (using https as observed in your headers)
-    $url = "https://{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    echo $url . "\n";
+    // Convert the POST data array to a URL-encoded string
+    $postDataString = http_build_query($postData);
 
     // Prepare headers to match the browser's request
     $headers = array(
         "Accept: */*",
         "Accept-Encoding: gzip, deflate, br, zstd",
         "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
-        // Let cURL handle content-length automatically by commenting it out,
-        // or if you need to set it manually, uncomment the next line:
-        //"Content-Length: " . strlen($postDataString),
         "Content-Type: application/x-www-form-urlencoded; charset=UTF-8",
         "Cookie: _gid=GA1.2.1165536105.1739483465; _ga=GA1.1.1382703612.1739483465; _ga_6ZDPCTTMZN=GS1.1.1739483464.1.1.1739486025.0.0.0",
         "Origin: https://web5.topcinema.world",
@@ -33,7 +35,7 @@ function getTopCimaUrl($postData, $link) {
     curl_setopt_array($curl, array(
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '', // handle all encodings
+        CURLOPT_ENCODING => '', // Accept all supported encodings
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
@@ -41,7 +43,7 @@ function getTopCimaUrl($postData, $link) {
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => $postDataString,
         CURLOPT_HTTPHEADER => $headers,
-        // Optional: Enable verbose logging for debugging; remove/comment when done
+        // Optional: Enable verbose logging for debugging
         CURLOPT_VERBOSE => true,
     ));
 
@@ -53,7 +55,7 @@ function getTopCimaUrl($postData, $link) {
 
     curl_close($curl);
 
-    // Debug output if needed
+    // Debug output
     print_r($headers);
     print_r($postData);
     var_dump($response);
