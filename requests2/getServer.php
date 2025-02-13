@@ -3,21 +3,21 @@ $website2 = "https://web5.topcinema.world";
 
 function getTopCimaUrl($postData, $link) {
     GLOBAL $website2;
-
-    // Remove any trailing slash from $website2 if present
+    
+    // Ensure $website2 doesn't have a trailing slash
     $website2 = rtrim($website2, '/');
     
-    // Build the URL (since $website2 already includes "https://")
+    // Build the URL
     $url = $website2 . "/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
     echo $url . "\n"; // Debug output to verify the URL
 
-    // Convert the POST data array to a URL-encoded string
+    // Convert POST data to a URL-encoded string
     $postDataString = http_build_query($postData);
 
-    // Prepare headers to match the browser's request
+    // Prepare headers, note the updated Accept-Encoding header (removed "br" and "zstd")
     $headers = array(
         "Accept: */*",
-        "Accept-Encoding: gzip, deflate, br, zstd",
+        "Accept-Encoding: gzip, deflate", // Updated header
         "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
         "Content-Type: application/x-www-form-urlencoded; charset=UTF-8",
         "Cookie: _gid=GA1.2.1165536105.1739483465; _ga=GA1.1.1382703612.1739483465; _ga_6ZDPCTTMZN=GS1.1.1739483464.1.1.1739486025.0.0.0",
@@ -35,7 +35,7 @@ function getTopCimaUrl($postData, $link) {
     curl_setopt_array($curl, array(
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '', // Accept all supported encodings
+        CURLOPT_ENCODING => '', // Accept all supported encodings (gzip, deflate)
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
