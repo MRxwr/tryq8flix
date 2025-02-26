@@ -7,7 +7,7 @@ require_once("../templates/simple_html_dom.php");
 if( isset($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['HTTP_AUTHORIZATION']) ){
     $token = str_replace("Bearer ","",$_SERVER["HTTP_AUTHORIZATION"]);
 }else{
-    $token = "";
+    $token = "dedd30ab355a377b8617d1c7c02c6635";
 }
 
 // get viewed page from pages folder \\
