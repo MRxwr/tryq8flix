@@ -690,11 +690,9 @@ function egyDeadServers($url) {
             }
             $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         } else {
-            echo 'Error: Server list not found.';
             $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
     } else {
-        echo 'Error: Invalid DOM object.';
         $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
     $servers = json_decode($servers, true);
@@ -773,7 +771,6 @@ function scrapeWecimaServers($url) {
         }
         $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
-        echo 'Error: Invalid DOM object.';
         $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
     $servers = json_decode($servers, true);
