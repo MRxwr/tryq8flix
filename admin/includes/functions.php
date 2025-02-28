@@ -543,7 +543,7 @@ function scrapEgyDead($url) {
 					'title' => $title ? $title->plaintext : '',
 					'category' => $category ? $category->plaintext : '',
 					'episode' => $episode ? $episode->plaintext : '',
-					'label' => $label ? $label->plaintext : '',
+					'description' => $label ? $label->plaintext : '',
 				];
 				$data['shows'][] = $movieData;
 			}
