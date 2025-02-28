@@ -12,7 +12,6 @@ function getUrlBase($url) {
 }
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-    var_dump($_GET["link"]);die();
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "{$_GET["link"]}",
@@ -29,6 +28,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         ));
         $response = curl_exec($curl);
         curl_close($curl);
+        var_dump($response);die();
         $_GET["link"] = extractVideoSource($response);
         // crop after .m3u8
         if (strpos($_GET["link"], ".m3u8") !== false) {
