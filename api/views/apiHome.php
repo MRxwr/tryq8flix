@@ -33,6 +33,19 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = scrapeWecima("{$url}");
                 $data = json_decode($data, true);
                 echo dataOutput($data);die();
+            }elseif( $_GET["server"] == 2 ){
+                $url = $website4;
+                if( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $url .= "/?s={$_GET["search"]}";
+                }
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
+                    $url .= "/?page={$_GET["page"]}";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $url .= "/page/{$_GET["page"]}/s?={$_GET["search"]}";
+                }
+                $data = scrapEgyDead("{$url}");
+                echo dataOutput($data);die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
