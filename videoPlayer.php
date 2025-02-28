@@ -92,6 +92,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             setupVideoPlayer(videoElement, url);
             videoElement.focus();  
             videoElement.requestFullscreen();
+            videoElement.play();
         }
 
          loadVideo('<?php echo $_GET["link"] ?>');
