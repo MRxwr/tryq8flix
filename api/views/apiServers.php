@@ -8,7 +8,17 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             echo dataError(array("msg" => "href is required"));die();
         }
         $url = $_GET["href"];
-        $data = scrapeWecimaServers($url);
+        if( isset($_GET["server"]) && !empty($_GET["server"]) ){
+            if( $_GET["server"] == 1 ){
+                $data = scrapeWecimaServers($url);
+            }elseif( $_GET["server"] == 2 ){
+                $data = egyDeadServers($url);
+            }else{
+                echo dataError(array("msg" => "Invalid Server"));die();
+            }
+        }else{
+            echo dataError(array("msg" => "server is required"));die();
+        }
         echo dataOutput($data);die();
     }elseif( $_GET["action"] == "view" ){
         

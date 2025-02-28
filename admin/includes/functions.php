@@ -603,55 +603,6 @@ function extractLink($html) {
     return "";
 }
 
-//get list of seasons and episodes wecima 
-function wecimaListing($url) {
-	$html = file_get_contents($url);
-    $htmlDom = str_get_html($html);
-    $seasonsData = [];
-    $episodesData = [];
-    foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
-        $link = $seasonLink->href;
-        $title = trim($seasonLink->plaintext);
-        $seasonNumber = preg_replace('/[^0-9]/', '', $title);
-        $seasonsData[] = [
-            'link' => $link,
-            'title' => $title,
-            'season_number' => $seasonNumber
-        ];
-    }
-    // Scrape episodes
-    foreach ($htmlDom->find('.Episodes--Seasons--Episodes a') as $episodeLink) {
-        $link = $episodeLink->href;
-        $title = trim($episodeLink->find('episodetitle', 0)->plaintext);
-        $episodeNumber = preg_replace('/[^0-9]/', '', $title);
-
-        $episodesData[] = [
-            'link' => $link,
-            'title' => $title,
-            'episode_number' => $episodeNumber
-        ];
-    }
-
-	if (strpos(strtolower($url), 'season') === false){
-		$episodesData = array_reverse($episodesData);
-		$seasonsData = array_reverse($seasonsData);
-	}
-	$data = [
-		'seasons' => $seasonsData,
-		'episodes' => $episodesData
-	];
-	$htmlDom->clear();
-	unset($htmlDom);
-	return $data;
-}
-
-function extractSeasonUrlEgyDead($html) {
-    if (preg_match('/<a itemprop="url" href="(https:\/\/[^"]*\/season\/[^"]*)"/', $html, $matches)) {
-        return $matches[1];
-    }
-    return null;
-}
-
 function egyDeadListing($url) {
 	$_POST["id"] = $url;
 	$html = $_POST["id"];
@@ -705,6 +656,100 @@ function egyDeadListing($url) {
 	$htmlDom->clear();
 	unset($htmlDom);
 	return $data;
+}
+
+function egyDeadServers($url) {
+    $_POST["id"] = $url;
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => "{$_POST["id"]}",
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('View' => '1'),
+    ));
+    $html = curl_exec($curl);
+    curl_close($curl);
+    $dom = str_get_html($html);
+    $data = [
+        'shows' => []
+    ];
+    if ($dom) {
+        $serversList = $dom->find('.watchAreaMaster .serversList', 0);
+        if ($serversList) {
+            foreach ($serversList->find('li') as $server) {
+                $link = $server->getAttribute('data-link');
+                $jsonData = [
+                    'link' => str_replace(" ", "", $link)
+                ];
+                $data['shows'][] = $jsonData;
+            }
+            $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        } else {
+            echo 'Error: Server list not found.';
+            $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }
+    } else {
+        echo 'Error: Invalid DOM object.';
+        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+    $servers = json_decode($servers, true);
+	$dom->clear();
+	unset($dom);
+	return $servers;
+}
+
+//get list of seasons and episodes wecima 
+function wecimaListing($url) {
+	$html = file_get_contents($url);
+    $htmlDom = str_get_html($html);
+    $seasonsData = [];
+    $episodesData = [];
+    foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
+        $link = $seasonLink->href;
+        $title = trim($seasonLink->plaintext);
+        $seasonNumber = preg_replace('/[^0-9]/', '', $title);
+        $seasonsData[] = [
+            'link' => $link,
+            'title' => $title,
+            'season_number' => $seasonNumber
+        ];
+    }
+    // Scrape episodes
+    foreach ($htmlDom->find('.Episodes--Seasons--Episodes a') as $episodeLink) {
+        $link = $episodeLink->href;
+        $title = trim($episodeLink->find('episodetitle', 0)->plaintext);
+        $episodeNumber = preg_replace('/[^0-9]/', '', $title);
+
+        $episodesData[] = [
+            'link' => $link,
+            'title' => $title,
+            'episode_number' => $episodeNumber
+        ];
+    }
+
+	if (strpos(strtolower($url), 'season') === false){
+		$episodesData = array_reverse($episodesData);
+		$seasonsData = array_reverse($seasonsData);
+	}
+	$data = [
+		'seasons' => $seasonsData,
+		'episodes' => $episodesData
+	];
+	$htmlDom->clear();
+	unset($htmlDom);
+	return $data;
+}
+
+function extractSeasonUrlEgyDead($html) {
+    if (preg_match('/<a itemprop="url" href="(https:\/\/[^"]*\/season\/[^"]*)"/', $html, $matches)) {
+        return $matches[1];
+    }
+    return null;
 }
 
 //get we cima video list servers 
