@@ -11,12 +11,16 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             if( $_GET["server"] == 1 ){
                 $url = $website3;
                 if( isset($_GET["search"]) && !empty($_GET["search"]) ){
-                    if( $_GET["searchType"] == "anime" ){
-                        $searchType = "/list/anime/";
-                    }elseif( $_GET["searchType"] == "movie" ){
-                        $searchType = "";
-                    }elseif( $_GET["searchType"] == "series" ){
-                        $searchType = "/list/series/";
+                    if( isset($_GET["searchType"]) && !empty($_GET["searchType"]) ){
+                        if( $_GET["searchType"] == "anime" ){
+                            $searchType = "/list/anime/";
+                        }elseif( $_GET["searchType"] == "movie" ){
+                            $searchType = "";
+                        }elseif( $_GET["searchType"] == "series" ){
+                            $searchType = "/list/series/";
+                        }else{
+                            $searchType = "";
+                        }
                     }else{
                         $searchType = "";
                     }
