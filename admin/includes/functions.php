@@ -653,6 +653,7 @@ function extractSeasonUrlEgyDead($html) {
 }
 
 function egyDeadListing($url) {
+	$_POST["id"] = $url;
 	$html = $_POST["id"];
     if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
         echo "<div>لا يوجد المزيد من الحلقات ... شاهد الفيديو مباشرة</div>"; die();
