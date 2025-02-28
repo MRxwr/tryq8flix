@@ -5,7 +5,7 @@
     <title>Adaptive Video Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
-<body>
+<body style="background-color: #1A1A1A;">
     <video id="videoPlayer" controls autoplay="0" style='width:100%;height:280px' poster="/images/w3html5.gif"></video>
 
 <?php 
