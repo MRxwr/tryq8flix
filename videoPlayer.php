@@ -7,10 +7,10 @@
 </head>
 <body style="background-color: #1A1A1A;">
     <?php 
-    if (isset($_GET["server"]) && $_GET["server"] == 1 ){
-        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
-    }else{
+    if (isset($_GET["server"]) && $_GET["server"] != 1 ){
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;margin-top: 30px;overflow: hidden;'allowFullScreen></iframe>"; 
+    }else{
+        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
     ?>
 <?php 
