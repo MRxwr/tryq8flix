@@ -6,8 +6,13 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body style="background-color: #1A1A1A;">
-    <video id="videoPlayer" controls style='width:100%;height:100vh'></video>
-
+    <?php 
+    if (isset($_GET["server"]) && $_GET["server"] == 1 ){
+        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+    }else{
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;margin-top: 30px;overflow: hidden;'allowFullScreen></iframe>"; 
+    }
+    ?>
 <?php 
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
@@ -91,8 +96,11 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             var videoElement = document.getElementById('videoPlayer');
             setupVideoPlayer(videoElement, url);
         }
-
-         loadVideo('<?php echo $_GET["link"] ?>');
+        <?php
+        if( isset($_GET["server"]) && $_GET["server"] == 1 ){
+         echo "loadVideo('{$_GET['link']}');";
+        }
+        ?>
     </script>
     </body>
 </html>
