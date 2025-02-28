@@ -45,7 +45,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $url .= "/page/{$_GET["page"]}/s?={$_GET["search"]}";
                 }
                 $data = scrapEgyDead("{$url}");
-                echo dataOutput($data);die();
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
