@@ -33,9 +33,9 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         if (strpos($_GET["link"], ".m3u8") !== false) {
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
         }
-        dataOutput(array("link" => $_GET["link"]));
+        echo dataOutput(array("link" => $_GET["link"]));
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
-    outputError(array("msg"=>"no links available"));
+    echo outputError(array("msg"=>"no links available"));
 }
 ?>
