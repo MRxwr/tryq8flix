@@ -12,6 +12,7 @@ function getUrlBase($url) {
 }
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
+    var_dump($_GET["link"]);die();
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "{$_GET["link"]}",
