@@ -28,13 +28,12 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         ));
         $response = curl_exec($curl);
         curl_close($curl);
-        var_dump($response);die();
         $_GET["link"] = extractVideoSource($response);
         // crop after .m3u8
         if (strpos($_GET["link"], ".m3u8") !== false) {
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
         }
-        outputData(array("link" => $_GET["link"]));
+        dataOutput(array("link" => $_GET["link"]));
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
     outputError(array("msg"=>"no links available"));
