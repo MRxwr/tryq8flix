@@ -603,7 +603,7 @@ function extractLink($html) {
     return "";
 }
 
-//get list of seasons and episodes wecima
+//get list of seasons and episodes wecima 
 function wecimaListing($url) {
 	$html = file_get_contents($url);
     $htmlDom = str_get_html($html);
@@ -635,6 +635,67 @@ function wecimaListing($url) {
 	if (strpos(strtolower($url), 'season') === false){
 		$episodesData = array_reverse($episodesData);
 		$seasonsData = array_reverse($seasonsData);
+	}
+	$data = [
+		'seasons' => $seasonsData,
+		'episodes' => $episodesData
+	];
+	$htmlDom->clear();
+	unset($htmlDom);
+	return $data;
+}
+
+function extractSeasonUrlEgyDead($html) {
+    if (preg_match('/<a itemprop="url" href="(https:\/\/[^"]*\/season\/[^"]*)"/', $html, $matches)) {
+        return $matches[1];
+    }
+    return null;
+}
+
+function egyDeadListing($url) {
+	$html = $_POST["id"];
+    if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
+        echo "<div>لا يوجد المزيد من الحلقات ... شاهد الفيديو مباشرة</div>"; die();
+    }
+    if (strpos(strtolower($_POST["id"]), 'season') === false) {
+        $html = curlCall($_POST["id"]);
+        $html = extractSeasonUrlEgyDead($html);
+    }
+    $html = curlCall($html);
+    $htmlDom = str_get_html($html);
+    $seasonsData = [];
+    $episodesData = [];
+    
+    // Scrape seasons
+    foreach ($htmlDom->find('.seasons-list .movieItem') as $seasonItem) {
+        $seasonLink = $seasonItem->find('a', 0);
+        $link = $seasonLink->href;
+        $title = $seasonLink->title;
+        $seasonNumber = preg_replace('/[^0-9]/', '', $title);
+        $seasonsData[] = [
+            'link' => $link,
+            'title' => $title,
+            'season_number' => $seasonNumber
+        ];
+    }
+
+    // Scrape episodes
+    foreach ($htmlDom->find('.episodes-list .EpsList li') as $episodeItem) {
+        $episodeLink = $episodeItem->find('a', 0);
+        $link = $episodeLink->href;
+        $title = $episodeLink->title;
+        $episodeNumber = preg_replace('/[^0-9]/', '', $episodeLink->plaintext);
+        $episodesData[] = [
+            'link' => $link,
+            'title' => $title,
+            'episode_number' => $episodeNumber
+        ];
+    }
+
+    // Reverse arrays if not a season page
+    if (strpos(strtolower($_POST["id"] ?? ''), 'season') === false) {
+        $episodesData = array_reverse($episodesData);
+        $seasonsData = array_reverse($seasonsData);
 	}
 	$data = [
 		'seasons' => $seasonsData,
