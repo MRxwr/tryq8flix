@@ -20,28 +20,26 @@ function searchMatches() {
 				@$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
 				$jsonData = [
 					'href' => isset($matchLink->href) ? $matchLink->href : '',
-					'matchName' => isset($matchLink->title) ? $matchLink->title : '',
 					'rightTeamName' => trim($rightTeamName),
 					'leftTeamName' => trim($leftTeamName),
 					'rightTeamLogo' => $rightTeamLogo,
 					'leftTeamLogo' => $leftTeamLogo,
 					'matchTime' => $matchTime,
 					'result' => $matchResult,
-					'date' => $matchDate,
+					'liveStatus' => $matchDate,
 					'league' => trim($leagueInfo),
 				];
 				$data['matches'][] = $jsonData;
 			}else{
 				$jsonData = [
 					'href' => '',
-					'matchName' => '',
 					'rightTeamName' => '',
 					'leftTeamName' => '',
 					'rightTeamLogo' => '',
 					'leftTeamLogo' => '',
 					'matchTime' => '',
 					'result' => '',
-					'date' => '',
+					'liveStatus' => '',
 					'league' => '',
 				];
 				$data['matches'][] = $jsonData;
