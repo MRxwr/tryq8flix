@@ -59,7 +59,7 @@ function liveMatch($view) {
 		$data = [
 			'matches' => []
 		];
-		foreach ($dom->find('.post-content-wrap .post-content') as $match) {
+		foreach ($dom->find('.embedvideo') as $match) {
 			$matchLink = $match->find('iframe', 0);
 			if ($matchLink) { 
 				$jsonData = [
