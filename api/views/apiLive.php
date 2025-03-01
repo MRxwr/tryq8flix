@@ -77,11 +77,11 @@ function liveMatch($view) {
     return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
 }
 
-if( isset($_GET['action']) && $_GET['action'] == 'live' ){
-    $matches = liveMatch($_GET['live']);
+if( isset($_GET['action']) && $_GET['action'] == 'match' ){
+    $matches = liveMatch($_GET['match']);
     echo dataOutput($matches);
-}elseif( isset($_GET['action']) && $_GET['action'] == 'match' ){
-    $matches = searchMatches($_GET['match']);
+}elseif( isset($_GET['action']) && $_GET['action'] == 'live' ){
+    $matches = searchMatches();
     echo dataOutput($matches);
 }else{
     echo dataError('Invalid request.');
