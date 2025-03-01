@@ -37,7 +37,7 @@ if( $_GET["action"] == "login" ){
         $data = array(
             "username" => $_POST["username"],
             "usernameSmall" => strtolower($_POST["username"]),
-            "password" => sha1($_POST["pass"]),
+            "password" => sha1($_POST["password"]),
             "email" => $_POST["email"]
         );
         if( insertDB("users",$data) ){
