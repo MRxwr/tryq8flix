@@ -77,8 +77,10 @@ function liveMatch($view) {
 
 if( isset($_GET['action']) && $_GET['action'] == 'match' ){
     $matches = liveMatch($_GET['match']);
+    /*
     $data[] = array("src" => $_GET['match']);
     $matches = $data;
+    */
     echo dataOutput($matches);
 }elseif( isset($_GET['action']) && $_GET['action'] == 'live' ){
     $matches = searchMatches();
