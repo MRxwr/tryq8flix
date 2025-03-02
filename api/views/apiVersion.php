@@ -6,4 +6,5 @@ if( isset($_GET["action"]) && $_GET["action"] == "version" ){
     echo dataOutput($response);
 }else{
     echo dataError(array("msg" => "Invalid action"));
-}
+} 
+?>
