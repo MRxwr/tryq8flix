@@ -516,6 +516,47 @@ function domTopCinema($url) {
 	return $shows = $shows["shows"];
 }
 
+function TopCenimaListings($url) {
+    $html = curlCall($url);
+    $htmlDom = str_get_html($html);
+    $seasonsData = [];
+    $episodesData = [];
+    foreach ($htmlDom->find('section.allseasonss .Small--Box.Season') as $seasonBox) {
+        $link = $seasonBox->find('a', 0)->href;
+        $title = trim($seasonBox->find('.title', 0)->plaintext);
+        $seasonNumber = trim($seasonBox->find('.epnum', 0)->plaintext);
+        $seasonNumber = preg_replace('/[^0-9]/', '', $seasonNumber); // Extract only the number
+
+        $seasonsData[] = [
+            'link' => $link,
+            'title' => $title,
+            'season_number' => $seasonNumber
+        ];
+    }
+
+    // Scrape episodes
+    foreach ($htmlDom->find('section.allepcont .row a') as $episodeLink) {
+        $link = $episodeLink->href;
+        $title = trim($episodeLink->find('.ep-info h2', 0)->plaintext);
+        $episodeNumber = trim($episodeLink->find('.epnum', 0)->plaintext);
+        $episodeNumber = preg_replace('/[^0-9]/', '', $episodeNumber); // Extract only the number
+
+        $episodesData[] = [
+            'link' => $link,
+            'title' => $title,
+            'episode_number' => $episodeNumber
+        ];
+    }
+
+    $data = [
+        'seasons' => $seasonsData,
+        'episodes' => $episodesData
+    ];
+    $htmlDom->clear();
+	unset($htmlDom);
+    return $data;
+}
+
 function scrapEgyDead($url) {
 	$html = curlCall($url);
 	$dom = str_get_html($html);
