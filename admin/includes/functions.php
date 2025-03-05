@@ -483,7 +483,9 @@ function convertImage($imageUrl) {
 	return base64_encode($image);
 }
 
-function domTopCinema($dom) {
+function domTopCinema($url) {
+    $html = curlCall($url);
+	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
 	];

@@ -26,8 +26,7 @@ function searchShahid(){
 	}else{
 		$url .= "/recenT";
 	}
-	$html = curlCall($url);
-	return domTopCinema(str_get_html($html));
+	return domTopCinema($url);
 }
 
 if( isset($_POST["type"]) && !empty($_POST["type"]) ){ 
