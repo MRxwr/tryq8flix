@@ -13,7 +13,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             }elseif( $_GET["server"] == 2 ){
                 $data = egyDeadListing($_GET["href"]);
             }elseif( $_GET["server"] == 3 ){
-                $data = TopCenimaListings($url);
+                $data = TopCenimaListings($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
