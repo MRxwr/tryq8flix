@@ -13,6 +13,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = scrapeWecimaServers($url);
             }elseif( $_GET["server"] == 2 ){
                 $data = egyDeadServers($url);
+            }elseif( $_GET["server"] == 3 ){
+                $data = topCinemaServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }

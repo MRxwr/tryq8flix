@@ -557,6 +557,40 @@ function TopCenimaListings($url) {
     return $data;
 }
 
+function topCinemaServers($url) {
+    GLOBAL $website2;
+    $html = curlCall("{$url}watch/");
+    $dom = str_get_html($html);
+    $data = [
+        'shows' => []
+    ];
+    if ($dom) {
+        foreach ($dom->find('.server--item') as $server) {
+            $id = $server->getAttribute('data-id');
+            $i = $server->getAttribute('data-server');
+            $jsonData = [
+                'id' => $id,
+                'i' => $i,
+                'link' => "{$url}watch/",
+            ];
+            $data['shows'][] = $jsonData;
+        }
+        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Invalid DOM object.';
+        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+    $servers = json_decode($servers, true);
+    $mainServer = [];
+    $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    $notListed = [];//[0,2,3,4];
+    for ($i = 0; $i < sizeof($servers); $i++) {
+            $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
+            $mainServer["shows"][]["link"] = $url1;
+    }
+    return $mainServer;
+}
+
 function scrapEgyDead($url) {
 	$html = curlCall($url);
 	$dom = str_get_html($html);
