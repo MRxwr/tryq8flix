@@ -583,12 +583,11 @@ function topCinemaServers($url) {
     $servers = json_decode($servers, true);
     $mainServer = [];
     $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    $notListed = [];//[0,2,3,4];
     for ($i = 0; $i < sizeof($servers); $i++) {
-            $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
-            $mainServer["shows"][]["link"] = $url1;
+        $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
+        $mainServer["shows"][]["link"] = $url1;
     }
-    return $mainServer;
+    return $servers;
 }
 
 function scrapEgyDead($url) {
