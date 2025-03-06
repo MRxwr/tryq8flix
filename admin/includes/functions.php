@@ -561,6 +561,7 @@ function shahidMore($url){
 }
 
 function shahidServers($url){
+    $url = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$url)));
     $html = scrapePage("{$url}");
     $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
     preg_match($pattern, $html, $matches);
