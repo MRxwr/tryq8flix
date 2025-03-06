@@ -504,7 +504,7 @@ function searchShahidListing(){
 				'episode' => $show->find('.ep', 0)->plaintext,
 				'category' => $show->find('.categ', 0)->plaintext,
 				'title' => $show->find('.title', 0)->plaintext,
-				'description' => trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
+				'description' => ''//trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
 			];
 			$data['shows'][] = $jsonData;
 		}
