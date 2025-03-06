@@ -577,8 +577,7 @@ function shahidServers($url){
     foreach ($servers as $server) {
         $mainServer[]["link"] = $server["url"];
     }
-    $servers = json_decode($mainServer,true);
-	return $servers;
+    return $mainServer;
 }
 
 function domTopCinema($url) {
