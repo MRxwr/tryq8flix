@@ -606,7 +606,7 @@ function topCinemaServers($url) {
         'Sec-Fetch-Mode: cors',
         'Sec-Fetch-Site: same-origin'
     ),
-    CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',//PostmanRuntime/7.43.0
+    CURLOPT_USERAGENT => 'PostmanRuntime/7.43.0',//Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',//PostmanRuntime/7.43.0
     ));
     $response = curl_exec($curl);
     var_dump($response);
