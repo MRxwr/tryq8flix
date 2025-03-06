@@ -15,6 +15,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = egyDeadServers($url);
             }elseif( $_GET["server"] == 3 ){
                 $data = topCinemaServers($url);
+            }elseif( $_GET["server"] == 4 ){
+                $data = shahidServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
