@@ -582,7 +582,7 @@ function topCinemaServers($url) {
     }
     $servers = json_decode($servers, true);
     $mainServer = [];
-    $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    $ajaxUrl = "https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
     for ($i = 0; $i < sizeof($servers); $i++) {
         $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
         $mainServer["shows"][]["link"] = $url1;
