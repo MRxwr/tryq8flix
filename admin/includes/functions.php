@@ -571,6 +571,7 @@ function shahidServers($url){
         echo 'Error: Server information not found.';
 		$server = json_encode(array());
     }
+    echo $server;
     foreach ($serversData as $server) {
         $mainServer[]["link"] = $server["url"];
     }
