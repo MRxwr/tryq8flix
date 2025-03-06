@@ -587,7 +587,29 @@ function topCinemaServers($url) {
         $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
         $mainServer["shows"][]["link"] = $url1;
     }*/
-    $url1 = makeRequest($ajaxUrl, $servers[1], "https://web5.topcinema.world");
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('id' => '145792','i' => '1'),
+    CURLOPT_HTTPHEADER => array(
+        'X-Requested-With: XMLHttpRequest',
+        'Referer: https://web5.topcinema.world',
+        'Connection: keep-alive',
+        'Sec-Fetch-Dest: empty',
+        'Sec-Fetch-Mode: cors',
+        'Sec-Fetch-Site: same-origin'
+    ),
+    ));
+    $response = curl_exec($curl);
+    var_dump($response);
+    curl_close($curl);
     $mainServer["shows"][]["link"] = $url1;
     return $mainServer;
 }
