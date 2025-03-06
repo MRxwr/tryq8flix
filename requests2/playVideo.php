@@ -42,10 +42,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     }
     $links .= "</div>";
     if (isset($mainServer) && sizeof($mainServer) > 0) {
-        $videoTag = "{$links}<iframe id='frame' src='{$mainServer[1]}' style='width:100%;height:300px;margin-top: 30px;' sandbox='allow-scripts allow-same-origin' allowFullScreen></iframe>
-        <script>
-            document.getElementById('frame').contentWindow.location.replace('{$mainServer[1]}');
-        </script>";
+        $videoTag = "{$links}<iframe id='frame' src='{$mainServer[0]}' style='width:100%;height:300px;margin-top: 30px;'  allowFullScreen></iframe>";
         echo $videoTag;
     } else {
         echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
