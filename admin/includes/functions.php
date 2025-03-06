@@ -665,7 +665,6 @@ function makeRequest($url, $postData = null, $referer = null) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     }
     $response = curl_exec($ch);
-    var_dump($response);
     curl_close($ch);
     $link = extractLink($response);
     return $link;
