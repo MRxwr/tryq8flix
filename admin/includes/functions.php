@@ -483,6 +483,43 @@ function convertImage($imageUrl) {
 	return base64_encode($image);
 }
 
+
+function searchShahidListing(){
+	GLOBAL $website, $_GET;
+	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
+	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+	$html = scrapePage($website.$collection.$category);
+	$dom = str_get_html($html);
+	$data = [
+		'shows' => []
+	];
+	if ($dom) {
+		foreach ($dom->find('.shows-container .show-card') as $show) {
+			$style = $show->style;
+			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
+			$imageUrl = isset($matches[1]) ? $matches[1] : '';
+			$jsonData = [
+				'href' => $show->href,
+				'image' => trim($imageUrl),
+				'episode' => $show->find('.ep', 0)->plaintext,
+				'category' => $show->find('.categ', 0)->plaintext,
+				'title' => $show->find('.title', 0)->plaintext,
+				'description' => trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
+			];
+			$data['shows'][] = $jsonData;
+		}
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	} else {
+		echo 'Error: Invalid DOM object.';
+		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	}
+
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
+	return $shows = $shows["shows"];
+	$dom->clear();
+	unset($dom);
+}
+
 function domTopCinema($url) {
     $html = curlCall($url);
 	$dom = str_get_html($html);

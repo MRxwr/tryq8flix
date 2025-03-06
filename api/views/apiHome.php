@@ -60,6 +60,9 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }
                 $data = domTopCinema("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
+            }elseif( $_GET["server"] == 4 ) {
+                $data = searchShahidListing();
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
