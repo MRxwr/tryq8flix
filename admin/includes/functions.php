@@ -649,7 +649,7 @@ function makeRequest($url, $postData = null, $referer = null) {
         'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
-        $headers[] = 'Referer: ' . $referer;
+        $headers[] = 'referer: ' . $referer;
     }
     var_dump($headers);
     curl_setopt_array($ch, [
