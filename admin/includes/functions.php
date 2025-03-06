@@ -610,7 +610,7 @@ function topCinemaServers($url) {
     $response = curl_exec($curl);
     var_dump($response);
     curl_close($curl);
-    $mainServer["shows"][]["link"] = $url1;
+    //$mainServer["shows"][]["link"] = $url1;
     return $mainServer;
 }
 
