@@ -571,7 +571,7 @@ function topCinemaServers($url) {
             $jsonData = [
                 'id' => $id,
                 'i' => $i,
-                'link' => "{$url}watch/",
+                //'link' => "{$url}watch/",
             ];
             $data['shows'][] = $jsonData;
         }
