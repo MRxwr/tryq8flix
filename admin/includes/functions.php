@@ -665,6 +665,7 @@ function makeRequest($url, $postData = null, $referer = null) {
     }
     $response = curl_exec($ch);
     curl_close($ch);
+    var_dump($response);
     return $response;
 }
 
