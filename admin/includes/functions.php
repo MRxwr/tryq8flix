@@ -597,7 +597,7 @@ function topCinemaServers($url) {
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => array('id' => '145792','i' => '1'),
+    CURLOPT_POSTFIELDS => http_build_query(array('id' => '145792','i' => '1')),
     CURLOPT_HTTPHEADER => array(
         'X-Requested-With: XMLHttpRequest',
         'Referer: https://web5.topcinema.world',
