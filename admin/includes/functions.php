@@ -582,13 +582,34 @@ function topCinemaServers($url) {
     }
     $servers = json_decode($servers, true);
     $mainServer = [];
+    $curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => array('id' => '145792','i' => '0'),
+  CURLOPT_HTTPHEADER => array(
+    'referer: https://web5.topcinema.world',
+    'X-Requested-With: XMLHttpRequest'
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;die();
     $ajaxUrl = "https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    $url1 = makeRequest($ajaxUrl, $servers[0], "https://web5.topcinema.world");
     for ($i = 0; $i < sizeof($servers); $i++) {
-        
+        //$url1 = makeRequest($ajaxUrl, $servers[$i], "https://web5.topcinema.world");
         $mainServer[]["link"] = $servers[$i]["link"];
     }
-    return $servers;
+    return $mainServer;
 }
 
 function scrapEgyDead($url) {
@@ -649,9 +670,8 @@ function makeRequest($url, $postData = null, $referer = null) {
         'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
-        $headers[] = 'referer: ' . $referer;
+        $headers[] = 'Referer: ' . $referer;
     }
-    var_dump($headers);
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
