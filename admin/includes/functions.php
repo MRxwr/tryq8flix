@@ -560,6 +560,24 @@ function shahidMore($url){
     return $data;
 }
 
+function shahidServers($url){
+    $html = scrapePage("{$url}");
+    $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
+    preg_match($pattern, $html, $matches);
+    if (isset($matches[1])) {
+        $serversData = json_decode($matches[1], true);
+        $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Server information not found.';
+		$server = json_encode(array());
+    }
+    foreach ($serversData as $server) {
+        $mainServer[]["link"] = $server["url"];
+    }
+    $servers = json_decode($mainServer,true);
+	return $servers;
+}
+
 function domTopCinema($url) {
     $html = curlCall($url);
 	$dom = str_get_html($html);
