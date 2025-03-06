@@ -583,8 +583,9 @@ function topCinemaServers($url) {
     $servers = json_decode($servers, true);
     $mainServer = [];
     $ajaxUrl = "https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    $url1 = makeRequest($ajaxUrl, $servers[1], "https://web5.topcinema.world");
     for ($i = 0; $i < sizeof($servers); $i++) {
-        $url1 = makeRequest($ajaxUrl, $servers[$i], "https://web5.topcinema.world");
+        
         $mainServer[]["link"] = $servers[$i]["link"];
     }
     return $mainServer;
@@ -648,7 +649,7 @@ function makeRequest($url, $postData = null, $referer = null) {
         'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
-        $headers[] = 'referer: ' . $referer;
+        $headers[] = 'Referer: ' . $referer;
     }
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
@@ -661,12 +662,13 @@ function makeRequest($url, $postData = null, $referer = null) {
     ]);
     if ($postData) {
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     }
     $response = curl_exec($ch);
-    curl_close($ch);
     var_dump($response);
-    return $response;
+    curl_close($ch);
+    $link = extractLink($response);
+    return $link;
 }
 
 function extractLink($html) {
