@@ -662,7 +662,7 @@ function makeRequest($url, $postData = null, $referer = null) {
     ]);
     if ($postData) {
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, ($postData));
     }
     $response = curl_exec($ch);
     var_dump($response);
