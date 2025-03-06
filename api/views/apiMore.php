@@ -14,6 +14,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = egyDeadListing($_GET["href"]);
             }elseif( $_GET["server"] == 3 ){
                 $data = TopCenimaListings($_GET["href"]);
+            }elseif( $_GET["server"] == 4 ){
+                $data = shahidMore($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }

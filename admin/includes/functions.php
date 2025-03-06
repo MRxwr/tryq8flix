@@ -520,6 +520,46 @@ function searchShahidListing($url){
 	unset($dom);
 }
 
+function shahidMore($url){
+    $html = scrapePage("{$url}");
+    $htmlDom = str_get_html($html);
+    $seasonsData = [];
+    foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
+        $link = $linkNode->href;
+        $title = trim($linkNode->find('h3', 0)->plaintext);
+                if (stripos($link, 'season') !== false) {
+            $seasonsData[] = [
+                'link' => $link,
+                'title' => $title,
+                'season_number' => ''
+            ];
+        }
+    }
+    $episodesData = [];
+    foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
+        $link = $linkNode->href;
+        $title = trim($linkNode->find('h3', 0)->plaintext);
+        if (stripos($link, 'season') === false) {
+            $episodesData[] = [
+                'link' => $link,
+                'title' => $title,
+                'episode_number' => ''
+            ];
+        }
+    }
+	if (strpos(strtolower($url), 'season') === false){
+		$episodesData = array_reverse($episodesData);
+		$seasonsData = array_reverse($seasonsData);
+	}
+    $data = [
+        'seasons' => $seasonsData,
+        'episodes' => $episodesData
+    ];
+    $htmlDom->clear();
+	unset($htmlDom);
+    return $data;
+}
+
 function domTopCinema($url) {
     $html = curlCall($url);
 	$dom = str_get_html($html);
