@@ -484,11 +484,11 @@ function convertImage($imageUrl) {
 }
 
 
-function searchShahidListing(){
+function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = scrapePage($website.$collection.$category);
+	$html = scrapePage($url.$collection.$category);
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []

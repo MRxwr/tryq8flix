@@ -61,7 +61,17 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = domTopCinema("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 4 ) {
-                $data = searchShahidListing();
+                $url = $website;
+                if( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $url .= "/?s={$_GET["search"]}";
+                }
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
+                    $url .= "?page={$_GET["page"]}";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
+                }
+                $data = searchShahidListing($url);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
