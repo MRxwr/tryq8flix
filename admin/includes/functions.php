@@ -571,7 +571,7 @@ function topCinemaServers($url) {
             $jsonData = [
                 'id' => $id,
                 'i' => $i,
-                //'link' => "{$url}watch/",
+                'link' => "{$url}watch/",
             ];
             $data['shows'][] = $jsonData;
         }
@@ -583,31 +583,11 @@ function topCinemaServers($url) {
     $servers = json_decode($servers, true);
     $mainServer = [];
     $ajaxUrl = "https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-    /*for ($i = 0; $i < sizeof($servers); $i++) {
-        $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
-        $mainServer["shows"][]["link"] = $url1;
-    }*/
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-    CURLOPT_URL => 'https://web5.topcinema.world/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => '',
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 0,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => array('id' => '145792','i' => '1'),
-    CURLOPT_HTTPHEADER => array(
-        'X-Requested-With: XMLHttpRequest',
-        'Referer: https://web5.topcinema.world',
-    ),
-    CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36'
-    ));
-    $response = curl_exec($curl);
-    var_dump($response);
-    curl_close($curl);
-    //$mainServer["shows"][]["link"] = $url1;
+    for ($i = 0; $i < sizeof($servers); $i++) {
+        $url1 = makeRequest($ajaxUrl, $servers[$i], "https://web5.topcinema.world");
+        $mainServer["shows"][]["link"] = $servers[$i]["link"];
+    }
+    $mainServer["shows"][]["link"] = $url1;
     return $mainServer;
 }
 
