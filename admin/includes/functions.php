@@ -582,7 +582,7 @@ function topCinemaServers($url) {
     }
     $servers = json_decode($servers, true);
     $mainServer = [];
-    $ajaxUrl = "https://tryq8flix.com/requests2/getServer.php?type=getServer";
+    $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
     $url1 = makeRequest($ajaxUrl, array("data"=>json_encode($servers[1])), "");
     for ($i = 0; $i < sizeof($servers); $i++) {
         
