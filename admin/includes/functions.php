@@ -597,16 +597,10 @@ function topCinemaServers($url) {
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => http_build_query(array('id' => '145792','i' => '1')),
+    CURLOPT_POSTFIELDS => array('id' => '145792','i' => '1'),
     CURLOPT_HTTPHEADER => array(
         'X-Requested-With: XMLHttpRequest',
         'Referer: https://web5.topcinema.world',
-        'Connection: keep-alive',
-        'Sec-Fetch-Dest: empty',
-        'Sec-Fetch-Mode: cors',
-        'Sec-Fetch-Site: same-origin',
-        'cookie: _gid=GA1.2.260252561.1741219093; _gat_gtag_UA_269945118_1=1; _gat_gtag_UA_269945118_2=1; prefetchAd_6969551=true; _ga=GA1.2.1313764862.1741219093; _ga_6ZDPCTTMZN=GS1.1.1741219092.1.1.1741219141.0.0.0',
-        'content-type: application/x-www-form-urlencoded; charset=UTF-8'
     ),
     CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36'
     ));
