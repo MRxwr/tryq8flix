@@ -64,7 +64,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $url = $website;
                 if( isset($_GET["search"]) && !empty($_GET["search"]) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
-                    $url .= "/search?s={$_GET["search"]}";
+                    $url .= "search?s={$_GET["search"]}";
                 }
                 if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
                     $url .= "?page={$_GET["page"]}";
