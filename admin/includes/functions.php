@@ -587,7 +587,7 @@ function topCinemaServers($url) {
         $url1 = makeRequest($ajaxUrl, $servers[$i], "{$url}watch/");
         $mainServer["shows"][]["link"] = $url1;
     }*/
-    $url1 = makeRequest($ajaxUrl, $servers[1], "{$servers[1]["link"]}");
+    $url1 = makeRequest($ajaxUrl, $servers[1], "https://web5.topcinema.world");
     $mainServer["shows"][]["link"] = $url1;
     return $mainServer;
 }
