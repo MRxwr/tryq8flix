@@ -9,7 +9,14 @@ if( isset($_GET["roomType"]) && !empty($_GET["roomType"]) ){
     if( $_GET["roomType"] == 1 ){
         if( $room = selectDB("qas_rooms","`type` = '1' AND `status` = '0' AND `hidden` = '0'") ){
             $members = json_decode($room[0]["members"],true);
-            if( !in_array($user["id"],$members) ){
+            $userExists = false;
+            foreach ($members as $member) {
+                if ($member['id'] == $user['id']) {
+                    $userExists = true;
+                    break;
+                }
+            }
+            if( !$userExists ){
                 $members[] = $user;
                 $members = json_encode($members);
                 $data = array("members" => $members);
@@ -23,7 +30,6 @@ if( isset($_GET["roomType"]) && !empty($_GET["roomType"]) ){
             }
         }else{
             $members = json_encode(array($user));
-            // generate new random room code 6 characters and digits long
             $roomCode = generateRandomString(6);
             while( selectDB("qas_rooms","`code` = '{$roomCode}'") ){
                 $roomCode = generateRandomString(6);
@@ -39,12 +45,12 @@ if( isset($_GET["roomType"]) && !empty($_GET["roomType"]) ){
             echo dataOutput($room);die();
     }
 }
-// Function to generate a random string of specified length
+
 function generateRandomString($length = 6) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
     $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
+    for ($i = 0; $length > $i; $i++) {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
     return $randomString;
