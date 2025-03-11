@@ -46,6 +46,15 @@ if( $_GET["action"] == "login" ){
             echo dataError(array("msg" => "Something went wrong, please try again"));die();
         }
     }
+}elseif( $_GET["action"] == "appFire" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
 }elseif( $_GET["action"] == "logout" ){
     if( empty($token) ){
         echo dataError(array("msg" => "token is required"));die();
