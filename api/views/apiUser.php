@@ -9,7 +9,7 @@ if( $_GET["action"] == "login" ){
     if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ?","") ){
         $token = md5(uniqid());
         updateDB("users",array("keepalive" => $token),"`id` = '{$user[0]["id"]}'");
-        echo dataOutput(array("keepalive" => $token));die();
+        echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
     }else{
         echo dataError(array("msg" => "Invalid Username or Password"));die();
     }
