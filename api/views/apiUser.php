@@ -93,7 +93,7 @@ if( $_GET["action"] == "login" ){
     if( !isset($_POST["email"]) || empty($_POST["email"]) ){
         echo dataError(array("msg" => "Email is required"));die();
     }
-    if( $user = selectDB("users","`email` = '{$_POST["email"]}'") ){
+    if( $user = selectDB("users","`email` = '{$_POST["email"]}' AND `status` = '0' AND `hidden` = '0' ORDER BY `id` DESC LIMIT 1") ){
         $newPass = rand("00000000","99999999");
         $newPassEnc = sha1($newPass);
         $data = array("password"=>$newPassEnc);
