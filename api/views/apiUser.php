@@ -6,7 +6,7 @@ if( $_GET["action"] == "login" ){
     if( !isset($_POST["password"]) || empty($_POST["password"]) ){
         echo dataError(array("msg" => "Password is required"));die();
     }
-    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ?","") ){
+    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ?","`id` DESC LIMIT 1") ){
         if( $user[0]["status"] == 1 ){
             echo dataError(array("msg" => "No account found for this username"));die();
         }
@@ -49,9 +49,9 @@ if( $_GET["action"] == "login" ){
     if( $_POST["password"] != $_POST["confirmPassword"] ){
         echo dataError(array("msg" => "Password and Confirm Password do not match"));die();
     }
-    if( $user = selectDB("users","`usernameSmall` = '".strtolower($_POST["username"])."'") ){
+    if( $user = selectDB("users","`usernameSmall` = '".strtolower($_POST["username"])."' AND `status` = '0'") ){
         echo dataError(array("msg" => "Username already exists"));die();
-    }elseif( $user = selectDB("users","`email` = '{$_POST["email"]}'") ){
+    }elseif( $user = selectDB("users","`email` = '{$_POST["email"]}' AND `status` = '0'") ){
         echo dataError(array("msg" => "Email already exists"));die();
     }else{
         $data = array(
