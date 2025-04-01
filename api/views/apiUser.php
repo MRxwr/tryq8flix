@@ -13,7 +13,21 @@ if( $_GET["action"] == "login" ){
     }else{
         echo dataError(array("msg" => "Invalid Username or Password"));die();
     }
-}elseif( $_GET["action"] == "register" ){
+}elseif( $_GET["action"] == "delete" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        $data = array("keepalive" => "", "status" => 1);
+        if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+            echo dataOutput(array("msg" => "User deleted successfully"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
+}if( $_GET["action"] == "register" ){
     if( !isset($_POST["username"]) || empty($_POST["username"]) ){
         echo dataError(array("msg" => "Username is required"));die();
     }
