@@ -6,7 +6,7 @@ if( $_GET["action"] == "login" ){
     if( !isset($_POST["password"]) || empty($_POST["password"]) ){
         echo dataError(array("msg" => "Password is required"));die();
     }
-    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ?","") ){
+    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ? AND `status` = 0 AND `hidden` = 0","") ){
         $token = md5(uniqid());
         updateDB("users",array("keepalive" => $token),"`id` = '{$user[0]["id"]}'");
         echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
