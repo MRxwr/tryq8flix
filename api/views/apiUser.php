@@ -97,9 +97,9 @@ if( $_GET["action"] == "login" ){
         $newPass = rand("00000000","99999999");
         $newPassEnc = sha1($newPass);
         $data = array("password"=>$newPassEnc);
-        if( updateDB("users",$data,"`email` = '{$_POST["email"]}'") ){
+        if( updateDB("users",$data,"`email` = '{$_POST["email"]}' AND `status` = '0' AND `hidden` = '0' ORDER BY `id` DESC LIMIT 1") ){
             $data = array(
-                "site" => "TRYQ8FLiX - ",
+                "site" => "أكدها - ",
                 "subject" => "New password",
                 "body" => "Use this new password [{$newPass}] to login with your email [{$_POST["email"]}]",
                 "to" => $_POST["email"]
