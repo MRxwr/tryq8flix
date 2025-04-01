@@ -6,7 +6,13 @@ if( $_GET["action"] == "login" ){
     if( !isset($_POST["password"]) || empty($_POST["password"]) ){
         echo dataError(array("msg" => "Password is required"));die();
     }
-    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ? AND `status` = 0 AND `hidden` = 0","") ){
+    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ?","") ){
+        if( $user[0]["status"] == 1 ){
+            echo dataError(array("msg" => "No account found for this username"));die();
+        }
+        if( $user[0]["hidden"] == 1 ){
+            echo dataError(array("msg" => "User is blocked"));die();
+        }
         $token = md5(uniqid());
         updateDB("users",array("keepalive" => $token),"`id` = '{$user[0]["id"]}'");
         echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
