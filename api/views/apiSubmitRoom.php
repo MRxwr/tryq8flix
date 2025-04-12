@@ -1,5 +1,5 @@
 <?php
-if( isset($_GET["action"]) && $_GET["action"] == "submitRoom" ){
+if( isset($_GET["endpoint"]) && $_GET["endpoint"] == "submitRoom" ){
     if( !isset($_POST["code"]) || empty($_POST["code"]) ){
         echo dataError(array("msg" => "Room code is required"));die();
     }
@@ -19,5 +19,7 @@ if( isset($_GET["action"]) && $_GET["action"] == "submitRoom" ){
     }else{
         echo dataError(array("msg" => "Invalid token"));die();
     }
+}else{
+    echo dataError(array("msg" => "Invalid endpoint"));die();
 }
 ?>
