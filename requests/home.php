@@ -34,6 +34,7 @@ function searchShahid(){
 		$collection = "";
 		$category = "";
 	}
+	echo $website.$collection.$category;
 	$html = scrapePage($website.$collection.$category);
 	$dom = str_get_html($html);
 	$data = [
