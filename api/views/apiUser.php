@@ -14,7 +14,8 @@ if( $_GET["action"] == "login" ){
             echo dataError(array("msg" => "User is blocked"));die();
         }
         $token = md5(uniqid());
-        updateDB("users",array("keepalive" => $token),"`id` = '{$user[0]["id"]}'");
+        $firebaseToken = ( isset($_POST["firebaseToken"]) && !empty($_POST["firebaseToken"]) ) ? $_POST["firebaseToken"] : "";
+        updateDB("users",array("keepalive" => $token, "firebaseToken" => $firebaseToken),"`id` = '{$user[0]["id"]}'");
         echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
     }else{
         echo dataError(array("msg" => "Invalid Username or Password"));die();
