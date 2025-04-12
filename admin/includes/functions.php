@@ -482,6 +482,7 @@ function scrapePage($url) {
 	curl_close($ch);
 
     return $response;
+    var_dump($response);
 }
 
 function curlCall($url) {
