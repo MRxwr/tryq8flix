@@ -480,9 +480,8 @@ function scrapePage($url) {
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 	$response = curl_exec($ch);
 	curl_close($ch);
-
-    return $response;
     var_dump($response);
+    return $response;
 }
 
 function curlCall($url) {
