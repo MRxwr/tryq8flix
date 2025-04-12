@@ -11,7 +11,7 @@ if( isset($_GET["action"]) && $_GET["action"] == "submitRoom" ){
     }
     if( $user = selectDB("users","`keepalive` = '{$token}'") ){
         $user = $user[0];
-        if( $room = insertDB("qas_rooms",$_POST) ){
+        if( insertDB("qas_rooms",$_POST) ){
             echo dataOutput(array("msg" => "Room saved successfully"));die();
         }else{
             echo dataError(array("msg" => "Could not save room"));die();
@@ -19,6 +19,5 @@ if( isset($_GET["action"]) && $_GET["action"] == "submitRoom" ){
     }else{
         echo dataError(array("msg" => "Invalid token"));die();
     }
-
 }
 ?>
