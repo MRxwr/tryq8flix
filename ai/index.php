@@ -62,7 +62,13 @@
             <div class="col-12"><hr class="section-divider"></div>
             
             <div class="col-12 pt-3" id="returnImage">
-                <img id="frame" src="" alt="Your generated image will appear here" width="100%" height="350">
+                <img id="frame" src="" alt="Your generated image will appear here" width="100%" height="350" style="display: none;">
+                <script>
+                  const frame = document.getElementById('frame');
+                  frame.onload = () => {
+                    frame.style.display = 'block';
+                  };
+                </script>
             </div>
             
             <div class="col-12 pt-4">
