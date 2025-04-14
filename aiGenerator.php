@@ -212,7 +212,7 @@
         }
 
         #loading {
-            display: none;
+            display: none; /* Keep this to hide initially */
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
             text-align: center;
@@ -222,10 +222,9 @@
             width: 100%;
             height: 100%;
             z-index: 1100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column; /* These properties only apply when display is flex */
+            justify-content: center; /* These properties only apply when display is flex */
+            align-items: center; /* These properties only apply when display is flex */
         }
 
         #loading .spinner {
@@ -483,16 +482,25 @@
                 return;
             }
 
-            loading.style.display = "flex";
+            loading.style.display = "flex"; // Set display to flex here when starting
             const modelParam = selectedModel !== "normal" ? `&model=${selectedModel}` : "";
             frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true${modelParam}`;
 
             frame.onload = () => {
-                loading.style.display = "none";
+                loading.style.display = "none"; // Set display back to none here when finished
                 downloadBtn.disabled = false;
                 savePromptBtn.disabled = false;
                 shareBtn.disabled = false;
                 showToast("Image generated successfully!");
+            };
+            // Add error handling in case the image fails to load
+            frame.onerror = () => {
+                loading.style.display = "none";
+                showToast("Error generating image. Please try again.");
+                // Optionally disable buttons again or keep them enabled
+                // downloadBtn.disabled = true;
+                // savePromptBtn.disabled = true;
+                // shareBtn.disabled = true;
             };
         });
 
