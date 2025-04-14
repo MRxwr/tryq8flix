@@ -84,8 +84,8 @@
                 <input name="prompt" id="prompt" value="" class="form-control" placeholder="Describe your art (e.g., a futuristic city)">
             </div>
             <div class="col-12 pt-3">
-                <label for="modalSelect" class="text-white">Select Modal:</label>
-                <select id="modalSelect" class="form-control">
+                <label for="modelSelect" class="text-white">Select model:</label>
+                <select id="modelSelect" class="form-control">
                     <option value="normal">Normal</option>
                     <option value="turbo">Turbo</option>
                     <option value="flux">Flux</option>
@@ -190,12 +190,12 @@
 
         submitBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
-            const modal = document.getElementById("modalSelect").value;
+            const model = document.getElementById("modelSelect").value;
             if (!prompt) return;
 
             loading.style.display = "block";
-            const modalParam = modal !== "normal" ? `&modal=${modal}` : "";
-            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=2048&height=2048&nologo=true${modalParam}`;
+            const modelParam = model !== "normal" ? `&model=${model}` : "";
+            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=2048&height=2048&nologo=true${modelParam}`;
 
             frame.onload = () => {
                 loading.style.display = "none";
