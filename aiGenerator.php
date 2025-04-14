@@ -83,13 +83,10 @@
             <div class="col-12">
                 <input name="prompt" id="prompt" value="" class="form-control" placeholder="Describe your art (e.g., a futuristic city)">
             </div>
-            <div class="col-12 pt-3">
-                <label for="modelSelect" class="text-white">Select model:</label>
-                <select id="modelSelect" class="form-control">
-                    <option value="normal">Normal</option>
-                    <option value="turbo">Turbo</option>
-                    <option value="flux">Flux</option>
-                </select>
+            <div class="col-12 pt-3 text-center">
+                <label class="text-white d-block">Select Model:</label>
+                <button class="btn btn-outline-light model-btn" data-model="normal">Normal</button>
+                <button class="btn btn-outline-light model-btn" data-model="turbo">Fast</button>
             </div>
             <div class="col-12 pt-3 text-center">
                 <button id="submitBtn" class="btn btn-primary w-100">Generate Image</button>
@@ -190,11 +187,11 @@
 
         submitBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
-            const model = document.getElementById("modelSelect").value;
+            const selectedModel = document.querySelector(".model-btn.active")?.getAttribute("data-model") || "normal";
             if (!prompt) return;
 
             loading.style.display = "block";
-            const modelParam = model !== "normal" ? `&model=${model}` : "";
+            const modelParam = selectedModel !== "normal" ? `&model=${selectedModel}` : "";
             frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=2048&height=2048&nologo=true${modelParam}`;
 
             frame.onload = () => {
@@ -204,6 +201,14 @@
                 shareBtn.disabled = false;
                 showToast("Image generated successfully!");
             };
+        });
+
+        // Add event listeners to model buttons
+        document.querySelectorAll(".model-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                document.querySelectorAll(".model-btn").forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+            });
         });
 
         savePromptBtn.addEventListener("click", function () {
