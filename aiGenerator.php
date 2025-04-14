@@ -83,6 +83,14 @@
             <div class="col-12">
                 <input name="prompt" id="prompt" value="" class="form-control" placeholder="Describe your art (e.g., a futuristic city)">
             </div>
+            <div class="col-12 pt-3">
+                <label for="modalSelect" class="text-white">Select Modal:</label>
+                <select id="modalSelect" class="form-control">
+                    <option value="normal">Normal</option>
+                    <option value="turbo">Turbo</option>
+                    <option value="flux">Flux</option>
+                </select>
+            </div>
             <div class="col-12 pt-3 text-center">
                 <button id="submitBtn" class="btn btn-primary w-100">Generate Image</button>
             </div>
@@ -182,10 +190,12 @@
 
         submitBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
+            const modal = document.getElementById("modalSelect").value;
             if (!prompt) return;
 
             loading.style.display = "block";
-            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=2048&height=2048&nologo=true`;
+            const modalParam = modal !== "normal" ? `&modal=${modal}` : "";
+            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=2048&height=2048&nologo=true${modalParam}`;
 
             frame.onload = () => {
                 loading.style.display = "none";
