@@ -42,13 +42,6 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-h6 {
-    color: rgba(255, 255, 255, 0.9);
-    font-style: italic;
-    margin-bottom: 30px;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
-}
-
 .generator-card {
     background: rgba(0, 0, 0, 0.7);
     border-radius: 15px;

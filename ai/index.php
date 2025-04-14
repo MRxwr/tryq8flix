@@ -6,6 +6,8 @@
     <meta name="description" content="AI Art Generator: Transform your imagination into stunning art. Create masterpieces with ease using our advanced AI models.">
     <meta name="keywords" content="AI Art Generator, AI Art, Create Art, AI Models, Art Generator">
     <meta name="author" content="TRYQ8FLiX">
+    <meta http-equiv="Cache-Control" content="max-age=31536000, must-revalidate">
+    <meta http-equiv="Expires" content="Tue, 15 Apr 2026 00:00:00 GMT">
     <title>AI Art Generator - Create Stunning Art with AI</title>
     <link rel="icon" href="images/mobileLogo.webp" type="image/webp">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
