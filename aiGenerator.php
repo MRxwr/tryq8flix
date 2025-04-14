@@ -354,7 +354,14 @@
                         <button id="shareBtn" class="btn btn-warning w-100" disabled><i class="fas fa-share-alt mr-1"></i> Share</button>
                     </div>
                 </div>
-                <button id="savePromptBtn" class="btn btn-info w-100 mb-3 mt-2" disabled><i class="fas fa-bookmark mr-1"></i> Save Prompt</button>
+                <div class="row">
+                    <div class="col-md-6 col-12 mb-2">
+                        <button id="savePromptBtn" class="btn btn-info w-100" disabled><i class="fas fa-bookmark mr-1"></i> Save Prompt</button>
+                    </div>
+                    <div class="col-md-6 col-12 mb-2">
+                        <button id="refreshBtn" class="btn btn-primary w-100" disabled><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                    </div>
+                </div>
                 
                 <div class="row mt-3">
                     <div class="col-md-6 col-12 mb-2">
@@ -419,6 +426,7 @@
         const downloadBtn = document.getElementById("downloadBtn");
         const savePromptBtn = document.getElementById("savePromptBtn");
         const shareBtn = document.getElementById("shareBtn");
+        const refreshBtn = document.getElementById("refreshBtn");
         const viewHistoryBtn = document.getElementById("viewHistoryBtn");
         const clearCookiesBtn = document.getElementById("clearCookiesBtn");
         const frame = document.getElementById("frame");
@@ -429,6 +437,8 @@
         const maxPrompts = 5;
         const promptCookieName = "savedPrompts";
         let generationTimeoutId = null; // Variable to hold the timeout ID
+        let currentSeed = 0; // Variable to hold the current seed for refresh
+        let lastSuccessfulPrompt = ""; // Store the last prompt that generated successfully
 
         const showToast = (message, type = 'success') => {
             // Create blocking overlay
@@ -486,11 +496,13 @@
             }, 2500);
         };
 
-        submitBtn.addEventListener("click", function () {
+        // Function to handle image generation (used by both submit and refresh)
+        function generateImage(isRefresh = false) {
             const prompt = promptInput.value.trim();
             const selectedModel = document.querySelector(".model-btn.active")?.getAttribute("data-model") || "normal";
             const width = document.getElementById("imgWidth").value || 1080;
             const height = document.getElementById("imgHeight").value || 1080;
+            
             if (!prompt) {
                 showToast("Please enter a prompt first!", 'error');
                 return;
@@ -501,57 +513,80 @@
                 clearTimeout(generationTimeoutId);
             }
 
-            loading.style.display = "flex"; // Set display to flex here when starting
+            loading.style.display = "flex"; // Show loading indicator
             // Disable buttons during generation
             submitBtn.disabled = true;
             downloadBtn.disabled = true;
             savePromptBtn.disabled = true;
             shareBtn.disabled = true;
+            refreshBtn.disabled = true; // Disable refresh during generation
+
+            if (isRefresh) {
+                currentSeed++; // Increment seed only on refresh
+            } else {
+                currentSeed = 0; // Reset seed if it's a new prompt generation
+            }
 
             const modelParam = selectedModel !== "normal" ? `&model=${selectedModel}` : "";
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true${modelParam}`;
+            const seedParam = currentSeed > 0 ? `&seed=${currentSeed}` : ""; // Add seed if > 0
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true${modelParam}${seedParam}`;
+            
+            console.log("Generating image with URL:", imageUrl); // For debugging
             frame.src = imageUrl;
 
             // Set a timeout for 60 seconds (60000 milliseconds)
             generationTimeoutId = setTimeout(() => {
-                // Check if still loading after 1 minute
                 if (loading.style.display === "flex") {
-                    loading.style.display = "none"; // Hide loading
-                    frame.src = ""; // Stop trying to load the image
+                    loading.style.display = "none";
+                    frame.src = "";
                     submitBtn.disabled = false; // Re-enable generate button
+                    // Keep other buttons disabled on timeout
                     showToast("Image generation timed out. Please try again.", 'error');
-                    generationTimeoutId = null; // Reset timeout ID
+                    generationTimeoutId = null;
                 }
             }, 60000);
 
             frame.onload = () => {
-                // Clear the timeout if the image loads successfully
                 if (generationTimeoutId) {
                     clearTimeout(generationTimeoutId);
                     generationTimeoutId = null;
                 }
-                loading.style.display = "none"; // Set display back to none here when finished
+                loading.style.display = "none";
+                // Enable buttons on successful load
                 downloadBtn.disabled = false;
                 savePromptBtn.disabled = false;
                 shareBtn.disabled = false;
-                submitBtn.disabled = false; // Re-enable generate button
-                showToast("Image generated successfully!");
+                refreshBtn.disabled = false; // Enable refresh button
+                submitBtn.disabled = false; 
+                lastSuccessfulPrompt = prompt; // Store the successful prompt
+                showToast(`Image ${isRefresh ? 'refreshed' : 'generated'} successfully!`);
             };
-            // Add error handling in case the image fails to load
+
             frame.onerror = () => {
-                 // Clear the timeout if there's an error
                 if (generationTimeoutId) {
                     clearTimeout(generationTimeoutId);
                     generationTimeoutId = null;
                 }
                 loading.style.display = "none";
                 submitBtn.disabled = false; // Re-enable generate button
+                 // Keep other buttons disabled on error
                 showToast("Error generating image. Please try again.", 'error');
-                // Optionally disable buttons again or keep them enabled
-                // downloadBtn.disabled = true;
-                // savePromptBtn.disabled = true;
-                // shareBtn.disabled = true;
             };
+        }
+
+        submitBtn.addEventListener("click", function () {
+            generateImage(false); // Call generateImage with isRefresh = false
+        });
+
+        refreshBtn.addEventListener("click", function() {
+            // Ensure the prompt hasn't changed since the last successful generation
+            if (promptInput.value.trim() === lastSuccessfulPrompt && lastSuccessfulPrompt !== "") {
+                 generateImage(true); // Call generateImage with isRefresh = true
+            } else {
+                // If prompt changed or no successful generation yet, treat as new generation
+                showToast("Prompt changed or no image generated yet. Generating new image.", "info");
+                generateImage(false);
+            }
         });
 
         // Add event listeners to model buttons
@@ -564,7 +599,11 @@
 
         savePromptBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
-            if (!prompt) return;
+            // Ensure saving the prompt that was actually used for the displayed image
+            if (!prompt || prompt !== lastSuccessfulPrompt) {
+                 showToast("Please generate an image with the current prompt first.", 'error');
+                 return;
+            }
 
             const savedPrompts = JSON.parse(localStorage.getItem(promptCookieName)) || [];
             if (!savedPrompts.includes(prompt)) {
@@ -579,19 +618,24 @@
         });
 
         downloadBtn.addEventListener("click", function () {
-            if (frame.src) {
+            if (frame.src && frame.src !== window.location.href) { // Check if frame.src is valid and not the base URL
                 const link = document.createElement("a");
                 link.href = frame.src;
                 link.download = "generated_image.png";
                 link.click();
                 showToast("Image downloaded!");
+            } else {
+                 showToast("No image to download.", 'error');
             }
         });
 
         shareBtn.addEventListener("click", function () {
-            if (frame.src) {
+             if (frame.src && frame.src !== window.location.href) { // Check if frame.src is valid
                 fetch(frame.src)
-                    .then(res => res.blob())
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                        return res.blob();
+                     })
                     .then(blob => {
                         const file = new File([blob], "generated_image.png", { type: blob.type });
                         if (navigator.share) {
@@ -605,6 +649,8 @@
                             showToast("Sharing not supported on your browser.");
                         }
                     });
+            } else {
+                 showToast("No image to share.", 'error');
             }
         });
 
@@ -634,7 +680,8 @@
                 btn.style.wordBreak = "break-word";
                 btn.onclick = () => {
                     promptInput.value = prompt;
-                    submitBtn.click();
+                    // Clicking history should trigger a new generation, not refresh
+                    generateImage(false); 
                     historyList.style.display = 'none';
                 };
                 historyList.appendChild(btn);
@@ -658,15 +705,20 @@
         promptInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
-                submitBtn.click();
+                generateImage(false); // Trigger new generation on Enter
             }
         });
         
         // Add input event for mobile devices
         promptInput.addEventListener("input", function(event) {
+            // Reset seed if prompt text changes manually
+            if (promptInput.value.trim() !== lastSuccessfulPrompt) {
+                currentSeed = 0;
+                refreshBtn.disabled = true; // Disable refresh if prompt changes before generating
+            }
             if (event.inputType === "insertLineBreak") {
                 event.preventDefault();
-                submitBtn.click();
+                 generateImage(false); // Trigger new generation on mobile Enter/Go
             }
         });
     </script>
