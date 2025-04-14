@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
   </head>
   <body>
     <h1 class="page-title">AI Art Generator</h1>
@@ -109,5 +111,16 @@
     <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-uydU5/LIetAVsLRkNmePfMY9EL/O1/5MbghbU+y2X6kvWC27+5p4Irfw050vLyY/P4PpqEcetnq/jRAcPDGFQg==" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
