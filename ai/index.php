@@ -7,6 +7,7 @@
     <meta name="keywords" content="AI Art Generator, AI Art, Create Art, AI Models, Art Generator">
     <meta name="author" content="TRYQ8FLiX">
     <title>AI Art Generator - Create Stunning Art with AI</title>
+    <link rel="icon" href="images/mobileLogo.webp" type="image/webp">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
