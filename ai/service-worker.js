@@ -1,10 +1,10 @@
 const CACHE_NAME = 'ai-art-generator-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.php',
-  '/css/style.css',
-  '/js/script.obfuscated.js',
-  '/images/mobileLogo.webp'
+  '/ai/',
+  '/ai/index.php',
+  '/ai/css/style.css',
+  '/ai/js/script.obfuscated.js',
+  '/ai/images/mobileLogo.webp'
 ];
 
 self.addEventListener('install', event => {

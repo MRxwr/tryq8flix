@@ -3,7 +3,7 @@
   "short_name": "Q8 ArtAI",
   "version": "1.0",
   "description": "Transform your imagination into stunning art with AI.",
-  "start_url": "/index.php",
+  "start_url": "/ai/index.php",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
