@@ -8,14 +8,14 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "images/mobileLogo.webp",
+      "src": "images/mobileLogo.png",
       "sizes": "192x192",
-      "type": "image/webp"
+      "type": "image/png"
     },
     {
-      "src": "images/mobileLogo.webp",
+      "src": "images/mobileLogo.png",
       "sizes": "512x512",
-      "type": "image/webp"
+      "type": "image/png"
     }
   ]
 }
