@@ -3,10 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="AI Art Generator: Transform your imagination into stunning art. Create masterpieces with ease using our advanced AI models.">
+    <meta name="keywords" content="AI Art Generator, AI Art, Create Art, AI Models, Art Generator">
+    <meta name="author" content="TRYQ8FLiX">
+    <title>AI Art Generator - Create Stunning Art with AI</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <title>AI Art Generator</title>
   </head>
   <body>
     <h1 class="page-title">AI Art Generator</h1>
@@ -89,9 +92,9 @@
     <footer>
         <p>Share this website:</p>
         <div class="mb-3">
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://tryq8flix.com/aiGenerator.php" target="_blank"><i class="fab fa-facebook-square fa-2x"></i></a>
-            <a href="https://twitter.com/intent/tweet?url=https://tryq8flix.com/aiGenerator.php" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
-            <a href="https://wa.me/?text=Check out this amazing AI Art Generator: https://tryq8flix.com/aiGenerator.php" target="_blank"><i class="fab fa-whatsapp-square fa-2x"></i></a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on Facebook"><i class="fab fa-facebook-square fa-2x"></i></a>
+            <a href="https://twitter.com/intent/tweet?url=https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on Twitter"><i class="fab fa-twitter-square fa-2x"></i></a>
+            <a href="https://wa.me/?text=Check out this amazing AI Art Generator: https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp-square fa-2x"></i></a>
         </div>
         <p>Courtesy of <a href="https://tryq8flix.com" target="_blank">TRYQ8FLiX</a></p>
     </footer>
@@ -100,7 +103,7 @@
         <div class="spinner"></div>
         <p>Creating Your Masterpiece... Please Wait</p>
     </div>
-    <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-uydU5/LIetAVsLRkNmePfMY9EL/O1/5MbghbU+y2X6kvWC27+5p4Irfw050vLyY/P4PpqEcetnq/jRAcPDGFQg=="></script>
+    <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-PTCYwp+yOO+G6vXTmD4r/TqDbF/BheTTtbetgnb6N5OillfKEDBQPqAb/HjqmFWQfWDYliDAtPRq0jCn2RohwA=="></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
