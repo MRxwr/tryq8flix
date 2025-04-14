@@ -9,11 +9,12 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: #fff;
-            background: linear-gradient(135deg, #6b8cce, #9cc5f2, #6b8cce);
+            background: linear-gradient(135deg, #6b8cce 0%, #9cc5f2 50%, #6b8cce 100%);
             background-size: 300% 300%;
             animation: moveBackground 15s infinite;
+            min-height: 100vh;
         }
 
         @keyframes moveBackground {
@@ -22,27 +23,148 @@
             100% { background-position: 0% 50%; }
         }
 
+        .glass-card {
+            background: rgba(255,255,255,0.13);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 30px 20px;
+            margin: 40px auto;
+            max-width: 800px;
+            transition: box-shadow 0.3s;
+        }
+        .glass-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+        }
+
         h1, h2, h6 {
             text-align: center;
             margin-top: 20px;
-            text-shadow: 2px 2px #000;
+            text-shadow: 2px 2px 8px #000, 0 0 10px #6b8cce;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        h6 {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #e0eaff;
+        }
+
+        label {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.18);
+            color: #222;
+            box-shadow: 0 2px 8px rgba(107,140,206,0.08);
+            transition: background 0.2s;
+        }
+        .form-control:focus {
+            background: rgba(255,255,255,0.28);
+            outline: none;
+            box-shadow: 0 0 0 2px #6b8cce;
+        }
+
+        .model-btn {
+            margin: 0 8px 12px 8px;
+            min-width: 110px;
+            font-weight: 600;
+            border-radius: 18px;
+            border: 2px solid #fff;
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(107,140,206,0.10);
+            position: relative;
+        }
+        .model-btn.active, .model-btn:focus {
+            background: linear-gradient(90deg, #6b8cce 60%, #9cc5f2 100%);
+            color: #fff;
+            border: 2px solid #9cc5f2;
+            box-shadow: 0 0 0 3px #9cc5f2;
+        }
+        .model-btn:hover {
+            background: #9cc5f2;
+            color: #222;
+            border: 2px solid #fff;
+        }
+
+        .btn {
+            font-size: 1.1rem;
+            border-radius: 14px;
+            margin-bottom: 8px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(107,140,206,0.10);
+        }
+        .btn-primary, .btn-success, .btn-warning, .btn-info, .btn-secondary, .btn-danger {
+            font-weight: 600;
+        }
+        .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-info:hover, .btn-secondary:hover, .btn-danger:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 16px rgba(107,140,206,0.18);
+        }
+
+        #returnImage {
+            margin-top: 18px;
+        }
+        #frame {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.18);
+            min-height: 320px;
+            background: repeating-linear-gradient(135deg, #e0eaff 0 10px, #fff 10px 20px);
+            object-fit: cover;
+            transition: box-shadow 0.3s;
+        }
+        #frame[src=""] {
+            min-height: 320px;
+            background: repeating-linear-gradient(135deg, #e0eaff 0 10px, #fff 10px 20px);
+        }
+
+        #historyList {
+            margin-top: 10px;
+            background: rgba(255,255,255,0.10);
+            border-radius: 12px;
+            padding: 10px;
+            color: #222;
+        }
+
+        .btn-outline-primary.btn-sm {
+            margin-bottom: 4px;
         }
 
         footer {
             text-align: center;
-            margin-top: 20px;
-            color: white;
+            margin-top: 30px;
+            color: #e0eaff;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
         }
 
         footer a {
             margin: 0 10px;
-            color: white;
+            color: #fff;
             text-decoration: none;
             font-size: 1.2rem;
+            transition: color 0.2s;
         }
 
         footer a:hover {
             text-decoration: underline;
+            color: #9cc5f2;
         }
 
         #loading {
@@ -78,45 +200,47 @@
     <h1>AI Art</h1>
     <h6>Transform Your Imagination Into Stunning Art</h6>
     <div class="container-fluid">
-        <div class="row text-center" style="background: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 20px;margin: 30px auto;max-width: 800px;">
-          <div class="col-12"><h3 class="text-center">Enter Your Prompt</h3></div>
-            <div class="col-12">
+        <div class="glass-card row text-center">
+          <div class="col-12"><h3 class="text-center mb-4" style="color:#fff;text-shadow:1px 1px 8px #6b8cce;">Enter Your Prompt</h3></div>
+            <div class="col-12 mb-3">
                 <input name="prompt" id="prompt" value="" class="form-control" placeholder="Describe your art (e.g., a futuristic city)">
             </div>
-            <div class="col-12 pt-3 text-center">
-                <label class="text-white d-block">Select Model:</label>
-                <button class="btn btn-outline-light model-btn" data-model="normal">Normal</button>
-                <button class="btn btn-outline-light model-btn" data-model="turbo">Fast</button>
+            <div class="col-12 pt-2 pb-2">
+                <label class="text-white d-block mb-2" style="font-size:1.1rem;"><i class="fas fa-rocket"></i> Select Model:</label>
+                <button class="btn model-btn" data-model="normal"><i class="fas fa-magic"></i> Normal</button>
+                <button class="btn model-btn" data-model="turbo"><i class="fas fa-bolt"></i> Turbo</button>
+                <button class="btn model-btn" data-model="flux"><i class="fas fa-fire"></i> Flux</button>
             </div>
-            <div class="col-12 pt-3 text-center">
-                <button id="submitBtn" class="btn btn-primary w-100">Generate Image</button>
+            <div class="col-12 pt-2 text-center">
+                <button id="submitBtn" class="btn btn-primary w-100"><i class="fas fa-image"></i> Generate Image</button>
             </div>
             <div id="toastContainer" class="col-12 pt-2 text-center"></div>
-            <div class="col-12"><hr></div>
+            <div class="col-12"><hr style="border-color:#9cc5f2;"></div>
             <div class="col-12 pt-3" id="returnImage">
-                <img style="width: 100%; border-radius: 10px;" id="frame" src="">
+                <img id="frame" src="">
             </div>
             <div class="col-12 pt-3">
-                <button id="downloadBtn" class="btn btn-success w-100 mb-2" disabled>Download</button>
-                <button id="shareBtn" class="btn btn-warning w-100 mb-2" disabled>Share</button>
-                <button id="savePromptBtn" class="btn btn-info w-100 mb-2" disabled>Save Prompt</button>
-                <button id="viewHistoryBtn" class="btn btn-secondary w-100 mt-2">Prompts History</button>
-                <button id="clearCookiesBtn" class="btn btn-danger w-100 mt-2">Clear Prompts</button>
+                <button id="downloadBtn" class="btn btn-success w-100 mb-2" disabled><i class="fas fa-download"></i> Download</button>
+                <button id="shareBtn" class="btn btn-warning w-100 mb-2" disabled><i class="fas fa-share-alt"></i> Share</button>
+                <button id="savePromptBtn" class="btn btn-info w-100 mb-2" disabled><i class="fas fa-save"></i> Save Prompt</button>
+                <button id="viewHistoryBtn" class="btn btn-secondary w-100 mt-2"><i class="fas fa-history"></i> Prompts History</button>
+                <button id="clearCookiesBtn" class="btn btn-danger w-100 mt-2"><i class="fas fa-trash"></i> Clear Prompts</button>
                 <div id="historyList"></div>
             </div>
         </div>
     </div>
     <footer>
         <p>Share this website:</p>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://tryq8flix.com/aiGenerator.php" target="_blank">Facebook</a>
-        <a href="https://twitter.com/intent/tweet?url=https://tryq8flix.com/aiGenerator.php" target="_blank">Twitter</a>
-        <a href="https://wa.me/?text=Check out this amazing AI Art Generator: https://tryq8flix.com/aiGenerator.php" target="_blank">WhatsApp</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://tryq8flix.com/aiGenerator.php" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url=https://tryq8flix.com/aiGenerator.php" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+        <a href="https://wa.me/?text=Check out this amazing AI Art Generator: https://tryq8flix.com/aiGenerator.php" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
         <p>Courtesy of <a href="https://tryq8flix.com" target="_blank">TRYQ8FLiX</a></p>
     </footer>
     <div id="loading">
         <div class="spinner"></div>
         <p>Generating Your Art... Please Wait</p>
     </div>
+    <script src="https://kit.fontawesome.com/7b2e1e5f2a.js" crossorigin="anonymous"></script>
     <script>
         const promptInput = document.getElementById("prompt");
         const submitBtn = document.getElementById("submitBtn");
@@ -185,6 +309,16 @@
             }, 2500);
         };
 
+        // Model button logic
+        document.querySelectorAll(".model-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                document.querySelectorAll(".model-btn").forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+        // Set default active model
+        document.querySelector('.model-btn[data-model="normal"]').classList.add("active");
+
         submitBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
             const selectedModel = document.querySelector(".model-btn.active")?.getAttribute("data-model") || "normal";
@@ -201,14 +335,6 @@
                 shareBtn.disabled = false;
                 showToast("Image generated successfully!");
             };
-        });
-
-        // Add event listeners to model buttons
-        document.querySelectorAll(".model-btn").forEach(button => {
-            button.addEventListener("click", function () {
-                document.querySelectorAll(".model-btn").forEach(btn => btn.classList.remove("active"));
-                this.classList.add("active");
-            });
         });
 
         savePromptBtn.addEventListener("click", function () {
@@ -292,14 +418,15 @@
 
         clearCookiesBtn.addEventListener("click", function () {
             localStorage.removeItem(promptCookieName);
-            //showHistoryMessage("<p>Prompts cleared!</p>");
             showToast("Prompts cleared!");
         });
+
         promptInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 submitBtn.click();
             }
         });
+
         // Add input event for mobile devices
         promptInput.addEventListener("input", function(event) {
             if (event.inputType === "insertLineBreak") {
