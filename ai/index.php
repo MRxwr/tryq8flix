@@ -124,12 +124,6 @@
       }
     </script>
     <script>
-        const frameElement = document.getElementById('frame');
-        frameElement.onload = () => {
-            frameElement.style.display = 'block';
-        };
-    </script>
-    <script>
       let deferredPrompt;
       const installButton = document.createElement('button');
       installButton.textContent = 'Install App';
