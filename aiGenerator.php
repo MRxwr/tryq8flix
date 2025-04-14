@@ -333,8 +333,15 @@
                 <button class="btn btn-outline-light model-btn" data-model="turbo">Fast</button>
             </div>
             
-            <div class="col-12 pt-4 text-center">
-                <button id="submitBtn" class="btn btn-primary w-100"><i class="fas fa-bolt mr-2"></i> Generate Image</button>
+            <div class="col-12 pt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 col-12 mb-2">
+                        <button id="submitBtn" class="btn btn-primary w-100"><i class="fas fa-bolt mr-2"></i> Generate Image</button>
+                    </div>
+                    <div class="col-md-6 col-12 mb-2">
+                         <button id="refreshBtn" class="btn btn-primary w-100" disabled><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                    </div>
+                </div>
             </div>
             
             <div id="toastContainer" class="col-12 pt-2 text-center"></div>
@@ -355,11 +362,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 col-12 mb-2">
+                    <div class="col-md-12 col-12 mb-2">
                         <button id="savePromptBtn" class="btn btn-info w-100" disabled><i class="fas fa-bookmark mr-1"></i> Save Prompt</button>
-                    </div>
-                    <div class="col-md-6 col-12 mb-2">
-                        <button id="refreshBtn" class="btn btn-primary w-100" disabled><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                     </div>
                 </div>
                 
@@ -519,7 +523,7 @@
             downloadBtn.disabled = true;
             savePromptBtn.disabled = true;
             shareBtn.disabled = true;
-            refreshBtn.disabled = true; // Disable refresh during generation
+            refreshBtn.disabled = true; // Always disable refresh during any generation
 
             if (isRefresh) {
                 currentSeed++; // Increment seed only on refresh
@@ -540,7 +544,7 @@
                     loading.style.display = "none";
                     frame.src = "";
                     submitBtn.disabled = false; // Re-enable generate button
-                    // Keep other buttons disabled on timeout
+                    refreshBtn.disabled = true; // Ensure refresh is disabled on timeout
                     showToast("Image generation timed out. Please try again.", 'error');
                     generationTimeoutId = null;
                 }
@@ -556,7 +560,8 @@
                 downloadBtn.disabled = false;
                 savePromptBtn.disabled = false;
                 shareBtn.disabled = false;
-                refreshBtn.disabled = false; // Enable refresh button
+                // Only enable refresh after the *first* successful generation for this prompt
+                refreshBtn.disabled = false; 
                 submitBtn.disabled = false; 
                 lastSuccessfulPrompt = prompt; // Store the successful prompt
                 showToast(`Image ${isRefresh ? 'refreshed' : 'generated'} successfully!`);
@@ -569,7 +574,7 @@
                 }
                 loading.style.display = "none";
                 submitBtn.disabled = false; // Re-enable generate button
-                 // Keep other buttons disabled on error
+                refreshBtn.disabled = true; // Ensure refresh is disabled on error
                 showToast("Error generating image. Please try again.", 'error');
             };
         }
@@ -711,7 +716,7 @@
         
         // Add input event for mobile devices
         promptInput.addEventListener("input", function(event) {
-            // Reset seed if prompt text changes manually
+            // Reset seed and disable refresh if prompt text changes manually
             if (promptInput.value.trim() !== lastSuccessfulPrompt) {
                 currentSeed = 0;
                 refreshBtn.disabled = true; // Disable refresh if prompt changes before generating
