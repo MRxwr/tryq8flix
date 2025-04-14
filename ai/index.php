@@ -122,5 +122,42 @@
         });
       }
     </script>
+    <script>
+      let deferredPrompt;
+      const installButton = document.createElement('button');
+      installButton.textContent = 'Install App';
+      installButton.style.position = 'fixed';
+      installButton.style.bottom = '20px';
+      installButton.style.right = '20px';
+      installButton.style.padding = '10px 20px';
+      installButton.style.backgroundColor = '#007bff';
+      installButton.style.color = '#fff';
+      installButton.style.border = 'none';
+      installButton.style.borderRadius = '5px';
+      installButton.style.cursor = 'pointer';
+      installButton.style.display = 'none';
+      document.body.appendChild(installButton);
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installButton.style.display = 'block';
+      });
+
+      installButton.addEventListener('click', () => {
+        installButton.style.display = 'none';
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              console.log('User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+          });
+        }
+      });
+    </script>
   </body>
 </html>
