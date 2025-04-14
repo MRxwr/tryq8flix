@@ -138,26 +138,30 @@
       installButton.style.display = 'none';
       document.body.appendChild(installButton);
 
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installButton.style.display = 'block';
-      });
+      if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+        console.log('App is already installed');
+      } else {
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          installButton.style.display = 'block';
+        });
 
-      installButton.addEventListener('click', () => {
-        installButton.style.display = 'none';
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('User accepted the install prompt');
-            } else {
-              console.log('User dismissed the install prompt');
-            }
-            deferredPrompt = null;
-          });
-        }
-      });
+        installButton.addEventListener('click', () => {
+          installButton.style.display = 'none';
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+              } else {
+                console.log('User dismissed the install prompt');
+              }
+              deferredPrompt = null;
+            });
+          }
+        });
+      }
     </script>
   </body>
 </html>
