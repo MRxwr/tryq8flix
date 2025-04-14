@@ -428,8 +428,9 @@
 
         const maxPrompts = 5;
         const promptCookieName = "savedPrompts";
+        let generationTimeoutId = null; // Variable to hold the timeout ID
 
-        const showToast = (message) => {
+        const showToast = (message, type = 'success') => {
             // Create blocking overlay
             const overlay = document.createElement("div");
             overlay.style.cssText = `
@@ -444,7 +445,9 @@
 
             // Create centered toast
             const toast = document.createElement("div");
-            toast.className = "toast align-items-center text-white bg-success border-0 show";
+            const bgColor = type === 'error' ? 'bg-danger' : 'bg-success';
+            const iconClass = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            toast.className = `toast align-items-center text-white ${bgColor} border-0 show`;
             toast.role = "alert";
             toast.style.cssText = `
                 position: fixed;
@@ -461,7 +464,7 @@
             
             toast.innerHTML = `
                 <div class="d-flex">
-                    <div class="toast-body"><i class="fas fa-check-circle mr-2"></i>${message}</div>
+                    <div class="toast-body"><i class="${iconClass} mr-2"></i>${message}</div>
                 </div>`;
 
             document.body.appendChild(overlay);
@@ -489,25 +492,61 @@
             const width = document.getElementById("imgWidth").value || 1080;
             const height = document.getElementById("imgHeight").value || 1080;
             if (!prompt) {
-                showToast("Please enter a prompt first!");
+                showToast("Please enter a prompt first!", 'error');
                 return;
             }
 
+            // Clear any previous timeout
+            if (generationTimeoutId) {
+                clearTimeout(generationTimeoutId);
+            }
+
             loading.style.display = "flex"; // Set display to flex here when starting
+            // Disable buttons during generation
+            submitBtn.disabled = true;
+            downloadBtn.disabled = true;
+            savePromptBtn.disabled = true;
+            shareBtn.disabled = true;
+
             const modelParam = selectedModel !== "normal" ? `&model=${selectedModel}` : "";
-            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true${modelParam}`;
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true${modelParam}`;
+            frame.src = imageUrl;
+
+            // Set a timeout for 60 seconds (60000 milliseconds)
+            generationTimeoutId = setTimeout(() => {
+                // Check if still loading after 1 minute
+                if (loading.style.display === "flex") {
+                    loading.style.display = "none"; // Hide loading
+                    frame.src = ""; // Stop trying to load the image
+                    submitBtn.disabled = false; // Re-enable generate button
+                    showToast("Image generation timed out. Please try again.", 'error');
+                    generationTimeoutId = null; // Reset timeout ID
+                }
+            }, 60000);
 
             frame.onload = () => {
+                // Clear the timeout if the image loads successfully
+                if (generationTimeoutId) {
+                    clearTimeout(generationTimeoutId);
+                    generationTimeoutId = null;
+                }
                 loading.style.display = "none"; // Set display back to none here when finished
                 downloadBtn.disabled = false;
                 savePromptBtn.disabled = false;
                 shareBtn.disabled = false;
+                submitBtn.disabled = false; // Re-enable generate button
                 showToast("Image generated successfully!");
             };
             // Add error handling in case the image fails to load
             frame.onerror = () => {
+                 // Clear the timeout if there's an error
+                if (generationTimeoutId) {
+                    clearTimeout(generationTimeoutId);
+                    generationTimeoutId = null;
+                }
                 loading.style.display = "none";
-                showToast("Error generating image. Please try again.");
+                submitBtn.disabled = false; // Re-enable generate button
+                showToast("Error generating image. Please try again.", 'error');
                 // Optionally disable buttons again or keep them enabled
                 // downloadBtn.disabled = true;
                 // savePromptBtn.disabled = true;
