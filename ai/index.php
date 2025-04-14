@@ -101,7 +101,9 @@
             <a href="https://twitter.com/intent/tweet?url=https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on Twitter"><i class="fab fa-twitter-square fa-2x"></i></a>
             <a href="https://wa.me/?text=Check out this amazing AI Art Generator: https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp-square fa-2x"></i></a>
         </div>
-        <p>Courtesy of <a href="https://tryq8flix.com" target="_blank">TRYQ8FLiX</a></p>
+        <p>Courtesy of <a href="https://tryq8flix.com" target="_blank">TRYQ8FLiX</a>
+          <img src="images/mobileLogo.webp" alt="TRYQ8FLiX Logo" style="width: 20px; height: 20px; margin-left: 5px;">
+        </p>
     </footer>
     
     <div id="loading">
