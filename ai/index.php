@@ -100,7 +100,7 @@
         <div class="spinner"></div>
         <p>Creating Your Masterpiece... Please Wait</p>
     </div>
-    <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-PTCYwp+yOO+G6vXTmD4r/TqDbF/BheTTtbetgnb6N5OillfKEDBQPqAb/HjqmFWQfWDYliDAtPRq0jCn2RohwA=="></script>
+    <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-uydU5/LIetAVsLRkNmePfMY9EL/O1/5MbghbU+y2X6kvWC27+5p4Irfw050vLyY/P4PpqEcetnq/jRAcPDGFQg=="></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
