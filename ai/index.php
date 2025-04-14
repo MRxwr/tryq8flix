@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="max-age=31536000, must-revalidate">
     <meta http-equiv="Expires" content="Tue, 15 Apr 2026 00:00:00 GMT">
     <title>AI Art Generator - Create Stunning Art with AI</title>
-    <link rel="icon" href="images/mobileLogo.webp" type="image/webp">
+    <link rel="icon" href="images/mobileLogo.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
@@ -101,8 +101,7 @@
             <a href="https://twitter.com/intent/tweet?url=https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on Twitter"><i class="fab fa-twitter-square fa-2x"></i></a>
             <a href="https://wa.me/?text=Check out this amazing AI Art Generator: https://tryq8flix.com/aiGenerator.php" target="_blank" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp-square fa-2x"></i></a>
         </div>
-        <p>Courtesy of <a href="https://tryq8flix.com" target="_blank">TRYQ8FLiX</a>
-          <img src="images/mobileLogo.webp" alt="TRYQ8FLiX Logo" style="width: 20px; height: 20px; margin-left: 5px;">
+        <p>Courtesy of <img src="images/mobileLogo.png" alt="TRYQ8FLiX Logo" style="width: 20px; height: 20px; margin-left: 5px;"> <a href="https://tryq8flix.com" target="_blank">TRYQ8FLiX</a>
         </p>
     </footer>
     
