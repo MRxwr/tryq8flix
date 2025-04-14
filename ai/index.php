@@ -10,7 +10,7 @@
     <link rel="icon" href="images/mobileLogo.webp" type="image/webp">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
   </head>
   <body>
     <h1 class="page-title">AI Art Generator</h1>
@@ -58,7 +58,7 @@
             <div class="col-12"><hr class="section-divider"></div>
             
             <div class="col-12 pt-3" id="returnImage">
-                <img id="frame" src="" alt="Your generated image will appear here">
+                <img id="frame" src="" alt="Your generated image will appear here" width="100%" height="350">
             </div>
             
             <div class="col-12 pt-4">
@@ -104,7 +104,7 @@
         <div class="spinner"></div>
         <p>Creating Your Masterpiece... Please Wait</p>
     </div>
-    <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-uydU5/LIetAVsLRkNmePfMY9EL/O1/5MbghbU+y2X6kvWC27+5p4Irfw050vLyY/P4PpqEcetnq/jRAcPDGFQg=="></script>
+    <script src="js/script.obfuscated.js" type="text/javascript" crossorigin="anonymous" integrity="sha512-uydU5/LIetAVsLRkNmePfMY9EL/O1/5MbghbU+y2X6kvWC27+5p4Irfw050vLyY/P4PpqEcetnq/jRAcPDGFQg==" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
