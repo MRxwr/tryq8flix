@@ -124,9 +124,9 @@
       }
     </script>
     <script>
-        const frame = document.getElementById('frame');
-        frame.onload = () => {
-        frame.style.display = 'block';
+        const frameElement = document.getElementById('frame');
+        frameElement.onload = () => {
+            frameElement.style.display = 'block';
         };
     </script>
     <script>
