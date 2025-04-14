@@ -34,6 +34,17 @@
             animation: fadeIn 1s ease-in;
         }
 
+        .page-subtitle {
+            color: #fff;
+            text-align: center;
+            font-weight: 700;
+            font-size: 12px;
+            margin-top: 30px;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-in;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -294,7 +305,7 @@
   </head>
   <body>
     <h1 class="page-title">AI Art Generator</h1>
-    <h6>Transform Your Imagination Into Stunning Art</h6>
+    <h6 class="page-subtitle">Transform Your Imagination Into Stunning Art</h6>
     <div class="container-fluid">
         <div class="row text-center generator-card">
           <div class="col-12 mb-3">
