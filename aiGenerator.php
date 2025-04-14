@@ -83,6 +83,12 @@
             <div class="col-12">
                 <input name="prompt" id="prompt" value="" class="form-control" placeholder="Describe your art (e.g., a futuristic city)">
             </div>
+            <div class="col-6 pt-2">
+                <input type="number" id="imgWidth" class="form-control" placeholder="Width (e.g. 1080)" min="256" max="2048" value="1080">
+            </div>
+            <div class="col-6 pt-2">
+                <input type="number" id="imgHeight" class="form-control" placeholder="Height (e.g. 1080)" min="256" max="2048" value="1080">
+            </div>
             <div class="col-12 pt-3 text-center">
                 <label class="text-white d-block">Select Model:</label>
                 <button class="btn btn-outline-light model-btn" data-model="normal">Normal</button>
@@ -188,11 +194,13 @@
         submitBtn.addEventListener("click", function () {
             const prompt = promptInput.value.trim();
             const selectedModel = document.querySelector(".model-btn.active")?.getAttribute("data-model") || "normal";
+            const width = document.getElementById("imgWidth").value || 1080;
+            const height = document.getElementById("imgHeight").value || 1080;
             if (!prompt) return;
 
             loading.style.display = "block";
             const modelParam = selectedModel !== "normal" ? `&model=${selectedModel}` : "";
-            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1080&height=1080&nologo=true${modelParam}`;
+            frame.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&nologo=true${modelParam}`;
 
             frame.onload = () => {
                 loading.style.display = "none";
