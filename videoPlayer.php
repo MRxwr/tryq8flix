@@ -7,6 +7,64 @@
 </head>
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
+    if( isset($_GET["link"]) && !empty($_GET["link"]) ){
+        //search link fpr topcenima in the url
+        if( strpos($_GET["link"], "topcinema") !== false ){
+            $html = curlCall("{$_GET["link"]}");
+            $dom = str_get_html($html);
+            $data = [
+                'shows' => []
+            ];
+            if ($dom) {
+                foreach ($dom->find('.server--item') as $server) {
+                    $id = $server->getAttribute('data-id');
+                    $i = $server->getAttribute('data-server');
+                    $jsonData = [
+                        'id' => $id,
+                        'i' => $i,
+                        'link' => "{$_GET["link"]}",
+                    ];
+                    $data['shows'][] = $jsonData;
+                }
+                $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            } else {
+                echo 'Error: Invalid DOM object.';
+                $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            }
+            $servers = json_decode($servers, true);
+            $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+            $url = makeRequest($ajaxUrl, $servers[2], "{$_GET["link"]}");
+            $_GET["link"] = extractVideoSource($url);
+            if (strpos($_GET["link"], ".m3u8") !== false) {
+                $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
+            }
+        }else{
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => "{$_GET["link"]}",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                "referer: {$website3}",
+            ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+            $_GET["link"] = extractVideoSource($response);
+            // crop after .m3u8
+            if (strpos($_GET["link"], ".m3u8") !== false) {
+                $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
+            }
+        }
+    }else{
+        echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+    }
+    
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
     }else{
@@ -28,64 +86,6 @@ function extractVideoSource($html) {
 
 function getUrlBase($url) {
     return strtok($url, '?');
-}
-
-if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-    //search link fpr topcenima in the url
-    if( strpos($_GET["link"], "topcinema") !== false ){
-        $html = curlCall("{$_GET["link"]}");
-        $dom = str_get_html($html);
-        $data = [
-            'shows' => []
-        ];
-        if ($dom) {
-            foreach ($dom->find('.server--item') as $server) {
-                $id = $server->getAttribute('data-id');
-                $i = $server->getAttribute('data-server');
-                $jsonData = [
-                    'id' => $id,
-                    'i' => $i,
-                    'link' => "{$_GET["link"]}",
-                ];
-                $data['shows'][] = $jsonData;
-            }
-            $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        } else {
-            echo 'Error: Invalid DOM object.';
-            $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        }
-        $servers = json_decode($servers, true);
-        $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
-        $url = makeRequest($ajaxUrl, $servers[2], "{$_GET["link"]}");
-        $_GET["link"] = extractVideoSource($url);
-        if (strpos($_GET["link"], ".m3u8") !== false) {
-            $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
-        }
-    }else{
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => "{$_GET["link"]}",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-        CURLOPT_HTTPHEADER => array(
-            "referer: {$website3}",
-        ),
-        ));
-        $response = curl_exec($curl);
-        curl_close($curl);
-        $_GET["link"] = extractVideoSource($response);
-        // crop after .m3u8
-        if (strpos($_GET["link"], ".m3u8") !== false) {
-            $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
-        }
-    }
-}else{
-    echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
 ?>
 
