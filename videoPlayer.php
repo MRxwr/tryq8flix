@@ -57,7 +57,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         $servers = json_decode($servers, true);
         $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
         $url = makeRequest($ajaxUrl, $servers[2], "{$_GET["link"]}");
-        $_GET["link"] = extractVideoSource($response);
+        $_GET["link"] = extractVideoSource($url);
         if (strpos($_GET["link"], ".m3u8") !== false) {
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
         }
