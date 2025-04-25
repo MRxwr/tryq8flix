@@ -763,14 +763,14 @@ function scrapEgyDead($url) {
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
     $headers = [
-        'Accept: */*',
-        'Accept-Language: en-US,en;q=0.5',
-        'Accept-Encoding: gzip, deflate',
+        //'Accept: */*',
+        //'Accept-Language: en-US,en;q=0.5',
+        //'Accept-Encoding: gzip, deflate',
         'X-Requested-With: XMLHttpRequest',
-        'Connection: keep-alive',
-        'Sec-Fetch-Dest: empty',
-        'Sec-Fetch-Mode: cors',
-        'Sec-Fetch-Site: same-origin',
+        //'Connection: keep-alive',
+        //'Sec-Fetch-Dest: empty',
+        //'Sec-Fetch-Mode: cors',
+        //'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
