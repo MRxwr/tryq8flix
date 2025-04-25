@@ -1,3 +1,19 @@
+<?php
+require("admin/includes/config.php");
+require("admin/includes/functions.php");
+require("templates/simple_html_dom.php");
+function extractVideoSource($html) {
+    $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
+    if (preg_match($pattern, $html, $matches)) {
+        return $matches[1];
+    }
+    return null;
+}
+
+function getUrlBase($url) {
+    return strtok($url, '?');
+}
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -64,30 +80,13 @@
     }else{
         echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
     }
-    
+
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
     ?>
-<?php 
-require("admin/includes/config.php");
-require("admin/includes/functions.php");
-require("templates/simple_html_dom.php");
-
-function extractVideoSource($html) {
-    $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
-    if (preg_match($pattern, $html, $matches)) {
-        return $matches[1];
-    }
-    return null;
-}
-
-function getUrlBase($url) {
-    return strtok($url, '?');
-}
-?>
 
 <script>
         function setupVideoPlayer(videoElement, sourceUrl) {
