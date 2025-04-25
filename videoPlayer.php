@@ -16,7 +16,7 @@
 <?php 
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
-require("admin/includes/simple_html_dom.php");
+require("templates/simple_html_dom.php");
 
 function extractVideoSource($html) {
     $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
