@@ -45,7 +45,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
                 $jsonData = [
                     'id' => $id,
                     'i' => $i,
-                    'link' => "{$_POST["id"]}watch/",
+                    'link' => "{$_GET["link"]}",
                 ];
                 $data['shows'][] = $jsonData;
             }
