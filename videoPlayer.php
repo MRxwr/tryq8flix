@@ -33,7 +33,7 @@ function getUrlBase($url) {
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     //search link fpr topcenima in the url
     if( strpos($_GET["link"], "topcinema") !== false ){
-        $html = curlCall("{$_POST["id"]}watch/");
+        $html = curlCall("{$_GET["link"]}");
         $dom = str_get_html($html);
         $data = [
             'shows' => []
