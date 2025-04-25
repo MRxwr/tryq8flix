@@ -58,7 +58,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }elseif( (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
                 }
-                $data = domTopCinema("{$url}");
+                $data = shahid4uBlog("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 4 ) {
                 $url = $website;
