@@ -650,7 +650,7 @@ function shahid4uBlog($url) {
 			$link = $show->find('a', 0);
 			$image = $show->find('img', 0);
 			$genre = $show->find('.liList li', 0);
-			$title = $show->find('h3', 0);
+			$title = $show->find('h2', 0);
 			$jsonData = [
 				'href' => $link->href,
 				'image' => $image->getAttribute('data-src'),
