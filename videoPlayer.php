@@ -23,6 +23,7 @@ function getUrlBase($url) {
 </head>
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
+/*
     if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         //search link fpr topcenima in the url
         if( strpos($_GET["link"], "topcinema") !== false ){
@@ -80,7 +81,7 @@ function getUrlBase($url) {
     }else{
         echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
     }
-
+*/
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
     }else{
