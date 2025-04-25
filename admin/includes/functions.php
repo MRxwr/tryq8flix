@@ -953,7 +953,7 @@ function extractSeasonUrlEgyDead($html) {
 
 //get we cima video list servers 
 function scrapeWecimaServers($url) {
-	$html = file_get_contents("{$url}");
+	$html = curlCall("{$url}");
     $dom = str_get_html($html);
     $data = [
         'shows' => []
