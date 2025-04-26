@@ -715,7 +715,7 @@ function topCinemaServers($url) {
             $mainServer[]["link"] = $servers[$i]["link"];
         }
     }
-    return $servers;
+    return $mainServer;
 }
 
 function scrapEgyDead($url) {
