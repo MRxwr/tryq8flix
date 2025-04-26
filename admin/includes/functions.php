@@ -779,7 +779,6 @@ function makeRequest($url, $postData = null, $referer = null) {
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
     }
-    echo $referer; die();
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
