@@ -764,17 +764,20 @@ function scrapEgyDead($url) {
 	return $shows = $shows["shows"];
 }
 
+/*
+//'Accept: *',
+//'Accept-Language: en-US,en;q=0.5',
+//'Accept-Encoding: gzip, deflate',
+//'Connection: keep-alive',
+//'Sec-Fetch-Dest: empty',
+//'Sec-Fetch-Mode: cors',
+//'Sec-Fetch-Site: same-origin',
+*/
+
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
     $headers = [
-        //'Accept: */*',
-        //'Accept-Language: en-US,en;q=0.5',
-        //'Accept-Encoding: gzip, deflate',
         'X-Requested-With: XMLHttpRequest',
-        //'Connection: keep-alive',
-        //'Sec-Fetch-Dest: empty',
-        //'Sec-Fetch-Mode: cors',
-        //'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
@@ -784,7 +787,7 @@ function makeRequest($url, $postData = null, $referer = null) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_ENCODING => '',
     ]);
