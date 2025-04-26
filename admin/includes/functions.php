@@ -715,7 +715,7 @@ function topCinemaServers($url) {
         if (in_array($i, $blackList)) {
         }else{
             //unset($servers[$i]["link"]);
-            $url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "https://web2.topcinema.cam/");
+            $url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
             $mainServer[]["link"] = $url1;
         }
     }
