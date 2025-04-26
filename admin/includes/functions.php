@@ -794,7 +794,7 @@ function makeRequest($url, $postData = null, $referer = null) {
     }
     $response = curl_exec($ch);
     curl_close($ch);
-    echo $response; die();
+    echo $referer; die();
     $link = extractLink($response);
     return $link;
 }
