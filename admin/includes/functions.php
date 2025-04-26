@@ -682,7 +682,7 @@ function TopCenimaListings($url) {
 }
 
 function topCinemaServers($url) {
-    GLOBAL $website3;
+    GLOBAL $website2;
     $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
     $data = [
@@ -706,7 +706,7 @@ function topCinemaServers($url) {
     }
     $servers = json_decode($servers, true);
     $mainServer = [];
-    $ajaxUrl = "{$website3}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
     $blackList = [0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
@@ -794,7 +794,6 @@ function makeRequest($url, $postData = null, $referer = null) {
     }
     $response = curl_exec($ch);
     curl_close($ch);
-    var_dump($url); die();
     $link = extractLink($response);
     return $link;
 }
