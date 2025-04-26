@@ -904,7 +904,7 @@ function egyDeadServers($url) {
 
 //get list of seasons and episodes wecima 
 function wecimaListing($url) {
-	$html = file_get_contents($url);
+	$html = curlCall($url);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
