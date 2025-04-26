@@ -5,7 +5,6 @@ if( isset($_GET["type"]) && !empty($_GET["type"]) && $_GET["type"] == "getServer
     $link = $data["link"];
     unset($data["link"]);
     $postData = $data;
-    var_dump($postData);
     echo $url = makeRequest($ajaxUrl, $postData, $link);
 }else{
     echo "";
