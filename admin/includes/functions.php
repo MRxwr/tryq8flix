@@ -793,7 +793,8 @@ function makeRequest($url, $postData = null, $referer = null) {
     ]);
     if ($postData) {
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        // Ensure data is sent as application/x-www-form-urlencoded
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData)); 
     }
     $response = curl_exec($ch);
     curl_close($ch);
