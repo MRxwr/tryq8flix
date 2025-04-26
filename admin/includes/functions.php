@@ -803,7 +803,6 @@ function makeRequest($url, $postData = null, $referer = null) {
 }
 
 function extractLink($html) {
-    var_dump($html); die();
     if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
         return $matches[1];
     }
