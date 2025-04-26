@@ -708,9 +708,11 @@ function topCinemaServers($url) {
     $mainServer = [];
     $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
     $url1 = makeRequest($ajaxUrl, array("data"=>json_encode($servers[1])), "");
+    $blackList = [0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
-        
-        $mainServer[]["link"] = $servers[$i]["link"];
+        if (!in_array($i, $blackList)) {
+            $mainServer[]["link"] = $servers[$i]["link"];
+        }
     }
     return $servers;
 }
