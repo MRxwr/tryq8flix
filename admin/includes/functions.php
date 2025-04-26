@@ -683,7 +683,7 @@ function TopCenimaListings($url) {
 
 function topCinemaServers($url) {
     GLOBAL $website2;
-    $html = curlCall("{$url}");
+    $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
     $data = [
         'shows' => []
@@ -695,7 +695,7 @@ function topCinemaServers($url) {
             $jsonData = [
                 'id' => $id,
                 'i' => $i,
-                'link' => "{$url}",
+                'link' => "{$url}watch/",
             ];
             $data['shows'][] = $jsonData;
         }
