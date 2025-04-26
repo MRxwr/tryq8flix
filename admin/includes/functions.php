@@ -712,9 +712,8 @@ function topCinemaServers($url) {
         if (in_array($i, $blackList)) {
         }else{
             unset($servers[$i]["link"]);
-            $servers[$i] = json_encode($servers[$i], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             $url1 = makeRequest($ajaxUrl, $servers[$i], "");
-            $mainServer[]["link"] = $servers[$i];
+            $mainServer[]["link"] = $url1;
         }
     }
     return $mainServer;
@@ -795,6 +794,7 @@ function makeRequest($url, $postData = null, $referer = null) {
     }
     $response = curl_exec($ch);
     curl_close($ch);
+    var_dump($response); die();
     $link = extractLink($response);
     return $link;
 }
