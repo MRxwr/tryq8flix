@@ -1,4 +1,7 @@
 <?php
+
+use function vierbergenlars\SemVer\Internal\valid;
+
 function direction($valEn,$valAr){
 	GLOBAL $directionHTML;
 	if ( $directionHTML == "rtl" ){
@@ -799,6 +802,7 @@ function makeRequest($url, $postData = null, $referer = null) {
 }
 
 function extractLink($html) {
+    var_dump($html); die();
     if (preg_match('/<iframe.*?src="(.*?)"/', $html, $matches)) {
         return $matches[1];
     }
