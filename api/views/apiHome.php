@@ -47,16 +47,16 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = scrapEgyDead("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 3 ){
-                $url = $website2 . "/recenT";
+                $url = $website2 . "/recent";
                 $_GET["page"] = ( isset($_GET["page"]) && !empty($_GET["page"]) ) ? (int)$_GET["page"] + 1 : 1 ;
                 if( isset($_GET["search"]) && !empty($_GET["search"]) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
-                    $url .= "/?s={$_GET["search"]}";
+                    $url .= "search/?query={$_GET["search"]}&type=all";
                 }
                 if( (!isset($_GET["search"]) || empty($_GET["search"])) ){
                     $url .= "/page/{$_GET["page"]}";
                 }elseif( (isset($_GET["search"]) && !empty($_GET["search"])) ){
-                    $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
+                    $url .= "&offset={$_GET["page"]}";
                 }
                 $data = domTopCinema("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
