@@ -733,9 +733,9 @@ function topCinemaServers($url) {
             ),
             ));
             $response = curl_exec($curl);
-            var_dump($response); die();
+            $link = extractLink($response);
             curl_close($curl);
-            $mainServer[]["link"] = $url1;
+            $mainServer[]["link"] = $link;
         }
     }
     return $mainServer;
