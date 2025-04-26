@@ -58,6 +58,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }elseif( (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $url .= "&offset={$_GET["page"]}";
                 }
+                echo $url;
                 $data = domTopCinema("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 4 ) {
