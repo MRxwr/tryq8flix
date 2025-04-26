@@ -706,13 +706,13 @@ function topCinemaServers($url) {
     }
     $servers = json_decode($servers, true);
     $mainServer = [];
-    $ajaxUrl = "{$website2}/wp-content/themes/movies2023/Ajaxat/Single/Server.php";
+    $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
     $blackList = [0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
         }else{
             unset($servers[$i]["link"]);
-            $url1 = makeRequest($ajaxUrl, $servers[$i], $website2);
+            $url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), $website2);
             $mainServer[]["link"] = $url1;
         }
     }
@@ -764,20 +764,17 @@ function scrapEgyDead($url) {
 	return $shows = $shows["shows"];
 }
 
-/*
-//'Accept: *',
-//'Accept-Language: en-US,en;q=0.5',
-//'Accept-Encoding: gzip, deflate',
-//'Connection: keep-alive',
-//'Sec-Fetch-Dest: empty',
-//'Sec-Fetch-Mode: cors',
-//'Sec-Fetch-Site: same-origin',
-*/
-
 function makeRequest($url, $postData = null, $referer = null) {
     $ch = curl_init();
     $headers = [
+        //'Accept: */*',
+        //'Accept-Language: en-US,en;q=0.5',
+        //'Accept-Encoding: gzip, deflate',
         'X-Requested-With: XMLHttpRequest',
+        //'Connection: keep-alive',
+        //'Sec-Fetch-Dest: empty',
+        //'Sec-Fetch-Mode: cors',
+        //'Sec-Fetch-Site: same-origin',
     ];
     if ($referer) {
         $headers[] = 'Referer: ' . $referer;
@@ -787,14 +784,13 @@ function makeRequest($url, $postData = null, $referer = null) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_ENCODING => '',
     ]);
     if ($postData) {
         curl_setopt($ch, CURLOPT_POST, true);
-        // Ensure data is sent as application/x-www-form-urlencoded
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData)); 
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     }
     $response = curl_exec($ch);
     curl_close($ch);
