@@ -715,6 +715,7 @@ function topCinemaServers($url) {
         if (in_array($i, $blackList)) {
         }else{
             //unset($servers[$i]["link"]);
+            var_dump($servers[$i]);
             $url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
             $mainServer[]["link"] = $url1;
         }
