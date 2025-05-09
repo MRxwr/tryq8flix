@@ -737,6 +737,7 @@ function topCinemaServers($url) {
             curl_close($curl);
             // New code: fetch the video page and extract the video src
             $videoHtml = curlCall($link);
+            var_dump($videoHtml); die();
             if (preg_match('/<video[^>]*src=[\"\']([^\"\']+)[\"\']/i', $videoHtml, $videoMatches)) {
                 $videoSrc = $videoMatches[1];
             } else {
