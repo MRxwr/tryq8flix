@@ -42,8 +42,9 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
                     $url .= "/?page={$_GET["page"]}";
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
-                    $url .= "/?page={$_GET["page"]}&s={$_GET["search"]}";
+                    $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
                 }
+                echo $url;
                 $data = scrapEgyDead("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 3 ){
