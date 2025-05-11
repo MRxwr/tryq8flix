@@ -35,6 +35,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 echo dataOutput($data);die();
             }elseif( $_GET["server"] == 2 ){
                 $url = $website4;
+                //strip last /
+                $url = rtrim($url, '/');
                 if( isset($_GET["page"]) && !empty($_GET["page"])){
                     $url .= "/page/{$_GET["page"]}";
                 }
