@@ -40,7 +40,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $url .= "/?s={$_GET["search"]}";
                 }
                 if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
-                    $url .= "/?page={$_GET["page"]}";
+                    $url .= ( $_GET["page"] == 1 ) ? '' : "/?page={$_GET["page"]}";
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
                 }
