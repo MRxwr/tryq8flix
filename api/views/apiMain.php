@@ -19,7 +19,7 @@ $response = array(
         ),
     )
 );
-if ($banners = selectDB2("`id`, `endpoint`, `server`, `url`, `imageurl`","banners","`status` = '0' AND `hidden` = '0'")) {
+if ($banners = selectDB2("`id`, `title`, `endpoint`, `server`, `url`, `imageurl`","banners","`status` = '0' AND `hidden` = '0'")) {
     $response["banners"] = $banners;
 } else {
     $response["banners"] = array(['error' => 'No banners found']);
