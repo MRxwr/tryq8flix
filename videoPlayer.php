@@ -7,60 +7,54 @@
 </head>
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
-    require("admin/includes/config.php");
-    require("admin/includes/functions.php");
-
-    if (isset($_GET["link"]) && !empty($_GET["link"])) {
-        // Try to detect if the link is a direct video file
-        $isDirectVideo = preg_match('/\\.(mp4|m3u8|webm|ogg)(\\?.*)?$/i', $_GET["link"]);
-        $realVideoUrl = $_GET["link"];
-        if (!$isDirectVideo) {
-            // Try to fetch the page and extract a direct video file from <video> or common JS players
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $_GET["link"],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'GET',
-                CURLOPT_HTTPHEADER => array(
-                    isset($website3) ? "referer: {$website3}" : '',
-                ),
-            ));
-            $response = curl_exec($curl);
-            curl_close($curl);
-            // Try to extract <video src="...">
-            if (preg_match('/<video[^>]*src=[\"\']([^\"\']+)[\"\']/i', $response, $matches)) {
-                $realVideoUrl = $matches[1];
-            } else {
-                // Try to extract jwplayer sources
-                $jwPattern = '/jwplayer\\([\"\']vplayer[\"\']\\)\\.setup\\(\\{.*?sources:\\s*\\[\\{file:[\"\'](.*?)[\"\']/s';
-                if (preg_match($jwPattern, $response, $matches)) {
-                    $realVideoUrl = $matches[1];
-                } else {
-                    // Try to extract any .mp4 or .m3u8 link in the HTML
-                    if (preg_match('/https?:\\/\\/[^\"\'\s>]+\\.(mp4|m3u8)/i', $response, $matches)) {
-                        $realVideoUrl = $matches[0];
-                    } else {
-                        $realVideoUrl = $_GET["link"];
-                    }
-                }
-            }
-        }
-        // Now, if we have a direct video file, use the video player, else fallback to iframe
-        if (preg_match('/\\.(mp4|m3u8|webm|ogg)(\\?.*)?$/i', $realVideoUrl)) {
-            echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
-            echo "<script>loadVideo('" . addslashes($realVideoUrl) . "');</script>";
-        } else {
-            echo "<iframe id='frame' src='" . htmlspecialchars($_GET["link"]) . "' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>";
-        }
-    } else {
-        echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+    if (isset($_GET["server"]) && $_GET["server"] != 1 ){
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
+    }else{
+        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
     ?>
+<?php 
+require("admin/includes/config.php");
+require("admin/includes/functions.php");
+
+function extractVideoSource($html) {
+    $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
+    if (preg_match($pattern, $html, $matches)) {
+        return $matches[1];
+    }
+    return null;
+}
+
+function getUrlBase($url) {
+    return strtok($url, '?');
+}
+
+if( isset($_GET["link"]) && !empty($_GET["link"]) ){
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "{$_GET["link"]}",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            "referer: {$website3}",
+        ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $_GET["link"] = extractVideoSource($response);
+        // crop after .m3u8
+        if (strpos($_GET["link"], ".m3u8") !== false) {
+            $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
+        }
+}else{
+    echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+}
+?>
 
 <script>
         function setupVideoPlayer(videoElement, sourceUrl) {
@@ -102,6 +96,11 @@
             var videoElement = document.getElementById('videoPlayer');
             setupVideoPlayer(videoElement, url);
         }
+        <?php
+        if( isset($_GET["server"]) && $_GET["server"] == 1 ){
+         echo "loadVideo('{$_GET['link']}');";
+        }
+        ?>
     </script>
     </body>
 </html>
