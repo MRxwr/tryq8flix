@@ -64,7 +64,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 4 ) {
                 $url = $website;
-                if( isset($_GET["search"]) && !empty($_GET["search"]) && !isset($_GET["page"]) || empty($_GET["page"]) ){
+                if( isset($_GET["search"]) && !empty($_GET["search"]) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
                     $url .= "search?s={$_GET["search"]}";
                 }
@@ -73,7 +73,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $url .= "search?s={$_GET["search"]}&page={$_GET["page"]}";
                 }
-                echo $url;
+                echo $url;die();
                 $data = searchShahidListing($url);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
