@@ -73,6 +73,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $url .= "search?s={$_GET["search"]}&page={$_GET["page"]}";
                 }
+                echo $url;
                 $data = searchShahidListing($url);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
