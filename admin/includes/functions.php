@@ -743,7 +743,6 @@ function topCinemaServers($url) {
 
 function scrapEgyDead($url) {
 	$html = curlCall($url);
-    var_dump($html); die();
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
