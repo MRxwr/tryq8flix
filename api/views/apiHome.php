@@ -44,7 +44,6 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
                     $url .= "/?s={$_GET["search"]}";
                 }
-                echo $url;
                 $data = scrapEgyDead("{$url}");
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 3 ){
