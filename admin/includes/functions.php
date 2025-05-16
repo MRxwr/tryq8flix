@@ -1038,7 +1038,7 @@ function scrapeWecima($url) {
 
             $jsonData = [
 				'href' => $link ? $link->href : '',
-				'image' => trim($imageUrl),
+				'image' => trim(str_replace("wecima.tube","flixcim.imgix.net",$imageUrl)),
 				'episode' => '',
 				'category' => '',
 				'title' => $title,
