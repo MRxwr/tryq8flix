@@ -488,7 +488,6 @@ function scrapePage($url) {
 }
 
 function curlCall($url) {
-    var_dump($_SERVER['HTTP_USER_AGENT']);
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -497,6 +496,13 @@ function curlCall($url) {
 	curl_setopt($ch, CURLOPT_USERAGENT, "{$_SERVER['HTTP_USER_AGENT']}");
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "accept: application/json",
+        "accept-language: ar,en-US;q=0.9,en;q=0.8",
+        "cache-control: no-cache",
+        "pragma: no-cache",
+        "referer: {$url}",
+    ));
 	$response = curl_exec($ch);
 	return $response;
 }
