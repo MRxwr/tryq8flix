@@ -742,7 +742,10 @@ function topCinemaServers($url) {
 }
 
 function scrapEgyDead($url) {
-	$html = file_get_contents(str_replace(" ", "", $url));
+    $url = str_replace(" ", "", $url);
+	$html = file_get_contents($url);
+    echo $url;
+    echo $html; die();
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
