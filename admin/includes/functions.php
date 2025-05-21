@@ -742,7 +742,7 @@ function topCinemaServers($url) {
 }
 
 function scrapEgyDead($url) {
-	$html = curlCall($url);
+	$html = curlCall("egydead.fyi");
     echo $url;
     var_dump($html); die();
 	$dom = str_get_html($html);
