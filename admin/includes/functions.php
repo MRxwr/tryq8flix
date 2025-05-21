@@ -742,10 +742,28 @@ function topCinemaServers($url) {
 }
 
 function scrapEgyDead($url) {
-    $url = str_replace(" ", "", $url);
+    $curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://ze0shqhjbe.sbs/wp-content/themes/egydeadc-taq/Ajax/live-search.php',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => array('search' => ''),
+  CURLOPT_HTTPHEADER => array(
+    'x-requested-with: XMLHttpRequest'
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
 	$html = file_get_contents($url);
-    echo $url;
-    echo $html; die();
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
