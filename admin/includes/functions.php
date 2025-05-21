@@ -763,6 +763,7 @@ $response = curl_exec($curl);
 
 curl_close($curl);
 echo $response;
+die();
 	$html = file_get_contents($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
