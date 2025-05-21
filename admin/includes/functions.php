@@ -496,12 +496,6 @@ function curlCall($url) {
 	curl_setopt($ch, CURLOPT_USERAGENT, "{$_SERVER['HTTP_USER_AGENT']}");
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-language: en-US,en;q=0.9,ar-EG;q=0.8,ar;q=0.7",
-        'cookie: _ga=GA1.1.442917692.1745621347; _ga_Q2XZ3ZSWDY=GS2.1.s1747868306$o7$g1$t1747868513$j0$l0$h0',
-        ':authority: ze0shqhjbe.sbs'
-    ));
 	$response = curl_exec($ch);
 	return $response;
 }
@@ -748,9 +742,7 @@ function topCinemaServers($url) {
 }
 
 function scrapEgyDead($url) {
-	$html = curlCall("egydead.fyi");
-    echo $url;
-    var_dump($html); die();
+	$html = file_get_contents($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
