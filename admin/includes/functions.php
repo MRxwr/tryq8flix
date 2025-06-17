@@ -1117,7 +1117,18 @@ function searchFile($path, $fileName) {
 function scrapeWithCloudflare($url) {
     $scriptPath = __DIR__ . '/../../cloudflare-scraper.js';
     
-    // Check if Node.js and script exist
+    // Check if Node.js is available
+    $nodeCheck = shell_exec('node --version 2>&1');
+    if (strpos($nodeCheck, 'command not found') !== false || strpos($nodeCheck, 'not recognized') !== false) {
+        return [
+            'success' => false,
+            'error' => 'Node.js is not installed or not in PATH',
+            'html' => null,
+            'output' => $nodeCheck
+        ];
+    }
+    
+    // Check if script exists
     if (!file_exists($scriptPath)) {
         error_log("Cloudflare scraper script not found at: $scriptPath");
         return [
@@ -1137,6 +1148,18 @@ function scrapeWithCloudflare($url) {
             'success' => false,
             'error' => 'Failed to execute Node.js script',
             'html' => null
+        ];
+    }
+    
+    // Check for Node.js execution errors
+    if (strpos($output, 'node: command not found') !== false || 
+        strpos($output, 'Error during scraping') !== false ||
+        strpos($output, 'Cannot find module') !== false) {
+        return [
+            'success' => false,
+            'error' => 'Node.js execution failed: ' . trim($output),
+            'html' => null,
+            'output' => $output
         ];
     }
     
@@ -1189,29 +1212,31 @@ function scrapeWithCloudflare($url) {
  * Enhanced scrapePage function with Cloudflare bypass option
  */
 function scrapePageEnhanced($url, $useCloudflareBypass = false) {
-    echo "<pre>DEBUG: scrapePageEnhanced called with URL: $url, useCloudflareBypass: " . ($useCloudflareBypass ? 'true' : 'false') . "</pre>";
+    // Static variable to remember if Node.js is available to avoid repeated checks
+    static $nodeAvailable = null;
     
-    if ($useCloudflareBypass) {
-        echo "<pre>DEBUG: Attempting Cloudflare bypass...</pre>";
-        $result = scrapeWithCloudflare($url);
-        
-        echo "<pre>DEBUG: Cloudflare bypass result: ";
-        var_dump($result);
-        echo "</pre>";
-        
-        if ($result['success']) {
-            echo "<pre>DEBUG: Cloudflare bypass successful, returning HTML (length: " . strlen($result['html']) . ")</pre>";
-            return $result['html'];
+    if ($useCloudflareBypass && $nodeAvailable !== false) {
+        // Check Node.js availability only once
+        if ($nodeAvailable === null) {
+            $nodeCheck = shell_exec('node --version 2>&1');
+            $nodeAvailable = !(strpos($nodeCheck, 'command not found') !== false || strpos($nodeCheck, 'not recognized') !== false);
         }
-        // Fallback to regular scraping if Cloudflare bypass fails
-        echo "<pre>DEBUG: Cloudflare bypass failed, falling back to regular scraping. Error: " . $result['error'] . "</pre>";
-        error_log("Cloudflare bypass failed for $url: " . $result['error']);
+        
+        if ($nodeAvailable) {
+            $result = scrapeWithCloudflare($url);
+            
+            if ($result['success']) {
+                return $result['html'];
+            }
+            
+            // If Node.js failed for other reasons, log and fallback
+            error_log("Cloudflare bypass failed for $url: " . $result['error']);
+        } else {
+            error_log("Node.js not available, skipping Cloudflare bypass for $url");
+        }
     }
     
     // Use existing scrapePage function as fallback
-    echo "<pre>DEBUG: Using regular scrapePage function as fallback...</pre>";
-    $fallbackResult = scrapePage($url);
-    echo "<pre>DEBUG: Regular scrapePage result length: " . strlen($fallbackResult) . "</pre>";
-    return $fallbackResult;
+    return scrapePage($url);
 }
 ?>
