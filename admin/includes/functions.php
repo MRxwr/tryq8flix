@@ -517,7 +517,7 @@ function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = scrapePage($url.$collection.$category);
+	$html = scrapePageEnhanced($url.$collection.$category, true);
     //var_dump($html); die();
 	$dom = str_get_html($html);
 	$data = [
@@ -1108,5 +1108,64 @@ function searchFile($path, $fileName) {
 		closedir($handle);
 	}
 	return false;
+}
+
+/**
+ * Scrape a URL using Node.js Puppeteer to bypass Cloudflare
+ * This function calls the cloudflare-scraper.js script
+ */
+function scrapeWithCloudflare($url) {
+    $scriptPath = __DIR__ . '/../../cloudflare-scraper.js';
+    $command = "node " . escapeshellarg($scriptPath) . " " . escapeshellarg($url) . " 2>&1";
+    
+    $output = shell_exec($command);
+    
+    if ($output === null) {
+        return [
+            'success' => false,
+            'error' => 'Failed to execute Node.js script',
+            'html' => null
+        ];
+    }
+    
+    // Look for saved file pattern in output
+    if (preg_match('/Content saved to: (.+\.html)/', $output, $matches)) {
+        $savedFile = trim($matches[1]);
+        if (file_exists($savedFile)) {
+            $html = file_get_contents($savedFile);
+            // Optionally delete the temp file
+            // unlink($savedFile);
+            
+            return [
+                'success' => true,
+                'html' => $html,
+                'output' => $output
+            ];
+        }
+    }
+    
+    return [
+        'success' => false,
+        'error' => 'Could not find saved HTML file',
+        'output' => $output,
+        'html' => null
+    ];
+}
+
+/**
+ * Enhanced scrapePage function with Cloudflare bypass option
+ */
+function scrapePageEnhanced($url, $useCloudflareBypass = false) {
+    if ($useCloudflareBypass) {
+        $result = scrapeWithCloudflare($url);
+        if ($result['success']) {
+            return $result['html'];
+        }
+        // Fallback to regular scraping if Cloudflare bypass fails
+        error_log("Cloudflare bypass failed for $url: " . $result['error']);
+    }
+    
+    // Use existing scrapePage function as fallback
+    return scrapePage($url);
 }
 ?>
