@@ -517,9 +517,8 @@ function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-    echo "{$url}{$collection}{$category}";
 	$html = scrapePage($url.$collection.$category);
-    //var_dump($html); die();
+    var_dump($html); die();
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
