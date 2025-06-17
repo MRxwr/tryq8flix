@@ -21,8 +21,7 @@ class CloudflareScraper {
         let browser;
         let page;
         
-        try {
-            console.log(`Starting browser...`);
+        try {            console.log(`Starting browser...`);
             browser = await puppeteer.launch({
                 headless: this.options.headless,
                 args: [
@@ -32,11 +31,39 @@ class CloudflareScraper {
                     '--disable-accelerated-2d-canvas',
                     '--no-first-run',
                     '--no-zygote',
-                    '--disable-gpu'
-                ]
+                    '--disable-gpu',
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-features=VizDisplayCompositor',
+                    '--disable-web-security',
+                    '--disable-features=TranslateUI',
+                    '--disable-ipc-flooding-protection'
+                ],
+                ignoreDefaultArgs: ['--enable-automation'],
+                defaultViewport: null
             });
 
             page = await browser.newPage();
+            
+            // Remove webdriver property
+            await page.evaluateOnNewDocument(() => {
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined,
+                });
+            });
+            
+            // Override the plugins property to use a custom getter
+            await page.evaluateOnNewDocument(() => {
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5],
+                });
+            });
+            
+            // Override the languages property to use a custom getter
+            await page.evaluateOnNewDocument(() => {
+                Object.defineProperty(navigator, 'languages', {
+                    get: () => ['en-US', 'en'],
+                });
+            });
             
             // Set user agent to appear more legitimate
             await page.setUserAgent(this.options.userAgent);
@@ -83,41 +110,93 @@ class CloudflareScraper {
             if (page) await page.close();
             if (browser) await browser.close();
         }
-    }
-
-    async waitForCloudflareChallenge(page) {
+    }    async waitForCloudflareChallenge(page) {
         try {
             // Check if we're on a Cloudflare challenge page
             const isCloudflare = await page.evaluate(() => {
                 return document.title.includes('Just a moment') || 
                        document.body.innerHTML.includes('Checking your browser') ||
                        document.body.innerHTML.includes('cloudflare') ||
-                       document.querySelector('.cf-browser-verification') !== null;
+                       document.body.innerHTML.includes('_cf_chl_opt') ||
+                       document.querySelector('.cf-browser-verification') !== null ||
+                       document.querySelector('script[src*="challenge-platform"]') !== null;
             });
 
             if (isCloudflare) {
                 console.log('Cloudflare challenge detected, waiting for completion...');
                 
-                // Wait for the challenge to complete by checking for page changes
-                await Promise.race([
-                    // Wait for navigation away from challenge page
-                    page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {}),
-                    
-                    // Wait for title to change
-                    page.waitForFunction(
-                        () => !document.title.includes('Just a moment') && 
-                              !document.body.innerHTML.includes('Checking your browser'),
-                        { timeout: 15000 }
-                    ).catch(() => {}),
-                    
-                    // Wait for specific timeout
-                    new Promise(resolve => setTimeout(resolve, 10000))
-                ]);
+                // Wait longer for modern Cloudflare challenges
+                const maxWaitTime = 30000; // 30 seconds
+                let attempts = 0;
+                const maxAttempts = 6;
                 
-                // Additional wait to ensure page is fully loaded
-                await page.waitForTimeout(2000);
+                while (attempts < maxAttempts) {
+                    attempts++;
+                    console.log(`Challenge attempt ${attempts}/${maxAttempts}...`);
+                    
+                    try {
+                        // Wait for the challenge to complete by checking for page changes
+                        await Promise.race([
+                            // Wait for navigation away from challenge page
+                            page.waitForNavigation({ 
+                                waitUntil: 'networkidle0', 
+                                timeout: maxWaitTime / maxAttempts 
+                            }),
+                            
+                            // Wait for title to change
+                            page.waitForFunction(
+                                () => {
+                                    const title = document.title;
+                                    const body = document.body.innerHTML;
+                                    return !title.includes('Just a moment') && 
+                                           !body.includes('Checking your browser') &&
+                                           !body.includes('_cf_chl_opt') &&
+                                           body.length > 5000; // Ensure we have real content
+                                },
+                                { timeout: maxWaitTime / maxAttempts }
+                            ),
+                            
+                            // Static wait
+                            new Promise(resolve => setTimeout(resolve, maxWaitTime / maxAttempts))
+                        ]);
+                        
+                        // Check if challenge is really completed
+                        const challengeCompleted = await page.evaluate(() => {
+                            const title = document.title;
+                            const body = document.body.innerHTML;
+                            return !title.includes('Just a moment') && 
+                                   !body.includes('Checking your browser') &&
+                                   !body.includes('_cf_chl_opt') &&
+                                   body.length > 5000;
+                        });
+                        
+                        if (challengeCompleted) {
+                            console.log('Cloudflare challenge completed successfully!');
+                            break;
+                        } else {
+                            console.log(`Challenge not yet completed, attempt ${attempts}...`);
+                            await page.waitForTimeout(2000);
+                        }
+                        
+                    } catch (error) {
+                        console.log(`Attempt ${attempts} failed: ${error.message}`);
+                        if (attempts < maxAttempts) {
+                            await page.waitForTimeout(3000);
+                        }
+                    }
+                }
                 
-                console.log('Cloudflare challenge appears to be completed');
+                // Final verification
+                const finalCheck = await page.evaluate(() => {
+                    return {
+                        title: document.title,
+                        bodyLength: document.body.innerHTML.length,
+                        hasChallenge: document.body.innerHTML.includes('_cf_chl_opt')
+                    };
+                });
+                
+                console.log(`Final status: Title="${finalCheck.title}", BodyLength=${finalCheck.bodyLength}, HasChallenge=${finalCheck.hasChallenge}`);
+                
             } else {
                 console.log('No Cloudflare challenge detected');
             }

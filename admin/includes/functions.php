@@ -1116,11 +1116,23 @@ function searchFile($path, $fileName) {
  */
 function scrapeWithCloudflare($url) {
     $scriptPath = __DIR__ . '/../../cloudflare-scraper.js';
+    
+    // Check if Node.js and script exist
+    if (!file_exists($scriptPath)) {
+        error_log("Cloudflare scraper script not found at: $scriptPath");
+        return [
+            'success' => false,
+            'error' => 'Cloudflare scraper script not found',
+            'html' => null
+        ];
+    }
+    
     $command = "node " . escapeshellarg($scriptPath) . " " . escapeshellarg($url) . " 2>&1";
     
     $output = shell_exec($command);
     
     if ($output === null) {
+        error_log("Failed to execute Node.js script for URL: $url");
         return [
             'success' => false,
             'error' => 'Failed to execute Node.js script',
@@ -1128,13 +1140,29 @@ function scrapeWithCloudflare($url) {
         ];
     }
     
+    // Log the output for debugging
+    error_log("Cloudflare scraper output for $url: " . substr($output, 0, 500));
+    
     // Look for saved file pattern in output
     if (preg_match('/Content saved to: (.+\.html)/', $output, $matches)) {
         $savedFile = trim($matches[1]);
         if (file_exists($savedFile)) {
             $html = file_get_contents($savedFile);
+            
+            // Check if we still got a Cloudflare challenge page
+            if (strpos($html, 'Just a moment') !== false || strpos($html, '_cf_chl_opt') !== false) {
+                error_log("Cloudflare challenge not bypassed for URL: $url");
+                // Delete the temp file
+                unlink($savedFile);
+                return [
+                    'success' => false,
+                    'error' => 'Cloudflare challenge not bypassed',
+                    'html' => null
+                ];
+            }
+            
             // Optionally delete the temp file
-            // unlink($savedFile);
+            unlink($savedFile);
             
             return [
                 'success' => true,
@@ -1144,9 +1172,14 @@ function scrapeWithCloudflare($url) {
         }
     }
     
+    // Check if the output contains error messages
+    if (strpos($output, 'Error during scraping') !== false || strpos($output, 'failed') !== false) {
+        error_log("Cloudflare scraper failed for $url: $output");
+    }
+    
     return [
         'success' => false,
-        'error' => 'Could not find saved HTML file',
+        'error' => 'Could not find saved HTML file or scraping failed',
         'output' => $output,
         'html' => null
     ];
