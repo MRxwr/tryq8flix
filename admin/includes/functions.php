@@ -1239,4 +1239,25 @@ function scrapePageEnhanced($url, $useCloudflareBypass = false) {
     // Use existing scrapePage function as fallback
     return scrapePage($url);
 }
+
+/**
+ * Enhanced scrapePage with better Cloudflare handling for shared hosting
+ */
+function scrapePageWithRetry($url, $maxRetries = 3) {
+    for ($i = 0; $i < $maxRetries; $i++) {
+        $html = scrapePage($url);
+        
+        // If we get a Cloudflare challenge, wait and retry
+        if (strpos($html, 'Just a moment') !== false || strpos($html, '_cf_chl_opt') !== false) {
+            if ($i < $maxRetries - 1) {
+                sleep(2 + $i); // Increasing delay
+                continue;
+            }
+        }
+        
+        return $html;
+    }
+    
+    return $html; // Return last attempt even if it failed
+}
 ?>
