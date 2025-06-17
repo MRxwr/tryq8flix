@@ -481,13 +481,6 @@ function scrapePage($url) {
 	curl_setopt($ch, CURLOPT_USERAGENT, "{$_SERVER['HTTP_USER_AGENT']}");
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Language: en-US,en;q=0.5',
-    'Accept-Encoding: gzip, deflate, br',
-    'Connection: keep-alive',
-    'Upgrade-Insecure-Requests: 1'
-]);
 	$response = curl_exec($ch);
 	curl_close($ch);
 
@@ -525,7 +518,7 @@ function searchShahidListing($url){
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	$html = scrapePage($url.$collection.$category);
-    var_dump($html); die();
+    //var_dump($html); die();
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
