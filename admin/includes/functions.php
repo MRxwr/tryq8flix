@@ -1189,16 +1189,29 @@ function scrapeWithCloudflare($url) {
  * Enhanced scrapePage function with Cloudflare bypass option
  */
 function scrapePageEnhanced($url, $useCloudflareBypass = false) {
+    echo "<pre>DEBUG: scrapePageEnhanced called with URL: $url, useCloudflareBypass: " . ($useCloudflareBypass ? 'true' : 'false') . "</pre>";
+    
     if ($useCloudflareBypass) {
+        echo "<pre>DEBUG: Attempting Cloudflare bypass...</pre>";
         $result = scrapeWithCloudflare($url);
+        
+        echo "<pre>DEBUG: Cloudflare bypass result: ";
+        var_dump($result);
+        echo "</pre>";
+        
         if ($result['success']) {
+            echo "<pre>DEBUG: Cloudflare bypass successful, returning HTML (length: " . strlen($result['html']) . ")</pre>";
             return $result['html'];
         }
         // Fallback to regular scraping if Cloudflare bypass fails
+        echo "<pre>DEBUG: Cloudflare bypass failed, falling back to regular scraping. Error: " . $result['error'] . "</pre>";
         error_log("Cloudflare bypass failed for $url: " . $result['error']);
     }
     
     // Use existing scrapePage function as fallback
-    return scrapePage($url);
+    echo "<pre>DEBUG: Using regular scrapePage function as fallback...</pre>";
+    $fallbackResult = scrapePage($url);
+    echo "<pre>DEBUG: Regular scrapePage result length: " . strlen($fallbackResult) . "</pre>";
+    return $fallbackResult;
 }
 ?>
