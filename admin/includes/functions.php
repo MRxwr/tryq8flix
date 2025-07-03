@@ -1,3 +1,3 @@
 <?php
-require_once "../functions/index.php";
+require_once "functions/index.php";
 ?>
