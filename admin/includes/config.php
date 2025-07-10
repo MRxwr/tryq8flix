@@ -18,8 +18,7 @@ $website = "https://shheid4u.net/";//"https://shaeid4u.net/";//"https://shahid4u
 $website2 = "https://web5.topcinema.world";
 $website3 = "https://wecima.watch/";//"https://weciema.org/";//"https://wecima.watch/";
 $website4 = "https://ze0shqhjbe.sbs/";
-$websiteLive = "https://tv.yalla-live.org/"
-;//"https://shootz.yalla-shoot-tv.live/home18/";
+$websiteLive = "https://shootz.yalla-shoot-tv.live/home18/";
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 //"Y0U1YZ5TQUH84HVVU2U31E6II1D776MU2XAMLCGMDEF0YXCD0CWK4PLMG0S6FI0O5ZDILNYE63W3SWW4";
 ?>
