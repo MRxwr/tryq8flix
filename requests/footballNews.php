@@ -54,14 +54,21 @@ function searchNews($more){
         $date = $xpath->query(".//*[contains(@class, 'fco-card__info--date')]", $card);
         $datetext = $date->length ? $date->item(0)->textContent : '';
         // Output card
-        echo "<div class='row p-0 m-3'><div class='col-sm-12 mb-3'><div class='row p-3' style='background-color:#a28c5a;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'><div class='col-sm-12 text-center'>";
-        echo "<a href='$link' target='_blank'><h2>" . htmlspecialchars($headlinetext) . "</h2></a>";
-        if($imgsrc) echo "<img src='$imgsrc' class='rounded' style='width: 250px;height: 250px;object-fit: cover;'/>";
-        echo "<div class='mt-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
-        echo "<div class='mt-2'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
-        echo "</div></div></div></div>";
+        echo "<div class='card mb-4 shadow-sm' style='background-color:#f8f9fa;border-radius:10px;'>";
+        echo "<div class='card-body'>";
+        echo "<div class='row'>";
+        if($imgsrc) {
+            echo "<div class='col-md-3 text-center'><img src='" . htmlspecialchars($imgsrc) . "' class='img-fluid rounded mb-2' style='max-width:180px;max-height:180px;object-fit:cover;'/></div>";
+        }
+        echo "<div class='col-md-9'>";
+        echo "<a href='" . htmlspecialchars($link) . "' target='_blank' style='text-decoration:none;'><h4 class='card-title'>" . htmlspecialchars($headlinetext) . "</h4></a>";
+        echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
+        echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
+        echo "</div></div>";
+        echo "</div></div>";
         // Optionally, fetch and show details
         if($link) articleBody($link);
+        echo "</div>";
     }
 }
 
@@ -88,9 +95,11 @@ function articleBody($link){
     $content = $xpath->query("//*[contains(@class, 'article_article__content__VfjFz')]");
     if($content->length){
         $html = $dom->saveHTML($content->item(0));
-        echo "<div class='row p-0 m-3'><div class='col-sm-12 mb-3'><div class='row p-3' style='background-color:#f5f5f5;border-radius: 10px;box-shadow: 0px 0px 3px 0px #3b3b3b;'><div class='col-sm-12 text-center'>";
+        echo "<div class='card mb-3' style='background-color:#fff;border-radius:10px;'>";
+        echo "<div class='card-body'>";
+        echo "<div class='article-content'>";
         echo $html;
-        echo "</div></div></div></div>";
+        echo "</div></div></div>";
     }
 }
 
