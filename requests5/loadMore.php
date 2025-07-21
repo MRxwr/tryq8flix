@@ -54,7 +54,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 		$user = checkLogin();
 		$shows = searchShahid($_POST["more"]);
 		if( is_array($shows) && !empty($shows) ){
-			outputData($shows); 
+			outputData5($shows); 
 			echo '<div class="col-md-12 loadMoreBtn mb-3" style="text-align-last: center;" id="'.$_POST["more"].'"><div class="btn btn-secondary w-75" >تابع</div></div><div style="display:none" class="getCollection" id="'.$collection.$category.'"></div>';
 		}else{
 			$msg = "<h1 class='text-center mt-5'>No result.<h1>";
