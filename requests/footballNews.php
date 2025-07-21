@@ -65,6 +65,11 @@ function searchNews($more){
             echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
             echo "</div></div>";
             echo "</div></div>";
+            // Fetch and display full article details
+            if($link) {
+                $details = getArticleBodyHtml($link);
+                if($details) echo "<div class='mt-3'>" . $details . "</div>";
+            }
             echo "</div>";
         }
     }
