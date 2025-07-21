@@ -65,7 +65,7 @@ function searchNews($more){
         echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
         echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
         // Optionally, fetch and show details
-        if($link) {
+        /*if($link) {
             $details = getArticleBodyHtml($link);
             // Remove duplicate headline, meta, and image from details
             if($details) {
@@ -78,7 +78,7 @@ function searchNews($more){
                     echo "<div class='mt-3'>" . $details . "</div>";
                 }
             }
-        }
+        }*/
         echo "</div></div>";
         echo "</div></div>";
         echo "</div>";
