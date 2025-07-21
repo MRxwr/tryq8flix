@@ -32,7 +32,7 @@ function searchNews($more){
             }
         }
         $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
-        echo "{$link}\n";
+        echo "{$href}\n";
         // Get image
         $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
         $imgsrc = '';
