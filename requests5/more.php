@@ -25,7 +25,14 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
         ];
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false){
-        $episodesData = array_reverse($episodesData);
+        // Sort episodes numerically by extracting the number from the title
+        usort($episodesData, function($a, $b) {
+            preg_match('/(\d+)/', $a['title'], $matchA);
+            preg_match('/(\d+)/', $b['title'], $matchB);
+            $numA = isset($matchA[1]) ? intval($matchA[1]) : 0;
+            $numB = isset($matchB[1]) ? intval($matchB[1]) : 0;
+            return $numA - $numB;
+        });
         // Sort seasons numerically by extracting the number from the title
         usort($seasonsData, function($a, $b) {
             preg_match('/(\d+)/', $a['title'], $matchA);
