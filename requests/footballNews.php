@@ -53,22 +53,22 @@ function searchNews($more){
             $date = $xpath->query(".//*[contains(@class, 'fco-card__info--date')]", $card);
             $datetext = $date->length ? $date->item(0)->textContent : '';
             // Output card
-            echo "<div class='card mb-4 shadow-sm' style='background-color:#f8f9fa;border-radius:10px;'>";
+            echo "<div class='card mb-4 shadow-sm' style='background-color:#a38b5c;border-radius:10px;color:#000;'>";
             echo "<div class='card-body'>";
             echo "<div class='row'>";
             if($imgsrc) {
                 echo "<div class='col-md-3 text-center'><img src='" . htmlspecialchars($imgsrc) . "' class='img-fluid rounded mb-2' style='max-width:180px;max-height:180px;object-fit:cover;'/></div>";
             }
             echo "<div class='col-md-9'>";
-            echo "<a href='" . htmlspecialchars($link) . "' target='_blank' style='text-decoration:none;'><h4 class='card-title'>" . htmlspecialchars($headlinetext) . "</h4></a>";
+            echo "<h4 class='card-title' style='color:#000;'>" . htmlspecialchars($headlinetext) . "</h4>";
             echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
-            echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
+            echo "<div class='mb-2 text-muted' style='color:#222;'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
             echo "</div></div>";
             echo "</div></div>";
             // Fetch and display full article details
             if($link) {
                 $details = getArticleBodyHtml($link);
-                if($details) echo "<div class='mt-3'>" . $details . "</div>";
+                if($details) echo "<div class='mt-3' style='color:#000;'>" . $details . "</div>";
             }
             echo "</div>";
         }
