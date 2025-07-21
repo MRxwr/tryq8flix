@@ -97,7 +97,17 @@ function getArticleBodyHtml($link){
     $xpath = new DOMXPath($dom);
     $content = $xpath->query("//*[contains(@class, 'article_article__content__VfjFz')]");
     if($content->length){
-        return $dom->saveHTML($content->item(0));
+        $node = $content->item(0);
+        $teaser = $xpath->query(".//p[contains(@class, 'article_article__content__teaser_____NK')]", $node);
+        $body = $xpath->query(".//div[contains(@class, 'fco-article-body')]", $node);
+        $html = '';
+        if($teaser->length) {
+            $html .= $dom->saveHTML($teaser->item(0));
+        }
+        if($body->length) {
+            $html .= $dom->saveHTML($body->item(0));
+        }
+        return $html;
     }
     return '';
 }
