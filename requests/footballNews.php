@@ -20,56 +20,53 @@ function searchNews($more){
     $dom->loadHTML('<?xml encoding="UTF-8">' . $response);
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
-    $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
-    foreach ($cards as $card) {
-        // Get post link
-        // Get the main anchor with class 'fco-card' for the post link
-        $mainAnchor = $xpath->query(".//a[contains(@class, 'fco-card')]", $card);
-        $href = '';
-        if ($mainAnchor->length) {
-            $anchorNode = $mainAnchor->item(0);
-            if ($anchorNode->nodeType === XML_ELEMENT_NODE && $anchorNode instanceof DOMElement) {
-                $href = $anchorNode->getAttribute('href');
+    $container = $xpath->query("//*[contains(@class, 'fco-cards-section__container')]");
+    if ($container->length) {
+        $section = $container->item(0);
+        $cards = $xpath->query("./a[contains(@class, 'fco-card')]", $section);
+        foreach ($cards as $card) {
+            // Get post link
+            $href = '';
+            if ($card->nodeType === XML_ELEMENT_NODE && $card instanceof DOMElement) {
+                $href = $card->getAttribute('href');
             }
-        }
-        // Print the href for verification
-        echo $href . "\n";
-        $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
-        // Get image
-        $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
-        $imgsrc = '';
-        if ($img->length && $img->item(0)->nodeType === XML_ELEMENT_NODE) {
-            $element = $img->item(0);
-            if ($element instanceof DOMElement) {
-                $imgsrc = $element->getAttribute('src');
+            $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
+            // Get image
+            $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
+            $imgsrc = '';
+            if ($img->length && $img->item(0)->nodeType === XML_ELEMENT_NODE) {
+                $element = $img->item(0);
+                if ($element instanceof DOMElement) {
+                    $imgsrc = $element->getAttribute('src');
+                }
             }
+            // Get tag text
+            $tag = $xpath->query(".//*[contains(@class, 'fco-tag-text')]", $card);
+            $tagtext = $tag->length ? $tag->item(0)->textContent : '';
+            // Get headline
+            $headline = $xpath->query(".//*[contains(@class, 'fco-card__headline-text')]", $card);
+            $headlinetext = $headline->length ? $headline->item(0)->textContent : '';
+            // Get time
+            $time = $xpath->query(".//*[contains(@class, 'fco-card__info--time')]", $card);
+            $timetext = $time->length ? $time->item(0)->textContent : '';
+            // Get date
+            $date = $xpath->query(".//*[contains(@class, 'fco-card__info--date')]", $card);
+            $datetext = $date->length ? $date->item(0)->textContent : '';
+            // Output card
+            echo "<div class='card mb-4 shadow-sm' style='background-color:#f8f9fa;border-radius:10px;'>";
+            echo "<div class='card-body'>";
+            echo "<div class='row'>";
+            if($imgsrc) {
+                echo "<div class='col-md-3 text-center'><img src='" . htmlspecialchars($imgsrc) . "' class='img-fluid rounded mb-2' style='max-width:180px;max-height:180px;object-fit:cover;'/></div>";
+            }
+            echo "<div class='col-md-9'>";
+            echo "<a href='" . htmlspecialchars($link) . "' target='_blank' style='text-decoration:none;'><h4 class='card-title'>" . htmlspecialchars($headlinetext) . "</h4></a>";
+            echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
+            echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
+            echo "</div></div>";
+            echo "</div></div>";
+            echo "</div>";
         }
-        // Get tag text
-        $tag = $xpath->query(".//*[contains(@class, 'fco-tag-text')]", $card);
-        $tagtext = $tag->length ? $tag->item(0)->textContent : '';
-        // Get headline
-        $headline = $xpath->query(".//*[contains(@class, 'fco-card__headline-text')]", $card);
-        $headlinetext = $headline->length ? $headline->item(0)->textContent : '';
-        // Get time
-        $time = $xpath->query(".//*[contains(@class, 'fco-card__info--time')]", $card);
-        $timetext = $time->length ? $time->item(0)->textContent : '';
-        // Get date
-        $date = $xpath->query(".//*[contains(@class, 'fco-card__info--date')]", $card);
-        $datetext = $date->length ? $date->item(0)->textContent : '';
-        // Output card
-        echo "<div class='card mb-4 shadow-sm' style='background-color:#f8f9fa;border-radius:10px;'>";
-        echo "<div class='card-body'>";
-        echo "<div class='row'>";
-        if($imgsrc) {
-            echo "<div class='col-md-3 text-center'><img src='" . htmlspecialchars($imgsrc) . "' class='img-fluid rounded mb-2' style='max-width:180px;max-height:180px;object-fit:cover;'/></div>";
-        }
-        echo "<div class='col-md-9'>";
-        echo "<a href='" . htmlspecialchars($link) . "' target='_blank' style='text-decoration:none;'><h4 class='card-title'>" . htmlspecialchars($headlinetext) . "</h4></a>";
-        echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
-        echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
-        echo "</div></div>";
-        echo "</div></div>";
-        echo "</div>";
     }
 }
 
