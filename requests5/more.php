@@ -5,24 +5,44 @@ if( isset($_POST["id"]) && !empty($_POST["id"]) ){
     $episodesData = [];
     $seasonsData = [];
     // Episodes
-    foreach ($htmlDom->find('div.EpisodesArea h3:contains(جميع الحلقات) + div.EpisodesList a') as $linkNode) {
-        $link = $linkNode->href;
-        $epNum = $linkNode->find('em', 0);
-        $title = $epNum ? 'الحلقة ' . trim($epNum->plaintext) : '';
-        $episodesData[] = [
-            'link' => $link,
-            'title' => $title,
-        ];
+    $episodesList = null;
+    foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+        $h3 = $area->find('h3', 0);
+        if ($h3 && strpos($h3->plaintext, 'جميع الحلقات') !== false) {
+            $episodesList = $area->find('div.EpisodesList', 0);
+            break;
+        }
+    }
+    if ($episodesList) {
+        foreach ($episodesList->find('a') as $linkNode) {
+            $link = $linkNode->href;
+            $epNum = $linkNode->find('em', 0);
+            $title = $epNum ? 'الحلقة ' . trim($epNum->plaintext) : '';
+            $episodesData[] = [
+                'link' => $link,
+                'title' => $title,
+            ];
+        }
     }
     // Seasons
-    foreach ($htmlDom->find('div.EpisodesArea h3:contains(جميع المواسم) + div.EpisodesList a') as $linkNode) {
-        $link = $linkNode->href;
-        $seasonNum = $linkNode->find('em', 0);
-        $title = $seasonNum ? 'الموسم ' . trim($seasonNum->plaintext) : '';
-        $seasonsData[] = [
-            'link' => $link,
-            'title' => $title,
-        ];
+    $seasonsList = null;
+    foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+        $h3 = $area->find('h3', 0);
+        if ($h3 && strpos($h3->plaintext, 'جميع المواسم') !== false) {
+            $seasonsList = $area->find('div.EpisodesList', 0);
+            break;
+        }
+    }
+    if ($seasonsList) {
+        foreach ($seasonsList->find('a') as $linkNode) {
+            $link = $linkNode->href;
+            $seasonNum = $linkNode->find('em', 0);
+            $title = $seasonNum ? 'الموسم ' . trim($seasonNum->plaintext) : '';
+            $seasonsData[] = [
+                'link' => $link,
+                'title' => $title,
+            ];
+        }
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false){
         // Sort episodes numerically by extracting the number from the title
