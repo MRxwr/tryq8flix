@@ -100,6 +100,9 @@ $xValue = md5(time());
 			<div class="col-12 p-3">
 				<button class="btn btn-warning rounded scrapBtn w-100 p-5 nextBtn" id="<?php echo urlencode("js/js.js") ?>">Server 4 [Shahid4u]</button>
 			</div>
+            <div class="col-12 p-3">
+				<button class="btn btn-warning rounded scrapBtn w-100 p-5 nextBtn" id="<?php echo urlencode("js/js5.js") ?>">Server 5 [Shahid4uSpace]</button>
+			</div>
 		</div>
         <?php require("templates/content.php"); ?>
     </div>
