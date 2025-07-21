@@ -53,7 +53,7 @@ function searchNews($more){
             $date = $xpath->query(".//*[contains(@class, 'fco-card__info--date')]", $card);
             $datetext = $date->length ? $date->item(0)->textContent : '';
             // Output card
-            echo "<div class='card mb-4 shadow-sm' style='background-color:#a38b5c;border-radius:10px;color:#000;'>";
+            echo "<div class='card m-4 shadow-sm' style='background-color:#a38b5c;border-radius:10px;color:#000;'>";
             echo "<div class='card-body'>";
             echo "<div class='row'>";
             if($imgsrc) {
