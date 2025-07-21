@@ -64,15 +64,18 @@ function searchNews($more){
         echo "<a href='" . htmlspecialchars($link) . "' target='_blank' style='text-decoration:none;'><h4 class='card-title'>" . htmlspecialchars($headlinetext) . "</h4></a>";
         echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
         echo "<div class='mb-2 text-muted'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
-        echo "</div></div>";
-        echo "</div></div>";
         // Optionally, fetch and show details
-        if($link) articleBody($link);
+        if($link) {
+            $details = getArticleBodyHtml($link);
+            if($details) echo "<div class='mt-3'>" . $details . "</div>";
+        }
+        echo "</div></div>";
+        echo "</div></div>";
         echo "</div>";
     }
 }
 
-function articleBody($link){
+function getArticleBodyHtml($link){
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_URL => $link,
@@ -94,13 +97,9 @@ function articleBody($link){
     $xpath = new DOMXPath($dom);
     $content = $xpath->query("//*[contains(@class, 'article_article__content__VfjFz')]");
     if($content->length){
-        $html = $dom->saveHTML($content->item(0));
-        echo "<div class='card mb-3' style='background-color:#fff;border-radius:10px;'>";
-        echo "<div class='card-body'>";
-        echo "<div class='article-content'>";
-        echo $html;
-        echo "</div></div></div>";
+        return $dom->saveHTML($content->item(0));
     }
+    return '';
 }
 
 $user = checkLogin();
