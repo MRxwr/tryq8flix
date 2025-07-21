@@ -21,7 +21,6 @@ function searchNews($more){
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
     $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
-var_dump($cards);
     foreach ($cards as $card) {
         // Get post link
         $a = $xpath->query(".//a", $card);
@@ -33,6 +32,7 @@ var_dump($cards);
             }
         }
         $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
+        echo "{$link}\n";
         // Get image
         $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
         $imgsrc = '';
