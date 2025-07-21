@@ -90,13 +90,13 @@ function getArticleBodyHtml($link){
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    var_dump($response);
     $dom = new DOMDocument;
     libxml_use_internal_errors(true);
     $dom->loadHTML('<?xml encoding="UTF-8">' . $response);
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
     $body = $xpath->query("//div[contains(@class, 'fco-article-body')]");
+    var_dump($body);
     if($body->length) {
         $bodyNode = $body->item(0);
         if ($bodyNode->nodeType === XML_ELEMENT_NODE && $bodyNode instanceof DOMElement) {
