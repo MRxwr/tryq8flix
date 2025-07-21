@@ -23,23 +23,18 @@ function searchNews($more){
     $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
     foreach ($cards as $card) {
         // Get post link
-        $aTags = $xpath->query(".//a", $card);
-        $hrefs = array();
-        for ($i = 0; $i < $aTags->length; $i++) {
-            $element = $aTags->item($i);
-            if ($element instanceof DOMElement) {
-                $href = $element->getAttribute('href');
-                if ($href && !in_array($href, $hrefs)) {
-                    $hrefs[] = $href;
-                }
+        // Get the main anchor with class 'fco-card' for the post link
+        $mainAnchor = $xpath->query(".//a[contains(@class, 'fco-card')]", $card);
+        $href = '';
+        if ($mainAnchor->length) {
+            $anchorNode = $mainAnchor->item(0);
+            if ($anchorNode->nodeType === XML_ELEMENT_NODE && $anchorNode instanceof DOMElement) {
+                $href = $anchorNode->getAttribute('href');
             }
         }
-        // Print all hrefs for this card
-        foreach ($hrefs as $href) {
-            echo $href . "\n";
-        }
-        // Use the first href for the rest of the card rendering
-        $link = isset($hrefs[0]) ? (strpos($hrefs[0], 'http') === 0 ? $hrefs[0] : 'https://www.kooora.com' . $hrefs[0]) : '';
+        // Print the href for verification
+        echo $href . "\n";
+        $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
         // Get image
         $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
         $imgsrc = '';
