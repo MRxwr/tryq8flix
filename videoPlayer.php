@@ -8,6 +8,7 @@
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
+        $_GET["link"] = urldecode($_GET["link"]);
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
@@ -30,7 +31,6 @@ function getUrlBase($url) {
 }
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-        $_GET["link"] = urldecode($_GET["link"]);
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "{$_GET["link"]}",
