@@ -21,7 +21,6 @@ function searchNews($more){
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
     $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
-    $renderedLinks = array();
     foreach ($cards as $card) {
         // Get post link
         $a = $xpath->query(".//a", $card);
@@ -33,9 +32,6 @@ function searchNews($more){
             }
         }
         $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
-        // Skip duplicate articles by link
-        if(!$link || isset($renderedLinks[$link])) continue;
-        $renderedLinks[$link] = true;
         // Get image
         $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
         $imgsrc = '';
@@ -71,17 +67,7 @@ function searchNews($more){
         // Optionally, fetch and show details
         /*if($link) {
             $details = getArticleBodyHtml($link);
-            // Remove duplicate headline, meta, and image from details
-            if($details) {
-                // Remove headline, meta, and image tags from details HTML
-                $details = preg_replace('/<h[12][^>]*>.*?<\/h[12]>/si', '', $details); // Remove h1/h2
-                $details = preg_replace('/<img[^>]*>/si', '', $details); // Remove images
-                $details = preg_replace('/<div[^>]*class=["\'].*?(badge|card-title|text-muted).*?["\'][^>]*>.*?<\/div>/si', '', $details); // Remove meta
-                // Only show if there's meaningful content
-                if(trim(strip_tags($details))) {
-                    echo "<div class='mt-3'>" . $details . "</div>";
-                }
-            }
+            if($details) echo "<div class='mt-3'>" . $details . "</div>";
         }*/
         echo "</div></div>";
         echo "</div></div>";
