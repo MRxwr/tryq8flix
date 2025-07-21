@@ -90,42 +90,18 @@ function getArticleBodyHtml($link){
     ));
     $response = curl_exec($curl);
     curl_close($curl);
+    var_dump($response);
     $dom = new DOMDocument;
     libxml_use_internal_errors(true);
     $dom->loadHTML('<?xml encoding="UTF-8">' . $response);
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
-    $content = $xpath->query("//*[contains(@class, 'article_article__content__VfjFz')]");
-    if($content->length){
-        $node = $content->item(0);
-        $teaser = $xpath->query(".//p[contains(@class, 'article_article__content__teaser_____NK')]", $node);
-        $body = $xpath->query(".//div[contains(@class, 'fco-article-body')]", $node);
-        $html = '';
-        // Only show teaser if it contains text
-        if($teaser->length) {
-            $teaserText = trim($teaser->item(0)->textContent);
-            if($teaserText !== '') {
-                $html .= $dom->saveHTML($teaser->item(0));
-            }
+    $body = $xpath->query("//div[contains(@class, 'fco-article-body')]");
+    if($body->length) {
+        $bodyNode = $body->item(0);
+        if ($bodyNode->nodeType === XML_ELEMENT_NODE && $bodyNode instanceof DOMElement) {
+            return $dom->saveHTML($bodyNode);
         }
-        // Only show body if it contains at least one non-empty <p>
-        if($body->length) {
-            $bodyNode = $body->item(0);
-            $hasText = false;
-            if ($bodyNode->nodeType === XML_ELEMENT_NODE && $bodyNode instanceof DOMElement) {
-                $paragraphs = $bodyNode->getElementsByTagName('p');
-                foreach($paragraphs as $p) {
-                    if(trim($p->textContent) !== '') {
-                        $hasText = true;
-                        break;
-                    }
-                }
-                if($hasText) {
-                    $html .= $dom->saveHTML($bodyNode);
-                }
-            }
-        }
-        return $html;
     }
     return '';
 }
