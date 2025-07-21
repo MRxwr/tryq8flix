@@ -67,7 +67,17 @@ function searchNews($more){
         // Optionally, fetch and show details
         if($link) {
             $details = getArticleBodyHtml($link);
-            if($details) echo "<div class='mt-3'>" . $details . "</div>";
+            // Remove duplicate headline, meta, and image from details
+            if($details) {
+                // Remove headline, meta, and image tags from details HTML
+                $details = preg_replace('/<h[12][^>]*>.*?<\/h[12]>/si', '', $details); // Remove h1/h2
+                $details = preg_replace('/<img[^>]*>/si', '', $details); // Remove images
+                $details = preg_replace('/<div[^>]*class=["\'].*?(badge|card-title|text-muted).*?["\'][^>]*>.*?<\/div>/si', '', $details); // Remove meta
+                // Only show if there's meaningful content
+                if(trim(strip_tags($details))) {
+                    echo "<div class='mt-3'>" . $details . "</div>";
+                }
+            }
         }
         echo "</div></div>";
         echo "</div></div>";
