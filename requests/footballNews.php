@@ -21,6 +21,7 @@ function searchNews($more){
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
     $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
+    $renderedLinks = array();
     foreach ($cards as $card) {
         // Get post link
         $a = $xpath->query(".//a", $card);
@@ -32,6 +33,9 @@ function searchNews($more){
             }
         }
         $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
+        // Skip duplicate articles by link
+        if(!$link || isset($renderedLinks[$link])) continue;
+        $renderedLinks[$link] = true;
         // Get image
         $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
         $imgsrc = '';
