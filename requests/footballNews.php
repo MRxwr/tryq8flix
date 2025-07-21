@@ -63,13 +63,13 @@ function searchNews($more){
             echo "<h4 class='card-title' style='color:#000;'>" . htmlspecialchars($headlinetext) . "</h4>";
             echo "<div class='mb-2'><span class='badge bg-secondary'>" . htmlspecialchars($tagtext) . "</span></div>";
             echo "<div class='mb-2 text-muted' style='color:#222;'><span>" . htmlspecialchars($timetext) . "</span> | <span>" . htmlspecialchars($datetext) . "</span></div>";
-            echo "</div></div>";
-            echo "</div></div>";
             // Fetch and display full article details
             if($link) {
                 $details = getArticleBodyHtml($link);
                 if($details) echo "<div class='mt-3' style='color:#000;'>" . $details . "</div>";
             }
+            echo "</div></div>";
+            echo "</div></div>";
             echo "</div>";
         }
     }
