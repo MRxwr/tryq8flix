@@ -21,6 +21,7 @@ function searchNews($more){
     libxml_clear_errors();
     $xpath = new DOMXPath($dom);
     $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
+var_dump($cards);
     foreach ($cards as $card) {
         // Get post link
         $a = $xpath->query(".//a", $card);
