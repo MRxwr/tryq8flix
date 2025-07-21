@@ -1,13 +1,13 @@
 <?php
 function getWebsite($search){
 	GLOBAL $website5, $_GET;
-	return "{$website5}search?s={$search}";
+	return "{$website5}?s={$search}";
 }
 
 function searchShahid($search){
 	GLOBAL $website5;
 	$search = urlencode($search);
-	$html = scrapePage("{$website5}search?s={$search}");
+	$html = scrapePage("{$website5}?s={$search}");
 	$dom = str_get_html($html);
 	if ($dom) {
 		$data = [
@@ -54,7 +54,7 @@ if( isset($_POST["type"]) && !empty($_POST["type"]) ){
 		if( !empty($user["id"]) ){
 			$shows = searchShahid($_POST["search"]);
 			echo "<div class='row m-0 w-100' id='content'>";
-			outputData($shows);
+			outputData5($shows);
 			echo '<div class="col-md-12 loadMoreSearchBtn mb-3" style="text-align-last: center;" id="1"><div class="btn btn-secondary w-75" >تابع</div></div><div style="display:none" class="getSearch" id="'.$_POST["search"].'"></div></div>';
 			//echo "<iframe id='frame' src='".getWebsite($_POST["search"])."' style='width:100%;height:100vh;' sandbox='allow-same-origin allow-scripts' allowFullScreen></iframe>";
 		}else{
