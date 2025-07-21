@@ -101,11 +101,29 @@ function getArticleBodyHtml($link){
         $teaser = $xpath->query(".//p[contains(@class, 'article_article__content__teaser_____NK')]", $node);
         $body = $xpath->query(".//div[contains(@class, 'fco-article-body')]", $node);
         $html = '';
+        // Only show teaser if it contains text
         if($teaser->length) {
-            $html .= $dom->saveHTML($teaser->item(0));
+            $teaserText = trim($teaser->item(0)->textContent);
+            if($teaserText !== '') {
+                $html .= $dom->saveHTML($teaser->item(0));
+            }
         }
+        // Only show body if it contains at least one non-empty <p>
         if($body->length) {
-            $html .= $dom->saveHTML($body->item(0));
+            $bodyNode = $body->item(0);
+            $hasText = false;
+            if ($bodyNode->nodeType === XML_ELEMENT_NODE && $bodyNode instanceof DOMElement) {
+                $paragraphs = $bodyNode->getElementsByTagName('p');
+                foreach($paragraphs as $p) {
+                    if(trim($p->textContent) !== '') {
+                        $hasText = true;
+                        break;
+                    }
+                }
+                if($hasText) {
+                    $html .= $dom->saveHTML($bodyNode);
+                }
+            }
         }
         return $html;
     }
