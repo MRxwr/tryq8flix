@@ -66,7 +66,17 @@ function searchNews($more){
             // Fetch and display full article details
             if($link) {
                 $details = getArticleBodyHtml($link);
-                if($details) echo "<div class='mt-3' style='color:#000;'>" . $details . "</div>";
+                if($details) {
+                    // Strip HTML tags for preview, but keep full HTML for expansion
+                    $detailsText = strip_tags($details);
+                    $preview = mb_substr($detailsText, 0, 200);
+                    $uniqueId = 'details_' . uniqid();
+                    echo "<div class='mt-3' style='color:#000;'>";
+                    echo "<span id='{$uniqueId}_preview'>{$preview}</span>";
+                    echo "<span id='{$uniqueId}_full' style='display:none;'>{$details}</span>";
+                    echo " <a href='javascript:void(0);' onclick=\"document.getElementById('{$uniqueId}_preview').style.display='none';document.getElementById('{$uniqueId}_full').style.display='inline';this.style.display='none';\" style='color:#222;text-decoration:underline;cursor:pointer;'>المزيد</a>";
+                    echo "</div>";
+                }
             }
             echo "</div></div>";
             echo "</div></div>";
