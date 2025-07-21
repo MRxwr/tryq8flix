@@ -19,7 +19,7 @@ function getWebsite(){
 }
 
 function searchShahid(){
-	GLOBAL $website, $_GET,$scrappingBeeToken;
+	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	if( isset($_GET["collection"]) ){
