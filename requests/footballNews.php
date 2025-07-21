@@ -23,16 +23,23 @@ function searchNews($more){
     $cards = $xpath->query("//*[contains(@class, 'fco-card')]");
     foreach ($cards as $card) {
         // Get post link
-        $a = $xpath->query(".//a", $card);
-        $href = '';
-        if ($a->length && $a->item(0)->nodeType === XML_ELEMENT_NODE) {
-            $element = $a->item(0);
+        $aTags = $xpath->query(".//a", $card);
+        $hrefs = array();
+        for ($i = 0; $i < $aTags->length; $i++) {
+            $element = $aTags->item($i);
             if ($element instanceof DOMElement) {
                 $href = $element->getAttribute('href');
+                if ($href && !in_array($href, $hrefs)) {
+                    $hrefs[] = $href;
+                }
             }
         }
-        $link = $href ? (strpos($href, 'http') === 0 ? $href : 'https://www.kooora.com' . $href) : '';
-        echo "{$href}\n";
+        // Print all hrefs for this card
+        foreach ($hrefs as $href) {
+            echo $href . "\n";
+        }
+        // Use the first href for the rest of the card rendering
+        $link = isset($hrefs[0]) ? (strpos($hrefs[0], 'http') === 0 ? $hrefs[0] : 'https://www.kooora.com' . $hrefs[0]) : '';
         // Get image
         $img = $xpath->query(".//*[contains(@class, 'fco-image__image')]", $card);
         $imgsrc = '';
