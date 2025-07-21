@@ -30,7 +30,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     for ($i = 0; $i < sizeof($servers); $i++) {
             $url = $servers[$i]["link"];
             $serverDetails = json_encode($servers[$i]);
-            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe2(\"{$url}&server=1\"); return false;'>Serv-{$y}</a></div>";
+            $links .= "<div class='col-3 p-1'><a class='btn btn-secondary w-100' style='color:white' href='#' onclick='sendIdToIframe2(\"{$url}\"); return false;'>Serv-{$y}</a></div>";
             $mainServer[] = $url;
             $y++;
             if( $i == 3 ){
@@ -39,7 +39,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     }
     $links .= "</div>";
     if (isset($mainServer) && sizeof($mainServer) > 0) {
-        $videoTag = "{$links}<iframe id='frame' src='{$mainServer[0]}' style='width:100%;height:300px;margin-top: 30px;overflow: hidden;' allowFullScreen></iframe>"; 
+        $videoTag = "{$links}<iframe id='frame' src='{$mainServer[0]}&server=1' style='width:100%;height:300px;margin-top: 30px;overflow: hidden;' allowFullScreen></iframe>"; 
         echo $videoTag;
     } else {
         echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
