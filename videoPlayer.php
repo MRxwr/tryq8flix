@@ -1,19 +1,3 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adaptive Video Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-</head>
-<body style="background-color: #1A1A1A;margin: auto;">
-    <?php 
-    if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        $_GET["link"] = urldecode($_GET["link"]);
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
-    }else{
-        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
-    }
-    ?>
 <?php 
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
@@ -56,7 +40,21 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
 ?>
-
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Video Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body style="background-color: #1A1A1A;margin: auto;">
+    <?php 
+    if (isset($_GET["server"]) && $_GET["server"] != 1 ){
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
+    }else{
+        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+    }
+    ?>
 <script>
         function setupVideoPlayer(videoElement, sourceUrl) {
             if (sourceUrl.includes('.m3u8')) {
