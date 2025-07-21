@@ -726,7 +726,7 @@ function sendIdToIframe2(id) {
     iframe.src = "";
     var urlWithId = id;
     if (urlWithId.toLowerCase().indexOf('wecima') === -1) {
-        urlWithId = 'videoPlayer.php?link=' + encodeURIComponent(urlWithId);
+        urlWithId = 'videoPlayer.php?server=1&link=' + encodeURIComponent(urlWithId);
     }
     iframe.src = urlWithId;
 }
