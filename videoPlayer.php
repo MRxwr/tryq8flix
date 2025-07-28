@@ -8,7 +8,24 @@
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
+        $iframeUrl = htmlspecialchars($_GET["link"], ENT_QUOTES, 'UTF-8');
+        echo "<iframe id='frame' src='{$iframeUrl}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
+        echo "<script>
+        var originalUrl = '{$iframeUrl}';
+        var frame = document.getElementById('frame');
+        // Monitor iframe src and reset if changed
+        setInterval(function() {
+            if (frame && frame.src !== originalUrl) {
+                frame.src = originalUrl;
+            }
+        }, 500);
+        // Prevent navigation via window blur/focus tricks
+        frame.addEventListener('load', function() {
+            try {
+                frame.contentWindow.onbeforeunload = function() { return false; };
+            } catch (e) {}
+        });
+        </script>";
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
