@@ -8,24 +8,7 @@
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        $iframeUrl = htmlspecialchars($_GET["link"], ENT_QUOTES, 'UTF-8');
-        echo "<iframe id='frame' src='{$iframeUrl}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
-        echo "<script>
-        var originalUrl = '{$iframeUrl}';
-        var frame = document.getElementById('frame');
-        // Monitor iframe src and reset if changed
-        setInterval(function() {
-            if (frame && frame.src !== originalUrl) {
-                frame.src = originalUrl;
-            }
-        }, 500);
-        // Prevent navigation via window blur/focus tricks
-        frame.addEventListener('load', function() {
-            try {
-                frame.contentWindow.onbeforeunload = function() { return false; };
-            } catch (e) {}
-        });
-        </script>";
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen sandbox='allow-scripts allow-same-origin allow-presentation'></iframe>"; 
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
@@ -118,6 +101,70 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
          echo "loadVideo('{$_GET['link']}');";
         }
         ?>
+
+        // Prevent iframe redirects
+        <?php if (isset($_GET["server"]) && $_GET["server"] != 1): ?>
+        (function() {
+            const iframe = document.getElementById('frame');
+            const originalSrc = iframe.src;
+            let checkInterval;
+            
+            // Function to reset iframe URL if it changes
+            function preventRedirects() {
+                try {
+                    // Check if iframe URL has changed
+                    if (iframe.contentWindow && iframe.contentWindow.location.href !== originalSrc) {
+                        console.log('Redirect detected, resetting iframe URL');
+                        iframe.src = originalSrc;
+                    }
+                } catch (e) {
+                    // Cross-origin error is expected, but we can still monitor src attribute
+                }
+                
+                // Also check the src attribute directly
+                if (iframe.src !== originalSrc) {
+                    console.log('Iframe src changed, resetting to original URL');
+                    iframe.src = originalSrc;
+                }
+            }
+            
+            // Monitor for changes every 500ms
+            checkInterval = setInterval(preventRedirects, 500);
+            
+            // Listen for iframe load events
+            iframe.addEventListener('load', function() {
+                // Reset to original URL if it's different
+                if (iframe.src !== originalSrc) {
+                    setTimeout(function() {
+                        iframe.src = originalSrc;
+                    }, 100);
+                }
+            });
+            
+            // Use MutationObserver to watch for src attribute changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                        if (iframe.src !== originalSrc) {
+                            console.log('Src attribute changed via DOM manipulation, resetting');
+                            iframe.src = originalSrc;
+                        }
+                    }
+                });
+            });
+            
+            observer.observe(iframe, {
+                attributes: true,
+                attributeFilter: ['src']
+            });
+            
+            // Cleanup function
+            window.addEventListener('beforeunload', function() {
+                clearInterval(checkInterval);
+                observer.disconnect();
+            });
+        })();
+        <?php endif; ?>
     </script>
     </body>
 </html>
