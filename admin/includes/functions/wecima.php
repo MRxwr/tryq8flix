@@ -1,6 +1,6 @@
 <?php
 function wecimaListing($url) {
-	$html = curlCall($url);
+    $html = curlCall($url);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -27,20 +27,20 @@ function wecimaListing($url) {
         ];
     }
 
-	if (strpos(strtolower($url), 'season') === false){
-		$episodesData = array_reverse($episodesData);
-		$seasonsData = array_reverse($seasonsData);
-	}
-	$data = [
-		'seasons' => $seasonsData,
-		'episodes' => $episodesData
-	];
-	$htmlDom->clear();
-	unset($htmlDom);
-	return $data;
+    if (strpos(strtolower($url), 'season') === false){
+        $episodesData = array_reverse($episodesData);
+        $seasonsData = array_reverse($seasonsData);
+    }
+    $data = [
+        'seasons' => $seasonsData,
+        'episodes' => $episodesData
+    ];
+    $htmlDom->clear();
+    unset($htmlDom);
+    return $data;
 }
 function scrapeWecimaServers($url) {
-	$html = curlCall("{$url}");
+    $html = curlCall("{$url}");
     $dom = str_get_html($html);
     $data = [
         'shows' => []
@@ -62,9 +62,9 @@ function scrapeWecimaServers($url) {
         $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
     $servers = json_decode($servers, true);
-	$dom->clear();
-	unset($dom);
-	return $servers;
+    $dom->clear();
+    unset($dom);
+    return $servers;
 }
 function scrapeWecima($url) {
     GLOBAL $website3;
@@ -98,14 +98,15 @@ function scrapeWecima($url) {
                 $title = trim(preg_replace('/\(\d{4}\)/', '', $title));
             }
 
+            $proxyImageUrl = '/image-proxy.php?url=' . urlencode(trim($imageUrl));
             $jsonData = [
-				'href' => $link ? $link->href : '',
-				'image' => trim($imageUrl),//str_replace("wecima.video","flixcim.imgix.net",$imageUrl)),
-				'episode' => '',
-				'category' => '',
-				'title' => $title,
-				'description' => $year,
-			];
+                'href' => $link ? $link->href : '',
+                'image' => $proxyImageUrl,
+                'episode' => '',
+                'category' => '',
+                'title' => $title,
+                'description' => $year,
+            ];
             $data['shows'][] = $jsonData;
         }
         return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
