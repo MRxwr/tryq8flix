@@ -8,10 +8,10 @@ if (!isset($_GET['url'])) {
     exit;
 }
 
-$url = $_GET['url'];
+$url = urldecode($_GET['url']);
 
 // Validate URL (basic check)
-if (!filter_var(urldecode($url), FILTER_VALIDATE_URL)) {
+if (!filter_var($url, FILTER_VALIDATE_URL)) {
     http_response_code(400);
     echo 'Invalid URL.';
     exit;
