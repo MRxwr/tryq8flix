@@ -6,13 +6,6 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body style="background-color: #1A1A1A;margin: auto;">
-    <?php 
-    if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
-    }else{
-        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
-    }
-    ?>
 <?php 
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
@@ -29,9 +22,12 @@ function getUrlBase($url) {
     return strtok($url, '?');
 }
 
+$videoUrl = "";
+$useVideoPlayer = false;
+
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
         CURLOPT_URL => "{$_GET["link"]}",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
@@ -43,15 +39,48 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         CURLOPT_HTTPHEADER => array(
             "referer: {$website3}",
         ),
-        ));
-        $response = curl_exec($curl);
-        curl_close($curl);
-        var_dump($response);
-        $_GET["link"] = extractVideoSource($response);
-        // crop after .m3u8
-        if (strpos($_GET["link"], ".m3u8") !== false) {
-            $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    
+    // First check if the link itself is a direct video file
+    if(strpos($_GET["link"], ".mp4") !== false || strpos($_GET["link"], ".m3u8") !== false) {
+        $videoUrl = $_GET["link"];
+        $useVideoPlayer = true;
+    } 
+    // Then try to extract video source from response
+    else if($response) {
+        // First try using the extractVideoSource function
+        $extractedUrl = extractVideoSource($response);
+        if($extractedUrl) {
+            $videoUrl = $extractedUrl;
+            // Crop after .m3u8 if present
+            if (strpos($videoUrl, ".m3u8") !== false) {
+                $videoUrl = substr($videoUrl, 0, strpos($videoUrl, ".m3u8")) . ".m3u8";
+            }
+            $useVideoPlayer = true;
         }
+        // If that fails, search for .mp4 or .m3u8 in the response
+        else {
+            // Search for .mp4 URL
+            if(preg_match('/(https?:\/\/[^\s"\']+\.mp4[^\s"\']*)/i', $response, $matches)) {
+                $videoUrl = $matches[1];
+                $useVideoPlayer = true;
+            }
+            // Search for .m3u8 URL
+            else if(preg_match('/(https?:\/\/[^\s"\']+\.m3u8[^\s"\']*)/i', $response, $matches)) {
+                $videoUrl = $matches[1];
+                $useVideoPlayer = true;
+            }
+        }
+    }
+
+    // Decide which element to display
+    if($useVideoPlayer) {
+        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+    } else {
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
+    }
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
@@ -98,8 +127,8 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             setupVideoPlayer(videoElement, url);
         }
         <?php
-        if( isset($_GET["server"]) && $_GET["server"] == 1 ){
-         echo "loadVideo('{$_GET['link']}');";
+        if($useVideoPlayer && !empty($videoUrl)) {
+            echo "loadVideo('" . $videoUrl . "');";
         }
         ?>
     </script>
