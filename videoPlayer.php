@@ -46,6 +46,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         ));
         $response = curl_exec($curl);
         curl_close($curl);
+        var_dump($response);
         $_GET["link"] = extractVideoSource($response);
         // crop after .m3u8
         if (strpos($_GET["link"], ".m3u8") !== false) {
