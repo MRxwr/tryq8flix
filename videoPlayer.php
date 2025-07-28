@@ -8,7 +8,8 @@
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen sandbox='allow-scripts allow-same-origin allow-presentation'></iframe>"; 
+        echo "<video id='embedVideoPlayer' controls style='width:100%;height:100vh'></video>"; 
+        echo "<div id='loadingMessage' style='color: white; text-align: center; margin-top: 20px;'>Loading video...</div>";
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
@@ -16,6 +17,44 @@
 <?php 
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
+
+// Handle proxy requests for fetching embed pages
+if (isset($_GET['proxy_url']) && !empty($_GET['proxy_url'])) {
+    $proxyUrl = $_GET['proxy_url'];
+    
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $proxyUrl,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language: en-US,en;q=0.5",
+            "Accept-Encoding: gzip, deflate",
+            "Connection: keep-alive",
+            "Upgrade-Insecure-Requests: 1",
+        ),
+    ));
+    
+    $response = curl_exec($curl);
+    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close($curl);
+    
+    if ($response !== false && $httpCode == 200) {
+        header('Content-Type: text/html; charset=utf-8');
+        echo $response;
+    } else {
+        http_response_code(500);
+        echo "Error fetching the embed page";
+    }
+    exit;
+}
 
 function extractVideoSource($html) {
     $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
@@ -96,75 +135,88 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             var videoElement = document.getElementById('videoPlayer');
             setupVideoPlayer(videoElement, url);
         }
+
+        // Function to extract video source from embed page HTML
+        function extractVideoSourceFromHTML(html) {
+            // Multiple patterns to try for different embed types
+            const patterns = [
+                // JWPlayer pattern
+                /jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s,
+                /jwplayer\([^)]+\)\.setup\({.*?file:\s*["'](.*?)["']/s,
+                // Generic video source patterns
+                /<video[^>]+src=["'](.*?)["']/i,
+                /src:\s*["'](.*?\.m3u8.*?)["']/i,
+                /source:\s*["'](.*?\.m3u8.*?)["']/i,
+                /"file":\s*["'](.*?)["']/i,
+                /"url":\s*["'](.*?)["']/i,
+                // HLS patterns
+                /["'](https?:\/\/[^"']*\.m3u8[^"']*)["']/i,
+                // MP4 patterns
+                /["'](https?:\/\/[^"']*\.mp4[^"']*)["']/i
+            ];
+
+            for (let pattern of patterns) {
+                const match = html.match(pattern);
+                if (match && match[1]) {
+                    let url = match[1];
+                    // Clean up the URL
+                    url = url.replace(/\\"/g, '"').replace(/\\\//g, '/');
+                    if (url.startsWith('http')) {
+                        return url;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Function to fetch embed page and extract video source
+        async function fetchAndExtractVideo(embedUrl) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            try {
+                // Use a proxy approach - fetch through your own server
+                const proxyUrl = window.location.origin + window.location.pathname + '?proxy_url=' + encodeURIComponent(embedUrl);
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch embed page');
+                }
+                
+                const html = await response.text();
+                const videoSrc = extractVideoSourceFromHTML(html);
+                
+                if (videoSrc) {
+                    if (loadingMessage) loadingMessage.style.display = 'none';
+                    
+                    // Clean up the video URL if it contains .m3u8
+                    let cleanUrl = videoSrc;
+                    if (cleanUrl.includes('.m3u8')) {
+                        cleanUrl = cleanUrl.substring(0, cleanUrl.indexOf('.m3u8')) + '.m3u8';
+                    }
+                    
+                    const videoElement = document.getElementById('embedVideoPlayer');
+                    setupVideoPlayer(videoElement, cleanUrl);
+                    
+                    console.log('Extracted video source:', cleanUrl);
+                } else {
+                    throw new Error('Could not extract video source from embed page');
+                }
+            } catch (error) {
+                console.error('Error fetching video:', error);
+                if (loadingMessage) {
+                    loadingMessage.innerHTML = 'Error loading video. Please try again later.';
+                    loadingMessage.style.color = '#ff6b6b';
+                }
+            }
+        }
+
         <?php
         if( isset($_GET["server"]) && $_GET["server"] == 1 ){
          echo "loadVideo('{$_GET['link']}');";
+        } elseif (isset($_GET["server"]) && $_GET["server"] != 1 && isset($_GET["link"])) {
+         echo "fetchAndExtractVideo('{$_GET['link']}');";
         }
         ?>
-
-        // Prevent iframe redirects
-        <?php if (isset($_GET["server"]) && $_GET["server"] != 1): ?>
-        (function() {
-            const iframe = document.getElementById('frame');
-            const originalSrc = iframe.src;
-            let checkInterval;
-            
-            // Function to reset iframe URL if it changes
-            function preventRedirects() {
-                try {
-                    // Check if iframe URL has changed
-                    if (iframe.contentWindow && iframe.contentWindow.location.href !== originalSrc) {
-                        console.log('Redirect detected, resetting iframe URL');
-                        iframe.src = originalSrc;
-                    }
-                } catch (e) {
-                    // Cross-origin error is expected, but we can still monitor src attribute
-                }
-                
-                // Also check the src attribute directly
-                if (iframe.src !== originalSrc) {
-                    console.log('Iframe src changed, resetting to original URL');
-                    iframe.src = originalSrc;
-                }
-            }
-            
-            // Monitor for changes every 500ms
-            checkInterval = setInterval(preventRedirects, 500);
-            
-            // Listen for iframe load events
-            iframe.addEventListener('load', function() {
-                // Reset to original URL if it's different
-                if (iframe.src !== originalSrc) {
-                    setTimeout(function() {
-                        iframe.src = originalSrc;
-                    }, 100);
-                }
-            });
-            
-            // Use MutationObserver to watch for src attribute changes
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
-                        if (iframe.src !== originalSrc) {
-                            console.log('Src attribute changed via DOM manipulation, resetting');
-                            iframe.src = originalSrc;
-                        }
-                    }
-                });
-            });
-            
-            observer.observe(iframe, {
-                attributes: true,
-                attributeFilter: ['src']
-            });
-            
-            // Cleanup function
-            window.addEventListener('beforeunload', function() {
-                clearInterval(checkInterval);
-                observer.disconnect();
-            });
-        })();
-        <?php endif; ?>
     </script>
     </body>
 </html>
