@@ -50,6 +50,9 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     } 
     // Then try to extract video source from response
     else if($response) {
+        // Debug - save the response to check
+        // file_put_contents('response_debug.txt', $response);
+        
         // First try using the extractVideoSource function
         $extractedUrl = extractVideoSource($response);
         if($extractedUrl) {
@@ -62,14 +65,37 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         }
         // If that fails, search for .mp4 or .m3u8 in the response
         else {
-            // Search for .mp4 URL
-            if(preg_match('/(https?:\/\/[^\s"\']+\.mp4[^\s"\']*)/i', $response, $matches)) {
+            // Try different patterns to find video URLs
+            
+            // Pattern 1: Look for video.mp4 pattern (for updown.icu and similar sites)
+            if(preg_match('/https?:\/\/[^"\'\s]+\/video\.mp4/i', $response, $matches)) {
+                $videoUrl = $matches[0];
+                $useVideoPlayer = true;
+            }
+            // Pattern 2: General MP4 pattern
+            else if(preg_match('/https?:\/\/[^"\'\s<>]+\.mp4[^"\'\s<>]*/i', $response, $matches)) {
+                $videoUrl = $matches[0];
+                $useVideoPlayer = true;
+            }
+            // Pattern 3: M3U8 pattern
+            else if(preg_match('/https?:\/\/[^"\'\s<>]+\.m3u8[^"\'\s<>]*/i', $response, $matches)) {
+                $videoUrl = $matches[0];
+                $useVideoPlayer = true;
+            }
+            // Pattern 4: Look for source with type="video/mp4"
+            else if(preg_match('/source\s+src=["\'](https?:\/\/[^"\']+)["\'](?:[^>]*type=["\'](video\/mp4|application\/x-mpegURL)["\']|[^>]*)/i', $response, $matches)) {
                 $videoUrl = $matches[1];
                 $useVideoPlayer = true;
             }
-            // Search for .m3u8 URL
-            else if(preg_match('/(https?:\/\/[^\s"\']+\.m3u8[^\s"\']*)/i', $response, $matches)) {
+            // Pattern 5: Look for file: pattern (common in many players)
+            else if(preg_match('/file["\']?\s*:\s*["\']([^"\']+\.(?:mp4|m3u8))["\']/', $response, $matches)) {
                 $videoUrl = $matches[1];
+                // If it's a relative URL, make it absolute
+                if(strpos($videoUrl, 'http') !== 0) {
+                    $parsedUrl = parse_url($_GET["link"]);
+                    $baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+                    $videoUrl = $baseUrl . ($videoUrl[0] == '/' ? '' : '/') . $videoUrl;
+                }
                 $useVideoPlayer = true;
             }
         }
@@ -78,8 +104,12 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     // Decide which element to display
     if($useVideoPlayer) {
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+        // Uncomment for debugging
+        // echo "<div style='display:none'>Found video URL: " . htmlspecialchars($videoUrl) . "</div>";
     } else {
         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
+        // Uncomment for debugging
+        // echo "<div style='color:white;'>No video URL found in response. Check browser console for more details.</div>";
     }
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
