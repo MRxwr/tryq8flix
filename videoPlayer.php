@@ -4,11 +4,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adaptive Video Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        // Store the original URL of the iframe
+        let originalIframeUrl = '';
+        
+        // Function to monitor and prevent iframe navigation
+        function monitorIframe() {
+            const iframe = document.getElementById('frame');
+            if (iframe) {
+                originalIframeUrl = iframe.src;
+                
+                // Check iframe source periodically
+                setInterval(function() {
+                    try {
+                        // If iframe tries to navigate to a different URL, reset it
+                        if (iframe.contentWindow.location.href !== originalIframeUrl) {
+                            console.log('Iframe navigation detected, resetting to original URL');
+                            iframe.src = originalIframeUrl;
+                        }
+                    } catch (e) {
+                        // Cross-origin errors will happen if the iframe loads content from another domain
+                        // This is actually good for security
+                        console.log('Cannot access iframe content due to same-origin policy');
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Initialize monitoring when the page loads
+        window.onload = function() {
+            monitorIframe();
+        };
+    </script>
 </head>
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' sandbox='allow-scripts allow-same-origin allow-forms allow-presentation' allowFullScreen></iframe>"; 
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
