@@ -8,7 +8,7 @@
 <body style="background-color: #1A1A1A;margin: auto;">
     <?php 
     if (isset($_GET["server"]) && $_GET["server"] != 1 ){
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen sandbox='allow-same-origin allow-scripts allow-popups allow-presentation allow-top-navigation'></iframe>"; 
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;'allowFullScreen></iframe>"; 
     }else{
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     }
@@ -47,7 +47,6 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         $response = curl_exec($curl);
         curl_close($curl);
         $_GET["link"] = extractVideoSource($response);
-        var_dump($_GET["link"]);
         // crop after .m3u8
         if (strpos($_GET["link"], ".m3u8") !== false) {
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
