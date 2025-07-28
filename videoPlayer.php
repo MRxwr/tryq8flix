@@ -58,32 +58,73 @@ if (isset($_GET['proxy_url']) && !empty($_GET['proxy_url'])) {
 
 function extractVideoSource($html) {
     echo "<script>console.log('🔧 PHP extractVideoSource: Starting extraction, HTML length:', " . strlen($html) . ");</script>";
-    echo "<script>console.log('🔧 PHP extractVideoSource: HTML preview:', '" . addslashes(substr($html, 0, 300)) . "');</script>";
     
-    $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
-    echo "<script>console.log('🔧 PHP extractVideoSource: Using pattern:', '" . addslashes($pattern) . "');</script>";
+    // Escape and show more of the HTML content for debugging
+    $htmlPreview = addslashes(substr($html, 0, 800));
+    echo "<script>console.log('🔧 PHP extractVideoSource: HTML preview (800 chars):', '" . $htmlPreview . "');</script>";
     
-    if (preg_match($pattern, $html, $matches)) {
-        echo "<script>console.log('🔧 PHP extractVideoSource: Pattern matched! Found:', '" . addslashes($matches[1]) . "');</script>";
-        return $matches[1];
-    } else {
-        echo "<script>console.log('🔧 PHP extractVideoSource: Pattern did not match');</script>";
+    // Try multiple patterns
+    $patterns = [
+        [
+            'name' => 'JWPlayer vplayer sources array',
+            'pattern' => '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s'
+        ],
+        [
+            'name' => 'JWPlayer vplayer file property',
+            'pattern' => '/jwplayer\("vplayer"\)\.setup\({.*?file:\s*["\'](.*?)["\']/s'
+        ],
+        [
+            'name' => 'JWPlayer any setup file',
+            'pattern' => '/jwplayer\([^)]+\)\.setup\({.*?file:\s*["\'](.*?)["\']/s'
+        ],
+        [
+            'name' => 'JWPlayer any setup sources',
+            'pattern' => '/jwplayer\([^)]+\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s'
+        ],
+        [
+            'name' => 'Direct MP4 URL in quotes',
+            'pattern' => '/["\'](https?:\/\/[^"\']*\.mp4[^"\']*)["\']/'
+        ],
+        [
+            'name' => 'Direct M3U8 URL in quotes', 
+            'pattern' => '/["\'](https?:\/\/[^"\']*\.m3u8[^"\']*)["\']/'
+        ],
+        [
+            'name' => 'File property in JSON',
+            'pattern' => '/"file":\s*["\'](https?:\/\/[^"\']+)["\']/i'
+        ],
+        [
+            'name' => 'URL property in JSON',
+            'pattern' => '/"url":\s*["\'](https?:\/\/[^"\']+)["\']/i'
+        ],
+        [
+            'name' => 'Source property',
+            'pattern' => '/"source":\s*["\'](https?:\/\/[^"\']+)["\']/i'
+        ]
+    ];
+    
+    foreach ($patterns as $patternInfo) {
+        echo "<script>console.log('🔧 PHP extractVideoSource: Trying pattern: " . addslashes($patternInfo['name']) . "');</script>";
         
-        // Try to find any jwplayer mentions
-        if (strpos($html, 'jwplayer') !== false) {
-            echo "<script>console.log('🔧 PHP extractVideoSource: jwplayer found in HTML, but pattern failed');</script>";
+        if (preg_match($patternInfo['pattern'], $html, $matches)) {
+            echo "<script>console.log('🔧 PHP extractVideoSource: ✅ Pattern \"" . addslashes($patternInfo['name']) . "\" matched! Found:', '" . addslashes($matches[1]) . "');</script>";
+            return $matches[1];
         } else {
-            echo "<script>console.log('🔧 PHP extractVideoSource: No jwplayer found in HTML at all');</script>";
+            echo "<script>console.log('🔧 PHP extractVideoSource: ❌ Pattern \"" . addslashes($patternInfo['name']) . "\" - no match');</script>";
         }
-        
-        // Try to find any .m3u8 URLs
-        if (preg_match('/https?:\/\/[^"\s]*\.m3u8[^"\s]*/', $html, $m3u8Matches)) {
-            echo "<script>console.log('🔧 PHP extractVideoSource: Found m3u8 URL anyway:', '" . addslashes($m3u8Matches[0]) . "');</script>";
-            return $m3u8Matches[0];
-        }
-        
-        return null;
     }
+    
+    // If no patterns work, let's try to find ANY video-like URLs
+    echo "<script>console.log('🔧 PHP extractVideoSource: No patterns matched, searching for any video URLs...');</script>";
+    
+    // Find all URLs that might be videos
+    if (preg_match_all('/(https?:\/\/[^\s"\'<>]+\.(?:mp4|m3u8|avi|mov|wmv|flv)[^\s"\'<>]*)/i', $html, $allMatches)) {
+        echo "<script>console.log('🔧 PHP extractVideoSource: Found video URLs:', " . json_encode($allMatches[1]) . ");</script>";
+        return $allMatches[1][0]; // Return the first one found
+    }
+    
+    echo "<script>console.log('🔧 PHP extractVideoSource: ❌ No video URLs found at all');</script>";
+    return null;
 }
 
 function getUrlBase($url) {
