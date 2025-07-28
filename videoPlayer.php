@@ -112,39 +112,127 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
                     console.log('🔒 Found', anchors.length, 'anchor tags in iframe');
                     
                     anchors.forEach((anchor, index) => {
-                        // Method 1: Set display to none
-                        anchor.style.display = 'none';
+                        // Method 1: Set display to none with !important
+                        anchor.style.setProperty('display', 'none', 'important');
+                        anchor.style.setProperty('visibility', 'hidden', 'important');
+                        anchor.style.setProperty('opacity', '0', 'important');
+                        anchor.style.setProperty('pointer-events', 'none', 'important');
+                        anchor.style.setProperty('position', 'absolute', 'important');
+                        anchor.style.setProperty('left', '-9999px', 'important');
                         
                         // Method 2: Remove href to prevent navigation
                         if (anchor.href) {
                             anchor.removeAttribute('href');
                         }
                         
-                        // Method 3: Prevent click events
-                        anchor.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('🚫 Blocked click on anchor:', anchor);
-                            return false;
+                        // Method 3: Remove all attributes that might cause navigation
+                        anchor.removeAttribute('onclick');
+                        anchor.removeAttribute('target');
+                        anchor.removeAttribute('download');
+                        
+                        // Method 4: Prevent all click events (multiple event types)
+                        ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend'].forEach(eventType => {
+                            anchor.addEventListener(eventType, function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                                console.log('🚫 Blocked', eventType, 'on anchor:', anchor);
+                                return false;
+                            }, true);
                         });
                         
-                        console.log('🔒 Hidden anchor', index + 1, ':', anchor.textContent?.substring(0, 50));
+                        // Method 5: Replace the anchor content but keep it visually hidden
+                        anchor.innerHTML = '';
+                        
+                        console.log('🔒 Hidden anchor', index + 1, '- URL was:', anchor.getAttribute('data-original-href') || 'no href');
                     });
+                    
+                    // Method 6: Inject aggressive CSS
+                    const style = iframeDoc.createElement('style');
+                    style.textContent = `
+                        a, a:link, a:visited, a:hover, a:active {
+                            display: none !important;
+                            visibility: hidden !important;
+                            opacity: 0 !important;
+                            pointer-events: none !important;
+                            position: absolute !important;
+                            left: -9999px !important;
+                            top: -9999px !important;
+                            width: 0 !important;
+                            height: 0 !important;
+                        }
+                        #link1 {
+                            display: none !important;
+                            visibility: hidden !important;
+                            opacity: 0 !important;
+                            pointer-events: none !important;
+                        }
+                    `;
+                    iframeDoc.head.appendChild(style);
                     
                     console.log('✅ Successfully hidden all anchor tags in iframe');
                 } catch (error) {
                     console.log('❌ Cannot access iframe content (cross-origin):', error.message);
                     
-                    // Fallback: Inject CSS to hide anchors
+                    // Enhanced fallback methods
+                    console.log('🔄 Trying enhanced fallback methods...');
+                    
+                    // Fallback 1: Try to access through contentWindow
                     try {
-                        const style = iframe.contentDocument.createElement('style');
-                        style.textContent = 'a { display: none !important; pointer-events: none !important; }';
-                        iframe.contentDocument.head.appendChild(style);
-                        console.log('✅ Injected CSS to hide anchors as fallback');
-                    } catch (cssError) {
-                        console.log('❌ CSS injection also failed:', cssError.message);
+                        const win = iframe.contentWindow;
+                        if (win && win.document) {
+                            const style = win.document.createElement('style');
+                            style.textContent = 'a { display: none !important; pointer-events: none !important; visibility: hidden !important; }';
+                            win.document.head.appendChild(style);
+                            console.log('✅ Injected CSS via contentWindow');
+                        }
+                    } catch (e) {
+                        console.log('❌ contentWindow access failed:', e.message);
                     }
+                    
+                    // Fallback 2: Use postMessage to inject script
+                    try {
+                        iframe.contentWindow.postMessage({
+                            type: 'HIDE_ANCHORS',
+                            css: 'a { display: none !important; pointer-events: none !important; }'
+                        }, '*');
+                        console.log('✅ Sent postMessage to hide anchors');
+                    } catch (e) {
+                        console.log('❌ postMessage failed:', e.message);
+                    }
+                    
+                    // Fallback 3: Overlay to block clicks
+                    createClickBlockingOverlay();
                 }
+            }
+            
+            // Create an overlay to block all clicks on the iframe
+            function createClickBlockingOverlay() {
+                const overlay = document.createElement('div');
+                overlay.id = 'iframe-click-blocker';
+                overlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: transparent;
+                    z-index: 999999;
+                    pointer-events: auto;
+                `;
+                
+                overlay.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🚫 Blocked click on iframe overlay');
+                    return false;
+                });
+                
+                // Position overlay over iframe
+                iframe.style.position = 'relative';
+                iframe.parentNode.insertBefore(overlay, iframe.nextSibling);
+                
+                console.log('✅ Created click-blocking overlay');
             }
             
             // Try to hide anchors immediately
@@ -153,13 +241,14 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             // Also try after iframe loads
             iframe.addEventListener('load', function() {
                 console.log('🔄 Iframe loaded, hiding anchors again...');
-                setTimeout(hideAnchors, 100); // Small delay to ensure content is ready
-                setTimeout(hideAnchors, 500); // Another attempt after 500ms
-                setTimeout(hideAnchors, 1000); // Final attempt after 1s
+                setTimeout(hideAnchors, 100);
+                setTimeout(hideAnchors, 500);
+                setTimeout(hideAnchors, 1000);
+                setTimeout(hideAnchors, 2000);
             });
             
-            // Monitor for new content and hide anchors periodically
-            const anchorHidingInterval = setInterval(hideAnchors, 2000); // Check every 2 seconds
+            // Monitor for new content and hide anchors more frequently
+            const anchorHidingInterval = setInterval(hideAnchors, 1000); // Check every 1 second
             
             // Clean up interval when page unloads
             window.addEventListener('beforeunload', function() {
