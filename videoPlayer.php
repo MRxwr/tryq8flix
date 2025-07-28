@@ -96,9 +96,83 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             var videoElement = document.getElementById('videoPlayer');
             setupVideoPlayer(videoElement, url);
         }
+        
+        // Function to hide all anchor tags inside iframe
+        function hideIframeAnchors() {
+            const iframe = document.getElementById('frame');
+            if (!iframe) return;
+            
+            console.log('🔒 Starting to hide iframe anchor tags...');
+            
+            function hideAnchors() {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const anchors = iframeDoc.querySelectorAll('a');
+                    
+                    console.log('🔒 Found', anchors.length, 'anchor tags in iframe');
+                    
+                    anchors.forEach((anchor, index) => {
+                        // Method 1: Set display to none
+                        anchor.style.display = 'none';
+                        
+                        // Method 2: Remove href to prevent navigation
+                        if (anchor.href) {
+                            anchor.removeAttribute('href');
+                        }
+                        
+                        // Method 3: Prevent click events
+                        anchor.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('🚫 Blocked click on anchor:', anchor);
+                            return false;
+                        });
+                        
+                        console.log('🔒 Hidden anchor', index + 1, ':', anchor.textContent?.substring(0, 50));
+                    });
+                    
+                    console.log('✅ Successfully hidden all anchor tags in iframe');
+                } catch (error) {
+                    console.log('❌ Cannot access iframe content (cross-origin):', error.message);
+                    
+                    // Fallback: Inject CSS to hide anchors
+                    try {
+                        const style = iframe.contentDocument.createElement('style');
+                        style.textContent = 'a { display: none !important; pointer-events: none !important; }';
+                        iframe.contentDocument.head.appendChild(style);
+                        console.log('✅ Injected CSS to hide anchors as fallback');
+                    } catch (cssError) {
+                        console.log('❌ CSS injection also failed:', cssError.message);
+                    }
+                }
+            }
+            
+            // Try to hide anchors immediately
+            hideAnchors();
+            
+            // Also try after iframe loads
+            iframe.addEventListener('load', function() {
+                console.log('🔄 Iframe loaded, hiding anchors again...');
+                setTimeout(hideAnchors, 100); // Small delay to ensure content is ready
+                setTimeout(hideAnchors, 500); // Another attempt after 500ms
+                setTimeout(hideAnchors, 1000); // Final attempt after 1s
+            });
+            
+            // Monitor for new content and hide anchors periodically
+            const anchorHidingInterval = setInterval(hideAnchors, 2000); // Check every 2 seconds
+            
+            // Clean up interval when page unloads
+            window.addEventListener('beforeunload', function() {
+                clearInterval(anchorHidingInterval);
+            });
+        }
+        
         <?php
         if( isset($_GET["server"]) && $_GET["server"] == 1 ){
          echo "loadVideo('{$_GET['link']}');";
+        } else {
+         echo "// Start hiding iframe anchors after page loads";
+         echo "setTimeout(hideIframeAnchors, 500);";
         }
         ?>
     </script>
