@@ -57,11 +57,33 @@ if (isset($_GET['proxy_url']) && !empty($_GET['proxy_url'])) {
 }
 
 function extractVideoSource($html) {
+    echo "<script>console.log('🔧 PHP extractVideoSource: Starting extraction, HTML length:', " . strlen($html) . ");</script>";
+    echo "<script>console.log('🔧 PHP extractVideoSource: HTML preview:', '" . addslashes(substr($html, 0, 300)) . "');</script>";
+    
     $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
+    echo "<script>console.log('🔧 PHP extractVideoSource: Using pattern:', '" . addslashes($pattern) . "');</script>";
+    
     if (preg_match($pattern, $html, $matches)) {
+        echo "<script>console.log('🔧 PHP extractVideoSource: Pattern matched! Found:', '" . addslashes($matches[1]) . "');</script>";
         return $matches[1];
+    } else {
+        echo "<script>console.log('🔧 PHP extractVideoSource: Pattern did not match');</script>";
+        
+        // Try to find any jwplayer mentions
+        if (strpos($html, 'jwplayer') !== false) {
+            echo "<script>console.log('🔧 PHP extractVideoSource: jwplayer found in HTML, but pattern failed');</script>";
+        } else {
+            echo "<script>console.log('🔧 PHP extractVideoSource: No jwplayer found in HTML at all');</script>";
+        }
+        
+        // Try to find any .m3u8 URLs
+        if (preg_match('/https?:\/\/[^"\s]*\.m3u8[^"\s]*/', $html, $m3u8Matches)) {
+            echo "<script>console.log('🔧 PHP extractVideoSource: Found m3u8 URL anyway:', '" . addslashes($m3u8Matches[0]) . "');</script>";
+            return $m3u8Matches[0];
+        }
+        
+        return null;
     }
-    return null;
 }
 
 function getUrlBase($url) {
@@ -69,6 +91,8 @@ function getUrlBase($url) {
 }
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
+        echo "<script>console.log('🔧 PHP: Processing link parameter:', '" . addslashes($_GET["link"]) . "');</script>";
+        
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "{$_GET["link"]}",
@@ -84,14 +108,28 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         ),
         ));
         $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-        $_GET["link"] = extractVideoSource($response);
+        
+        echo "<script>console.log('🔧 PHP: cURL response code:', $httpCode);</script>";
+        echo "<script>console.log('🔧 PHP: Response length:', " . strlen($response) . ");</script>";
+        
+        $extractedSource = extractVideoSource($response);
+        echo "<script>console.log('🔧 PHP: Extracted source:', '" . addslashes($extractedSource) . "');</script>";
+        
+        $_GET["link"] = $extractedSource;
+        
         // crop after .m3u8
         if (strpos($_GET["link"], ".m3u8") !== false) {
+            $originalLink = $_GET["link"];
             $_GET["link"] = substr($_GET["link"], 0, strpos($_GET["link"], ".m3u8")) . ".m3u8";
+            echo "<script>console.log('🔧 PHP: m3u8 URL cleaned:', {original: '" . addslashes($originalLink) . "', cleaned: '" . addslashes($_GET["link"]) . "'});</script>";
         }
+        
+        echo "<script>console.log('🔧 PHP: Final processed link:', '" . addslashes($_GET["link"]) . "');</script>";
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+    echo "<script>console.log('❌ PHP: No link parameter provided or empty');</script>";
 }
 ?>
 
@@ -173,7 +211,9 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         }
 
         function loadVideo(url) {
+            console.log('🎥 loadVideo called with URL:', url);
             var videoElement = document.getElementById('videoPlayer');
+            console.log('🎥 Video element found:', videoElement);
             setupVideoPlayer(videoElement, url);
         }
 
@@ -311,9 +351,15 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 
         <?php
         if( isset($_GET["server"]) && $_GET["server"] == 1 ){
+         echo "console.log('🔄 Server=1 detected, calling loadVideo');";
          echo "loadVideo('{$_GET['link']}');";
         } elseif (isset($_GET["server"]) && $_GET["server"] != 1 && isset($_GET["link"])) {
+         echo "console.log('🔄 Server!=1 detected, calling fetchAndExtractVideo');";
+         echo "console.log('🔗 Link parameter:', '{$_GET['link']}');";
          echo "fetchAndExtractVideo('{$_GET['link']}');";
+        } else {
+         echo "console.log('❌ No valid server/link parameters found');";
+         echo "console.log('🔍 Current GET parameters:', " . json_encode($_GET) . ");";
         }
         ?>
     </script>
