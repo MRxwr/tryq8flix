@@ -98,7 +98,7 @@ function scrapeWecima($url) {
                 $title = trim(preg_replace('/\(\d{4}\)/', '', $title));
             }
 
-            $proxyImageUrl = '/image-proxy.php?url=' . urlencode(trim($imageUrl));
+            $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
             $jsonData = [
                 'href' => $link ? $link->href : '',
                 'image' => $proxyImageUrl,
