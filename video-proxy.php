@@ -2,6 +2,10 @@
 // video-proxy.php - A specialized proxy for video files
 // Use this to stream videos through your server
 
+// Include config and functions
+require_once("admin/includes/config.php");
+require_once("admin/includes/functions/functions.php");
+
 // Security check - only logged in users can access this proxy
 $user = checkLogin();
 if (empty($user["id"])) {
