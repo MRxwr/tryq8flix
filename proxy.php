@@ -29,6 +29,8 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36');
 curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_REFERER, $url); // Add referer for sites that check it
+curl_setopt($ch, CURLOPT_ENCODING, ''); // Accept all encodings
 
 // Execute the request
 $response = curl_exec($ch);
@@ -125,6 +127,50 @@ if (strpos($contentType, 'text/html') !== false) {
     // Add a base target to open links in the proxy
     $body = str_replace('<head>', '<head><base target="_self">', $body);
     
+    // Try to fix video tags to go through the proxy
+    $body = preg_replace_callback(
+        '/<video[^>]*>(.*?)<\/video>/is',
+        function($matches) {
+            $videoTag = $matches[0];
+            // Rewrite video source attributes
+            $videoTag = preg_replace_callback(
+                '/src=(["\'])(https?:\/\/[^"\']+)(["\'])/i',
+                function($srcMatches) {
+                    return 'src=' . $srcMatches[1] . 'video-proxy.php?url=' . urlencode($srcMatches[2]) . $srcMatches[3];
+                },
+                $videoTag
+            );
+            // Also handle source tags inside video
+            $videoTag = preg_replace_callback(
+                '/<source[^>]*src=(["\'])(https?:\/\/[^"\']+)(["\'])/i',
+                function($srcMatches) {
+                    return '<source src=' . $srcMatches[1] . 'video-proxy.php?url=' . urlencode($srcMatches[2]) . $srcMatches[3];
+                },
+                $videoTag
+            );
+            return $videoTag;
+        },
+        $body
+    );
+    
+    // Try to fix iframe embeds (like YouTube)
+    $body = preg_replace_callback(
+        '/<iframe[^>]*src=(["\'])(https?:\/\/[^"\']+)(["\'])[^>]*><\/iframe>/i',
+        function($matches) {
+            $iframeSrc = $matches[2];
+            // Don't proxy the iframe if it's already a proxy URL
+            if (strpos($iframeSrc, 'proxy.php') !== false) {
+                return $matches[0];
+            }
+            return str_replace(
+                'src=' . $matches[1] . $iframeSrc . $matches[3],
+                'src=' . $matches[1] . 'proxy.php?url=' . urlencode($iframeSrc) . $matches[3],
+                $matches[0]
+            );
+        },
+        $body
+    );
+    
     // Add proxy frame for context
     echo '<!DOCTYPE html>
 <html>
@@ -149,15 +195,31 @@ if (strpos($contentType, 'text/html') !== false) {
             </form>
         </div>
         <div>
-            <a href="proxy.php">New Proxy</a>
+            <a href="proxy.php">New Proxy</a> | 
+            <a href="' . htmlspecialchars($url) . '" target="_blank">Open Original</a>
         </div>
     </div>
-    <iframe id="proxy-content" sandbox="allow-same-origin allow-scripts allow-forms" srcdoc="' . htmlspecialchars($body) . '"></iframe>
+    <iframe id="proxy-content" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" srcdoc="' . htmlspecialchars($body) . '"></iframe>
 </body>
 </html>';
 } else {
     // For non-HTML content, pass through the content type and body
     header("Content-Type: $contentType");
+    
+    // Handle streaming media
+    if (strpos($contentType, 'video/') !== false || 
+        strpos($contentType, 'audio/') !== false || 
+        strpos($contentType, 'application/octet-stream') !== false) {
+        
+        // For large files, consider range requests
+        if (isset($_SERVER['HTTP_RANGE'])) {
+            // Pass through the range header to the remote server
+            // This requires a more complex implementation for proper support
+            header("HTTP/1.1 206 Partial Content");
+            header("Accept-Ranges: bytes");
+        }
+    }
+    
     echo $body;
 }
 ?>
