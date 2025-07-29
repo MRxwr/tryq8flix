@@ -2,6 +2,10 @@
 // proxy.php - A simple web proxy to access content through your server
 // Usage: proxy.php?url=https://example.com
 
+// Include config and functions
+require_once("admin/includes/config.php");
+require_once("admin/includes/functions/functions.php");
+
 // Security check - only logged in users can access this proxy
 $user = checkLogin();
 if (empty($user["id"])) {
