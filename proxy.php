@@ -2,8 +2,11 @@
 // proxy.php - A simple web proxy to access content through your server
 // Usage: proxy.php?url=https://example.com
 
-// Security check - you might want to limit this to authenticated users
-// if (!isLoggedIn()) { exit("Access denied"); }
+// Security check - only logged in users can access this proxy
+$user = checkLogin();
+if (empty($user["id"])) {
+    exit("Access denied. Please log in first.");
+}
 
 // Get the target URL
 if (!isset($_GET['url'])) {

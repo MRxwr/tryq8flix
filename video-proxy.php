@@ -2,6 +2,12 @@
 // video-proxy.php - A specialized proxy for video files
 // Use this to stream videos through your server
 
+// Security check - only logged in users can access this proxy
+$user = checkLogin();
+if (empty($user["id"])) {
+    exit("Access denied. Please log in first.");
+}
+
 if (!isset($_GET['url'])) {
     exit("Missing URL parameter");
 }
