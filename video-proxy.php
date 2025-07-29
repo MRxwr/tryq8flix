@@ -4,7 +4,7 @@
 
 // Include config and functions
 require_once("admin/includes/config.php");
-require_once("admin/includes/functions/functions.php");
+require_once("admin/includes/functions/index.php");
 
 // Security check - only logged in users can access this proxy
 $user = checkLogin();
