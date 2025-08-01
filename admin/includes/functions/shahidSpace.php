@@ -51,7 +51,11 @@ function shahidSpaceMore($url){
     $html = scrapePage("{$url}");
     $htmlDom = str_get_html($html);
     $seasonsData = [];
-	foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+    $episodesData = [];
+    
+    // Episodes
+    $episodesList = null;
+    foreach ($htmlDom->find('div.EpisodesArea') as $area) {
         $h3 = $area->find('h3', 0);
         if ($h3 && strpos($h3->plaintext, 'جميع الحلقات') !== false) {
             $episodesList = $area->find('div.EpisodesList', 0);
@@ -66,10 +70,11 @@ function shahidSpaceMore($url){
             $episodesData[] = [
                 'link' => $link,
                 'title' => $title,
-				'episode_number' => ''
+                'episode_number' => ''
             ];
         }
     }
+    
     // Seasons
     $seasonsList = null;
     foreach ($htmlDom->find('div.EpisodesArea') as $area) {
@@ -87,11 +92,12 @@ function shahidSpaceMore($url){
             $seasonsData[] = [
                 'link' => $link,
                 'title' => $title,
-				'season_number' => ''
+                'season_number' => ''
             ];
         }
     }
-    if (strpos(strtolower($_POST["id"]), 'season') === false){
+    
+    if (strpos(strtolower($url), 'season') === false){
         // Sort episodes numerically by extracting the number from the title
         usort($episodesData, function($a, $b) {
             preg_match('/(\d+)/', $a['title'], $matchA);
@@ -109,7 +115,7 @@ function shahidSpaceMore($url){
             return $numA - $numB;
         });
     }
-
+	
     $data = [
         'seasons' => $seasonsData,
         'episodes' => $episodesData
