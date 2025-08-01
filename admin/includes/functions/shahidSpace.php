@@ -25,9 +25,11 @@ function searchShahidSpaceListing($url){
             $descTag = $anchor ? $anchor->find('inner--title p', 0) : null;
             $description = $descTag ? $descTag->plaintext : '';
 
+			$proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
+
             $jsonData = [
                 'href'       => trim($href),
-                'image'      => trim($image),
+                'image'      => $proxyImageUrl,
                 'episode'    => trim($episode),
                 'views'      => '', // No views in new structure
                 'title'      => trim($title),
