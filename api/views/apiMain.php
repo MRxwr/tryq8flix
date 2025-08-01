@@ -17,6 +17,10 @@ $response = array(
             "id" => 4,
             "name" => "Shahid",
         ),
+        array(
+            "id" => 5,
+            "name" => "Shahid Space",
+        ),
     )
 );
 if ($banners = selectDB2("`id`, `title`, `endpoint`, `server`, `url`, `imageurl`","banners","`status` = '0' AND `hidden` = '0'")) {
