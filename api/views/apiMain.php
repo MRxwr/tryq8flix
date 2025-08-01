@@ -1,5 +1,5 @@
 <?php
-$response["serversList"] = array(
+$response = array(
     "servers" => array(
         array(
             "id" => 1,
