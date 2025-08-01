@@ -124,7 +124,14 @@ function shahidSpaceMore($url){
 	unset($htmlDom);
     return $data;
 }
-
+function extractDomain($url) {
+	$parsedUrl = parse_url($url);
+	if ($parsedUrl && isset($parsedUrl['host'])) {
+		return $parsedUrl['host'];
+	} else {
+		return false;
+	}
+}
 function shahidSpaceServers($url){
     $videoUrl = $url;
 	if (substr($videoUrl, -7) !== '/watch/') {
