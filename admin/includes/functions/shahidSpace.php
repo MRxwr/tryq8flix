@@ -51,33 +51,65 @@ function shahidSpaceMore($url){
     $html = scrapePage("{$url}");
     $htmlDom = str_get_html($html);
     $seasonsData = [];
-    foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
-        $link = $linkNode->href;
-        $title = trim($linkNode->find('h3', 0)->plaintext);
-                if (stripos($link, 'season') !== false) {
-            $seasonsData[] = [
-                'link' => $link,
-                'title' => $title,
-                'season_number' => ''
-            ];
+	foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+        $h3 = $area->find('h3', 0);
+        if ($h3 && strpos($h3->plaintext, 'جميع الحلقات') !== false) {
+            $episodesList = $area->find('div.EpisodesList', 0);
+            break;
         }
     }
-    $episodesData = [];
-    foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
-        $link = $linkNode->href;
-        $title = trim($linkNode->find('h3', 0)->plaintext);
-        if (stripos($link, 'season') === false) {
+    if ($episodesList) {
+        foreach ($episodesList->find('a') as $linkNode) {
+            $link = $linkNode->href;
+            $epNum = $linkNode->find('em', 0);
+            $title = $epNum ? 'الحلقة ' . trim($epNum->plaintext) : '';
             $episodesData[] = [
                 'link' => $link,
                 'title' => $title,
-                'episode_number' => ''
+				'episode_number' => ''
             ];
         }
     }
-	if (strpos(strtolower($url), 'season') === false){
-		$episodesData = array_reverse($episodesData);
-		$seasonsData = array_reverse($seasonsData);
-	}
+    // Seasons
+    $seasonsList = null;
+    foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+        $h3 = $area->find('h3', 0);
+        if ($h3 && strpos($h3->plaintext, 'جميع المواسم') !== false) {
+            $seasonsList = $area->find('div.EpisodesList', 0);
+            break;
+        }
+    }
+    if ($seasonsList) {
+        foreach ($seasonsList->find('a') as $linkNode) {
+            $link = $linkNode->href;
+            $seasonNum = $linkNode->find('em', 0);
+            $title = $seasonNum ? 'الموسم ' . trim($seasonNum->plaintext) : '';
+            $seasonsData[] = [
+                'link' => $link,
+                'title' => $title,
+				'season_number' => ''
+            ];
+        }
+    }
+    if (strpos(strtolower($_POST["id"]), 'season') === false){
+        // Sort episodes numerically by extracting the number from the title
+        usort($episodesData, function($a, $b) {
+            preg_match('/(\d+)/', $a['title'], $matchA);
+            preg_match('/(\d+)/', $b['title'], $matchB);
+            $numA = isset($matchA[1]) ? intval($matchA[1]) : 0;
+            $numB = isset($matchB[1]) ? intval($matchB[1]) : 0;
+            return $numA - $numB;
+        });
+        // Sort seasons numerically by extracting the number from the title
+        usort($seasonsData, function($a, $b) {
+            preg_match('/(\d+)/', $a['title'], $matchA);
+            preg_match('/(\d+)/', $b['title'], $matchB);
+            $numA = isset($matchA[1]) ? intval($matchA[1]) : 0;
+            $numB = isset($matchB[1]) ? intval($matchB[1]) : 0;
+            return $numA - $numB;
+        });
+    }
+
     $data = [
         'seasons' => $seasonsData,
         'episodes' => $episodesData
