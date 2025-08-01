@@ -126,9 +126,12 @@ function shahidSpaceMore($url){
 }
 
 function shahidSpaceServers($url){
-    $url = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$url)));
+    $videoUrl = $url;
+	if (substr($videoUrl, -7) !== '/watch/') {
+		$videoUrl = rtrim($videoUrl, '/') . '/watch/';
+	}
     $mainServer = [];
-    $html = scrapePage("{$url}");
+    $html = scrapePage("{$videoUrl}");
     $htmlDom = str_get_html($html);
     $servers = [];
     
