@@ -10,25 +10,37 @@ function searchShahidSpaceListing($url){
 		'shows' => []
 	];
 	if ($dom) {
-		foreach ($dom->find('.shows-container .show-card') as $show) {
-			$style = $show->style;
-			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
-			$imageUrl = isset($matches[1]) ? $matches[1] : '';
-			$jsonData = [
-				'href' => $show->href,
-				'image' => trim($imageUrl),
-				'episode' => $show->find('.ep', 0)->plaintext,
-				'category' => $show->find('.categ', 0)->plaintext,
-				'title' => $show->find('.title', 0)->plaintext,
-				'description' => ''//trim(preg_replace('/\s+/', ' ', $show->find('.description', 0)->plaintext)),
-			];
-			$data['shows'][] = $jsonData;
-		}
-		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-	} else {
-		echo 'Error: Invalid DOM object.';
-		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-	}
+        // Loop through each show block in the new structure
+        foreach ($dom->find('.Small--Box') as $show) {
+            $anchor = $show->find('a.recent--block', 0);
+            $href = $anchor ? $anchor->href : '';
+            $imageTag = $anchor ? $anchor->find('.Poster img', 0) : null;
+            $image = $imageTag ? $imageTag->getAttribute('data-src') : '';
+            $episodeEm = $anchor ? $anchor->find('.number em', 0) : null;
+            $episode = $episodeEm ? $episodeEm->plaintext : '';
+            $categoryLi = $anchor ? $anchor->find('ul.liList li.category', 0) : null;
+            $category = $categoryLi ? $categoryLi->plaintext : '';
+            $titleTag = $anchor ? $anchor->find('inner--title h2', 0) : null;
+            $title = $titleTag ? $titleTag->plaintext : '';
+            $descTag = $anchor ? $anchor->find('inner--title p', 0) : null;
+            $description = $descTag ? $descTag->plaintext : '';
+
+            $jsonData = [
+                'href'       => trim($href),
+                'image'      => trim($image),
+                'episode'    => trim($episode),
+                'views'      => '', // No views in new structure
+                'title'      => trim($title),
+                'category'   => trim($category),
+                'description'=> trim($description)
+            ];
+            $data['shows'][] = $jsonData;
+        }
+        $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Invalid DOM object.';
+        $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
 
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	return $shows = $shows["shows"];
