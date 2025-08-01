@@ -129,19 +129,30 @@ function shahidSpaceServers($url){
     $url = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$url)));
     $mainServer = [];
     $html = scrapePage("{$url}");
-    $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
-    preg_match($pattern, $html, $matches);
-    if (isset($matches[1])) {
-        $serversData = json_decode($matches[1], true);
-        $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        echo 'Error: Server information not found.';
-		$server = json_encode(array());
+    $htmlDom = str_get_html($html);
+    $servers = [];
+    
+    // Define unwanted domains (you may need to adjust this array based on your requirements)
+    $notWanted = ['example.com', 'unwanted.com']; // Add domains you want to exclude
+    
+    if ($htmlDom) {
+        foreach ($htmlDom->find('div.ServersList ul#watch li') as $li) {
+            $url = $li->getAttribute('data-watch');
+            $nameTag = $li->find('span#serverName', 0);
+            $name = $nameTag ? $nameTag->plaintext : '';
+            $domain = extractDomain($url);
+            if ($url && !in_array(strtolower($domain), $notWanted)) {
+                $servers[] = ["url" => $url, "name" => $name];
+            }
+        }
     }
-    $servers = json_decode($server,true);
+    
     foreach ($servers as $server) {
         $mainServer[]["link"] = $server["url"];
     }
+    
+    $htmlDom->clear();
+    unset($htmlDom);
     return $mainServer;
 }
 
