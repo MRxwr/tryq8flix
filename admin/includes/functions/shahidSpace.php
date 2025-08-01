@@ -1,10 +1,7 @@
 <?php
 function searchShahidSpaceListing($url){
 	GLOBAL $website, $_GET;
-	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
-	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = scrapePage($url.$collection.$category);
-    //var_dump($html); die();
+	$html = scrapePage($url);
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []

@@ -78,6 +78,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 5 ) {
                 $url = $website5;
+                $_GET["search"] = ( isset($_GET["search"]) && !empty($_GET["search"]) ) ? urlencode($_GET["search"]) : $_GET["search"];
                 if( isset($_GET["search"]) && !empty($_GET["search"]) && (!isset($_GET["page"]) || empty($_GET["page"])) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
                     $url .= "?s={$_GET["search"]}";
