@@ -59,11 +59,10 @@ function liveMatch($view) {
 		$data = [
 			'matches' => []
 		];
-		foreach ($dom->find('.embedvideo') as $match) {
-			$matchLink = $match->find('iframe', 0);
-			if ($matchLink) { 
+		foreach ($dom->find('iframe') as $iframe) {
+			if ($iframe) { 
 				$jsonData = [
-					'src' => $matchLink->getAttribute('src'),
+					'src' => $iframe->getAttribute('src'),
 				];
 				$data['matches'][] = $jsonData;
 			}
