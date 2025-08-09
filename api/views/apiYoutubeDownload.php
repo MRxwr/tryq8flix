@@ -42,7 +42,7 @@ if( isset($_GET['video_id']) && isset($_GET['itag']) ){
 // Advanced function to get actual YouTube download URLs
 function getYouTubeDownloadUrl($video_id, $itag) {
     
-    // Method 1: Try YouTube's internal API (like mobile apps use)
+    // Method 1: Try YouTube's internal API (like mobile apps use) - Usually fastest
     $download_url = getFromYouTubeAPI($video_id, $itag);
     if ($download_url) {
         return array(
@@ -52,23 +52,23 @@ function getYouTubeDownloadUrl($video_id, $itag) {
         );
     }
     
-    // Method 2: Extract from YouTube page with signature handling
-    $download_url = extractFromYouTubePage($video_id, $itag);
-    if ($download_url) {
-        return array(
-            'url' => $download_url,
-            'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4"),
-            'method' => 'Page Extraction'
-        );
-    }
-    
-    // Method 3: Try external API services
+    // Method 2: Try external API services (faster than page scraping)
     $download_url = getFromExternalAPI($video_id, $itag);
     if ($download_url) {
         return array(
             'url' => $download_url,
             'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4"),
             'method' => 'External API'
+        );
+    }
+    
+    // Method 3: Extract from YouTube page with signature handling (slowest, last resort)
+    $download_url = extractFromYouTubePage($video_id, $itag);
+    if ($download_url) {
+        return array(
+            'url' => $download_url,
+            'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4"),
+            'method' => 'Page Extraction'
         );
     }
     
@@ -111,7 +111,7 @@ function getFromYouTubeAPI($video_id, $itag) {
                 'X-YouTube-Client-Version: 17.31.35'
             ],
             'content' => $post_data,
-            'timeout' => 15
+            'timeout' => 8
         ]
     ]);
     
@@ -156,7 +156,7 @@ function extractFromYouTubePage($video_id, $itag) {
     
     $context = stream_context_create([
         'http' => [
-            'timeout' => 15,
+            'timeout' => 8,
             'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'header' => [
                 "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -222,7 +222,7 @@ function getFromExternalAPI($video_id, $itag) {
     foreach ($apis as $api_url) {
         $context = stream_context_create([
             'http' => [
-                'timeout' => 10,
+                'timeout' => 6,
                 'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 'header' => 'Accept: application/json'
             ]
