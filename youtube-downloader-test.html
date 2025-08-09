@@ -279,7 +279,8 @@
 
                 console.log('Parsed result:', result);
 
-                if (result.error) {
+                // Check for error - handle both boolean and string formats
+                if (result.error === true || result.error === "1" || (result.ok !== true && result.status !== "successful")) {
                     throw new Error(result.msg || 'An unknown error occurred');
                 }
 
