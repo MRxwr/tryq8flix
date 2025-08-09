@@ -1,44 +1,5 @@
 <?php
 
-if( isset($_GET['action']) && $_GET['action'] == 'Youtube' ){
-    
-    // Enable error reporting for debugging
-    error_reporting(E_ALL);
-    
-    // Check if link is provided via POST
-    if( !isset($_POST['link']) || empty($_POST['link']) ){
-        echo dataError('YouTube link is required');
-        exit;
-    }
-    
-    $youtube_url = trim($_POST['link']);
-    
-    // Validate YouTube URL
-    if( !isValidYouTubeUrl($youtube_url) ){
-        echo dataError('Invalid YouTube URL format. Please provide a valid YouTube URL.');
-        exit;
-    }
-    
-    // Get video information and download links
-    try {
-        $video_info = getYouTubeVideoInfo($youtube_url);
-        
-        if( $video_info === false ){
-            echo dataError('Failed to extract video information. The video may be private, age-restricted, deleted, or temporarily unavailable.');
-            exit;
-        }
-        
-        echo dataOutput($video_info);
-        
-    } catch (Exception $e) {
-        echo dataError('Error processing request: ' . $e->getMessage());
-        exit;
-    }
-    
-}else{
-    echo dataError('Invalid request. Missing action parameter.');
-}
-
 // Function to validate YouTube URL
 function isValidYouTubeUrl($url) {
     $patterns = array(
@@ -67,69 +28,6 @@ function extractYouTubeVideoId($url) {
         }
     }
     return false;
-}
-
-// Function to get YouTube video information using web scraping
-function getYouTubeVideoInfo($url) {
-    $video_id = extractYouTubeVideoId($url);
-    if (!$video_id) {
-        return false;
-    }
-    
-    $video_data = false;
-    $last_error = '';
-    
-    // Try Method 1: oEmbed API
-    try {
-        $video_data = getVideoDataMethod1($video_id);
-        if ($video_data && !empty($video_data['title'])) {
-            // Success with Method 1
-        } else {
-            $video_data = false;
-        }
-    } catch (Exception $e) {
-        $last_error = 'oEmbed failed: ' . $e->getMessage();
-    }
-    
-    // Try Method 2: Direct page scraping if Method 1 failed
-    if (!$video_data) {
-        try {
-            $video_data = getVideoDataMethod2($video_id);
-            if (!$video_data || empty($video_data['title'])) {
-                $video_data = false;
-            }
-        } catch (Exception $e) {
-            $last_error .= ' | Page scraping failed: ' . $e->getMessage();
-        }
-    }
-    
-    // If both methods failed, try a basic approach
-    if (!$video_data) {
-        $video_data = array(
-            'title' => 'YouTube Video - ' . $video_id,
-            'author' => 'Unknown',
-            'duration' => 0,
-            'view_count' => 0,
-            'description' => 'Video information could not be extracted, but download links are still available.'
-        );
-    }
-    
-    // Extract download links
-    $formats = extractDownloadFormats($video_id, $video_data);
-    
-    $result = array(
-        'video_id' => $video_id,
-        'title' => $video_data['title'] ?? 'Unknown Title',
-        'duration' => formatDuration($video_data['duration'] ?? 0),
-        'thumbnail' => "https://img.youtube.com/vi/{$video_id}/maxresdefault.jpg",
-        'uploader' => $video_data['author'] ?? 'Unknown',
-        'view_count' => (int)($video_data['view_count'] ?? 0),
-        'description' => substr($video_data['description'] ?? 'No description available', 0, 500),
-        'formats' => $formats,
-        'debug_info' => $last_error ? $last_error : 'Video information extracted successfully'
-    );
-    
-    return $result;
 }
 
 // Method 1: Use YouTube's oEmbed API
@@ -274,6 +172,107 @@ function formatDuration($seconds) {
     } else {
         return sprintf('%02d:%02d', $minutes, $secs);
     }
+}
+
+// Function to get YouTube video information using web scraping
+function getYouTubeVideoInfo($url) {
+    $video_id = extractYouTubeVideoId($url);
+    if (!$video_id) {
+        return false;
+    }
+    
+    $video_data = false;
+    $last_error = '';
+    
+    // Try Method 1: oEmbed API
+    try {
+        $video_data = getVideoDataMethod1($video_id);
+        if ($video_data && !empty($video_data['title'])) {
+            // Success with Method 1
+        } else {
+            $video_data = false;
+        }
+    } catch (Exception $e) {
+        $last_error = 'oEmbed failed: ' . $e->getMessage();
+    }
+    
+    // Try Method 2: Direct page scraping if Method 1 failed
+    if (!$video_data) {
+        try {
+            $video_data = getVideoDataMethod2($video_id);
+            if (!$video_data || empty($video_data['title'])) {
+                $video_data = false;
+            }
+        } catch (Exception $e) {
+            $last_error .= ' | Page scraping failed: ' . $e->getMessage();
+        }
+    }
+    
+    // If both methods failed, try a basic approach
+    if (!$video_data) {
+        $video_data = array(
+            'title' => 'YouTube Video - ' . $video_id,
+            'author' => 'Unknown',
+            'duration' => 0,
+            'view_count' => 0,
+            'description' => 'Video information could not be extracted, but download links are still available.'
+        );
+    }
+    
+    // Extract download links
+    $formats = extractDownloadFormats($video_id, $video_data);
+    
+    $result = array(
+        'video_id' => $video_id,
+        'title' => $video_data['title'] ?? 'Unknown Title',
+        'duration' => formatDuration($video_data['duration'] ?? 0),
+        'thumbnail' => "https://img.youtube.com/vi/{$video_id}/maxresdefault.jpg",
+        'uploader' => $video_data['author'] ?? 'Unknown',
+        'view_count' => (int)($video_data['view_count'] ?? 0),
+        'description' => substr($video_data['description'] ?? 'No description available', 0, 500),
+        'formats' => $formats,
+        'debug_info' => $last_error ? $last_error : 'Video information extracted successfully'
+    );
+    
+    return $result;
+}
+
+if( isset($_GET['action']) && $_GET['action'] == 'Youtube' ){
+    
+    // Check if link is provided via POST
+    if( !isset($_POST['link']) || empty($_POST['link']) ){
+        echo dataError('YouTube link is required');
+        exit;
+    }
+    
+    $youtube_url = trim($_POST['link']);
+    
+    // Validate YouTube URL
+    if( !isValidYouTubeUrl($youtube_url) ){
+        echo dataError('Invalid YouTube URL format. Please provide a valid YouTube URL.');
+        exit;
+    }
+    
+    // Get video information and download links
+    try {
+        $video_info = getYouTubeVideoInfo($youtube_url);
+        
+        if( $video_info === false ){
+            echo dataError('Failed to extract video information. The video may be private, age-restricted, deleted, or temporarily unavailable.');
+            exit;
+        }
+        
+        echo dataOutput($video_info);
+        exit; // Important: exit after output
+        
+    } catch (Exception $e) {
+        echo dataError('Error processing request: ' . $e->getMessage());
+        exit;
+    }
+    
+}else{
+    echo dataError('Invalid request. Missing action parameter.');
+    exit;
 }
 
 ?>
