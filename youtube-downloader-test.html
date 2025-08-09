@@ -255,22 +255,43 @@
                 const formData = new FormData();
                 formData.append('link', youtubeUrl);
 
+                console.log('Making request to:', 'api/?endpoint=Youtube&action=Youtube');
+                console.log('YouTube URL:', youtubeUrl);
+
                 const response = await fetch('api/?endpoint=Youtube&action=Youtube', {
                     method: 'POST',
                     body: formData
                 });
 
-                const result = await response.json();
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON Parse Error:', parseError);
+                    throw new Error('Invalid response format. Server returned: ' + responseText.substring(0, 200));
+                }
+
+                console.log('Parsed result:', result);
 
                 if (result.error) {
-                    throw new Error(result.msg || 'An error occurred');
+                    throw new Error(result.msg || 'An unknown error occurred');
                 }
 
                 // Display video information
                 displayVideoInfo(result.data);
 
             } catch (err) {
-                error.textContent = err.message;
+                console.error('Error details:', err);
+                error.innerHTML = `
+                    <strong>Error:</strong> ${err.message}<br>
+                    <small>Check the browser console (F12) for more details.</small>
+                `;
                 error.style.display = 'block';
             } finally {
                 loading.style.display = 'none';
@@ -285,14 +306,19 @@
             const videoDetails = document.getElementById('videoDetails');
             const videoFormats = document.getElementById('videoFormats');
 
-            videoTitle.textContent = data.title;
-            videoThumbnail.src = data.thumbnail;
+            console.log('Displaying video data:', data);
+
+            videoTitle.textContent = data.title || 'Unknown Title';
+            videoThumbnail.src = data.thumbnail || '';
+            
+            const viewCount = data.view_count ? parseInt(data.view_count).toLocaleString() : 'Unknown';
             
             videoDetails.innerHTML = `
-                <strong>Duration:</strong> ${data.duration}<br>
-                <strong>Uploader:</strong> ${data.uploader}<br>
-                <strong>Views:</strong> ${data.view_count?.toLocaleString() || 'Unknown'}<br>
+                <strong>Duration:</strong> ${data.duration || 'Unknown'}<br>
+                <strong>Uploader:</strong> ${data.uploader || 'Unknown'}<br>
+                <strong>Views:</strong> ${viewCount}<br>
                 <strong>Description:</strong> ${data.description || 'No description available'}
+                ${data.debug_info ? '<br><br><small><strong>Debug Info:</strong> ' + data.debug_info + '</small>' : ''}
             `;
 
             // Display available formats
