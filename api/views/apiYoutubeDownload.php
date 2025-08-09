@@ -11,54 +11,107 @@ if( isset($_GET['video_id']) && isset($_GET['itag']) ){
         exit;
     }
     
-    // Get the actual download URL
-    $download_info = getYouTubeDownloadUrl($video_id, $itag);
+    // Since direct YouTube downloads are heavily restricted,
+    // provide alternative methods instead
+    $alternatives = getDownloadAlternatives($video_id, $itag);
     
-    if( !$download_info ){
-        echo dataError('Unable to generate download link. Video may be private or restricted.');
-        exit;
-    }
-    
-    // Redirect to the actual download URL or stream it
-    if( isset($_GET['direct']) && $_GET['direct'] == '1' ){
-        // Return the direct URL as JSON
-        echo dataOutput(array(
-            'download_url' => $download_info['url'],
-            'filename' => $download_info['filename']
-        ));
-    } else {
-        // Stream the file
-        streamVideoFile($download_info);
-    }
+    echo dataOutput($alternatives);
+    exit;
     
 }else{
     echo dataError('Video ID and itag are required');
 }
 
-// Function to get YouTube download URL using various methods
-function getYouTubeDownloadUrl($video_id, $itag) {
-    // Method 1: Try to extract from YouTube page
-    $download_url = extractFromYouTubePage($video_id, $itag);
+// Function to provide download alternatives
+function getDownloadAlternatives($video_id, $itag) {
+    $youtube_url = "https://www.youtube.com/watch?v=" . $video_id;
     
-    if (!$download_url) {
-        // Method 2: Use third-party services as fallback
-        $download_url = getFromThirdPartyService($video_id, $itag);
-    }
+    // Quality mapping
+    $quality_map = array(
+        '22' => '720p HD',
+        '18' => '480p', 
+        '134' => '360p',
+        '133' => '240p'
+    );
     
-    if (!$download_url) {
-        // Method 3: Generate direct YouTube URL (may not always work)
-        $download_url = generateDirectYouTubeUrl($video_id, $itag);
-    }
+    $quality = isset($quality_map[$itag]) ? $quality_map[$itag] : 'Unknown Quality';
+    
+    return array(
+        'video_id' => $video_id,
+        'requested_quality' => $quality,
+        'youtube_url' => $youtube_url,
+        'message' => 'Due to YouTube\'s protection mechanisms, direct downloads are not available.',
+        'alternatives' => array(
+            array(
+                'method' => 'Browser Extension',
+                'description' => 'Use browser extensions like "Video DownloadHelper" or "SaveFrom.net Helper"',
+                'instructions' => array(
+                    '1. Install a YouTube downloader browser extension',
+                    '2. Visit the YouTube video page',
+                    '3. Click the extension icon to download'
+                )
+            ),
+            array(
+                'method' => 'Online Services',
+                'description' => 'Use online YouTube downloaders',
+                'services' => array(
+                    array(
+                        'name' => 'SaveFrom.net',
+                        'url' => 'https://savefrom.net/en/',
+                        'instructions' => 'Paste the YouTube URL and select quality'
+                    ),
+                    array(
+                        'name' => 'Y2mate',
+                        'url' => 'https://y2mate.com/',
+                        'instructions' => 'Enter YouTube URL and choose download format'
+                    ),
+                    array(
+                        'name' => 'ClipConverter',
+                        'url' => 'https://clipconverter.cc/',
+                        'instructions' => 'Convert YouTube videos to various formats'
+                    )
+                )
+            ),
+            array(
+                'method' => 'Desktop Software',
+                'description' => 'Use desktop applications for downloading',
+                'software' => array(
+                    array(
+                        'name' => '4K Video Downloader',
+                        'description' => 'Free desktop application for Windows/Mac/Linux'
+                    ),
+                    array(
+                        'name' => 'yt-dlp',
+                        'description' => 'Command-line tool for advanced users'
+                    ),
+                    array(
+                        'name' => 'Freemake Video Downloader',
+                        'description' => 'Windows application with simple interface'
+                    )
+                )
+            ),
+            array(
+                'method' => 'Mobile Apps',
+                'description' => 'Use mobile applications (where legally available)',
+                'note' => 'Check your local laws and YouTube\'s terms of service'
+            )
+        ),
+        'legal_notice' => 'Please respect YouTube\'s Terms of Service and copyright laws. Only download videos you have permission to download.',
+        'technical_note' => 'YouTube actively prevents unauthorized downloads through various protection mechanisms including signed URLs, geographic restrictions, and rate limiting.'
+    );
+}
+
     
     if ($download_url) {
         return array(
             'url' => $download_url,
             'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4")
         );
+    }else{
+        return false;
     }
     
-    return false;
-}
+    
 
 // Method 1: Extract from YouTube page
 function extractFromYouTubePage($video_id, $itag) {
