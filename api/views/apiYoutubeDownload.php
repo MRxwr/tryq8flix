@@ -11,18 +11,263 @@ if( isset($_GET['video_id']) && isset($_GET['itag']) ){
         exit;
     }
     
-    // Since direct YouTube downloads are heavily restricted,
-    // provide alternative methods instead
-    $alternatives = getDownloadAlternatives($video_id, $itag);
+    // Try to get actual download URL using advanced methods
+    $download_info = getYouTubeDownloadUrl($video_id, $itag);
     
-    echo dataOutput($alternatives);
-    exit;
+    if( !$download_info ){
+        // Fallback to alternatives if direct download fails
+        $alternatives = getDownloadAlternatives($video_id, $itag);
+        echo dataOutput($alternatives);
+        exit;
+    }
+    
+    // If we got a direct URL, redirect to it
+    if( isset($_GET['direct']) && $_GET['direct'] == '1' ){
+        echo dataOutput(array(
+            'download_url' => $download_info['url'],
+            'filename' => $download_info['filename'],
+            'expires_in' => '6 hours (YouTube URLs expire)',
+            'method_used' => $download_info['method']
+        ));
+    } else {
+        // Redirect to direct download
+        header('Location: ' . $download_info['url']);
+        exit;
+    }
     
 }else{
     echo dataError('Video ID and itag are required');
 }
 
-// Function to provide download alternatives
+// Advanced function to get actual YouTube download URLs
+function getYouTubeDownloadUrl($video_id, $itag) {
+    
+    // Method 1: Try YouTube's internal API (like mobile apps use)
+    $download_url = getFromYouTubeAPI($video_id, $itag);
+    if ($download_url) {
+        return array(
+            'url' => $download_url,
+            'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4"),
+            'method' => 'YouTube Internal API'
+        );
+    }
+    
+    // Method 2: Extract from YouTube page with signature handling
+    $download_url = extractFromYouTubePage($video_id, $itag);
+    if ($download_url) {
+        return array(
+            'url' => $download_url,
+            'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4"),
+            'method' => 'Page Extraction'
+        );
+    }
+    
+    // Method 3: Try external API services
+    $download_url = getFromExternalAPI($video_id, $itag);
+    if ($download_url) {
+        return array(
+            'url' => $download_url,
+            'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4"),
+            'method' => 'External API'
+        );
+    }
+    
+    return false;
+}
+
+// Method 1: Use YouTube's internal API (how mobile apps work)
+function getFromYouTubeAPI($video_id, $itag) {
+    
+    // This mimics what YouTube mobile apps do
+    $api_url = "https://www.youtube.com/youtubei/v1/player";
+    
+    $post_data = json_encode([
+        'context' => [
+            'client' => [
+                'clientName' => 'ANDROID',
+                'clientVersion' => '17.31.35',
+                'androidSdkVersion' => 30,
+                'userAgent' => 'com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip'
+            ]
+        ],
+        'videoId' => $video_id,
+        'params' => 'CgIQBg%3D%3D',
+        'playbackContext' => [
+            'contentPlaybackContext' => [
+                'html5Preference' => 'HTML5_PREF_WANTS'
+            ]
+        ],
+        'contentCheckOk' => true,
+        'racyCheckOk' => true
+    ]);
+    
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => [
+                'Content-Type: application/json',
+                'User-Agent: com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip',
+                'X-YouTube-Client-Name: 3',
+                'X-YouTube-Client-Version: 17.31.35'
+            ],
+            'content' => $post_data,
+            'timeout' => 15
+        ]
+    ]);
+    
+    $response = @file_get_contents($api_url, false, $context);
+    if (!$response) {
+        return false;
+    }
+    
+    $data = json_decode($response, true);
+    if (!$data || !isset($data['streamingData'])) {
+        return false;
+    }
+    
+    // Look for the requested format
+    $all_formats = array_merge(
+        $data['streamingData']['formats'] ?? [],
+        $data['streamingData']['adaptiveFormats'] ?? []
+    );
+    
+    foreach ($all_formats as $format) {
+        if (isset($format['itag']) && $format['itag'] == $itag) {
+            if (isset($format['url'])) {
+                return $format['url'];
+            }
+            // Handle signed URLs
+            if (isset($format['signatureCipher']) || isset($format['cipher'])) {
+                $cipher = $format['signatureCipher'] ?? $format['cipher'];
+                $decoded_url = decodeCipher($cipher, $video_id);
+                if ($decoded_url) {
+                    return $decoded_url;
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
+// Method 2: Enhanced page extraction with signature handling
+function extractFromYouTubePage($video_id, $itag) {
+    $watch_url = "https://www.youtube.com/watch?v={$video_id}";
+    
+    $context = stream_context_create([
+        'http' => [
+            'timeout' => 15,
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'header' => [
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.9",
+                "Accept-Encoding: gzip, deflate",
+                "Cache-Control: no-cache"
+            ]
+        ]
+    ]);
+    
+    $html = @file_get_contents($watch_url, false, $context);
+    if (!$html) {
+        return false;
+    }
+    
+    // Extract player response with multiple patterns
+    $patterns = [
+        '/var ytInitialPlayerResponse = ({.+?});/',
+        '/window\["ytInitialPlayerResponse"\] = ({.+?});/',
+        '/"ytInitialPlayerResponse":({.+?}),"/',
+    ];
+    
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $html, $matches)) {
+            $player_data = json_decode($matches[1], true);
+            
+            if ($player_data && isset($player_data['streamingData'])) {
+                $all_formats = array_merge(
+                    $player_data['streamingData']['formats'] ?? [],
+                    $player_data['streamingData']['adaptiveFormats'] ?? []
+                );
+                
+                foreach ($all_formats as $format) {
+                    if (isset($format['itag']) && $format['itag'] == $itag) {
+                        if (isset($format['url'])) {
+                            return $format['url'];
+                        }
+                        // Handle cipher
+                        if (isset($format['signatureCipher'])) {
+                            $decoded_url = decodeCipher($format['signatureCipher'], $video_id);
+                            if ($decoded_url) {
+                                return $decoded_url;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
+// Method 3: Use external API services that work
+function getFromExternalAPI($video_id, $itag) {
+    
+    // Try different external APIs
+    $apis = [
+        "https://youtube-dl-api-omega.vercel.app/api/youtube?url=https://www.youtube.com/watch?v={$video_id}",
+        "https://api.vevioz.com/api/button/mp4/https://www.youtube.com/watch?v={$video_id}",
+    ];
+    
+    foreach ($apis as $api_url) {
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 10,
+                'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'header' => 'Accept: application/json'
+            ]
+        ]);
+        
+        $response = @file_get_contents($api_url, false, $context);
+        if ($response) {
+            $data = json_decode($response, true);
+            if ($data && isset($data['formats'])) {
+                foreach ($data['formats'] as $format) {
+                    if (isset($format['format_id']) && $format['format_id'] == $itag && isset($format['url'])) {
+                        return $format['url'];
+                    }
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
+// Decode YouTube's signature cipher (simplified version)
+function decodeCipher($cipher, $video_id) {
+    // Parse cipher parameters
+    parse_str($cipher, $params);
+    
+    if (!isset($params['url'])) {
+        return false;
+    }
+    
+    $url = urldecode($params['url']);
+    
+    // If there's a signature, we'd need to decode it
+    // This is complex and changes frequently
+    if (isset($params['s'])) {
+        // YouTube signature decoding would go here
+        // This is the most complex part and changes frequently
+        // For now, return the URL as-is (may not work)
+        return $url;
+    }
+    
+    return $url;
+}
+
+// Function to provide download alternatives (fallback)
 function getDownloadAlternatives($video_id, $itag) {
     $youtube_url = "https://www.youtube.com/watch?v=" . $video_id;
     
@@ -40,7 +285,7 @@ function getDownloadAlternatives($video_id, $itag) {
         'video_id' => $video_id,
         'requested_quality' => $quality,
         'youtube_url' => $youtube_url,
-        'message' => 'Due to YouTube\'s protection mechanisms, direct downloads are not available.',
+        'message' => 'Direct download failed. Here are alternative methods:',
         'alternatives' => array(
             array(
                 'method' => 'Browser Extension',
@@ -89,11 +334,6 @@ function getDownloadAlternatives($video_id, $itag) {
                         'description' => 'Windows application with simple interface'
                     )
                 )
-            ),
-            array(
-                'method' => 'Mobile Apps',
-                'description' => 'Use mobile applications (where legally available)',
-                'note' => 'Check your local laws and YouTube\'s terms of service'
             )
         ),
         'legal_notice' => 'Please respect YouTube\'s Terms of Service and copyright laws. Only download videos you have permission to download.',
@@ -101,224 +341,17 @@ function getDownloadAlternatives($video_id, $itag) {
     );
 }
 
-    
-    if ($download_url) {
-        return array(
-            'url' => $download_url,
-            'filename' => sanitizeFilename("youtube_video_{$video_id}.mp4")
-        );
-    }else{
-        return false;
-    }
-    
-    
-
-// Method 1: Extract from YouTube page
-function extractFromYouTubePage($video_id, $itag) {
-    $watch_url = "https://www.youtube.com/watch?v={$video_id}";
-    
-    $context = stream_context_create([
-        'http' => [
-            'timeout' => 15,
-            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'header' => "Accept-Language: en-US,en;q=0.9\r\n"
-        ]
-    ]);
-    
-    $html = @file_get_contents($watch_url, false, $context);
-    if (!$html) {
-        return false;
-    }
-    
-    // Try to extract player response
-    if (preg_match('/var ytInitialPlayerResponse = ({.+?});/', $html, $matches)) {
-        $player_data = json_decode($matches[1], true);
-        
-        if (isset($player_data['streamingData']['formats'])) {
-            foreach ($player_data['streamingData']['formats'] as $format) {
-                if (isset($format['itag']) && $format['itag'] == $itag && isset($format['url'])) {
-                    return $format['url'];
-                }
-            }
-        }
-        
-        if (isset($player_data['streamingData']['adaptiveFormats'])) {
-            foreach ($player_data['streamingData']['adaptiveFormats'] as $format) {
-                if (isset($format['itag']) && $format['itag'] == $itag && isset($format['url'])) {
-                    return $format['url'];
-                }
-            }
-        }
-    }
-    
-    return false;
-}
-
-// Method 2: Use third-party service
-function getFromThirdPartyService($video_id, $itag) {
-    // This is a placeholder for using services like SaveFrom, Y2mate, etc.
-    // Note: Be careful about terms of service when using third-party services
-    
-    $services = array(
-        "https://www.savefrom.net/mates/en/convert?url=https://www.youtube.com/watch?v={$video_id}",
-        // Add more services as needed
-    );
-    
-    foreach ($services as $service_url) {
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 10,
-                'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            ]
-        ]);
-        
-        $response = @file_get_contents($service_url, false, $context);
-        if ($response) {
-            // Parse response and extract download links
-            // This would need to be implemented based on the specific service
-            // For now, return false
-        }
-    }
-    
-    return false;
-}
-
-// Method 3: Generate direct YouTube URL (basic implementation)
-function generateDirectYouTubeUrl($video_id, $itag) {
-    // This is a simplified approach that may not always work
-    // YouTube frequently changes their URL structure
-    
-    $quality_map = array(
-        '22' => 'hd720',
-        '18' => 'medium', 
-        '134' => 'small',
-        '133' => 'tiny'
-    );
-    
-    $quality = isset($quality_map[$itag]) ? $quality_map[$itag] : 'medium';
-    
-    // Try to construct a basic YouTube URL
-    // Note: This is very basic and may not work reliably
-    $base_url = "https://www.youtube.com/api/v1/videos/{$video_id}/streams";
-    
-    return false; // Disable this method for now as it's unreliable
-}
-
-// Function to stream video file
-function streamVideoFile($download_info) {
-    $url = $download_info['url'];
-    $filename = $download_info['filename'];
-    
-    // Get video title for better filename
-    $video_data = getVideoDataMethod2(extractVideoIdFromUrl($url));
-    if ($video_data && !empty($video_data['title'])) {
-        $filename = sanitizeFilename($video_data['title']) . '.mp4';
-    }
-    
-    // Set headers for download
-    header('Content-Description: File Transfer');
-    header('Content-Type: video/mp4');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-    
-    // Get file size if possible
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'HEAD',
-            'timeout' => 10,
-            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        ]
-    ]);
-    
-    $headers = @get_headers($url, 1, $context);
-    if ($headers && isset($headers['Content-Length'])) {
-        $filesize = is_array($headers['Content-Length']) ? end($headers['Content-Length']) : $headers['Content-Length'];
-        header('Content-Length: ' . $filesize);
-    }
-    
-    // Stream the file
-    $stream_context = stream_context_create([
-        'http' => [
-            'timeout' => 300,
-            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        ]
-    ]);
-    
-    $handle = @fopen($url, 'rb', false, $stream_context);
-    if ($handle === false) {
-        echo dataError('Failed to open download stream');
-        return;
-    }
-    
-    // Output file content in chunks
-    while (!feof($handle)) {
-        $chunk = fread($handle, 8192);
-        if ($chunk === false) {
-            break;
-        }
-        echo $chunk;
-        
-        // Flush output to prevent memory issues
-        if (ob_get_level()) {
-            ob_flush();
-        }
-        flush();
-    }
-    
-    fclose($handle);
-}
-
-// Helper function to extract video ID from URL
-function extractVideoIdFromUrl($url) {
-    $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/';
-    preg_match($pattern, $url, $matches);
-    return isset($matches[1]) ? $matches[1] : '';
-}
-
 // Function to sanitize filename
 function sanitizeFilename($filename) {
-    // Remove or replace invalid characters
     $filename = preg_replace('/[^a-zA-Z0-9\-_\.\s]/', '', $filename);
     $filename = preg_replace('/\s+/', ' ', $filename);
     $filename = trim($filename);
     
-    // Limit length
     if (strlen($filename) > 100) {
         $filename = substr($filename, 0, 100);
     }
     
     return $filename ?: 'video';
-}
-
-// Include the same getVideoDataMethod2 function from apiYoutube.php
-function getVideoDataMethod2($video_id) {
-    if (empty($video_id)) return false;
-    
-    $watch_url = "https://www.youtube.com/watch?v={$video_id}";
-    
-    $context = stream_context_create([
-        'http' => [
-            'timeout' => 15,
-            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        ]
-    ]);
-    
-    $html = @file_get_contents($watch_url, false, $context);
-    if (!$html) {
-        return false;
-    }
-    
-    $data = array();
-    
-    // Extract title
-    if (preg_match('/<title>([^<]+)<\/title>/', $html, $matches)) {
-        $data['title'] = html_entity_decode($matches[1]);
-        $data['title'] = str_replace(' - YouTube', '', $data['title']);
-    }
-    
-    return $data;
 }
 
 ?>
