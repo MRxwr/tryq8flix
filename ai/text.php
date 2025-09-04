@@ -337,7 +337,6 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
 }
 
 // If no action is specified, show the interface
-if (empty($_REQUEST['action'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -481,13 +480,17 @@ if (empty($_REQUEST['action'])) {
                     resultDiv.innerHTML = `<strong>Assistant:</strong><br>${data.data.choices[0].message.content}`;
                     resultDiv.className = 'result';
                 } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || 'Unknown error'}`;
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || JSON.stringify(data.data)}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
                     resultDiv.className = 'error';
                 }
                 resultDiv.style.display = 'block';
             })
             .catch(error => {
                 console.error('Error:', error);
+                const resultDiv = document.getElementById('chatResult');
+                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
             });
         }
         
@@ -498,15 +501,19 @@ if (empty($_REQUEST['action'])) {
             window.open(`?action=tts&text=${encodeURIComponent(text)}&voice=${voice}`, '_blank');
             
             const resultDiv = document.getElementById('ttsResult');
-            resultDiv.innerHTML = '<strong>Audio generated!</strong> Check your downloads or the new tab.';
-            resultDiv.className = 'result';
+            resultDiv.innerHTML = '<strong>Audio generated!</strong> Check your downloads or the new tab. If the new tab shows an error, the API call failed.';
             resultDiv.style.display = 'block';
         }
         
         function analyzeImage() {
             const imageUrl = document.getElementById('imageUrl').value;
             const question = document.getElementById('question').value;
-            
+
+            if (!imageUrl.trim()) {
+                alert('Please enter an image URL');
+                return;
+            }
+
             fetch('', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -519,23 +526,29 @@ if (empty($_REQUEST['action'])) {
                     resultDiv.innerHTML = `<strong>Analysis:</strong><br>${data.data.choices[0].message.content}`;
                     resultDiv.className = 'result';
                 } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || 'Unknown error'}`;
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || JSON.stringify(data.data)}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
                     resultDiv.className = 'error';
                 }
                 resultDiv.style.display = 'block';
             })
             .catch(error => {
                 console.error('Error:', error);
+                const resultDiv = document.getElementById('visionResult');
+                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
             });
         }
-        
-        function getModels() {
-            fetch('?action=models')
+
+        function debugInfo() {
+            fetch('?action=debug', {
+                method: 'GET'
+            })
             .then(response => response.json())
             .then(data => {
-                const resultDiv = document.getElementById('modelsResult');
+                const resultDiv = document.getElementById('debugResult');
                 if (data.success) {
-                    resultDiv.innerHTML = `<strong>Available Models:</strong><br><pre>${JSON.stringify(data.data, null, 2)}</pre>`;
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(data.debug, null, 2)}</pre>`;
                     resultDiv.className = 'result';
                 } else {
                     resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
@@ -545,23 +558,46 @@ if (empty($_REQUEST['action'])) {
             })
             .catch(error => {
                 console.error('Error:', error);
+                const resultDiv = document.getElementById('debugResult');
+                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
             });
         }
-        
-        function debugInfo() {
-            fetch('?action=debug')
+
+        function getModels() {
+            fetch('?action=models', {
+                method: 'GET'
+            })
             .then(response => response.json())
             .then(data => {
-                const resultDiv = document.getElementById('debugResult');
-                resultDiv.innerHTML = `<strong>Debug Info:</strong><br><pre>${JSON.stringify(data.debug, null, 2)}</pre>`;
-                resultDiv.className = 'result';
+                const resultDiv = document.getElementById('modelsResult');
+                if (data.success) {
+                    let modelsHtml = '<ul>';
+                    if (Array.isArray(data.data)) {
+                        for (const model of data.data) {
+                            modelsHtml += `<li><strong>${model.id}</strong> - ${model.object} (owned by ${model.owned_by})</li>`;
+                        }
+                    } else {
+                        modelsHtml += '<li>Could not parse models list.</li>';
+                    }
+                    modelsHtml += '</ul>';
+                    resultDiv.innerHTML = modelsHtml;
+                    resultDiv.className = 'result';
+                } else {
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                    resultDiv.className = 'error';
+                }
                 resultDiv.style.display = 'block';
             })
             .catch(error => {
                 console.error('Error:', error);
+                const resultDiv = document.getElementById('modelsResult');
+                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
             });
         }
     </script>
 </body>
 </html>
-<?php } ?>
