@@ -43,6 +43,7 @@
             <div class="col-12 pt-4 text-center">
                 <p class="feature-title"><i class="fas fa-robot mr-1"></i> Select Model <span class="tooltip-toggle" data-toggle="tooltip" title="Normal: Better quality but slower. Fast: Quick generation with good quality."><i class="fas fa-question-circle"></i></span></p>
                 <button class="btn btn-outline-light model-btn" data-model="normal">Normal</button>
+                <button class="btn btn-outline-light model-btn" data-model="kontext">New</button>
                 <button class="btn btn-outline-light model-btn" data-model="turbo">Fast</button>
             </div>
             
