@@ -200,63 +200,73 @@ class PollinationsAI {
 }
 
 // Handle API requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET')) {
     header('Content-Type: application/json');
     
     try {
         $ai = new PollinationsAI();
         $action = $_REQUEST['action'] ?? 'generate';
         
+        // Get input data from POST body if it's a POST request
+        $input = $_REQUEST;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST)) {
+            $postData = file_get_contents('php://input');
+            if (!empty($postData)) {
+                parse_str($postData, $input);
+                $input = array_merge($_REQUEST, $input);
+            }
+        }
+        
         switch ($action) {
             case 'generate':
-                $prompt = $_REQUEST['prompt'] ?? '';
+                $prompt = trim($input['prompt'] ?? '');
                 if (empty($prompt)) {
-                    throw new Exception('Prompt is required');
+                    throw new Exception('Prompt is required. Received: ' . json_encode($input));
                 }
                 
                 $options = [
-                    'model' => $_REQUEST['model'] ?? 'openai',
-                    'temperature' => floatval($_REQUEST['temperature'] ?? 0.7),
-                    'json' => filter_var($_REQUEST['json'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                    'stream' => filter_var($_REQUEST['stream'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                    'private' => filter_var($_REQUEST['private'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                    'model' => $input['model'] ?? 'openai',
+                    'temperature' => floatval($input['temperature'] ?? 0.7),
+                    'json' => filter_var($input['json'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                    'stream' => filter_var($input['stream'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                    'private' => filter_var($input['private'] ?? false, FILTER_VALIDATE_BOOLEAN)
                 ];
                 
-                if (isset($_REQUEST['system'])) $options['system'] = $_REQUEST['system'];
-                if (isset($_REQUEST['seed'])) $options['seed'] = intval($_REQUEST['seed']);
-                if (isset($_REQUEST['top_p'])) $options['top_p'] = floatval($_REQUEST['top_p']);
-                if (isset($_REQUEST['presence_penalty'])) $options['presence_penalty'] = floatval($_REQUEST['presence_penalty']);
-                if (isset($_REQUEST['frequency_penalty'])) $options['frequency_penalty'] = floatval($_REQUEST['frequency_penalty']);
+                if (isset($input['system'])) $options['system'] = $input['system'];
+                if (isset($input['seed'])) $options['seed'] = intval($input['seed']);
+                if (isset($input['top_p'])) $options['top_p'] = floatval($input['top_p']);
+                if (isset($input['presence_penalty'])) $options['presence_penalty'] = floatval($input['presence_penalty']);
+                if (isset($input['frequency_penalty'])) $options['frequency_penalty'] = floatval($input['frequency_penalty']);
                 
                 $result = $ai->generateText($prompt, $options);
                 echo json_encode(['success' => true, 'data' => $result]);
                 break;
                 
             case 'chat':
-                $messages = json_decode($_REQUEST['messages'] ?? '[]', true);
+                $messages = json_decode($input['messages'] ?? '[]', true);
                 if (empty($messages)) {
                     throw new Exception('Messages are required for chat');
                 }
                 
                 $options = [
-                    'model' => $_REQUEST['model'] ?? 'openai',
-                    'temperature' => floatval($_REQUEST['temperature'] ?? 0.7),
-                    'stream' => filter_var($_REQUEST['stream'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                    'private' => filter_var($_REQUEST['private'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                    'model' => $input['model'] ?? 'openai',
+                    'temperature' => floatval($input['temperature'] ?? 0.7),
+                    'stream' => filter_var($input['stream'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                    'private' => filter_var($input['private'] ?? false, FILTER_VALIDATE_BOOLEAN)
                 ];
                 
-                if (isset($_REQUEST['seed'])) $options['seed'] = intval($_REQUEST['seed']);
-                if (isset($_REQUEST['top_p'])) $options['top_p'] = floatval($_REQUEST['top_p']);
-                if (isset($_REQUEST['presence_penalty'])) $options['presence_penalty'] = floatval($_REQUEST['presence_penalty']);
-                if (isset($_REQUEST['frequency_penalty'])) $options['frequency_penalty'] = floatval($_REQUEST['frequency_penalty']);
+                if (isset($input['seed'])) $options['seed'] = intval($input['seed']);
+                if (isset($input['top_p'])) $options['top_p'] = floatval($input['top_p']);
+                if (isset($input['presence_penalty'])) $options['presence_penalty'] = floatval($input['presence_penalty']);
+                if (isset($input['frequency_penalty'])) $options['frequency_penalty'] = floatval($input['frequency_penalty']);
                 
                 $result = $ai->chatCompletion($messages, $options);
                 echo json_encode(['success' => true, 'data' => $result]);
                 break;
                 
             case 'tts':
-                $text = $_REQUEST['text'] ?? '';
-                $voice = $_REQUEST['voice'] ?? 'alloy';
+                $text = trim($input['text'] ?? '');
+                $voice = $input['voice'] ?? 'alloy';
                 
                 if (empty($text)) {
                     throw new Exception('Text is required for TTS');
@@ -270,16 +280,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
                 exit;
                 
             case 'vision':
-                $imageUrl = $_REQUEST['image_url'] ?? '';
-                $question = $_REQUEST['question'] ?? "What's in this image?";
+                $imageUrl = trim($input['image_url'] ?? '');
+                $question = $input['question'] ?? "What's in this image?";
                 
                 if (empty($imageUrl)) {
                     throw new Exception('Image URL is required for vision analysis');
                 }
                 
                 $options = [
-                    'model' => $_REQUEST['model'] ?? 'openai',
-                    'max_tokens' => intval($_REQUEST['max_tokens'] ?? 500)
+                    'model' => $input['model'] ?? 'openai',
+                    'max_tokens' => intval($input['max_tokens'] ?? 500)
                 ];
                 
                 $result = $ai->analyzeImage($imageUrl, $question, $options);
@@ -291,18 +301,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
                 echo json_encode(['success' => true, 'data' => $result]);
                 break;
                 
+            case 'debug':
+                echo json_encode([
+                    'success' => true,
+                    'debug' => [
+                        'method' => $_SERVER['REQUEST_METHOD'],
+                        'post_data' => $_POST,
+                        'get_data' => $_GET,
+                        'request_data' => $_REQUEST,
+                        'raw_input' => file_get_contents('php://input'),
+                        'content_type' => $_SERVER['CONTENT_TYPE'] ?? 'not set'
+                    ]
+                ]);
+                break;
+                
             default:
                 throw new Exception('Invalid action');
         }
         
     } catch (Exception $e) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        echo json_encode([
+            'success' => false, 
+            'error' => $e->getMessage(),
+            'debug' => [
+                'method' => $_SERVER['REQUEST_METHOD'],
+                'post_data' => $_POST,
+                'get_data' => $_GET,
+                'request_data' => $_REQUEST,
+                'raw_input' => file_get_contents('php://input')
+            ]
+        ]);
     }
     exit;
 }
 
-// Show usage examples if accessed directly
+// If no action is specified, show the interface
+if (empty($_REQUEST['action'])) {
+?>
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -368,7 +405,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     </div>
     
     <div class="example">
-        <h3>📊 Available Models</h3>
+        <h3>� Debug Info</h3>
+        <button onclick="debugInfo()">Get Debug Info</button>
+        <div id="debugResult" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="example">
+        <h3>�📊 Available Models</h3>
         <button onclick="getModels()">Get Models</button>
         <div id="modelsResult" class="result" style="display:none;"></div>
     </div>
@@ -384,25 +427,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
             const model = document.getElementById('model').value;
             const temperature = document.getElementById('temperature').value;
             
+            if (!prompt.trim()) {
+                alert('Please enter a prompt');
+                return;
+            }
+            
+            console.log('Sending:', { action: 'generate', prompt, model, temperature });
+            
             fetch('', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `action=generate&prompt=${encodeURIComponent(prompt)}&model=${model}&temperature=${temperature}`
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 const resultDiv = document.getElementById('textResult');
                 if (data.success) {
                     resultDiv.innerHTML = `<strong>Result:</strong><br>${data.data}`;
                     resultDiv.className = 'result';
                 } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
                     resultDiv.className = 'error';
                 }
                 resultDiv.style.display = 'block';
             })
             .catch(error => {
                 console.error('Error:', error);
+                const resultDiv = document.getElementById('textResult');
+                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
             });
         }
         
@@ -485,6 +543,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
                     resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
                     resultDiv.className = 'error';
                 }
+                resultDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        function debugInfo() {
+            fetch('?action=debug')
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('debugResult');
+                resultDiv.innerHTML = `<strong>Debug Info:</strong><br><pre>${JSON.stringify(data.debug, null, 2)}</pre>`;
+                resultDiv.className = 'result';
                 resultDiv.style.display = 'block';
             })
             .catch(error => {
