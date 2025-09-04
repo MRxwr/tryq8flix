@@ -19,41 +19,17 @@ class PollinationsAI {
      * Simple text generation using GET method
      */
     public function generateText($prompt, $options = []) {
-        $defaultOptions = [
-            'model' => 'openai',
-            'temperature' => 0.7,
-            'json' => false,
-            'stream' => false,
-            'private' => false
-        ];
-        
-        $options = array_merge($defaultOptions, $options);
-        
-        // URL encode the prompt
-        $encodedPrompt = urlencode($prompt);
-        $url = $this->baseUrl . '/' . $encodedPrompt;
-        
-        // Add query parameters
-        $queryParams = array_filter([
-            'model' => $options['model'],
-            'temperature' => $options['temperature'],
-            'seed' => $options['seed'] ?? null,
-            'top_p' => $options['top_p'] ?? null,
-            'presence_penalty' => $options['presence_penalty'] ?? null,
-            'frequency_penalty' => $options['frequency_penalty'] ?? null,
-            'json' => $options['json'] ? 'true' : 'false',
-            'system' => isset($options['system']) ? urlencode($options['system']) : null,
-            'stream' => $options['stream'] ? 'true' : 'false',
-            'private' => $options['private'] ? 'true' : 'false',
-            'referrer' => $this->referrer,
-            'token' => $this->token
-        ]);
-        
-        if (!empty($queryParams)) {
-            $url .= '?' . http_build_query(array_filter($queryParams));
+        // Use the chatCompletion endpoint for text generation as it's more robust
+        $messages = [];
+        if (isset($options['system'])) {
+            $messages[] = ['role' => 'system', 'content' => $options['system']];
         }
-        
-        return $this->makeRequest($url, 'GET');
+        $messages[] = ['role' => 'user', 'content' => $prompt];
+
+        // Unset system from options as it's now in messages
+        unset($options['system']);
+
+        return $this->chatCompletion($messages, $options);
     }
     
     /**
@@ -207,15 +183,26 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
         $ai = new PollinationsAI();
         $action = $_REQUEST['action'] ?? 'generate';
         
-        // Get input data from POST body if it's a POST request
-        $input = $_REQUEST;
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST)) {
-            $postData = file_get_contents('php://input');
-            if (!empty($postData)) {
-                parse_str($postData, $input);
-                $input = array_merge($_REQUEST, $input);
+        // Unified input handling
+        $input = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $rawInput = file_get_contents('php://input');
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+            if (strpos($contentType, 'application/json') !== false) {
+                $input = json_decode($rawInput, true);
+            } elseif (strpos($contentType, 'application/x-www-form-urlencoded') !== false) {
+                parse_str($rawInput, $input);
+            } else {
+                // Fallback for other content types or empty content type
+                parse_str($rawInput, $input);
             }
+            // Ensure $_REQUEST values are merged, giving precedence to the POST body
+            $input = array_merge($_REQUEST, $input);
+        } else {
+            $input = $_GET;
         }
+
         
         switch ($action) {
             case 'generate':
@@ -243,7 +230,15 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
                 break;
                 
             case 'chat':
-                $messages = json_decode($input['messages'] ?? '[]', true);
+                // Use POST for chat as it's more appropriate for sending JSON payloads
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    throw new Exception('Chat action requires POST method.');
+                }
+                $messages = $input['messages'] ?? [];
+                if (is_string($messages)) {
+                    $messages = json_decode($messages, true);
+                }
+
                 if (empty($messages)) {
                     throw new Exception('Messages are required for chat');
                 }
@@ -272,12 +267,11 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
                     throw new Exception('Text is required for TTS');
                 }
                 
-                header('Content-Type: audio/mpeg');
-                header('Content-Disposition: attachment; filename="speech.mp3"');
-                
                 $audioData = $ai->textToSpeech($text, $voice);
-                echo $audioData;
-                exit;
+                $base64Audio = base64_encode($audioData);
+                
+                echo json_encode(['success' => true, 'audio' => $base64Audio]);
+                break;
                 
             case 'vision':
                 $imageUrl = trim($input['image_url'] ?? '');
@@ -470,8 +464,11 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
             
             fetch('', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=chat&messages=${encodeURIComponent(JSON.stringify(messages))}`
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'chat',
+                    messages: messages
+                })
             })
             .then(response => response.json())
             .then(data => {
@@ -497,12 +494,40 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
         function textToSpeech() {
             const text = document.getElementById('ttsText').value;
             const voice = document.getElementById('voice').value;
-            
-            window.open(`?action=tts&text=${encodeURIComponent(text)}&voice=${voice}`, '_blank');
-            
             const resultDiv = document.getElementById('ttsResult');
-            resultDiv.innerHTML = '<strong>Audio generated!</strong> Check your downloads or the new tab. If the new tab shows an error, the API call failed.';
+
+            if (!text.trim()) {
+                alert('Please enter text for speech synthesis.');
+                return;
+            }
+
+            resultDiv.innerHTML = '<strong>Generating audio...</strong>';
+            resultDiv.className = 'result';
             resultDiv.style.display = 'block';
+
+            fetch('', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=tts&text=${encodeURIComponent(text)}&voice=${voice}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.audio) {
+                    const audioPlayer = new Audio(`data:audio/mpeg;base64,${data.audio}`);
+                    resultDiv.innerHTML = '<strong>Audio generated!</strong><br>';
+                    audioPlayer.controls = true;
+                    resultDiv.appendChild(audioPlayer);
+                    audioPlayer.play();
+                } else {
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || 'Failed to generate audio.'}`;
+                    resultDiv.className = 'error';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
+                resultDiv.className = 'error';
+            });
         }
         
         function analyzeImage() {

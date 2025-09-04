@@ -26,10 +26,13 @@ try {
     echo "<h2>Test 4: Text-to-Speech (TTS)</h2>";
     $ttsText = "Hello from the Pollinations AI test script.";
     $audioData = $ai->textToSpeech($ttsText);
-    if (strpos($audioData, 'Error') === false && strlen($audioData) > 1000) {
-        echo "<p><strong>Result:</strong> Successfully received audio data (" . strlen($audioData) . " bytes). Cannot play here, but the API call was successful.</p>";
-        // Optionally save the file to test it
-        // file_put_contents('test_speech.mp3', $audioData);
+    if (strpos($audioData, 'Error') === false && strlen($audioData) > 100) { // Check for a reasonable length of non-error data
+        echo "<p><strong>Result:</strong> Successfully received audio data (" . strlen($audioData) . " bytes). Playing audio below:</p>";
+        $base64Audio = base64_encode($audioData);
+        echo '<audio controls autoplay>
+                <source src="data:audio/mpeg;base64,' . $base64Audio . '" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>';
     } else {
         echo "<p style='color: red;'><strong>Error:</strong> Failed to get valid audio data. Response: " . htmlspecialchars(substr($audioData, 0, 500)) . "</p>";
     }
