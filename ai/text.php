@@ -64,7 +64,14 @@ class PollinationsAI {
         if (isset($options['tool_choice'])) $payload['tool_choice'] = $options['tool_choice'];
         if (isset($options['response_format'])) $payload['response_format'] = $options['response_format'];
         
-        return $this->makeRequest($this->baseUrl . '/openai', 'POST', $payload);
+        $response = $this->makeRequest($this->baseUrl . '/openai', 'POST', $payload);
+
+        if (isset($response['choices'][0]['message']['content'])) {
+            return $response['choices'][0]['message']['content'];
+        }
+
+        // Return the full response for debugging if content is not found
+        return $response;
     }
     
     /**
@@ -358,8 +365,8 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
             <option value="openai">OpenAI</option>
             <option value="mistral">Mistral</option>
         </select>
-        <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7">
-        <label>Temperature: <span id="tempValue">0.7</span></label>
+        <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="this.nextElementSibling.value = this.value">
+        <output>0.7</output>
         <br>
         <button onclick="generateText()">Generate Text</button>
         <div id="textResult" class="result" style="display:none;"></div>
@@ -438,6 +445,7 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
                 console.log('Response data:', data);
                 const resultDiv = document.getElementById('textResult');
                 if (data.success) {
+                    // The actual text response is now in data.data
                     resultDiv.innerHTML = `<strong>Result:</strong><br>${data.data}`;
                     resultDiv.className = 'result';
                 } else {
@@ -473,8 +481,8 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
             .then(response => response.json())
             .then(data => {
                 const resultDiv = document.getElementById('chatResult');
-                if (data.success && data.data.choices) {
-                    resultDiv.innerHTML = `<strong>Assistant:</strong><br>${data.data.choices[0].message.content}`;
+                if (data.success) {
+                    resultDiv.innerHTML = `<strong>Assistant:</strong><br>${data.data}`;
                     resultDiv.className = 'result';
                 } else {
                     resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || JSON.stringify(data.data)}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
@@ -547,8 +555,8 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
             .then(response => response.json())
             .then(data => {
                 const resultDiv = document.getElementById('visionResult');
-                if (data.success && data.data.choices) {
-                    resultDiv.innerHTML = `<strong>Analysis:</strong><br>${data.data.choices[0].message.content}`;
+                if (data.success) {
+                    resultDiv.innerHTML = `<strong>Analysis:</strong><br>${data.data}`;
                     resultDiv.className = 'result';
                 } else {
                     resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || JSON.stringify(data.data)}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
