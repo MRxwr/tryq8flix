@@ -339,8 +339,6 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
 // If no action is specified, show the interface
 if (empty($_REQUEST['action'])) {
 ?>
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -566,3 +564,4 @@ if (empty($_REQUEST['action'])) {
     </script>
 </body>
 </html>
+<?php } ?>
