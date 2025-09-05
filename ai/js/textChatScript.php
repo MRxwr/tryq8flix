@@ -301,12 +301,9 @@
                 // Re-enable inputs
                 sendBtn.disabled = false;
                 promptInput.disabled = false;
-                promptInput.focus();
+                // promptInput.focus(); // Removed to prevent keyboard from popping up on mobile
                 
-                // Scroll to the bottom of chat
-                setTimeout(() => {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 100);
+                // Scrolling is now handled within the addMessage function
             });
         });
 
@@ -355,7 +352,6 @@
             
             // Insert before typing indicator
             chatMessages.insertBefore(messageDiv, typingIndicator);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
             
             // Animate message appearance
             messageDiv.style.opacity = '0';
@@ -365,6 +361,15 @@
             setTimeout(() => {
                 messageDiv.style.opacity = '1';
                 messageDiv.style.transform = 'translateY(0)';
+                
+                // Scroll based on message type
+                if (type === 'user') {
+                    // Scroll to the bottom to see the typing indicator
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    // For AI or error messages, scroll to the top of the new message
+                    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }, 10);
         }
         
