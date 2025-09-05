@@ -22,11 +22,6 @@
         const modelNameElement = document.getElementById('modelName');
         const modelAvatarElement = document.getElementById('modelAvatar');
         const modelInput = document.getElementById('model');
-        const modelTypeInput = document.createElement('input');
-        modelTypeInput.type = 'hidden';
-        modelTypeInput.id = 'modelType';
-        modelTypeInput.name = 'type';
-        chatForm.prepend(modelTypeInput);
 
         // Show models list by default
         modelsList.style.display = 'flex';
@@ -53,16 +48,14 @@
             item.addEventListener('click', function() {
                 const modelName = this.getAttribute('data-model');
                 const modelDesc = this.getAttribute('data-desc');
-                const modelType = this.getAttribute('data-type');
                 const firstLetter = modelDesc.charAt(0).toUpperCase();
                 
-                console.log(`Switching to model: ${modelName}, type: ${modelType}`);
+                console.log(`Switching to model: ${modelName}`);
                 
                 // Update chat view with selected model
                 modelNameElement.textContent = modelDesc;
                 modelAvatarElement.textContent = firstLetter;
                 modelInput.value = modelName;
-                modelTypeInput.value = modelType;
                 currentModel = modelName;
                 
                 // Switch views
@@ -183,14 +176,10 @@
                             
                             // Display each message in the UI
                             data.history.forEach(msg => {
-                                const modelType = document.getElementById('modelType').value;
                                 if (msg.role === 'user') {
                                     addMessage('user', msg.content);
                                 } else if (msg.role === 'assistant') {
-                                    // Determine if the content is an image path
-                                    const isImage = typeof msg.content === 'string' && msg.content.includes('generated_images');
-                                    const effectiveModelType = isImage ? 'image' : 'text';
-                                    addMessage('ai', msg.content, model, effectiveModelType);
+                                    addMessage('ai', formatResponse(msg.content), model);
                                 }
                             });
                         } else {
@@ -279,7 +268,7 @@
                 credentials: 'same-origin' // Include cookies
             })
             .then(response => response.json())
-            .then data => {
+            .then(data => {
                 // Hide typing indicator
                 typingIndicator.style.display = 'none';
                 
@@ -287,8 +276,18 @@
                 console.log('API Response:', data);
                 
                 if (data.status === 'success') {
+                    // Log the response text
+                    console.log('Response Text:', data.text);
+                    // Try to parse it as JSON if it's a string representation of JSON
+                    try {
+                        const jsonContent = JSON.parse(data.text);
+                        console.log('Parsed JSON content:', jsonContent);
+                    } catch(e) {
+                        console.log('Text is not valid JSON');
+                    }
+                    
                     // Format and display AI response
-                    addMessage('ai', data.content, data.model, data.type);
+                    addMessage('ai', formatResponse(data.text), data.model);
                 } else {
                     addMessage('error', data.message);
                 }
@@ -309,36 +308,44 @@
         });
 
         // Function to add a message to the chat
-        function addMessage(type, content, model = '', modelType = 'text') {
+        function addMessage(type, text, model = '') {
             const messageDiv = document.createElement('div');
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
             if (type === 'user') {
                 messageDiv.className = 'user-message';
                 messageDiv.innerHTML = `
-                    <div>${escapeHtml(content)}</div>
+                    <div>${escapeHtml(text)}</div>
                     <div class="message-time">${time}</div>
                 `;
             } else if (type === 'ai') {
                 messageDiv.className = 'ai-message';
-                let displayContent = '';
-
-                if (modelType === 'image' && content.includes('generated_images')) {
-                    // It's an image response
-                    displayContent = `<img src="${content}" class="img-fluid rounded" alt="Generated Image">`;
-                } else {
-                    // It's a text response, format it
-                    displayContent = formatResponse(content);
+                
+                // Try to parse the response as JSON for better display
+                let displayText = text;
+                try {
+                    const jsonObj = JSON.parse(text);
+                    // If it's valid JSON, we'll add a collapsible section to show it
+                    const jsonFormatted = JSON.stringify(jsonObj, null, 2);
+                    displayText = `
+                        <div>${text}</div>
+                        <details class="mt-2">
+                            <summary>View as JSON</summary>
+                            <pre class="bg-light p-2 mt-1 rounded" style="max-height: 200px; overflow: auto;">${escapeHtml(jsonFormatted)}</pre>
+                        </details>
+                    `;
+                } catch (e) {
+                    // Not JSON, use the formatted text as-is
                 }
                 
                 messageDiv.innerHTML = `
-                    <div><strong>${model}</strong>: ${displayContent}</div>
+                    <div><strong>${model}</strong>: ${displayText}</div>
                     <div class="message-time">${time}</div>
                 `;
             } else if (type === 'error') {
                 messageDiv.className = 'error-message';
                 messageDiv.innerHTML = `
-                    <div><i class="fas fa-exclamation-triangle me-2"></i>${escapeHtml(content)}</div>
+                    <div><i class="fas fa-exclamation-triangle me-2"></i>${escapeHtml(text)}</div>
                     <div class="message-time">${time}</div>
                 `;
             }
