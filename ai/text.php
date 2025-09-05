@@ -365,8 +365,12 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
             <option value="openai">OpenAI</option>
             <option value="mistral">Mistral</option>
         </select>
-        <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="this.nextElementSibling.value = this.value">
-        <output>0.7</output>
+        <label for="temperature">Temperature:</label>
+        <select id="temperature">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
         <br>
         <button onclick="generateText()">Generate Text</button>
         <div id="textResult" class="result" style="display:none;"></div>
@@ -415,10 +419,6 @@ if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SE
     </div>
 
     <script>
-        // Update temperature display
-        document.getElementById('temperature').addEventListener('input', function() {
-            document.getElementById('tempValue').textContent = this.value;
-        });
         
         function generateText() {
             const prompt = document.getElementById('prompt').value;
