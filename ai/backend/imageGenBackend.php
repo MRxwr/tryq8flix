@@ -50,41 +50,82 @@ if (empty($imageModels)) {
     ];
 }
 
+// Track seeds for prompts to ensure different results for repeated prompts
+$promptSeeds = [];
+
+// Function to get a seed for a prompt, incrementing if it's been used before
+function getSeedForPrompt($prompt, $model) {
+    global $promptSeeds;
+    
+    // Create a unique key for this prompt+model combination
+    $key = $model . ':' . $prompt;
+    
+    // Initialize if this is the first time
+    if (!isset($promptSeeds[$key])) {
+        $promptSeeds[$key] = 1;
+    } else {
+        // Increment the seed for repeated prompts
+        $promptSeeds[$key]++;
+    }
+    
+    return $promptSeeds[$key];
+}
+
 // Function to generate image from the Pollinations API
 function generateImage($model, $prompt, $params = []) {
     // Base URL for the Pollinations API
     $baseUrl = 'https://image.pollinations.ai/prompt/';
     
-    // Build parameters string
-    $paramString = '';
-    if (!empty($params)) {
-        foreach ($params as $key => $value) {
-            $paramString .= $key . '=' . urlencode($value) . '&';
-        }
-        $paramString = rtrim($paramString, '&');
-        $paramString = '?' . $paramString;
-    }
+    // Get width and height from params or use defaults
+    $width = $params['width'] ?? 512;
+    $height = $params['height'] ?? 512;
     
-    // Add model as a parameter if specified
-    if (!empty($model) && $model !== 'default') {
-        $modelParam = empty($paramString) ? '?model=' . urlencode($model) : '&model=' . urlencode($model);
-        $paramString .= $modelParam;
-    }
+    // Get a seed for this prompt, incrementing if it's been used before
+    $seed = getSeedForPrompt($prompt, $model);
     
     // URL encode the prompt
     $encodedPrompt = urlencode($prompt);
     
-    // Combine the URL parts
-    $imageUrl = $baseUrl . $encodedPrompt . $paramString;
+    // Format model parameter
+    $modelParam = '';
+    if (!empty($model) && $model !== 'default') {
+        $modelParam = '&model=' . urlencode($model);
+    }
     
-    // Return the image URL
-    // In production, you may want to make an actual API request and handle responses
+    // Format seed parameter
+    $seedParam = '&seed=' . $seed;
+    
+    // Build the complete URL with all parameters
+    $imageUrl = $baseUrl . $encodedPrompt . '?width=' . $width . '&height=' . $height . '&nologo=true' . $modelParam . $seedParam;
+    
+    // Add any additional parameters
+    if (!empty($params)) {
+        foreach ($params as $key => $value) {
+            // Skip width and height as they're already included
+            if ($key !== 'width' && $key !== 'height') {
+                $imageUrl .= '&' . urlencode($key) . '=' . urlencode($value);
+            }
+        }
+    }
+    
+    // Return the image URL and additional information
     return [
         'success' => true,
         'image_url' => $imageUrl,
         'prompt' => $prompt,
-        'model' => $model
+        'model' => $model,
+        'seed' => $seed,
+        'width' => $width,
+        'height' => $height
     ];
+}
+
+// Initialize or load prompt seed data from session
+session_start();
+if (!isset($_SESSION['prompt_seeds'])) {
+    $_SESSION['prompt_seeds'] = [];
+} else {
+    $promptSeeds = $_SESSION['prompt_seeds'];
 }
 
 // Handle image generation API requests
@@ -104,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     
     // Generate the image
     $result = generateImage($model, $prompt, $params);
+    
+    // Save updated prompt seeds to session
+    $_SESSION['prompt_seeds'] = $promptSeeds;
     
     // Return the result as JSON
     echo json_encode($result);

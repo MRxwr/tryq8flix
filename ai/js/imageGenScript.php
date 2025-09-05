@@ -216,14 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get the timestamp
                 const timestamp = new Date().toISOString();
                 
-                // Save to history
+                // Save to history with seed information
                 imageHistory[currentImageModel].push({
                     prompt: prompt,
                     imageUrl: data.image_url,
                     timestamp: timestamp,
                     width: width,
                     height: height,
-                    steps: steps
+                    steps: steps,
+                    seed: data.seed || Math.floor(Math.random() * 1000000) // Use provided seed or generate a fallback
                 });
                 
                 // Save to localStorage
