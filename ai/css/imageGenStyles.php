@@ -5,7 +5,7 @@
 /* Tab Navigation */
 .tab-navigation {
     display: flex;
-    background: #1a1a1a;
+    background: var(--chat-header);
     border-radius: 15px 15px 0 0;
     overflow: hidden;
 }
@@ -14,8 +14,8 @@
     flex: 1;
     text-align: center;
     padding: 15px;
-    background: #333;
-    color: #ccc;
+    background: var(--chat-primary);
+    color: white;
     font-weight: bold;
     cursor: pointer;
     border-bottom: 3px solid transparent;
@@ -23,9 +23,9 @@
 }
 
 .tab-button.active {
-    background: #1a1a1a;
+    background: var(--chat-header);
     color: white;
-    border-bottom: 3px solid #007bff;
+    border-bottom: 3px solid var(--chat-secondary);
 }
 
 .tab-button i {
@@ -35,7 +35,7 @@
 /* Image generation specific styles */
 .image-models-list-container {
     display: none;
-    background-color: #1a1a1a;
+    background-color: white;
     border-radius: 0 0 15px 15px;
     overflow: hidden;
     height: calc(100vh - 140px);
@@ -45,21 +45,21 @@
 
 .image-model-item {
     display: flex;
-    padding: 15px;
-    border-bottom: 1px solid #333;
+    padding: 12px 15px;
+    border-bottom: 1px solid #F0F0F0;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s;
 }
 
 .image-model-item:hover {
-    background-color: #333;
+    background-color: #F5F5F5;
 }
 
 .image-model-avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #007bff;
+    background-color: var(--chat-primary);
     color: white;
     display: flex;
     align-items: center;
@@ -71,7 +71,7 @@
 .image-generator-container {
     display: none;
     flex-direction: column;
-    background-color: #1a1a1a;
+    background-color: white;
     border-radius: 0 0 15px 15px;
     height: calc(100vh - 140px);
     max-height: 80vh;
@@ -80,37 +80,54 @@
 .image-generator-header {
     display: flex;
     align-items: center;
-    padding: 15px;
-    background-color: #252525;
+    padding: 10px 16px;
+    background-color: var(--chat-header);
     color: white;
 }
 
 .image-preview-area {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    background-color: var(--chat-bg);
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAO0lEQVQ4y2P8//8/A7UBEwMNwKhBWg0aNYgIg9iIU4tIs8Zok8aAGsQzDcTH5DQ2iI0AYz7QFhJh0AAACBAreUQggYUAAAAASUVORK5CYII=');
+    background-repeat: repeat;
+    background-color: rgba(248, 248, 248, 0.95);
 }
 
 .image-result {
     max-width: 100%;
     margin: 10px 0;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .image-prompt-bubble {
     align-self: flex-end;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 18px 18px 0 18px;
+    background-color: var(--chat-sent);
+    color: #303030;
+    padding: 8px 12px;
+    border-radius: 8px 8px 0 8px;
     margin: 5px 10px;
     max-width: 80%;
     word-break: break-word;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+.image-prompt-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -8px;
+    width: 8px;
+    height: 13px;
+    background-color: var(--chat-sent);
+    border-bottom-left-radius: 10px;
 }
 
 .image-loading {
@@ -123,8 +140,9 @@
 }
 
 .image-generator-footer {
-    padding: 15px;
-    background-color: #252525;
+    padding: 10px;
+    background-color: #F0F0F0;
+    border-top: 1px solid #E0E0E0;
 }
 
 .image-options-row {
@@ -140,9 +158,40 @@
 }
 
 .image-option label {
-    color: #ccc;
+    color: #606060;
     font-size: 0.8rem;
     margin-bottom: 3px;
+}
+
+/* Image input field */
+#imagePrompt {
+    border-radius: 20px;
+    resize: none;
+    transition: all 0.3s ease;
+    border: 1px solid #DDD;
+    padding: 9px 12px;
+}
+
+#imagePrompt:focus {
+    box-shadow: none;
+    border-color: var(--chat-secondary);
+}
+
+/* Send button */
+#sendImageBtn {
+    background-color: var(--chat-primary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sendImageBtn:hover {
+    background-color: var(--chat-secondary);
 }
 
 /* Responsive adjustments */
