@@ -191,41 +191,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     $maxApiChars = 5000;
     $totalChars = calculateHistorySize($modelHistory);
     if ($totalChars > $maxApiChars) {
-        // Separate system, latest user, and older messages
+        // Separate system messages and the latest user message
         $systemMessages = [];
         $latestUser = null;
-        $olderMessages = [];
+        $previousMessages = [];
         
-        foreach ($modelHistory as $index => $msg) {
+        foreach ($modelHistory as $msg) {
             if ($msg['role'] === 'system') {
                 $systemMessages[] = $msg;
-            } elseif ($msg['role'] === 'user' && $index === count($modelHistory) - 1) {
-                $latestUser = $msg;
+            } elseif ($msg['role'] === 'user') {
+                $latestUser = $msg; // Keep overwriting with the latest user message
             } else {
-                $olderMessages[] = $msg;
+                $previousMessages[] = $msg;
             }
         }
         
-        // Start with system and latest user
+        // Start building trimmed history in chronological order
         $trimmedHistory = $systemMessages;
-        if ($latestUser) {
-            $trimmedHistory[] = $latestUser;
-        }
         
-        // Add older messages from newest to oldest until limit
-        $olderMessages = array_reverse($olderMessages); // newest first
-        foreach ($olderMessages as $msg) {
-            $tempHistory = $trimmedHistory;
-            $tempHistory[] = $msg;
-            if (calculateHistorySize($tempHistory) <= $maxApiChars) {
+        // Add previous messages (user/assistant pairs) from oldest to newest
+        // but only as many as fit within the character limit
+        $remainingChars = $maxApiChars - calculateHistorySize($trimmedHistory);
+        
+        foreach ($previousMessages as $msg) {
+            $msgLength = strlen($msg['content']);
+            if ($remainingChars >= $msgLength) {
                 $trimmedHistory[] = $msg;
+                $remainingChars -= $msgLength;
             } else {
                 break;
             }
         }
         
+        // Always add the latest user message at the end if it fits
+        if ($latestUser) {
+            $userLength = strlen($latestUser['content']);
+            if ($remainingChars >= $userLength) {
+                $trimmedHistory[] = $latestUser;
+            } else {
+                // If user message doesn't fit, we need to make room by removing older messages
+                while (count($trimmedHistory) > count($systemMessages) && 
+                       calculateHistorySize($trimmedHistory) + $userLength > $maxApiChars) {
+                    array_splice($trimmedHistory, count($systemMessages), 1); // Remove oldest non-system message
+                }
+                if (calculateHistorySize($trimmedHistory) + $userLength <= $maxApiChars) {
+                    $trimmedHistory[] = $latestUser;
+                }
+            }
+        }
+        
         $modelHistory = $trimmedHistory;
-        error_log("Trimmed API history to " . calculateHistorySize($modelHistory) . " characters");
+        error_log("Trimmed API history to " . calculateHistorySize($modelHistory) . " characters, last message role: " . end($modelHistory)['role']);
     }
     
     // Prepare the request data with conversation history
