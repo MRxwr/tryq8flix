@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Pollinations.AI Text Generator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -111,6 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             --chat-secondary: #7895CB;
             --chat-light: #A0BFE0;
             --chat-bg: #EEF5FF;
+            --app-height: 100%;
+        }
+        html, body {
+            height: var(--app-height);
+            overflow: hidden;
         }
         body {
             background-color: var(--chat-bg);
@@ -240,30 +245,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             }
         }
         @media (max-width: 576px) {
+            html, body {
+                height: 100%;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+                background-color: white;
+                position: fixed;
+            }
+            .container {
+                max-width: 100%;
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
             .chat-container {
                 border-radius: 0;
                 height: 100vh;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
                 display: flex;
                 flex-direction: column;
+                box-shadow: none;
+            }
+            .chat-header {
+                border-radius: 0;
             }
             .chat-messages {
                 flex-grow: 1;
                 height: auto;
             }
-            body {
-                padding: 0;
-                margin: 0;
-                background-color: white;
-            }
-            .container {
-                max-width: 100%;
-                padding: 0;
+            .chat-footer {
+                padding-bottom: env(safe-area-inset-bottom, 15px);
             }
         }
     </style>
 </head>
 <body>
-    <div class="container mt-3 mt-md-5">
+    <div class="container mt-3 mt-md-5 px-0">
         <div class="chat-container">
             <div class="chat-header">
                 <h2 class="m-0"><i class="fas fa-robot me-2"></i>Pollinations.AI Chat</h2>
@@ -304,7 +326,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                         </select>
                     </div>
                     <div class="input-group">
-                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)" rows="1" required></textarea>
+                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Start typing..." rows="1" required></textarea>
                         <button type="submit" class="btn send-button" id="sendBtn">
                             <i class="fas fa-paper-plane me-1"></i> Send
                         </button>
@@ -316,6 +338,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Fix for mobile browsers viewport height issues
+        const appHeight = () => {
+            const doc = document.documentElement;
+            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+        }
+        window.addEventListener('resize', appHeight);
+        appHeight();
+
         document.addEventListener('DOMContentLoaded', function() {
             const chatMessages = document.getElementById('chat');
             const chatForm = document.getElementById('chatForm');
