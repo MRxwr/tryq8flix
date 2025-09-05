@@ -1,30 +1,4 @@
 <?php
-// Ensure proper session configuration
-ini_set('session.cookie_lifetime', 86400); // 24 hours
-ini_set('session.gc_maxlifetime', 86400); // 24 hours
-ini_set('session.use_cookies', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_httponly', 1);
-
-// Set a cookie to help with session persistence
-$cookieName = 'POLLINATIONS_CHAT_SESSION';
-if (!isset($_COOKIE[$cookieName])) {
-    setcookie($cookieName, '1', time() + 86400, '/', '', false, false);
-}
-
-// Start session for chat history
-session_start();
-
-// Pollinations.AI Text Generation Script
-// Using the OpenAI-compatible POST endpoint with authentication
-
-$token = '8x5QP4YGfNKsu8j-'; // Your provided token
-
-// Initialize chat history session variable if not exists
-if (!isset($_SESSION['chat_history'])) {
-    $_SESSION['chat_history'] = [];
-}
-
 // Log session ID for debugging
 error_log("Session ID: " . session_id());
 
@@ -328,6 +302,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     
     if ($isAjax) exit;
 }
-
-// Display the form
-?>
