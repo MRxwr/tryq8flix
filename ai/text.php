@@ -13,23 +13,23 @@
 </head>
 <body>
     <div class="container mt-3 mt-md-5 px-0">
-        <!-- Tab Navigation -->
-        <div class="tab-navigation">
-            <div class="tab-button active" id="chatTabButton">
-                <i class="fas fa-comments"></i> Chat
-            </div>
-            <div class="tab-button" id="imageTabButton">
-                <i class="fas fa-image"></i> Images
-            </div>
-        </div>
-
         <!-- Models List View (WhatsApp contacts style) -->
         <div class="models-list-container" id="modelsList">
             <div class="models-header">
-                <h2 class="m-0"><i class="fas fa-comments me-2"></i>Q8FLiX AI Chat</h2>
+                <h2 class="m-0"><i class="fas fa-comments me-2"></i>Q8FLiX AI Hub</h2>
             </div>
             <div class="models-search">
                 <input type="text" id="modelSearch" placeholder="Search models..." class="form-control">
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <div class="tab-button active" id="chatTabButton">
+                    <i class="fas fa-comments"></i> Chat
+                </div>
+                <div class="tab-button" id="imageTabButton">
+                    <i class="fas fa-image"></i> Images
+                </div>
             </div>
             <div class="models-list" id="modelsListItems">
                 <?php 
@@ -71,10 +71,20 @@
         <!-- Image Models List View -->
         <div class="image-models-list-container" id="imageModelsList">
             <div class="models-header">
-                <h2 class="m-0"><i class="fas fa-image me-2"></i>Q8FLiX AI Image</h2>
+                <h2 class="m-0"><i class="fas fa-image me-2"></i>Q8FLiX AI Hub</h2>
             </div>
             <div class="models-search">
                 <input type="text" id="imageModelSearch" placeholder="Search image models..." class="form-control">
+            </div>
+            
+            <!-- Tab Navigation (duplicate for image view) -->
+            <div class="tab-navigation">
+                <div class="tab-button" id="chatTabButtonImg">
+                    <i class="fas fa-comments"></i> Chat
+                </div>
+                <div class="tab-button active" id="imageTabButtonImg">
+                    <i class="fas fa-image"></i> Images
+                </div>
             </div>
             <div class="models-list" id="imageModelsListItems">
                 <?php 

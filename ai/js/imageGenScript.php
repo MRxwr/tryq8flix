@@ -11,16 +11,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tab switching functionality
     const chatTabButton = document.getElementById('chatTabButton');
     const imageTabButton = document.getElementById('imageTabButton');
+    const chatTabButtonImg = document.getElementById('chatTabButtonImg');
+    const imageTabButtonImg = document.getElementById('imageTabButtonImg');
     
     const modelsList = document.getElementById('modelsList');
     const imageModelsList = document.getElementById('imageModelsList');
     const chatContainer = document.getElementById('chatContainer');
     const imageGeneratorContainer = document.getElementById('imageGeneratorContainer');
     
-    chatTabButton.addEventListener('click', function() {
-        // Switch to chat tab
+    // Functions to switch between tabs
+    function switchToChat() {
+        // Update active tab indicators
         chatTabButton.classList.add('active');
         imageTabButton.classList.remove('active');
+        chatTabButtonImg.classList.add('active');
+        imageTabButtonImg.classList.remove('active');
         
         // Show chat interface, hide image interface
         if (chatContainer.style.display === 'flex') {
@@ -32,12 +37,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         imageModelsList.style.display = 'none';
         imageGeneratorContainer.style.display = 'none';
-    });
+    }
     
-    imageTabButton.addEventListener('click', function() {
-        // Switch to image tab
+    function switchToImage() {
+        // Update active tab indicators
         imageTabButton.classList.add('active');
         chatTabButton.classList.remove('active');
+        imageTabButtonImg.classList.add('active');
+        chatTabButtonImg.classList.remove('active');
         
         // Show image interface, hide chat interface
         if (imageGeneratorContainer.style.display === 'flex') {
@@ -49,7 +56,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         modelsList.style.display = 'none';
         chatContainer.style.display = 'none';
-    });
+    }
+    
+    // Add event listeners for tab buttons
+    chatTabButton.addEventListener('click', switchToChat);
+    chatTabButtonImg.addEventListener('click', switchToChat);
+    imageTabButton.addEventListener('click', switchToImage);
+    imageTabButtonImg.addEventListener('click', switchToImage);
     
     // Image model selection
     const imageModelItems = document.querySelectorAll('.image-model-item');

@@ -5,15 +5,15 @@
 /* Tab Navigation */
 .tab-navigation {
     display: flex;
-    background: var(--chat-header);
-    border-radius: 15px 15px 0 0;
+    background: var(--chat-primary);
     overflow: hidden;
+    margin-bottom: 1px;
 }
 
 .tab-button {
     flex: 1;
     text-align: center;
-    padding: 15px;
+    padding: 10px;
     background: var(--chat-primary);
     color: white;
     font-weight: bold;
