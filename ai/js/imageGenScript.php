@@ -5,6 +5,11 @@
 // Image Generation Variables
 let currentImageModel = '';
 let imageHistory = {};
+let imageSettings = {
+    width: 512,
+    height: 512,
+    steps: 30
+};
 
 // Tab Navigation
 document.addEventListener('DOMContentLoaded', function() {
@@ -241,5 +246,90 @@ document.addEventListener('DOMContentLoaded', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
+    
+    // Load saved image settings from localStorage if available
+    function loadImageSettings() {
+        const savedSettings = localStorage.getItem('imageSettings');
+        if (savedSettings) {
+            try {
+                imageSettings = JSON.parse(savedSettings);
+                document.getElementById('imageWidth').value = imageSettings.width;
+                document.getElementById('imageHeight').value = imageSettings.height;
+                document.getElementById('imageSteps').value = imageSettings.steps;
+                
+                // Update modal values too
+                document.getElementById('modalImageWidth').value = imageSettings.width;
+                document.getElementById('modalImageHeight').value = imageSettings.height;
+                document.getElementById('modalImageSteps').value = imageSettings.steps;
+                
+                updateModalLabels();
+            } catch (e) {
+                console.error('Error loading saved image settings:', e);
+            }
+        }
+    }
+    
+    // Save current settings to localStorage
+    function saveImageSettings() {
+        if (document.getElementById('saveImageSettings').checked) {
+            localStorage.setItem('imageSettings', JSON.stringify(imageSettings));
+        }
+    }
+    
+    // Update settings when modal is opened
+    document.getElementById('imageOptionsButton').addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('imageOptionsModal'));
+        
+        // Set current values to the modal inputs
+        document.getElementById('modalImageWidth').value = imageSettings.width;
+        document.getElementById('modalImageHeight').value = imageSettings.height;
+        document.getElementById('modalImageSteps').value = imageSettings.steps;
+        
+        updateModalLabels();
+        modal.show();
+    });
+    
+    // Update the value labels when sliders change
+    document.getElementById('modalImageWidth').addEventListener('input', updateModalLabels);
+    document.getElementById('modalImageHeight').addEventListener('input', updateModalLabels);
+    document.getElementById('modalImageSteps').addEventListener('input', updateModalLabels);
+    
+    function updateModalLabels() {
+        document.getElementById('modalImageWidthValue').textContent = 
+            document.getElementById('modalImageWidth').value + 'px';
+        document.getElementById('modalImageHeightValue').textContent = 
+            document.getElementById('modalImageHeight').value + 'px';
+        document.getElementById('modalImageStepsValue').textContent = 
+            document.getElementById('modalImageSteps').value;
+    }
+    
+    // Save settings when Apply button is clicked
+    document.getElementById('saveImageOptions').addEventListener('click', function() {
+        // Get values from modal
+        const width = parseInt(document.getElementById('modalImageWidth').value);
+        const height = parseInt(document.getElementById('modalImageHeight').value);
+        const steps = parseInt(document.getElementById('modalImageSteps').value);
+        
+        // Update settings object
+        imageSettings = {
+            width: width,
+            height: height,
+            steps: steps
+        };
+        
+        // Update hidden form fields
+        document.getElementById('imageWidth').value = width;
+        document.getElementById('imageHeight').value = height;
+        document.getElementById('imageSteps').value = steps;
+        
+        // Save to localStorage if option is checked
+        saveImageSettings();
+        
+        // Close the modal
+        bootstrap.Modal.getInstance(document.getElementById('imageOptionsModal')).hide();
+    });
+    
+    // Load settings on page load
+    loadImageSettings();
 });
 </script>

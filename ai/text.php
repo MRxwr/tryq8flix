@@ -156,8 +156,13 @@
                     <h2 id="imageModelName">AI Image Model</h2>
                     <small>Powered by Q8FLiX</small>
                 </div>
-                <div class="clear-chat-button" id="clearImageHistoryButton">
-                    <i class="fas fa-trash-alt"></i>
+                <div class="image-header-actions">
+                    <div class="image-options-button" id="imageOptionsButton" title="Image Generation Options">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="clear-chat-button" id="clearImageHistoryButton" title="Clear Image History">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
                 </div>
             </div>
             <div class="image-preview-area" id="imagePreviewArea">
@@ -166,20 +171,9 @@
             <div class="image-generator-footer">
                 <form id="imageGenForm">
                     <input type="hidden" id="imageModel" name="model" value="">
-                    <div class="image-options-row">
-                        <div class="image-option">
-                            <label for="imageWidth">Width</label>
-                            <input type="number" id="imageWidth" name="width" class="form-control form-control-sm" value="512" min="256" max="1024">
-                        </div>
-                        <div class="image-option">
-                            <label for="imageHeight">Height</label>
-                            <input type="number" id="imageHeight" name="height" class="form-control form-control-sm" value="512" min="256" max="1024">
-                        </div>
-                        <div class="image-option">
-                            <label for="imageSteps">Steps</label>
-                            <input type="number" id="imageSteps" name="steps" class="form-control form-control-sm" value="30" min="10" max="100">
-                        </div>
-                    </div>
+                    <input type="hidden" id="imageWidth" name="width" value="512">
+                    <input type="hidden" id="imageHeight" name="height" value="512">
+                    <input type="hidden" id="imageSteps" name="steps" value="30">
                     <div class="input-group">
                         <textarea id="imagePrompt" name="prompt" class="form-control message-input" placeholder="Describe the image you want to create..." rows="1" required></textarea>
                         <button type="submit" class="btn send-button" id="sendImageBtn">
@@ -190,6 +184,56 @@
             </div>
         </div>
     </div>
+    
+    <!-- Image Options Modal -->
+    <div class="modal fade" id="imageOptionsModal" tabindex="-1" aria-labelledby="imageOptionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageOptionsModalLabel">Image Generation Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modalImageWidth" class="form-label">Width</label>
+                        <input type="range" class="form-range" id="modalImageWidth" min="256" max="1024" step="64" value="512">
+                        <div class="d-flex justify-content-between">
+                            <small>256px</small>
+                            <span id="modalImageWidthValue">512px</span>
+                            <small>1024px</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalImageHeight" class="form-label">Height</label>
+                        <input type="range" class="form-range" id="modalImageHeight" min="256" max="1024" step="64" value="512">
+                        <div class="d-flex justify-content-between">
+                            <small>256px</small>
+                            <span id="modalImageHeightValue">512px</span>
+                            <small>1024px</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalImageSteps" class="form-label">Steps</label>
+                        <input type="range" class="form-range" id="modalImageSteps" min="10" max="100" step="5" value="30">
+                        <div class="d-flex justify-content-between">
+                            <small>10</small>
+                            <span id="modalImageStepsValue">30</span>
+                            <small>100</small>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="saveImageSettings" checked>
+                        <label class="form-check-label" for="saveImageSettings">Save settings for future sessions</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveImageOptions">Apply Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <?php include 'js/textChatScript.php'; ?>
     <?php include 'js/imageGenScript.php'; ?>

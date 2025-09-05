@@ -122,14 +122,21 @@
     padding: 0;
 }
 
+.image-header-actions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.image-generator-header .image-options-button,
 .image-generator-header .clear-chat-button {
     color: white;
     cursor: pointer;
     opacity: 0.8;
-    margin-left: auto;
-    padding-left: 10px;
+    padding: 0 10px;
 }
 
+.image-generator-header .image-options-button:hover,
 .image-generator-header .clear-chat-button:hover {
     opacity: 1;
 }
@@ -248,5 +255,59 @@
     .image-options-row {
         flex-direction: column;
     }
+}
+
+/* Image Options Modal Styles */
+#imageOptionsModal .modal-content {
+    border-radius: 15px;
+}
+
+#imageOptionsModal .modal-header {
+    background-color: var(--chat-primary);
+    color: white;
+    border-bottom: none;
+    border-radius: 15px 15px 0 0;
+}
+
+#imageOptionsModal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+#imageOptionsModal .modal-footer {
+    border-top: none;
+}
+
+#imageOptionsModal .form-range::-webkit-slider-thumb {
+    background: var(--chat-primary);
+}
+
+#imageOptionsModal .form-range::-moz-range-thumb {
+    background: var(--chat-primary);
+}
+
+#imageOptionsModal .form-range::-ms-thumb {
+    background: var(--chat-primary);
+}
+
+#modalImageWidthValue,
+#modalImageHeightValue,
+#modalImageStepsValue {
+    color: var(--chat-primary);
+    font-weight: bold;
+}
+
+#imageOptionsModal .form-check-input:checked {
+    background-color: var(--chat-primary);
+    border-color: var(--chat-primary);
+}
+
+#saveImageOptions {
+    background-color: var(--chat-primary);
+    border-color: var(--chat-primary);
+}
+
+#saveImageOptions:hover {
+    background-color: var(--chat-secondary);
+    border-color: var(--chat-secondary);
 }
 </style>
