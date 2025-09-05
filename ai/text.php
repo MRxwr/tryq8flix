@@ -172,6 +172,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
 
     // Get the current model's chat history
     $modelHistory = $_SESSION['chat_history'][$model] ?? [];
+
+    // Trim history before adding new messages to stay within limits
+    $maxHistoryCharsForApi = 4500; // A bit less than 5000 to be safe
+    $currentChars = calculateHistorySize($modelHistory);
+
+    if ($currentChars > $maxHistoryCharsForApi) {
+        $systemMessages = [];
+        $userAssistantMessages = [];
+        
+        foreach ($modelHistory as $msg) {
+            if ($msg['role'] === 'system') {
+                $systemMessages[] = $msg;
+            } else {
+                $userAssistantMessages[] = $msg;
+            }
+        }
+        
+        $trimmedMessages = $userAssistantMessages;
+        while (calculateHistorySize(array_merge($systemMessages, $trimmedMessages)) > $maxHistoryCharsForApi && count($trimmedMessages) > 2) {
+            array_shift($trimmedMessages);
+        }
+        
+        $modelHistory = array_merge($systemMessages, $trimmedMessages);
+        error_log("Trimmed chat history for API for $model from $currentChars to " . calculateHistorySize($modelHistory) . " characters");
+    }
     
     // Add system message for context if this is a new conversation
     if (empty($modelHistory)) {
