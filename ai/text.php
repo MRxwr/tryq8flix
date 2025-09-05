@@ -598,10 +598,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         }
         .model-info {
             flex-grow: 1;
+            overflow: hidden; /* Add this to make text-overflow work in flex child */
         }
         .model-name {
             font-weight: bold;
             margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .model-description {
             font-size: 0.8rem;
