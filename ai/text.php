@@ -1,8 +1,16 @@
 <?php
+// Start session for chat history
+session_start();
+
 // Pollinations.AI Text Generation Script
 // Using the OpenAI-compatible POST endpoint with authentication
 
 $token = '8x5QP4YGfNKsu8j-'; // Your provided token
+
+// Initialize chat history session variable if not exists
+if (!isset($_SESSION['chat_history'])) {
+    $_SESSION['chat_history'] = [];
+}
 
 // Fetch available models
 $modelsUrl = 'https://text.pollinations.ai/models';
@@ -18,6 +26,43 @@ $models = json_decode($modelsResponse, true);
 if (!is_array($models)) {
     // Fallback to hardcoded models if fetch fails
     $models = ['openai', 'mistral', 'openai-large', 'claude-hybridspace'];
+}
+
+// Endpoint to get chat history
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_history' && isset($_GET['model'])) {
+    $model = $_GET['model'];
+    $chatHistory = $_SESSION['chat_history'][$model] ?? [];
+    
+    // Remove system messages for display
+    $displayHistory = array_filter($chatHistory, function($msg) {
+        return $msg['role'] !== 'system';
+    });
+    
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'success', 'history' => $displayHistory]);
+    exit;
+}
+
+// Endpoint to clear chat history
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'clear_history' && isset($_POST['model'])) {
+    $model = $_POST['model'];
+    
+    if (isset($_SESSION['chat_history'][$model])) {
+        // Keep only the system message if it exists
+        $systemMessage = null;
+        foreach ($_SESSION['chat_history'][$model] as $msg) {
+            if ($msg['role'] === 'system') {
+                $systemMessage = $msg;
+                break;
+            }
+        }
+        
+        $_SESSION['chat_history'][$model] = $systemMessage ? [$systemMessage] : [];
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'success', 'message' => 'History cleared']);
+    exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
@@ -40,15 +85,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     // Get selected model, default to openai
     $model = isset($_POST['model']) ? $_POST['model'] : 'openai';
 
-    // Prepare the request data
+    // Get the current model's chat history
+    $modelHistory = $_SESSION['chat_history'][$model] ?? [];
+    
+    // Add system message for context if this is a new conversation
+    if (empty($modelHistory)) {
+        $modelHistory[] = [
+            'role' => 'system',
+            'content' => 'You are a helpful assistant. Please provide informative and thoughtful responses.'
+        ];
+    }
+    
+    // Add the new user message to history
+    $modelHistory[] = [
+        'role' => 'user',
+        'content' => $prompt
+    ];
+    
+    // Prepare the request data with conversation history
     $data = [
         'model' => $model,
-        'messages' => [
-            [
-                'role' => 'user',
-                'content' => $prompt
-            ]
-        ],
+        'messages' => $modelHistory,
         'temperature' => 1,
         'max_tokens' => 300,
     ];
@@ -81,8 +138,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             // Log the extracted content
             error_log("Generated Text: " . $generatedText);
             
+            // Add the AI response to the chat history
+            $modelHistory[] = [
+                'role' => 'assistant',
+                'content' => $generatedText
+            ];
+            
+            // Save updated history back to session
+            $_SESSION['chat_history'][$model] = $modelHistory;
+            
+            // Get full chat history for this model to send to the client
+            $chatHistory = $_SESSION['chat_history'][$model] ?? [];
+            
             if ($isAjax) {
-                echo json_encode(['status' => 'success', 'text' => $generatedText, 'model' => $model, 'raw_response' => $result]);
+                echo json_encode([
+                    'status' => 'success', 
+                    'text' => $generatedText, 
+                    'model' => $model, 
+                    'raw_response' => $result,
+                    'history' => $chatHistory
+                ]);
             } else {
                 echo "<div class='alert alert-success mt-4'><h2>Generated Text:</h2><p>" . htmlspecialchars($generatedText) . "</p></div>";
             }
@@ -494,6 +569,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     <h2 id="modelName">AI Model</h2>
                     <small>Powered by Pollinations.AI API</small>
                 </div>
+                <div class="clear-chat-button" id="clearChatButton" style="color: white; cursor: pointer; opacity: 0.8;" title="Clear chat history">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
             </div>
             <div class="chat-messages" id="chat">
                 <div class="typing-indicator" id="typingIndicator">
@@ -563,6 +641,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     modelsList.style.display = 'none';
                     chatContainer.style.display = 'flex';
                     
+                    // Clear the chat UI
+                    clearChatMessages();
+                    
+                    // Load chat history for this model
+                    loadChatHistory(modelName);
+                    
                     // Focus on input
                     setTimeout(() => {
                         promptInput.focus();
@@ -575,6 +659,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 chatContainer.style.display = 'none';
                 modelsList.style.display = 'flex';
             });
+            
+            // Handle clear chat button
+            const clearChatButton = document.getElementById('clearChatButton');
+            clearChatButton.addEventListener('click', function() {
+                const model = modelInput.value;
+                if (!model) return;
+                
+                if (confirm('Are you sure you want to clear the chat history?')) {
+                    // Send request to clear history
+                    const formData = new FormData();
+                    formData.append('action', 'clear_history');
+                    formData.append('model', model);
+                    
+                    fetch('', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Clear chat UI
+                            clearChatMessages();
+                            console.log('Chat history cleared');
+                        }
+                    })
+                    .catch(error => console.error('Error clearing history:', error));
+                }
+            });
+            
+            // Function to clear all messages from the chat UI
+            function clearChatMessages() {
+                // Remove all child elements except the typing indicator
+                const children = Array.from(chatMessages.children);
+                children.forEach(child => {
+                    if (child !== typingIndicator) {
+                        chatMessages.removeChild(child);
+                    }
+                });
+            }
+            
+            // Function to load chat history for a model
+            function loadChatHistory(model) {
+                // Show loading indicator
+                typingIndicator.style.display = 'block';
+                
+                fetch(`?action=get_history&model=${encodeURIComponent(model)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success' && data.history) {
+                            // Display each message in the UI
+                            data.history.forEach(msg => {
+                                if (msg.role === 'user') {
+                                    addMessage('user', msg.content);
+                                } else if (msg.role === 'assistant') {
+                                    addMessage('ai', formatResponse(msg.content), model);
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error loading chat history:', error))
+                    .finally(() => {
+                        // Hide loading indicator
+                        typingIndicator.style.display = 'none';
+                        // Scroll to bottom
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+            }
 
             // Filter models on search
             modelSearch.addEventListener('input', function() {
