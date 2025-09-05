@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             --chat-primary: #128C7E;
             --chat-secondary: #25D366;
             --chat-light: #DCF8C6;
-            --chat-bg: #E5DDD5;
+            --chat-bg: #F5F5F5;  /* Lighter background color */
             --app-height: 100%;
             --chat-header: #075E54;
             --chat-sent: #DCF8C6;
@@ -127,9 +127,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         .chat-container {
             max-width: 800px;
             margin: 0 auto;
-            background: var(--chat-bg);
+            background: white;
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
         .chat-header {
@@ -168,6 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             background-color: var(--chat-bg);
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAO0lEQVQ4y2P8//8/A7UBEwMNwKhBWg0aNYgIg9iIU4tIs8Zok8aAGsQzDcTH5DQ2iI0AYz7QFhJh0AAACBAreUQggYUAAAAASUVORK5CYII=');
             background-repeat: repeat;
+            background-color: rgba(248, 248, 248, 0.95);  /* Lighter color with higher opacity */
         }
         .user-message {
             background-color: var(--chat-sent);
@@ -178,6 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             margin-left: auto;
             margin-bottom: 12px;
             position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
         }
         .user-message::after {
             content: '';
