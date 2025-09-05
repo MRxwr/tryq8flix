@@ -60,11 +60,6 @@
     background-color: #F5F5F5;
 }
 
-.image-model-item .model-description {
-    color: #606060;
-    font-size: 0.8rem;
-}
-
 .image-model-avatar {
     width: 50px;
     height: 50px;
@@ -215,14 +210,6 @@
     color: #606060;
     font-size: 0.8rem;
     margin-bottom: 3px;
-}
-
-/* Empty state message for no images */
-.empty-history-message {
-    text-align: center;
-    color: #888;
-    margin-top: 30px;
-    font-style: italic;
 }
 
 /* Image input field */
