@@ -25,10 +25,10 @@
             <!-- Tab Navigation -->
             <div class="tab-navigation">
                 <div class="tab-button active" id="chatTabButton">
-                    <i class="fas fa-comments"></i> Chat
+                    <i class="fas fa-comments"></i><span>Chat</span>
                 </div>
                 <div class="tab-button" id="imageTabButton">
-                    <i class="fas fa-image"></i> Images
+                    <i class="fas fa-image"></i><span>Images</span>
                 </div>
             </div>
             <div class="models-list" id="modelsListItems">
@@ -80,10 +80,10 @@
             <!-- Tab Navigation (duplicate for image view) -->
             <div class="tab-navigation">
                 <div class="tab-button" id="chatTabButtonImg">
-                    <i class="fas fa-comments"></i> Chat
+                    <i class="fas fa-comments"></i><span>Chat</span>
                 </div>
                 <div class="tab-button active" id="imageTabButtonImg">
-                    <i class="fas fa-image"></i> Images
+                    <i class="fas fa-image"></i><span>Images</span>
                 </div>
             </div>
             <div class="models-list" id="imageModelsListItems">

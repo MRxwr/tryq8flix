@@ -206,6 +206,8 @@
         width: 100%;
         display: flex;
         flex-direction: column;
+        border-radius: 15px;
+        overflow: hidden;
     }
     .models-header {
         background: var(--chat-header);
@@ -227,6 +229,14 @@
         border: 1px solid #DDD;
         background-color: #F0F0F0;
     }
+    /* Tab Navigation in models view */
+    .models-list-container .tab-navigation,
+    .image-models-list-container .tab-navigation {
+        width: 100%;
+        min-height: 46px; /* Ensure minimum height for tab buttons */
+        z-index: 10;
+    }
+    
     .models-list {
         overflow-y: auto;
         flex-grow: 1;

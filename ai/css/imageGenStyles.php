@@ -8,6 +8,8 @@
     background: var(--chat-primary);
     overflow: hidden;
     margin-bottom: 1px;
+    width: 100%;
+    min-height: 46px; /* Ensure minimum height */
 }
 
 .tab-button {
@@ -20,6 +22,9 @@
     cursor: pointer;
     border-bottom: 3px solid transparent;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tab-button.active {
