@@ -183,22 +183,39 @@ class PollinationsAI {
 }
 
 // Handle API requests
-if (isset($_REQUEST['action']) && ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET')) {
+$rawInputCheck = file_get_contents('php://input');
+$contentTypeCheck = $_SERVER['CONTENT_TYPE'] ?? '';
+$actionFromBody = null;
+if (stripos($contentTypeCheck, 'application/json') !== false) {
+    $decodedCheck = json_decode($rawInputCheck, true);
+    if (is_array($decodedCheck) && isset($decodedCheck['action'])) {
+        $actionFromBody = $decodedCheck['action'];
+    }
+} else {
+    parse_str($rawInputCheck, $parsedCheck);
+    if (isset($parsedCheck['action'])) {
+        $actionFromBody = $parsedCheck['action'];
+    }
+}
+
+if (($actionFromBody !== null) || isset($_REQUEST['action'])) {
     header('Content-Type: application/json');
     
     try {
         $ai = new PollinationsAI();
-        $action = $_REQUEST['action'] ?? 'generate';
+        // Prefer action from JSON/body when present
+        $action = $actionFromBody ?? ($_REQUEST['action'] ?? 'generate');
         
         // Unified input handling
         $input = [];
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $rawInput = file_get_contents('php://input');
-            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            // reuse raw input we already read above
+            $rawInput = $rawInputCheck;
+            $contentType = $contentTypeCheck;
 
-            if (strpos($contentType, 'application/json') !== false) {
-                $input = json_decode($rawInput, true);
-            } elseif (strpos($contentType, 'application/x-www-form-urlencoded') !== false) {
+            if (stripos($contentType, 'application/json') !== false) {
+                $input = json_decode($rawInput, true) ?: [];
+            } elseif (stripos($contentType, 'application/x-www-form-urlencoded') !== false) {
                 parse_str($rawInput, $input);
             } else {
                 // Fallback for other content types or empty content type
