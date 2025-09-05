@@ -187,63 +187,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         'content' => $prompt
     ];
     
-    // Trim history for API request to max 5000 characters
-    $maxApiChars = 5000;
-    $totalChars = calculateHistorySize($modelHistory);
-    if ($totalChars > $maxApiChars) {
-        // Separate system messages and the latest user message
-        $systemMessages = [];
-        $latestUser = null;
-        $previousMessages = [];
-        
-        foreach ($modelHistory as $msg) {
-            if ($msg['role'] === 'system') {
-                $systemMessages[] = $msg;
-            } elseif ($msg['role'] === 'user') {
-                $latestUser = $msg; // Keep overwriting with the latest user message
-            } else {
-                $previousMessages[] = $msg;
-            }
-        }
-        
-        // Start building trimmed history in chronological order
-        $trimmedHistory = $systemMessages;
-        
-        // Add previous messages (user/assistant pairs) from oldest to newest
-        // but only as many as fit within the character limit
-        $remainingChars = $maxApiChars - calculateHistorySize($trimmedHistory);
-        
-        foreach ($previousMessages as $msg) {
-            $msgLength = strlen($msg['content']);
-            if ($remainingChars >= $msgLength) {
-                $trimmedHistory[] = $msg;
-                $remainingChars -= $msgLength;
-            } else {
-                break;
-            }
-        }
-        
-        // Always add the latest user message at the end if it fits
-        if ($latestUser) {
-            $userLength = strlen($latestUser['content']);
-            if ($remainingChars >= $userLength) {
-                $trimmedHistory[] = $latestUser;
-            } else {
-                // If user message doesn't fit, we need to make room by removing older messages
-                while (count($trimmedHistory) > count($systemMessages) && 
-                       calculateHistorySize($trimmedHistory) + $userLength > $maxApiChars) {
-                    array_splice($trimmedHistory, count($systemMessages), 1); // Remove oldest non-system message
-                }
-                if (calculateHistorySize($trimmedHistory) + $userLength <= $maxApiChars) {
-                    $trimmedHistory[] = $latestUser;
-                }
-            }
-        }
-        
-        $modelHistory = $trimmedHistory;
-        error_log("Trimmed API history to " . calculateHistorySize($modelHistory) . " characters, last message role: " . end($modelHistory)['role']);
-    }
-    
     // Prepare the request data with conversation history
     $data = [
         'model' => $model,
@@ -317,180 +260,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 error_log("Trimmed chat history for $model from $totalChars to " . calculateHistorySize($modelHistory) . " characters");
             }
             
-            // Trim history to stay within API limits (5000 characters max)
-            $apiMaxChars = 5000;
-            $totalChars = calculateHistorySize($modelHistory);
+            // Save updated history back to session
+            $_SESSION['chat_history'][$model] = $modelHistory;
             
-            if ($totalChars > $apiMaxChars) {
-                // We need to trim the history, preserving system messages and most recent messages
-                $systemMessages = [];
-                $userAssistantMessages = [];
-                
-                // Separate system messages from user/assistant messages
-                foreach ($modelHistory as $msg) {
-                    if ($msg['role'] === 'system') {
-                        $systemMessages[] = $msg;
-                    } else {
-                        $userAssistantMessages[] = $msg;
-                    }
-                }
-                
-                // Keep removing oldest messages until we're under the API limit
-                $trimmedMessages = $userAssistantMessages;
-                while (calculateHistorySize(array_merge($systemMessages, $trimmedMessages)) > $apiMaxChars && count($trimmedMessages) > 2) {
-                    // Remove the oldest non-system message (at the beginning)
-                    array_shift($trimmedMessages);
-                }
-                
-                // Rebuild the history with system messages and trimmed user/assistant messages
-                $modelHistory = array_merge($systemMessages, $trimmedMessages);
-                
-                error_log("Trimmed API request history for $model from $totalChars to " . calculateHistorySize($modelHistory) . " characters");
-            }
+            // Force session write to disk
+            session_write_close();
             
-            // Prepare the request data with conversation history
-            $data = [
-                'model' => $model,
-                'messages' => $modelHistory, // This will now use the trimmed history
-                'temperature' => 1,
-                'max_tokens' => 300,
-            ];
-
-            // Initialize cURL
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $token
-            ]);
-
-            // Execute the request
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            // Log the raw API response for debugging
-            error_log("Pollinations API Response: " . $response);
-
-            if ($httpCode === 200) {
-                $result = json_decode($response, true);
-                // Log the decoded response
-                error_log("Decoded Response: " . print_r($result, true));
-                
-                if (isset($result['choices'][0]['message']['content'])) {
-                    $generatedText = $result['choices'][0]['message']['content'];
-                    // Log the extracted content
-                    error_log("Generated Text: " . $generatedText);
-                    
-                    // Add the AI response to the chat history
-                    $modelHistory[] = [
-                        'role' => 'assistant',
-                        'content' => $generatedText
-                    ];
-                    
-                    // Check if we need to trim history (keeping max 10000 characters)
-                    $maxHistoryChars = 10000; // Twice the display limit to allow for some buffer
-                    $totalChars = calculateHistorySize($modelHistory);
-                    
-                    if ($totalChars > $maxHistoryChars) {
-                        // We need to trim the history, preserving system messages and most recent messages
-                        $systemMessages = [];
-                        $userAssistantMessages = [];
-                        
-                        // Separate system messages from user/assistant messages
-                        foreach ($modelHistory as $msg) {
-                            if ($msg['role'] === 'system') {
-                                $systemMessages[] = $msg;
-                            } else {
-                                $userAssistantMessages[] = $msg;
-                            }
-                        }
-                        
-                        // Keep removing oldest messages until we're under the limit
-                        $trimmedMessages = $userAssistantMessages;
-                        while (calculateHistorySize(array_merge($systemMessages, $trimmedMessages)) > $maxHistoryChars && count($trimmedMessages) > 2) {
-                            // Remove the oldest non-system message (at the beginning)
-                            array_shift($trimmedMessages);
-                        }
-                        
-                        // Rebuild the history with system messages and trimmed user/assistant messages
-                        $modelHistory = array_merge($systemMessages, $trimmedMessages);
-                        
-                        error_log("Trimmed chat history for $model from $totalChars to " . calculateHistorySize($modelHistory) . " characters");
-                    }
-                    
-                    // Trim history to stay within API limits (5000 characters max)
-                    $apiMaxChars = 5000;
-                    $totalChars = calculateHistorySize($modelHistory);
-                    
-                    if ($totalChars > $apiMaxChars) {
-                        // We need to trim the history, preserving system messages and most recent messages
-                        $systemMessages = [];
-                        $userAssistantMessages = [];
-                        
-                        // Separate system messages from user/assistant messages
-                        foreach ($modelHistory as $msg) {
-                            if ($msg['role'] === 'system') {
-                                $systemMessages[] = $msg;
-                            } else {
-                                $userAssistantMessages[] = $msg;
-                            }
-                        }
-                        
-                        // Keep removing oldest messages until we're under the API limit
-                        $trimmedMessages = $userAssistantMessages;
-                        while (calculateHistorySize(array_merge($systemMessages, $trimmedMessages)) > $apiMaxChars && count($trimmedMessages) > 2) {
-                            // Remove the oldest non-system message (at the beginning)
-                            array_shift($trimmedMessages);
-                        }
-                        
-                        // Rebuild the history with system messages and trimmed user/assistant messages
-                        $modelHistory = array_merge($systemMessages, $trimmedMessages);
-                        
-                        error_log("Trimmed API request history for $model from $totalChars to " . calculateHistorySize($modelHistory) . " characters");
-                    }
-                    
-                    // Save updated history back to session
-                    $_SESSION['chat_history'][$model] = $modelHistory;
-                    
-                    // Force session write to disk
-                    session_write_close();
-                    
-                    // Restart the session to ensure changes are available for future requests
-                    session_start();
-                    
-                    // Get full chat history for this model to send to the client
-                    $chatHistory = isset($_SESSION['chat_history'][$model]) ? $_SESSION['chat_history'][$model] : [];
-                    
-                    // Log for debugging
-                    error_log("Updated session data for model $model: " . print_r($_SESSION['chat_history'][$model], true));
-                    
-                    if ($isAjax) {
-                        echo json_encode([
-                            'status' => 'success', 
-                            'text' => $generatedText, 
-                            'model' => $model, 
-                            'raw_response' => $result,
-                            'history' => $chatHistory
-                        ]);
-                    } else {
-                        echo "<div class='alert alert-success mt-4'><h2>Generated Text:</h2><p>" . htmlspecialchars($generatedText) . "</p></div>";
-                    }
-                } else {
-                    if ($isAjax) {
-                        echo json_encode(['status' => 'error', 'message' => 'Unexpected response format.']);
-                    } else {
-                        echo "<div class='alert alert-warning mt-4'>Error: Unexpected response format.</div>";
-                    }
-                }
+            // Restart the session to ensure changes are available for future requests
+            session_start();
+            
+            // Get full chat history for this model to send to the client
+            $chatHistory = isset($_SESSION['chat_history'][$model]) ? $_SESSION['chat_history'][$model] : [];
+            
+            // Log for debugging
+            error_log("Updated session data for model $model: " . print_r($_SESSION['chat_history'][$model], true));
+            
+            if ($isAjax) {
+                echo json_encode([
+                    'status' => 'success', 
+                    'text' => $generatedText, 
+                    'model' => $model, 
+                    'raw_response' => $result,
+                    'history' => $chatHistory
+                ]);
             } else {
-                if ($isAjax) {
-                    echo json_encode(['status' => 'error', 'message' => "HTTP $httpCode - " . $response]);
-                } else {
-                    echo "<div class='alert alert-danger mt-4'>Error: HTTP $httpCode - " . htmlspecialchars($response) . "</div>";
-                }
+                echo "<div class='alert alert-success mt-4'><h2>Generated Text:</h2><p>" . htmlspecialchars($generatedText) . "</p></div>";
             }
         } else {
             if ($isAjax) {
