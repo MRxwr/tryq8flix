@@ -187,7 +187,10 @@
                                 if (msg.role === 'user') {
                                     addMessage('user', msg.content);
                                 } else if (msg.role === 'assistant') {
-                                    addMessage('ai', msg.content, model, modelType);
+                                    // Determine if the content is an image path
+                                    const isImage = typeof msg.content === 'string' && msg.content.includes('generated_images');
+                                    const effectiveModelType = isImage ? 'image' : 'text';
+                                    addMessage('ai', msg.content, model, effectiveModelType);
                                 }
                             });
                         } else {
