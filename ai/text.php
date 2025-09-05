@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 'content' => $prompt
             ]
         ],
-        'temperature' => 0.7,
+        'temperature' => 1,
         'max_tokens' => 300
     ];
 
