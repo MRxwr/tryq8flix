@@ -1,4 +1,17 @@
 <?php
+// Ensure proper session configuration
+ini_set('session.cookie_lifetime', 86400); // 24 hours
+ini_set('session.gc_maxlifetime', 86400); // 24 hours
+ini_set('session.use_cookies', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_httponly', 1);
+
+// Set a cookie to help with session persistence
+$cookieName = 'POLLINATIONS_CHAT_SESSION';
+if (!isset($_COOKIE[$cookieName])) {
+    setcookie($cookieName, '1', time() + 86400, '/', '', false, false);
+}
+
 // Start session for chat history
 session_start();
 
@@ -10,6 +23,23 @@ $token = '8x5QP4YGfNKsu8j-'; // Your provided token
 // Initialize chat history session variable if not exists
 if (!isset($_SESSION['chat_history'])) {
     $_SESSION['chat_history'] = [];
+}
+
+// Log session ID for debugging
+error_log("Session ID: " . session_id());
+
+// Debug endpoint to check session status
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['debug_session'])) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'session_id' => session_id(),
+        'session_name' => session_name(),
+        'session_status' => session_status(),
+        'has_session_data' => isset($_SESSION['chat_history']),
+        'models_with_history' => isset($_SESSION['chat_history']) ? array_keys($_SESSION['chat_history']) : [],
+        'cookie' => isset($_COOKIE['POLLINATIONS_CHAT_SESSION']),
+    ]);
+    exit;
 }
 
 // Fetch available models
@@ -31,12 +61,21 @@ if (!is_array($models)) {
 // Endpoint to get chat history
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get_history' && isset($_GET['model'])) {
     $model = $_GET['model'];
-    $chatHistory = $_SESSION['chat_history'][$model] ?? [];
+    
+    // Ensure session is active and log for debugging
+    error_log("Getting history for model: " . $model . ", Session ID: " . session_id());
+    error_log("Session data: " . print_r($_SESSION, true));
+    
+    // Get chat history or empty array if not set
+    $chatHistory = isset($_SESSION['chat_history'][$model]) ? $_SESSION['chat_history'][$model] : [];
     
     // Remove system messages for display
     $displayHistory = array_filter($chatHistory, function($msg) {
         return $msg['role'] !== 'system';
     });
+    
+    // Force session write
+    session_write_close();
     
     header('Content-Type: application/json');
     echo json_encode(['status' => 'success', 'history' => $displayHistory]);
@@ -46,6 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 // Endpoint to clear chat history
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'clear_history' && isset($_POST['model'])) {
     $model = $_POST['model'];
+    
+    // Log for debugging
+    error_log("Clearing history for model: " . $model . ", Session ID: " . session_id());
     
     if (isset($_SESSION['chat_history'][$model])) {
         // Keep only the system message if it exists
@@ -58,6 +100,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         $_SESSION['chat_history'][$model] = $systemMessage ? [$systemMessage] : [];
+        
+        // Explicitly save the session
+        session_write_close();
+        session_start();
     }
     
     header('Content-Type: application/json');
@@ -147,8 +193,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             // Save updated history back to session
             $_SESSION['chat_history'][$model] = $modelHistory;
             
+            // Force session write to disk
+            session_write_close();
+            
+            // Restart the session to ensure changes are available for future requests
+            session_start();
+            
             // Get full chat history for this model to send to the client
-            $chatHistory = $_SESSION['chat_history'][$model] ?? [];
+            $chatHistory = isset($_SESSION['chat_history'][$model]) ? $_SESSION['chat_history'][$model] : [];
+            
+            // Log for debugging
+            error_log("Updated session data for model $model: " . print_r($_SESSION['chat_history'][$model], true));
             
             if ($isAjax) {
                 echo json_encode([
@@ -626,16 +681,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             chatContainer.style.display = 'none';
 
             // Handle model selection
+            // Store the currently selected model
+            let currentModel = '';
+            
+            // Function to check session status (for debugging)
+            function checkSessionStatus() {
+                fetch('?debug_session=1')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Session status:", data);
+                    })
+                    .catch(error => console.error("Error checking session:", error));
+            }
+            
+            // Check session on page load
+            checkSessionStatus();
+            
             modelItems.forEach(item => {
                 item.addEventListener('click', function() {
                     const modelName = this.getAttribute('data-model');
                     const modelDesc = this.getAttribute('data-desc');
                     const firstLetter = modelDesc.charAt(0).toUpperCase();
                     
+                    console.log(`Switching to model: ${modelName}`);
+                    
                     // Update chat view with selected model
                     modelNameElement.textContent = modelDesc;
                     modelAvatarElement.textContent = firstLetter;
                     modelInput.value = modelName;
+                    currentModel = modelName;
                     
                     // Switch views
                     modelsList.style.display = 'none';
@@ -656,8 +730,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
 
             // Handle back button
             backButton.addEventListener('click', function() {
+                // Remember the current model and its chat before switching views
+                const lastModel = currentModel;
+                
+                console.log(`Back button clicked, remembering model: ${lastModel}`);
+                
+                // Switch views
                 chatContainer.style.display = 'none';
                 modelsList.style.display = 'flex';
+                
+                // Check session to ensure data is preserved
+                checkSessionStatus();
             });
             
             // Handle clear chat button
@@ -672,9 +755,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     formData.append('action', 'clear_history');
                     formData.append('model', model);
                     
-                    fetch('', {
+                    fetch(window.location.href, {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        credentials: 'same-origin' // Include cookies
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -701,24 +785,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             
             // Function to load chat history for a model
             function loadChatHistory(model) {
+                console.log(`Loading chat history for model: ${model}`);
+                
                 // Show loading indicator
                 typingIndicator.style.display = 'block';
                 
-                fetch(`?action=get_history&model=${encodeURIComponent(model)}`)
-                    .then(response => response.json())
+                // Add cache-busting parameter to prevent browser caching
+                const timestamp = new Date().getTime();
+                fetch(`?action=get_history&model=${encodeURIComponent(model)}&_=${timestamp}`, {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    },
+                    credentials: 'same-origin' // Include cookies
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        if (data.status === 'success' && data.history) {
-                            // Display each message in the UI
-                            data.history.forEach(msg => {
-                                if (msg.role === 'user') {
-                                    addMessage('user', msg.content);
-                                } else if (msg.role === 'assistant') {
-                                    addMessage('ai', formatResponse(msg.content), model);
-                                }
-                            });
+                        console.log("History data received:", data);
+                        
+                        if (data.status === 'success') {
+                            if (data.history && data.history.length > 0) {
+                                // Display each message in the UI
+                                data.history.forEach(msg => {
+                                    if (msg.role === 'user') {
+                                        addMessage('user', msg.content);
+                                    } else if (msg.role === 'assistant') {
+                                        addMessage('ai', formatResponse(msg.content), model);
+                                    }
+                                });
+                            } else {
+                                console.log("No history found for model:", model);
+                            }
+                        } else {
+                            console.error("Error in history response:", data);
                         }
                     })
-                    .catch(error => console.error('Error loading chat history:', error))
+                    .catch(error => {
+                        console.error('Error loading chat history:', error);
+                    })
                     .finally(() => {
                         // Hide loading indicator
                         typingIndicator.style.display = 'none';
@@ -765,6 +876,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 
                 const model = formData.get('model');
                 
+                // Log for debugging
+                console.log(`Sending message for model: ${model}`);
+                
+                // Check session status before sending
+                checkSessionStatus();
+                
                 // Disable inputs and show sending state
                 sendBtn.disabled = true;
                 promptInput.disabled = true;
@@ -780,12 +897,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 typingIndicator.style.display = 'block';
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                fetch('', {
+                fetch(window.location.href, {
                     method: 'POST',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    },
+                    credentials: 'same-origin' // Include cookies
                 })
                 .then(response => response.json())
                 .then(data => {
