@@ -365,6 +365,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Use full container height */
         }
         .chat-header {
             background: var(--chat-header);
@@ -396,7 +399,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             padding: 0;
         }
         .chat-messages {
-            height: 400px;
+            flex-grow: 1; /* Allow this to grow */
             overflow-y: auto;
             padding: 16px;
             background-color: var(--chat-bg);
@@ -612,10 +615,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
-        @media (max-width: 768px) {
-            .chat-messages {
-                height: 350px;
+        @media (min-width: 577px) {
+            .container {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 1rem;
             }
+            .chat-container {
+                height: 90vh;
+                max-height: 800px;
+            }
+        }
+        @media (max-width: 768px) {
             .user-message, .ai-message {
                 max-width: 90%;
             }
