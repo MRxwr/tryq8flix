@@ -107,11 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --chat-primary: #4A55A2;
-            --chat-secondary: #7895CB;
-            --chat-light: #A0BFE0;
-            --chat-bg: #EEF5FF;
+            --chat-primary: #128C7E;
+            --chat-secondary: #25D366;
+            --chat-light: #DCF8C6;
+            --chat-bg: #E5DDD5;
             --app-height: 100%;
+            --chat-header: #075E54;
+            --chat-sent: #DCF8C6;
+            --chat-received: #FFFFFF;
         }
         html, body {
             height: var(--app-height);
@@ -124,99 +127,151 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         .chat-container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: var(--chat-bg);
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         .chat-header {
-            background: var(--chat-primary);
+            background: var(--chat-header);
             color: white;
-            padding: 15px 20px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
+        }
+        .chat-header .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--chat-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+        }
+        .chat-header .chat-info {
+            flex-grow: 1;
+        }
+        .chat-header h2 {
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
         }
         .chat-messages {
             height: 400px;
             overflow-y: auto;
-            padding: 20px;
-            background-color: #f8f9fa;
+            padding: 16px;
+            background-color: var(--chat-bg);
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAO0lEQVQ4y2P8//8/A7UBEwMNwKhBWg0aNYgIg9iIU4tIs8Zok8aAGsQzDcTH5DQ2iI0AYz7QFhJh0AAACBAreUQggYUAAAAASUVORK5CYII=');
+            background-repeat: repeat;
         }
         .user-message {
-            background-color: var(--chat-primary);
-            color: white;
-            border-radius: 18px 18px 0 18px;
-            padding: 12px 15px;
+            background-color: var(--chat-sent);
+            color: #303030;
+            border-radius: 8px 8px 0 8px;
+            padding: 8px 12px;
             max-width: 80%;
             margin-left: auto;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .user-message::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 8px;
+            height: 13px;
+            background-color: var(--chat-sent);
+            border-bottom-left-radius: 10px;
         }
         .ai-message {
-            background-color: white;
-            border: 1px solid #e9ecef;
-            border-radius: 18px 18px 18px 0;
-            padding: 12px 15px;
+            background-color: var(--chat-received);
+            color: #303030;
+            border-radius: 8px 8px 8px 0;
+            padding: 8px 12px;
             max-width: 80%;
             margin-right: auto;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+            position: relative;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,.13);
+        }
+        .ai-message::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 8px;
+            height: 13px;
+            background-color: var(--chat-received);
+            border-bottom-right-radius: 10px;
         }
         .error-message {
-            background-color: #dc3545;
-            color: white;
-            border-radius: 18px;
-            padding: 12px 15px;
+            background-color: #FFCCCC;
+            color: #CC0000;
+            border-radius: 8px;
+            padding: 8px 12px;
             max-width: 90%;
-            margin: 0 auto 15px auto;
+            margin: 0 auto 12px auto;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .message-time {
-            font-size: 0.7rem;
-            margin-top: 5px;
+            font-size: 0.65rem;
+            margin-top: 4px;
             opacity: 0.7;
+            text-align: right;
         }
         .chat-footer {
-            padding: 15px;
-            border-top: 1px solid #e9ecef;
-            background-color: white;
-        }
-        .model-selector {
-            background-color: var(--chat-light);
-            border: none;
-            border-radius: 20px;
+            padding: 10px;
+            background-color: #F0F0F0;
+            border-top: 1px solid #E0E0E0;
         }
         .message-input {
             border-radius: 20px;
             resize: none;
             transition: all 0.3s ease;
+            border: 1px solid #DDD;
+            padding: 9px 12px;
         }
         .message-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(74, 85, 162, 0.25);
+            box-shadow: none;
             border-color: var(--chat-secondary);
         }
         .send-button {
             background-color: var(--chat-primary);
             border: none;
-            border-radius: 50px;
-            padding: 10px 20px;
-            transition: all 0.3s ease;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .send-button:hover {
             background-color: var(--chat-secondary);
-            transform: translateY(-2px);
         }
         .typing-indicator {
             display: none;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+        .typing-indicator-container {
+            background: white;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: inline-block;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,.13);
         }
         .typing-indicator span {
             height: 8px;
             width: 8px;
             border-radius: 50%;
-            background-color: var(--chat-secondary);
+            background-color: var(--chat-primary);
             display: inline-block;
             margin-right: 5px;
             animation: typing 1s infinite ease-in-out;
@@ -230,6 +285,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         .typing-indicator span:nth-child(3) {
             animation-delay: 0.3s;
             margin-right: 0;
+        }
+        
+        /* Model List (Contacts) Styling */
+        .models-list-container {
+            background: white;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .models-header {
+            background: var(--chat-header);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+        .models-search {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: white;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        .models-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid #DDD;
+            background-color: #F0F0F0;
+        }
+        .models-list {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .model-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #F0F0F0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .model-item:hover {
+            background-color: #F5F5F5;
+        }
+        .model-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--chat-primary);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .model-info {
+            flex-grow: 1;
+        }
+        .model-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .model-description {
+            font-size: 0.8rem;
+            color: #606060;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         @keyframes typing {
             0% { transform: translateY(0px); }
@@ -253,6 +379,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 overflow: hidden;
                 background-color: white;
                 position: fixed;
+                top: 0;
+                left: 0;
             }
             .container {
                 max-width: 100%;
@@ -260,19 +388,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 height: 100%;
                 padding: 0;
                 margin: 0;
+                position: absolute;
+                top: 0;
+                left: 0;
             }
             .chat-container {
                 border-radius: 0;
-                height: 100vh;
+                height: 100%;
                 width: 100%;
                 max-width: 100%;
                 margin: 0;
+                position: absolute;
+                top: 0;
+                left: 0;
                 display: flex;
                 flex-direction: column;
                 box-shadow: none;
             }
             .chat-header {
                 border-radius: 0;
+                position: relative;
+                z-index: 10;
             }
             .chat-messages {
                 flex-grow: 1;
@@ -280,20 +416,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             }
             .chat-footer {
                 padding-bottom: env(safe-area-inset-bottom, 15px);
+                position: relative;
+                z-index: 10;
+            }
+            .mt-3, .mt-md-5 {
+                margin-top: 0 !important;
             }
         }
     </style>
 </head>
 <body>
     <div class="container mt-3 mt-md-5 px-0">
-        <div class="chat-container">
+        <!-- Models List View (WhatsApp contacts style) -->
+        <div class="models-list-container" id="modelsList">
+            <div class="models-header">
+                <h2 class="m-0"><i class="fas fa-comments me-2"></i>Pollinations Chat</h2>
+            </div>
+            <div class="models-search">
+                <input type="text" id="modelSearch" placeholder="Search models..." class="form-control">
+            </div>
+            <div class="models-list" id="modelsListItems">
+                <?php 
+                if (is_array($models) && isset($models[0]) && is_array($models[0])) {
+                    // API returned objects
+                    foreach ($models as $modelObj): 
+                        $name = $modelObj['name'] ?? 'unknown';
+                        $desc = $modelObj['description'] ?? $name;
+                        $firstLetter = strtoupper(substr($name, 0, 1));
+                ?>
+                <div class="model-item" data-model="<?php echo htmlspecialchars($name); ?>" data-desc="<?php echo htmlspecialchars($desc); ?>">
+                    <div class="model-avatar"><?php echo htmlspecialchars($firstLetter); ?></div>
+                    <div class="model-info">
+                        <div class="model-name"><?php echo htmlspecialchars($desc); ?></div>
+                        <div class="model-description">Tap to chat with this AI model</div>
+                    </div>
+                </div>
+                <?php 
+                    endforeach;
+                } elseif (is_array($models)) {
+                    // Fallback or simple array of strings
+                    foreach ($models as $model): 
+                        $firstLetter = strtoupper(substr($model, 0, 1));
+                ?>
+                <div class="model-item" data-model="<?php echo htmlspecialchars($model); ?>" data-desc="<?php echo htmlspecialchars($model); ?>">
+                    <div class="model-avatar"><?php echo htmlspecialchars($firstLetter); ?></div>
+                    <div class="model-info">
+                        <div class="model-name"><?php echo htmlspecialchars($model); ?></div>
+                        <div class="model-description">Tap to chat with this AI model</div>
+                    </div>
+                </div>
+                <?php 
+                    endforeach;
+                }
+                ?>
+            </div>
+        </div>
+
+        <!-- Chat View -->
+        <div class="chat-container" id="chatContainer" style="display: none;">
             <div class="chat-header">
-                <h2 class="m-0"><i class="fas fa-robot me-2"></i>Pollinations.AI Chat</h2>
-                <small>Powered by Pollinations.AI API</small>
+                <div class="back-button me-2" id="backButton">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="avatar" id="modelAvatar">A</div>
+                <div class="chat-info">
+                    <h2 id="modelName">AI Model</h2>
+                    <small>Powered by Pollinations.AI API</small>
+                </div>
             </div>
             <div class="chat-messages" id="chat">
                 <div class="typing-indicator" id="typingIndicator">
-                    <div class="ai-message" style="padding: 10px 15px;">
+                    <div class="typing-indicator-container">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -302,36 +495,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             </div>
             <div class="chat-footer">
                 <form id="chatForm">
-                    <div class="mb-3">
-                        <select id="model" name="model" class="form-select model-selector">
-                            <?php 
-                            if (is_array($models) && isset($models[0]) && is_array($models[0])) {
-                                // API returned objects
-                                foreach ($models as $modelObj): 
-                                    $name = $modelObj['name'] ?? 'unknown';
-                                    $desc = $modelObj['description'] ?? $name;
-                            ?>
-                                <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($desc); ?></option>
-                            <?php 
-                                endforeach;
-                            } elseif (is_array($models)) {
-                                // Fallback or simple array of strings
-                                foreach ($models as $model): 
-                            ?>
-                                <option value="<?php echo htmlspecialchars($model); ?>"><?php echo htmlspecialchars($model); ?></option>
-                            <?php 
-                                endforeach;
-                            }
-                            ?>
-                        </select>
-                    </div>
+                    <input type="hidden" id="model" name="model" value="">
                     <div class="input-group">
-                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Start typing..." rows="1" required></textarea>
+                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Type a message..." rows="1" required></textarea>
                         <button type="submit" class="btn send-button" id="sendBtn">
-                            <i class="fas fa-paper-plane me-1"></i> Send
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
-                    <small class="text-muted mt-1">Press Enter to send, Shift+Enter for new line</small>
                 </form>
             </div>
         </div>
@@ -347,20 +517,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         appHeight();
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Elements
             const chatMessages = document.getElementById('chat');
             const chatForm = document.getElementById('chatForm');
             const promptInput = document.getElementById('prompt');
             const sendBtn = document.getElementById('sendBtn');
             const typingIndicator = document.getElementById('typingIndicator');
+            const modelsList = document.getElementById('modelsList');
+            const chatContainer = document.getElementById('chatContainer');
+            const backButton = document.getElementById('backButton');
+            const modelItems = document.querySelectorAll('.model-item');
+            const modelSearch = document.getElementById('modelSearch');
+            const modelNameElement = document.getElementById('modelName');
+            const modelAvatarElement = document.getElementById('modelAvatar');
+            const modelInput = document.getElementById('model');
+
+            // Show models list by default
+            modelsList.style.display = 'flex';
+            chatContainer.style.display = 'none';
+
+            // Handle model selection
+            modelItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const modelName = this.getAttribute('data-model');
+                    const modelDesc = this.getAttribute('data-desc');
+                    const firstLetter = modelDesc.charAt(0).toUpperCase();
+                    
+                    // Update chat view with selected model
+                    modelNameElement.textContent = modelDesc;
+                    modelAvatarElement.textContent = firstLetter;
+                    modelInput.value = modelName;
+                    
+                    // Switch views
+                    modelsList.style.display = 'none';
+                    chatContainer.style.display = 'flex';
+                    
+                    // Focus on input
+                    setTimeout(() => {
+                        promptInput.focus();
+                    }, 100);
+                });
+            });
+
+            // Handle back button
+            backButton.addEventListener('click', function() {
+                chatContainer.style.display = 'none';
+                modelsList.style.display = 'flex';
+            });
+
+            // Filter models on search
+            modelSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                modelItems.forEach(item => {
+                    const modelName = item.getAttribute('data-desc').toLowerCase();
+                    if (modelName.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
 
             // Auto-resize textarea as user types
             promptInput.addEventListener('input', function() {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
             });
-
-            // Focus the input field when the page loads
-            promptInput.focus();
 
             // Handle Enter key to submit the form, Shift+Enter to add a new line
             promptInput.addEventListener('keydown', function(e) {
