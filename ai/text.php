@@ -1,10 +1,10 @@
-<?php include_once ("backend/textChatBackend.php"); ?>
+<?php require_once("backend/textChatBackend.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Pollinations.AI Text Generator</title>
+    <title>Q8FLiX AI Chat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php include 'css/textChatStyles.php'; ?>
@@ -14,7 +14,7 @@
         <!-- Models List View (WhatsApp contacts style) -->
         <div class="models-list-container" id="modelsList">
             <div class="models-header">
-                <h2 class="m-0"><i class="fas fa-comments me-2"></i>Pollinations Chat</h2>
+                <h2 class="m-0"><i class="fas fa-comments me-2"></i>Q8FLiX AI Chat</h2>
             </div>
             <div class="models-search">
                 <input type="text" id="modelSearch" placeholder="Search models..." class="form-control">
@@ -32,7 +32,7 @@
                     <div class="model-avatar"><?php echo htmlspecialchars($firstLetter); ?></div>
                     <div class="model-info">
                         <div class="model-name"><?php echo htmlspecialchars($desc); ?></div>
-                        <div class="model-description">Tap to chat with this AI model</div>
+                        <div class="model-description">Start conversation...</div>
                     </div>
                 </div>
                 <?php 
@@ -46,7 +46,7 @@
                     <div class="model-avatar"><?php echo htmlspecialchars($firstLetter); ?></div>
                     <div class="model-info">
                         <div class="model-name"><?php echo htmlspecialchars($model); ?></div>
-                        <div class="model-description">Tap to chat with this AI model</div>
+                        <div class="model-description">Start conversation...</div>
                     </div>
                 </div>
                 <?php 
@@ -65,7 +65,7 @@
                 <div class="avatar" id="modelAvatar">A</div>
                 <div class="chat-info">
                     <h2 id="modelName">AI Model</h2>
-                    <small>Powered by Pollinations.AI API</small>
+                    <small>Powered by Q8FLiX</small>
                 </div>
                 <div class="clear-chat-button" id="clearChatButton" style="color: white; cursor: pointer; opacity: 0.8;" title="Clear chat history">
                     <i class="fas fa-trash-alt"></i>
