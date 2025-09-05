@@ -104,97 +104,366 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pollinations.AI Text Generator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --chat-primary: #4A55A2;
+            --chat-secondary: #7895CB;
+            --chat-light: #A0BFE0;
+            --chat-bg: #EEF5FF;
+        }
+        body {
+            background-color: var(--chat-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: var(--chat-primary);
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .user-message {
+            background-color: var(--chat-primary);
+            color: white;
+            border-radius: 18px 18px 0 18px;
+            padding: 12px 15px;
+            max-width: 80%;
+            margin-left: auto;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .ai-message {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 18px 18px 18px 0;
+            padding: 12px 15px;
+            max-width: 80%;
+            margin-right: auto;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .error-message {
+            background-color: #dc3545;
+            color: white;
+            border-radius: 18px;
+            padding: 12px 15px;
+            max-width: 90%;
+            margin: 0 auto 15px auto;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .message-time {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        .chat-footer {
+            padding: 15px;
+            border-top: 1px solid #e9ecef;
+            background-color: white;
+        }
+        .model-selector {
+            background-color: var(--chat-light);
+            border: none;
+            border-radius: 20px;
+        }
+        .message-input {
+            border-radius: 20px;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+        .message-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(74, 85, 162, 0.25);
+            border-color: var(--chat-secondary);
+        }
+        .send-button {
+            background-color: var(--chat-primary);
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        .send-button:hover {
+            background-color: var(--chat-secondary);
+            transform: translateY(-2px);
+        }
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            background-color: var(--chat-secondary);
+            display: inline-block;
+            margin-right: 5px;
+            animation: typing 1s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.3s;
+            margin-right: 0;
+        }
+        @keyframes typing {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        @media (max-width: 768px) {
+            .chat-messages {
+                height: 350px;
+            }
+            .user-message, .ai-message {
+                max-width: 90%;
+            }
+        }
+        @media (max-width: 576px) {
+            .chat-container {
+                border-radius: 0;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            .chat-messages {
+                flex-grow: 1;
+                height: auto;
+            }
+            body {
+                padding: 0;
+                margin: 0;
+                background-color: white;
+            }
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="mb-4 text-center">Pollinations.AI Chat</h1>
-        <div id="chat" class="mb-4" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f8f9fa;"></div>
-        <form id="chatForm" class="mx-auto" style="max-width: 600px;">
-            <div class="mb-3">
-                <label for="model" class="form-label">Select Model:</label>
-                <select id="model" name="model" class="form-select">
-                    <?php 
-                    if (is_array($models) && isset($models[0]) && is_array($models[0])) {
-                        // API returned objects
-                        foreach ($models as $modelObj): 
-                            $name = $modelObj['name'] ?? 'unknown';
-                            $desc = $modelObj['description'] ?? $name;
-                    ?>
-                        <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($desc); ?></option>
-                    <?php 
-                        endforeach;
-                    } elseif (is_array($models)) {
-                        // Fallback or simple array of strings
-                        foreach ($models as $model): 
-                    ?>
-                        <option value="<?php echo htmlspecialchars($model); ?>"><?php echo htmlspecialchars($model); ?></option>
-                    <?php 
-                        endforeach;
-                    }
-                    ?>
-                </select>
+    <div class="container mt-3 mt-md-5">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2 class="m-0"><i class="fas fa-robot me-2"></i>Pollinations.AI Chat</h2>
+                <small>Powered by Pollinations.AI API</small>
             </div>
-            <div class="mb-3">
-                <label for="prompt" class="form-label">Enter your message:</label>
-                <textarea id="prompt" name="prompt" rows="3" class="form-control" required></textarea>
+            <div class="chat-messages" id="chat">
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="ai-message" style="padding: 10px 15px;">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100" id="sendBtn">Send</button>
-        </form>
+            <div class="chat-footer">
+                <form id="chatForm">
+                    <div class="mb-3">
+                        <select id="model" name="model" class="form-select model-selector">
+                            <?php 
+                            if (is_array($models) && isset($models[0]) && is_array($models[0])) {
+                                // API returned objects
+                                foreach ($models as $modelObj): 
+                                    $name = $modelObj['name'] ?? 'unknown';
+                                    $desc = $modelObj['description'] ?? $name;
+                            ?>
+                                <option value="<?php echo htmlspecialchars($name); ?>"><?php echo htmlspecialchars($desc); ?></option>
+                            <?php 
+                                endforeach;
+                            } elseif (is_array($models)) {
+                                // Fallback or simple array of strings
+                                foreach ($models as $model): 
+                            ?>
+                                <option value="<?php echo htmlspecialchars($model); ?>"><?php echo htmlspecialchars($model); ?></option>
+                            <?php 
+                                endforeach;
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Type your message here..." rows="1" required></textarea>
+                        <button type="submit" class="btn send-button" id="sendBtn">
+                            <i class="fas fa-paper-plane me-1"></i> Send
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('chatForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat');
+            const chatForm = document.getElementById('chatForm');
+            const promptInput = document.getElementById('prompt');
             const sendBtn = document.getElementById('sendBtn');
-            sendBtn.disabled = true;
-            sendBtn.textContent = 'Sending...';
+            const typingIndicator = document.getElementById('typingIndicator');
 
-            // Add user message to chat
-            const userMessage = formData.get('prompt');
-            const model = formData.get('model');
-            addMessage('user', userMessage, model);
-
-            fetch('', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    addMessage('ai', data.text, data.model);
-                } else {
-                    addMessage('error', data.message);
-                }
-            })
-            .catch(error => {
-                addMessage('error', 'Network error: ' + error.message);
-            })
-            .finally(() => {
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'Send';
-                document.getElementById('prompt').value = '';
-                document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+            // Auto-resize textarea as user types
+            promptInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
             });
-        });
 
-        function addMessage(type, text, model = '') {
-            const chat = document.getElementById('chat');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'mb-2';
-            const time = new Date().toLocaleTimeString();
-            if (type === 'user') {
-                messageDiv.innerHTML = `<div class="d-flex justify-content-end"><div class="bg-primary text-white p-2 rounded"><strong>You:</strong> ${text}<br><small>${time}</small></div></div>`;
-            } else if (type === 'ai') {
-                messageDiv.innerHTML = `<div class="d-flex justify-content-start"><div class="bg-light p-2 rounded"><strong>AI (${model}):</strong> ${text}<br><small>${time}</small></div></div>`;
-            } else if (type === 'error') {
-                messageDiv.innerHTML = `<div class="d-flex justify-content-center"><div class="bg-danger text-white p-2 rounded"><strong>Error:</strong> ${text}<br><small>${time}</small></div></div>`;
+            // Focus the input field when the page loads
+            promptInput.focus();
+
+            // Handle form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const userMessage = formData.get('prompt').trim();
+                
+                if (!userMessage) return;
+                
+                const model = formData.get('model');
+                
+                // Disable inputs and show sending state
+                sendBtn.disabled = true;
+                promptInput.disabled = true;
+                
+                // Add user message to chat
+                addMessage('user', userMessage);
+                
+                // Reset and focus the input
+                promptInput.value = '';
+                promptInput.style.height = 'auto';
+                
+                // Show typing indicator
+                typingIndicator.style.display = 'block';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                fetch('', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+                    
+                    if (data.status === 'success') {
+                        // Format and display AI response
+                        addMessage('ai', formatResponse(data.text), data.model);
+                    } else {
+                        addMessage('error', data.message);
+                    }
+                })
+                .catch(error => {
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+                    addMessage('error', 'Network error: ' + error.message);
+                })
+                .finally(() => {
+                    // Re-enable inputs
+                    sendBtn.disabled = false;
+                    promptInput.disabled = false;
+                    promptInput.focus();
+                    
+                    // Scroll to the bottom of chat
+                    setTimeout(() => {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 100);
+                });
+            });
+
+            // Function to add a message to the chat
+            function addMessage(type, text, model = '') {
+                const messageDiv = document.createElement('div');
+                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                if (type === 'user') {
+                    messageDiv.className = 'user-message';
+                    messageDiv.innerHTML = `
+                        <div>${escapeHtml(text)}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                } else if (type === 'ai') {
+                    messageDiv.className = 'ai-message';
+                    messageDiv.innerHTML = `
+                        <div><strong>${model}</strong>: ${text}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                } else if (type === 'error') {
+                    messageDiv.className = 'error-message';
+                    messageDiv.innerHTML = `
+                        <div><i class="fas fa-exclamation-triangle me-2"></i>${escapeHtml(text)}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                }
+                
+                // Insert before typing indicator
+                chatMessages.insertBefore(messageDiv, typingIndicator);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Animate message appearance
+                messageDiv.style.opacity = '0';
+                messageDiv.style.transform = 'translateY(20px)';
+                messageDiv.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                
+                setTimeout(() => {
+                    messageDiv.style.opacity = '1';
+                    messageDiv.style.transform = 'translateY(0)';
+                }, 10);
             }
-            chat.appendChild(messageDiv);
-        }
+            
+            // Format code blocks and URLs in responses
+            function formatResponse(text) {
+                // Basic security: escape HTML
+                text = escapeHtml(text);
+                
+                // Format code blocks (```code```)
+                text = text.replace(/```([\s\S]*?)```/g, '<pre class="bg-dark text-white p-2 mt-2 mb-2 rounded"><code>$1</code></pre>');
+                
+                // Format inline code (`code`)
+                text = text.replace(/`([^`]+)`/g, '<code class="bg-light px-1 rounded">$1</code>');
+                
+                // Convert URLs to links
+                text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+                
+                // Convert line breaks to <br>
+                text = text.replace(/\n/g, '<br>');
+                
+                return text;
+            }
+            
+            // Helper function to escape HTML
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
     </script>
 </body>
 </html>
