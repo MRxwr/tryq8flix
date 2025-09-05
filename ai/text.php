@@ -1,653 +1,75 @@
 <?php
-/**
- * Pollinations AI Text Generation API Integration
- * Supports various AI text generation features including chat, streaming, and advanced options
- */
+// Pollinations.AI Text Generation Script
+// Using the OpenAI-compatible POST endpoint with authentication
 
-class PollinationsAI {
-    private $token;
-    private $baseUrl;
-    private $referrer;
-    
-    public function __construct($token = null, $referrer = 'tryq8flix') {
-        $this->token = $token ?: '8x5QP4YGfNKsu8j-';
-        $this->baseUrl = 'https://text.pollinations.ai';
-        $this->referrer = $referrer;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
+    $prompt = trim($_POST['prompt']);
+    if (empty($prompt)) {
+        echo "Please enter a prompt.";
+        exit;
     }
-    
-    /**
-     * Simple text generation using GET method
-     */
-    public function generateText($prompt, $options = []) {
-        // Use the chatCompletion endpoint for text generation as it's more robust
-        $messages = [];
-        if (isset($options['system'])) {
-            $messages[] = ['role' => 'system', 'content' => $options['system']];
-        }
-        $messages[] = ['role' => 'user', 'content' => $prompt];
 
-        // Unset system from options as it's now in messages
-        unset($options['system']);
+    // API details
+    $url = 'https://text.pollinations.ai/openai';
+    $token = '8x5QP4YGfNKsu8j-'; // Your provided token
 
-        return $this->chatCompletion($messages, $options);
-    }
-    
-    /**
-     * Advanced chat completion using POST method (OpenAI compatible)
-     */
-    public function chatCompletion($messages, $options = []) {
-        $defaultOptions = [
-            'model' => 'openai',
-            'temperature' => 0.7,
-            'stream' => false,
-            'private' => false
-        ];
-        
-        $options = array_merge($defaultOptions, $options);
-        
-        $payload = [
-            'model' => $options['model'],
-            'messages' => $messages,
-            'token' => $this->token,
-            'referrer' => $this->referrer
-        ];
-        
-        // Add optional parameters
-        if (isset($options['temperature'])) $payload['temperature'] = $options['temperature'];
-        if (isset($options['top_p'])) $payload['top_p'] = $options['top_p'];
-        if (isset($options['presence_penalty'])) $payload['presence_penalty'] = $options['presence_penalty'];
-        if (isset($options['frequency_penalty'])) $payload['frequency_penalty'] = $options['frequency_penalty'];
-        if (isset($options['seed'])) $payload['seed'] = $options['seed'];
-        if (isset($options['stream'])) $payload['stream'] = $options['stream'];
-        if (isset($options['private'])) $payload['private'] = $options['private'];
-        if (isset($options['tools'])) $payload['tools'] = $options['tools'];
-        if (isset($options['tool_choice'])) $payload['tool_choice'] = $options['tool_choice'];
-        if (isset($options['response_format'])) $payload['response_format'] = $options['response_format'];
-        
-        $response = $this->makeRequest($this->baseUrl . '/openai', 'POST', $payload);
-
-        if (isset($response['choices'][0]['message']['content'])) {
-            return $response['choices'][0]['message']['content'];
-        }
-
-        // Return the full response for debugging if content is not found
-        return $response;
-    }
-    
-    /**
-     * Text-to-Speech generation
-     */
-    public function textToSpeech($text, $voice = 'alloy') {
-        $encodedText = urlencode($text);
-        $url = $this->baseUrl . '/' . $encodedText;
-        
-        $queryParams = [
-            'model' => 'openai-audio',
-            'voice' => $voice,
-            'referrer' => $this->referrer,
-            'token' => $this->token
-        ];
-        
-        $url .= '?' . http_build_query($queryParams);
-        
-        return $this->makeRequest($url, 'GET', null, true); // true for binary response
-    }
-    
-    /**
-     * Vision analysis (image input)
-     */
-    public function analyzeImage($imageUrl, $question = "What's in this image?", $options = []) {
-        $messages = [
+    // Prepare the request data
+    $data = [
+        'model' => 'openai',
+        'messages' => [
             [
                 'role' => 'user',
-                'content' => [
-                    ['type' => 'text', 'text' => $question],
-                    ['type' => 'image_url', 'image_url' => ['url' => $imageUrl]]
-                ]
+                'content' => $prompt
             ]
-        ];
-        
-        $defaultOptions = [
-            'model' => 'openai',
-            'max_tokens' => 500
-        ];
-        
-        $options = array_merge($defaultOptions, $options);
-        
-        return $this->chatCompletion($messages, $options);
-    }
-    
-    /**
-     * Get available models
-     */
-    public function getModels() {
-        $url = $this->baseUrl . '/models';
-        return $this->makeRequest($url, 'GET');
-    }
-    
-    /**
-     * Make HTTP request
-     */
-    private function makeRequest($url, $method = 'GET', $data = null, $binary = false) {
-        $ch = curl_init();
-        
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 300,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_USERAGENT => 'TryQ8Flix/1.0'
-        ]);
-        
-        if ($method === 'POST' && $data !== null) {
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->token
-            ]);
-        } else {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Authorization: Bearer ' . $this->token
-            ]);
-        }
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-        
-        if ($error) {
-            throw new Exception("cURL Error: " . $error);
-        }
-        
-        if ($httpCode !== 200) {
-            throw new Exception("HTTP Error: " . $httpCode . " - " . $response);
-        }
-        
-        // Return binary data for audio
-        if ($binary) {
-            return $response;
-        }
-        
-        // Try to decode JSON response
-        $decoded = json_decode($response, true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $decoded;
-        }
-        
-        // Return raw response if not JSON
-        return $response;
-    }
-}
+        ],
+        'temperature' => 0.7,
+        'max_tokens' => 300
+    ];
 
-// Handle API requests
-$rawInputCheck = file_get_contents('php://input');
-$contentTypeCheck = $_SERVER['CONTENT_TYPE'] ?? '';
-$actionFromBody = null;
-if (stripos($contentTypeCheck, 'application/json') !== false) {
-    $decodedCheck = json_decode($rawInputCheck, true);
-    if (is_array($decodedCheck) && isset($decodedCheck['action'])) {
-        $actionFromBody = $decodedCheck['action'];
+    // Initialize cURL
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $token
+    ]);
+
+    // Execute the request
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode === 200) {
+        $result = json_decode($response, true);
+        if (isset($result['choices'][0]['message']['content'])) {
+            $generatedText = $result['choices'][0]['message']['content'];
+            echo "<h2>Generated Text:</h2><p>" . htmlspecialchars($generatedText) . "</p>";
+        } else {
+            echo "Error: Unexpected response format.";
+        }
+    } else {
+        echo "Error: HTTP $httpCode - " . htmlspecialchars($response);
     }
 } else {
-    parse_str($rawInputCheck, $parsedCheck);
-    if (isset($parsedCheck['action'])) {
-        $actionFromBody = $parsedCheck['action'];
-    }
+    // Display the form
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pollinations.AI Text Generator</title>
+    </head>
+    <body>
+        <h1>Generate Text with Pollinations.AI</h1>
+        <form method="post">
+            <label for="prompt">Enter your prompt:</label><br>
+            <textarea id="prompt" name="prompt" rows="4" cols="50" required></textarea><br><br>
+            <button type="submit">Generate</button>
+        </form>
+    </body>
+    </html>
+    <?php
 }
-
-if (($actionFromBody !== null) || isset($_REQUEST['action'])) {
-    header('Content-Type: application/json');
-    
-    try {
-        $ai = new PollinationsAI();
-        // Prefer action from JSON/body when present
-        $action = $actionFromBody ?? ($_REQUEST['action'] ?? 'generate');
-        
-        // Unified input handling
-        $input = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // reuse raw input we already read above
-            $rawInput = $rawInputCheck;
-            $contentType = $contentTypeCheck;
-
-            if (stripos($contentType, 'application/json') !== false) {
-                $input = json_decode($rawInput, true) ?: [];
-            } elseif (stripos($contentType, 'application/x-www-form-urlencoded') !== false) {
-                parse_str($rawInput, $input);
-            } else {
-                // Fallback for other content types or empty content type
-                parse_str($rawInput, $input);
-            }
-            // Ensure $_REQUEST values are merged, giving precedence to the POST body
-            $input = array_merge($_REQUEST, $input);
-        } else {
-            $input = $_GET;
-        }
-
-        
-        switch ($action) {
-            case 'generate':
-                $prompt = trim($input['prompt'] ?? '');
-                if (empty($prompt)) {
-                    throw new Exception('Prompt is required. Received: ' . json_encode($input));
-                }
-                
-                $options = [
-                    'model' => $input['model'] ?? 'openai',
-                    'temperature' => floatval($input['temperature'] ?? 0.7),
-                    'json' => filter_var($input['json'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                    'stream' => filter_var($input['stream'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                    'private' => filter_var($input['private'] ?? false, FILTER_VALIDATE_BOOLEAN)
-                ];
-                
-                if (isset($input['system'])) $options['system'] = $input['system'];
-                if (isset($input['seed'])) $options['seed'] = intval($input['seed']);
-                if (isset($input['top_p'])) $options['top_p'] = floatval($input['top_p']);
-                if (isset($input['presence_penalty'])) $options['presence_penalty'] = floatval($input['presence_penalty']);
-                if (isset($input['frequency_penalty'])) $options['frequency_penalty'] = floatval($input['frequency_penalty']);
-                
-                $result = $ai->generateText($prompt, $options);
-                echo json_encode(['success' => true, 'data' => $result]);
-                break;
-                
-            case 'chat':
-                // Use POST for chat as it's more appropriate for sending JSON payloads
-                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                    throw new Exception('Chat action requires POST method.');
-                }
-                $messages = $input['messages'] ?? [];
-                if (is_string($messages)) {
-                    $messages = json_decode($messages, true);
-                }
-
-                if (empty($messages)) {
-                    throw new Exception('Messages are required for chat');
-                }
-                
-                $options = [
-                    'model' => $input['model'] ?? 'openai',
-                    'temperature' => floatval($input['temperature'] ?? 0.7),
-                    'stream' => filter_var($input['stream'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                    'private' => filter_var($input['private'] ?? false, FILTER_VALIDATE_BOOLEAN)
-                ];
-                
-                if (isset($input['seed'])) $options['seed'] = intval($input['seed']);
-                if (isset($input['top_p'])) $options['top_p'] = floatval($input['top_p']);
-                if (isset($input['presence_penalty'])) $options['presence_penalty'] = floatval($input['presence_penalty']);
-                if (isset($input['frequency_penalty'])) $options['frequency_penalty'] = floatval($input['frequency_penalty']);
-                
-                $result = $ai->chatCompletion($messages, $options);
-                echo json_encode(['success' => true, 'data' => $result]);
-                break;
-                
-            case 'tts':
-                $text = trim($input['text'] ?? '');
-                $voice = $input['voice'] ?? 'alloy';
-                
-                if (empty($text)) {
-                    throw new Exception('Text is required for TTS');
-                }
-                
-                $audioData = $ai->textToSpeech($text, $voice);
-                $base64Audio = base64_encode($audioData);
-                
-                echo json_encode(['success' => true, 'audio' => $base64Audio]);
-                break;
-                
-            case 'vision':
-                $imageUrl = trim($input['image_url'] ?? '');
-                $question = $input['question'] ?? "What's in this image?";
-                
-                if (empty($imageUrl)) {
-                    throw new Exception('Image URL is required for vision analysis');
-                }
-                
-                $options = [
-                    'model' => $input['model'] ?? 'openai',
-                    'max_tokens' => intval($input['max_tokens'] ?? 500)
-                ];
-                
-                $result = $ai->analyzeImage($imageUrl, $question, $options);
-                echo json_encode(['success' => true, 'data' => $result]);
-                break;
-                
-            case 'models':
-                $result = $ai->getModels();
-                echo json_encode(['success' => true, 'data' => $result]);
-                break;
-                
-            case 'debug':
-                echo json_encode([
-                    'success' => true,
-                    'debug' => [
-                        'method' => $_SERVER['REQUEST_METHOD'],
-                        'post_data' => $_POST,
-                        'get_data' => $_GET,
-                        'request_data' => $_REQUEST,
-                        'raw_input' => file_get_contents('php://input'),
-                        'content_type' => $_SERVER['CONTENT_TYPE'] ?? 'not set'
-                    ]
-                ]);
-                break;
-                
-            default:
-                throw new Exception('Invalid action');
-        }
-        
-    } catch (Exception $e) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false, 
-            'error' => $e->getMessage(),
-            'debug' => [
-                'method' => $_SERVER['REQUEST_METHOD'],
-                'post_data' => $_POST,
-                'get_data' => $_GET,
-                'request_data' => $_REQUEST,
-                'raw_input' => file_get_contents('php://input')
-            ]
-        ]);
-    }
-    exit;
-}
-
-// If no action is specified, show the interface
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pollinations AI - Text Generation API</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .example { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        .result { background: #e8f5e8; padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .error { background: #ffe8e8; padding: 10px; margin: 10px 0; border-radius: 5px; }
-        button { background: #007cba; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        textarea { width: 100%; height: 100px; margin: 10px 0; }
-        input[type="text"], select { width: 100%; padding: 8px; margin: 5px 0; }
-    </style>
-</head>
-<body>
-    <h1>🤖 Pollinations AI - Text Generation API</h1>
-    
-    <div class="example">
-        <h3>📝 Simple Text Generation</h3>
-        <textarea id="prompt" placeholder="Enter your prompt here...">Write a short story about AI and creativity</textarea>
-        <select id="model">
-            <option value="openai">OpenAI</option>
-            <option value="mistral">Mistral</option>
-        </select>
-        <label for="temperature">Temperature:</label>
-        <select id="temperature">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-        </select>
-        <br>
-        <button onclick="generateText()">Generate Text</button>
-        <div id="textResult" class="result" style="display:none;"></div>
-    </div>
-    
-    <div class="example">
-        <h3>💬 Chat Completion</h3>
-        <textarea id="userMessage" placeholder="Ask me anything...">What are the benefits of renewable energy?</textarea>
-        <button onclick="chatCompletion()">Send Message</button>
-        <div id="chatResult" class="result" style="display:none;"></div>
-    </div>
-    
-    <div class="example">
-        <h3>🎤 Text-to-Speech</h3>
-        <textarea id="ttsText" placeholder="Text to speak...">Hello, this is a test of the text-to-speech feature.</textarea>
-        <select id="voice">
-            <option value="alloy">Alloy</option>
-            <option value="echo">Echo</option>
-            <option value="fable">Fable</option>
-            <option value="onyx">Onyx</option>
-            <option value="nova">Nova</option>
-            <option value="shimmer">Shimmer</option>
-        </select>
-        <button onclick="textToSpeech()">Generate Speech</button>
-        <div id="ttsResult" class="result" style="display:none;"></div>
-    </div>
-    
-    <div class="example">
-        <h3>👁️ Vision Analysis</h3>
-        <input type="text" id="imageUrl" placeholder="Image URL..." value="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/640px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg">
-        <input type="text" id="question" placeholder="Question about the image..." value="What's in this image?">
-        <button onclick="analyzeImage()">Analyze Image</button>
-        <div id="visionResult" class="result" style="display:none;"></div>
-    </div>
-    
-    <div class="example">
-        <h3>� Debug Info</h3>
-        <button onclick="debugInfo()">Get Debug Info</button>
-        <div id="debugResult" class="result" style="display:none;"></div>
-    </div>
-    
-    <div class="example">
-        <h3>�📊 Available Models</h3>
-        <button onclick="getModels()">Get Models</button>
-        <div id="modelsResult" class="result" style="display:none;"></div>
-    </div>
-
-    <script>
-        
-        function generateText() {
-            const prompt = document.getElementById('prompt').value;
-            const model = document.getElementById('model').value;
-            const temperature = document.getElementById('temperature').value;
-            
-            if (!prompt.trim()) {
-                alert('Please enter a prompt');
-                return;
-            }
-            
-            console.log('Sending:', { action: 'generate', prompt, model, temperature });
-            
-            fetch('', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=generate&prompt=${encodeURIComponent(prompt)}&model=${model}&temperature=${temperature}`
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                const resultDiv = document.getElementById('textResult');
-                if (data.success) {
-                    // The actual text response is now in data.data
-                    resultDiv.innerHTML = `<strong>Result:</strong><br>${data.data}`;
-                    resultDiv.className = 'result';
-                } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
-                    resultDiv.className = 'error';
-                }
-                resultDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const resultDiv = document.getElementById('textResult');
-                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
-                resultDiv.className = 'error';
-                resultDiv.style.display = 'block';
-            });
-        }
-        
-        function chatCompletion() {
-            const userMessage = document.getElementById('userMessage').value;
-            const messages = [
-                { role: "system", content: "You are a helpful assistant." },
-                { role: "user", content: userMessage }
-            ];
-            
-            fetch('', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'chat',
-                    messages: messages
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('chatResult');
-                if (data.success) {
-                    resultDiv.innerHTML = `<strong>Assistant:</strong><br>${data.data}`;
-                    resultDiv.className = 'result';
-                } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || JSON.stringify(data.data)}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
-                    resultDiv.className = 'error';
-                }
-                resultDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const resultDiv = document.getElementById('chatResult');
-                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
-                resultDiv.className = 'error';
-                resultDiv.style.display = 'block';
-            });
-        }
-        
-        function textToSpeech() {
-            const text = document.getElementById('ttsText').value;
-            const voice = document.getElementById('voice').value;
-            const resultDiv = document.getElementById('ttsResult');
-
-            if (!text.trim()) {
-                alert('Please enter text for speech synthesis.');
-                return;
-            }
-
-            resultDiv.innerHTML = '<strong>Generating audio...</strong>';
-            resultDiv.className = 'result';
-            resultDiv.style.display = 'block';
-
-            fetch('', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=tts&text=${encodeURIComponent(text)}&voice=${voice}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.audio) {
-                    const audioPlayer = new Audio(`data:audio/mpeg;base64,${data.audio}`);
-                    resultDiv.innerHTML = '<strong>Audio generated!</strong><br>';
-                    audioPlayer.controls = true;
-                    resultDiv.appendChild(audioPlayer);
-                    audioPlayer.play();
-                } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || 'Failed to generate audio.'}`;
-                    resultDiv.className = 'error';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
-                resultDiv.className = 'error';
-            });
-        }
-        
-        function analyzeImage() {
-            const imageUrl = document.getElementById('imageUrl').value;
-            const question = document.getElementById('question').value;
-
-            if (!imageUrl.trim()) {
-                alert('Please enter an image URL');
-                return;
-            }
-
-            fetch('', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=vision&image_url=${encodeURIComponent(imageUrl)}&question=${encodeURIComponent(question)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('visionResult');
-                if (data.success) {
-                    resultDiv.innerHTML = `<strong>Analysis:</strong><br>${data.data}`;
-                    resultDiv.className = 'result';
-                } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error || JSON.stringify(data.data)}<br><pre>${JSON.stringify(data.debug || {}, null, 2)}</pre>`;
-                    resultDiv.className = 'error';
-                }
-                resultDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const resultDiv = document.getElementById('visionResult');
-                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
-                resultDiv.className = 'error';
-                resultDiv.style.display = 'block';
-            });
-        }
-
-        function debugInfo() {
-            fetch('?action=debug', {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('debugResult');
-                if (data.success) {
-                    resultDiv.innerHTML = `<pre>${JSON.stringify(data.debug, null, 2)}</pre>`;
-                    resultDiv.className = 'result';
-                } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
-                    resultDiv.className = 'error';
-                }
-                resultDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const resultDiv = document.getElementById('debugResult');
-                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
-                resultDiv.className = 'error';
-                resultDiv.style.display = 'block';
-            });
-        }
-
-        function getModels() {
-            fetch('?action=models', {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('modelsResult');
-                if (data.success) {
-                    let modelsHtml = '<ul>';
-                    if (Array.isArray(data.data)) {
-                        for (const model of data.data) {
-                            modelsHtml += `<li><strong>${model.id}</strong> - ${model.object} (owned by ${model.owned_by})</li>`;
-                        }
-                    } else {
-                        modelsHtml += '<li>Could not parse models list.</li>';
-                    }
-                    modelsHtml += '</ul>';
-                    resultDiv.innerHTML = modelsHtml;
-                    resultDiv.className = 'result';
-                } else {
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
-                    resultDiv.className = 'error';
-                }
-                resultDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const resultDiv = document.getElementById('modelsResult');
-                resultDiv.innerHTML = `<strong>Network Error:</strong> ${error.message}`;
-                resultDiv.className = 'error';
-                resultDiv.style.display = 'block';
-            });
-        }
-    </script>
-</body>
-</html>
