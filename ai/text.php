@@ -50,7 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             ]
         ],
         'temperature' => 1,
-        'max_tokens' => 300
+        'max_tokens' => 300,
+        'response_format' => [
+            'type' => 'json_object'
+        ]
     ];
 
     // Initialize cURL
@@ -632,7 +635,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     // Hide typing indicator
                     typingIndicator.style.display = 'none';
                     
+                    // Log the full response to console for debugging
+                    console.log('API Response:', data);
+                    
                     if (data.status === 'success') {
+                        // Log the response text
+                        console.log('Response Text:', data.text);
+                        // Try to parse it as JSON if it's a string representation of JSON
+                        try {
+                            const jsonContent = JSON.parse(data.text);
+                            console.log('Parsed JSON content:', jsonContent);
+                        } catch(e) {
+                            console.log('Text is not valid JSON');
+                        }
+                        
                         // Format and display AI response
                         addMessage('ai', formatResponse(data.text), data.model);
                     } else {
