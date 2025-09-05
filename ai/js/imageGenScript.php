@@ -4,7 +4,6 @@
 <script>
 // Image Generation Variables
 let currentImageModel = '';
-let imageHistory = {};
 let imageSettings = {
     width: 512,
     height: 512,
@@ -13,6 +12,19 @@ let imageSettings = {
 
 // Tab Navigation
 document.addEventListener('DOMContentLoaded', function() {
+    // Function to check session status (for debugging)
+    function checkImageSessionStatus() {
+        fetch('?debug_image_session=1')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Image Session status:", data);
+            })
+            .catch(error => console.error("Error checking image session:", error));
+    }
+    
+    // Check session on page load
+    checkImageSessionStatus();
+    
     // Tab switching functionality
     const chatTabButton = document.getElementById('chatTabButton');
     const imageTabButton = document.getElementById('imageTabButton');
@@ -86,14 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
             imageModelsList.style.display = 'none';
             imageGeneratorContainer.style.display = 'flex';
             
-            // Initialize or load history
+            // Set current model and load history
             currentImageModel = modelName;
-            if (!imageHistory[currentImageModel]) {
-                imageHistory[currentImageModel] = [];
-            } else {
-                // Load previous images
-                displayImageHistory();
-            }
+            loadImageHistory(currentImageModel);
         });
     });
     
@@ -106,8 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clear image history button
     document.getElementById('clearImageHistoryButton').addEventListener('click', function() {
         if (confirm('Are you sure you want to clear the image history?')) {
-            imageHistory[currentImageModel] = [];
-            document.getElementById('imagePreviewArea').innerHTML = '';
+            clearImageHistory(currentImageModel);
         }
     });
     
@@ -168,12 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add to preview area
                 document.getElementById('imagePreviewArea').appendChild(img);
                 
-                // Save to history
-                imageHistory[currentImageModel].push({
-                    prompt: prompt,
-                    imageUrl: data.image_url
-                });
-                
                 // Scroll to the bottom
                 document.getElementById('imagePreviewArea').scrollTop = document.getElementById('imagePreviewArea').scrollHeight;
                 
@@ -214,30 +214,92 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Function to display image history
-    function displayImageHistory() {
-        const history = imageHistory[currentImageModel];
+    // Function to load image history for a model from the session
+    function loadImageHistory(model) {
+        console.log(`Loading image history for model: ${model}`);
+        
+        // Show loading indicator
         const previewArea = document.getElementById('imagePreviewArea');
+        previewArea.innerHTML = `
+            <div class="image-loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading image history...</p>
+            </div>
+        `;
         
-        // Clear current preview area
-        previewArea.innerHTML = '';
+        // Fetch history from server
+        const formData = new FormData();
+        formData.append('action', 'get_history');
+        formData.append('model', model);
         
-        // Display each image in history
-        history.forEach(item => {
-            const promptBubble = document.createElement('div');
-            promptBubble.className = 'image-prompt-bubble';
-            promptBubble.textContent = item.prompt;
-            previewArea.appendChild(promptBubble);
+        fetch('backend/imageGenBackend.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Image history data received:", data);
             
-            const img = document.createElement('img');
-            img.src = item.imageUrl;
-            img.alt = item.prompt;
-            img.className = 'image-result';
-            previewArea.appendChild(img);
+            // Clear current preview area
+            previewArea.innerHTML = '';
+            
+            if (data.status === 'success' && data.history && data.history.length > 0) {
+                // Display each image in history
+                data.history.forEach(item => {
+                    const promptBubble = document.createElement('div');
+                    promptBubble.className = 'image-prompt-bubble';
+                    promptBubble.textContent = item.prompt;
+                    previewArea.appendChild(promptBubble);
+                    
+                    const img = document.createElement('img');
+                    img.src = item.imageUrl;
+                    img.alt = item.prompt;
+                    img.className = 'image-result';
+                    previewArea.appendChild(img);
+                });
+            } else {
+                console.log("No image history found for model:", model);
+            }
+            
+            // Scroll to the bottom
+            previewArea.scrollTop = previewArea.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Error loading image history:', error);
+            previewArea.innerHTML = `
+                <div class="alert alert-danger m-3">
+                    Error loading image history. Please try again.
+                </div>
+            `;
         });
+    }
+    
+    // Function to clear image history for a model
+    function clearImageHistory(model) {
+        const formData = new FormData();
+        formData.append('action', 'clear_history');
+        formData.append('model', model);
         
-        // Scroll to the bottom
-        previewArea.scrollTop = previewArea.scrollHeight;
+        fetch('backend/imageGenBackend.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Clear image history response:", data);
+            
+            if (data.status === 'success') {
+                // Clear the UI
+                document.getElementById('imagePreviewArea').innerHTML = '';
+            } else {
+                console.error("Failed to clear image history:", data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing image history:', error);
+        });
     }
     
     // Auto-resize text area

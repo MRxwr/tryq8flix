@@ -193,6 +193,7 @@
     justify-content: center;
     width: 100%;
     padding: 20px;
+    color: var(--chat-primary);
 }
 
 .image-generator-footer {
