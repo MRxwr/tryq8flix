@@ -28,6 +28,17 @@ if (!isset($_SESSION['chat_history'])) {
 // Log session ID for debugging
 error_log("Session ID: " . session_id());
 
+// Helper function to calculate total characters in chat history
+function calculateHistorySize($messages) {
+    $totalChars = 0;
+    foreach ($messages as $msg) {
+        if (isset($msg['content'])) {
+            $totalChars += strlen($msg['content']);
+        }
+    }
+    return $totalChars;
+}
+
 // Debug endpoint to check session status
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['debug_session'])) {
     header('Content-Type: application/json');
@@ -64,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     
     // Ensure session is active and log for debugging
     error_log("Getting history for model: " . $model . ", Session ID: " . session_id());
-    error_log("Session data: " . print_r($_SESSION, true));
     
     // Get chat history or empty array if not set
     $chatHistory = isset($_SESSION['chat_history'][$model]) ? $_SESSION['chat_history'][$model] : [];
@@ -74,11 +84,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         return $msg['role'] !== 'system';
     });
     
+    // Limit history to 5000 characters, keeping the most recent messages
+    $maxCharacters = 5000;
+    $limitedHistory = [];
+    $totalChars = 0;
+    
+    // Reverse the array to process from the most recent message
+    $reversedHistory = array_reverse($displayHistory);
+    
+    foreach ($reversedHistory as $msg) {
+        $msgLength = strlen($msg['content']);
+        if ($totalChars + $msgLength <= $maxCharacters) {
+            // We can add this message
+            array_unshift($limitedHistory, $msg); // Add to the beginning to restore original order
+            $totalChars += $msgLength;
+        } else {
+            // We've reached the limit, stop adding messages
+            break;
+        }
+    }
+    
+    error_log("Limited chat history from " . count($displayHistory) . " to " . count($limitedHistory) . " messages (total " . $totalChars . " characters)");
+    
     // Force session write
     session_write_close();
     
     header('Content-Type: application/json');
-    echo json_encode(['status' => 'success', 'history' => $displayHistory]);
+    echo json_encode([
+        'status' => 'success', 
+        'history' => $limitedHistory,
+        'truncated' => count($limitedHistory) < count($displayHistory),
+        'originalCount' => count($displayHistory),
+        'limitedCount' => count($limitedHistory),
+        'charactersUsed' => $totalChars
+    ]);
     exit;
 }
 
@@ -189,6 +228,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                 'role' => 'assistant',
                 'content' => $generatedText
             ];
+            
+            // Check if we need to trim history (keeping max 10000 characters)
+            $maxHistoryChars = 10000; // Twice the display limit to allow for some buffer
+            $totalChars = calculateHistorySize($modelHistory);
+            
+            if ($totalChars > $maxHistoryChars) {
+                // We need to trim the history, preserving system messages and most recent messages
+                $systemMessages = [];
+                $userAssistantMessages = [];
+                
+                // Separate system messages from user/assistant messages
+                foreach ($modelHistory as $msg) {
+                    if ($msg['role'] === 'system') {
+                        $systemMessages[] = $msg;
+                    } else {
+                        $userAssistantMessages[] = $msg;
+                    }
+                }
+                
+                // Keep removing oldest messages until we're under the limit
+                $trimmedMessages = $userAssistantMessages;
+                while (calculateHistorySize(array_merge($systemMessages, $trimmedMessages)) > $maxHistoryChars && count($trimmedMessages) > 2) {
+                    // Remove the oldest non-system message (at the beginning)
+                    array_shift($trimmedMessages);
+                }
+                
+                // Rebuild the history with system messages and trimmed user/assistant messages
+                $modelHistory = array_merge($systemMessages, $trimmedMessages);
+                
+                error_log("Trimmed chat history for $model from $totalChars to " . calculateHistorySize($modelHistory) . " characters");
+            }
             
             // Save updated history back to session
             $_SESSION['chat_history'][$model] = $modelHistory;
@@ -426,6 +496,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
         .typing-indicator span:nth-child(3) {
             animation-delay: 0.3s;
             margin-right: 0;
+        }
+        
+        /* History truncation notice */
+        .history-truncated-notice {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+        .history-truncated-notice .alert {
+            padding: 8px;
+            border-radius: 8px;
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 1px solid rgba(13, 110, 253, 0.2);
+            color: #0d6efd;
+            font-size: 0.8rem;
         }
         
         /* Model List (Contacts) Styling */
@@ -812,6 +896,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                         
                         if (data.status === 'success') {
                             if (data.history && data.history.length > 0) {
+                                // Show truncation notice if history was limited
+                                if (data.truncated) {
+                                    const noticeDiv = document.createElement('div');
+                                    noticeDiv.className = 'history-truncated-notice';
+                                    noticeDiv.innerHTML = `
+                                        <div class="alert alert-info text-center small mb-2">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Showing the most recent ${data.limitedCount} of ${data.originalCount} messages 
+                                            (${Math.round(data.charactersUsed / 1000 * 10) / 10}K characters)
+                                        </div>
+                                    `;
+                                    chatMessages.appendChild(noticeDiv);
+                                    console.log(`Chat history truncated: ${data.limitedCount}/${data.originalCount} messages`);
+                                }
+                                
                                 // Display each message in the UI
                                 data.history.forEach(msg => {
                                     if (msg.role === 'user') {
