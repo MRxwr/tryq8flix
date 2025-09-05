@@ -41,28 +41,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     $model = isset($_POST['model']) ? $_POST['model'] : 'openai';
 
     // Prepare the request data
-    $systemMessage = "You must respond in valid JSON format. Always format your entire response as a properly formatted JSON object with fields like 'response', 'thoughts', etc.";
-    
-    // Adjust prompt to ensure JSON response
-    $jsonPrompt = "Please respond to this in JSON format: $prompt";
-    
     $data = [
         'model' => $model,
         'messages' => [
             [
-                'role' => 'system',
-                'content' => $systemMessage
-            ],
-            [
                 'role' => 'user',
-                'content' => $jsonPrompt
+                'content' => $prompt
             ]
         ],
         'temperature' => 1,
         'max_tokens' => 300,
-        'response_format' => [
-            'type' => 'json_object'
-        ]
     ];
 
     // Initialize cURL
@@ -93,28 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
             // Log the extracted content
             error_log("Generated Text: " . $generatedText);
             
-            // Check if the response is already valid JSON
-            $isValidJson = false;
-            $jsonContent = null;
-            
-            // Try to parse the content as JSON
-            try {
-                $jsonContent = json_decode($generatedText, true, 512, JSON_THROW_ON_ERROR);
-                $isValidJson = is_array($jsonContent);
-                error_log("Successfully parsed response as JSON: " . print_r($jsonContent, true));
-            } catch (Exception $e) {
-                error_log("Response is not valid JSON: " . $e->getMessage());
-            }
-            
             if ($isAjax) {
-                echo json_encode([
-                    'status' => 'success', 
-                    'text' => $generatedText, 
-                    'model' => $model,
-                    'is_json' => $isValidJson,
-                    'json_content' => $jsonContent,
-                    'raw_response' => $result
-                ]);
+                echo json_encode(['status' => 'success', 'text' => $generatedText, 'model' => $model, 'raw_response' => $result]);
             } else {
                 echo "<div class='alert alert-success mt-4'><h2>Generated Text:</h2><p>" . htmlspecialchars($generatedText) . "</p></div>";
             }
@@ -679,18 +647,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     if (data.status === 'success') {
                         // Log the response text
                         console.log('Response Text:', data.text);
-                        
-                        // Use the server's JSON parsing if available
-                        if (data.is_json && data.json_content) {
-                            console.log('Server parsed JSON content:', data.json_content);
-                        } else {
-                            // Try client-side parsing as fallback
-                            try {
-                                const jsonContent = JSON.parse(data.text);
-                                console.log('Client parsed JSON content:', jsonContent);
-                            } catch(e) {
-                                console.log('Text is not valid JSON');
-                            }
+                        // Try to parse it as JSON if it's a string representation of JSON
+                        try {
+                            const jsonContent = JSON.parse(data.text);
+                            console.log('Parsed JSON content:', jsonContent);
+                        } catch(e) {
+                            console.log('Text is not valid JSON');
                         }
                         
                         // Format and display AI response
@@ -735,31 +697,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     let displayText = text;
                     try {
                         const jsonObj = JSON.parse(text);
-                        // If it's valid JSON, format it nicely with both raw and formatted views
+                        // If it's valid JSON, we'll add a collapsible section to show it
                         const jsonFormatted = JSON.stringify(jsonObj, null, 2);
-                        
-                        // Extract a readable response from the JSON if possible
-                        let readableResponse = '';
-                        if (jsonObj.response) {
-                            readableResponse = `<div class="mb-2">${jsonObj.response}</div>`;
-                        } else if (jsonObj.answer) {
-                            readableResponse = `<div class="mb-2">${jsonObj.answer}</div>`;
-                        } else if (jsonObj.message) {
-                            readableResponse = `<div class="mb-2">${jsonObj.message}</div>`;
-                        } else if (jsonObj.content) {
-                            readableResponse = `<div class="mb-2">${jsonObj.content}</div>`;
-                        }
-                        
                         displayText = `
-                            ${readableResponse}
+                            <div>${text}</div>
                             <details class="mt-2">
-                                <summary>View JSON Response</summary>
-                                <pre class="bg-light p-2 mt-1 rounded" style="max-height: 200px; overflow: auto; font-size: 0.85rem;">${escapeHtml(jsonFormatted)}</pre>
+                                <summary>View as JSON</summary>
+                                <pre class="bg-light p-2 mt-1 rounded" style="max-height: 200px; overflow: auto;">${escapeHtml(jsonFormatted)}</pre>
                             </details>
                         `;
                     } catch (e) {
                         // Not JSON, use the formatted text as-is
-                        console.log('Failed to parse JSON:', e);
                     }
                     
                     messageDiv.innerHTML = `
