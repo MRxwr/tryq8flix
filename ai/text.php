@@ -21,31 +21,24 @@
             </div>
             <div class="models-list" id="modelsListItems">
                 <?php 
-                if (is_array($models) && isset($models[0]) && is_array($models[0])) {
-                    // API returned objects
+                if (is_array($models)) {
                     foreach ($models as $modelObj): 
                         $name = $modelObj['name'] ?? 'unknown';
                         $desc = $modelObj['description'] ?? $name;
+                        $type = $modelObj['type'] ?? 'text'; // Default to text
                         $firstLetter = strtoupper(substr($name, 0, 1));
                 ?>
-                <div class="model-item" data-model="<?php echo htmlspecialchars($name); ?>" data-desc="<?php echo htmlspecialchars($desc); ?>">
+                <div class="model-item" data-model="<?php echo htmlspecialchars($name); ?>" data-desc="<?php echo htmlspecialchars($desc); ?>" data-type="<?php echo htmlspecialchars($type); ?>">
                     <div class="model-avatar"><?php echo htmlspecialchars($firstLetter); ?></div>
                     <div class="model-info">
-                        <div class="model-name"><?php echo htmlspecialchars($desc); ?></div>
-                        <div class="model-description">Start conversation...</div>
-                    </div>
-                </div>
-                <?php 
-                    endforeach;
-                } elseif (is_array($models)) {
-                    // Fallback or simple array of strings
-                    foreach ($models as $model): 
-                        $firstLetter = strtoupper(substr($model, 0, 1));
-                ?>
-                <div class="model-item" data-model="<?php echo htmlspecialchars($model); ?>" data-desc="<?php echo htmlspecialchars($model); ?>">
-                    <div class="model-avatar"><?php echo htmlspecialchars($firstLetter); ?></div>
-                    <div class="model-info">
-                        <div class="model-name"><?php echo htmlspecialchars($model); ?></div>
+                        <div class="model-name">
+                            <?php echo htmlspecialchars($desc); ?>
+                            <?php if ($type === 'image'): ?>
+                                <i class="fas fa-image ms-2 text-muted" title="Image Model"></i>
+                            <?php else: ?>
+                                <i class="fas fa-comment ms-2 text-muted" title="Text Model"></i>
+                            <?php endif; ?>
+                        </div>
                         <div class="model-description">Start conversation...</div>
                     </div>
                 </div>

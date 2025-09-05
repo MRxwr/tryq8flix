@@ -27,7 +27,13 @@ if (!isset($_SESSION['chat_history'])) {
 
 // Include the models fetching logic
 require_once("models.php");
-$models = fetchModels($token);
+$textModels = fetchModels($token);
+
+// Include the static image models
+require_once("imageModels.php");
+
+// Merge the two model lists
+$models = array_merge($textModels, $imageModels);
 
 // Include the rest of the chat logic
 require_once("textChatCode.php");
