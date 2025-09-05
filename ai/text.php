@@ -156,7 +156,7 @@
                     <h2 id="imageModelName">AI Image Model</h2>
                     <small>Powered by Q8FLiX</small>
                 </div>
-                <div class="clear-chat-button" id="clearImageHistoryButton" style="color: white; cursor: pointer; opacity: 0.8;" title="Clear image history">
+                <div class="clear-chat-button" id="clearImageHistoryButton">
                     <i class="fas fa-trash-alt"></i>
                 </div>
             </div>

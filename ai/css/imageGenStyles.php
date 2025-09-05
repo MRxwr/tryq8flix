@@ -72,9 +72,12 @@
     display: none;
     flex-direction: column;
     background-color: white;
-    border-radius: 0 0 15px 15px;
-    height: calc(100vh - 140px);
-    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    height: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .image-generator-header {
@@ -83,10 +86,51 @@
     padding: 10px 16px;
     background-color: var(--chat-header);
     color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.image-generator-header .back-button {
+    cursor: pointer;
+}
+
+.image-generator-header .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--chat-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-weight: bold;
+}
+
+.image-generator-header .chat-info {
+    flex-grow: 1;
+}
+
+.image-generator-header .chat-info h2 {
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.image-generator-header .clear-chat-button {
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    margin-left: auto;
+    padding-left: 10px;
+}
+
+.image-generator-header .clear-chat-button:hover {
+    opacity: 1;
 }
 
 .image-preview-area {
-    flex: 1;
+    flex-grow: 1;
     overflow-y: auto;
     padding: 16px;
     display: flex;

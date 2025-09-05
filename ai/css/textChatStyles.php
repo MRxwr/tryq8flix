@@ -287,7 +287,7 @@
             justify-content: center;
             padding: 1rem;
         }
-        .chat-container {
+        .chat-container, .image-generator-container {
             height: 90vh;
             max-height: 800px;
         }
