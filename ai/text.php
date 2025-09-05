@@ -71,12 +71,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
+    // Log the raw API response for debugging
+    error_log("Pollinations API Response: " . $response);
+
     if ($httpCode === 200) {
         $result = json_decode($response, true);
+        // Log the decoded response
+        error_log("Decoded Response: " . print_r($result, true));
+        
         if (isset($result['choices'][0]['message']['content'])) {
             $generatedText = $result['choices'][0]['message']['content'];
+            // Log the extracted content
+            error_log("Generated Text: " . $generatedText);
+            
             if ($isAjax) {
-                echo json_encode(['status' => 'success', 'text' => $generatedText, 'model' => $model]);
+                echo json_encode(['status' => 'success', 'text' => $generatedText, 'model' => $model, 'raw_response' => $result]);
             } else {
                 echo "<div class='alert alert-success mt-4'><h2>Generated Text:</h2><p>" . htmlspecialchars($generatedText) . "</p></div>";
             }
@@ -686,8 +695,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                     `;
                 } else if (type === 'ai') {
                     messageDiv.className = 'ai-message';
+                    
+                    // Try to parse the response as JSON for better display
+                    let displayText = text;
+                    try {
+                        const jsonObj = JSON.parse(text);
+                        // If it's valid JSON, we'll add a collapsible section to show it
+                        const jsonFormatted = JSON.stringify(jsonObj, null, 2);
+                        displayText = `
+                            <div>${text}</div>
+                            <details class="mt-2">
+                                <summary>View as JSON</summary>
+                                <pre class="bg-light p-2 mt-1 rounded" style="max-height: 200px; overflow: auto;">${escapeHtml(jsonFormatted)}</pre>
+                            </details>
+                        `;
+                    } catch (e) {
+                        // Not JSON, use the formatted text as-is
+                    }
+                    
                     messageDiv.innerHTML = `
-                        <div><strong>${model}</strong>: ${text}</div>
+                        <div><strong>${model}</strong>: ${displayText}</div>
                         <div class="message-time">${time}</div>
                     `;
                 } else if (type === 'error') {
