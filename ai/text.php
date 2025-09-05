@@ -304,11 +304,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
                         </select>
                     </div>
                     <div class="input-group">
-                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Type your message here..." rows="1" required></textarea>
+                        <textarea id="prompt" name="prompt" class="form-control message-input" placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)" rows="1" required></textarea>
                         <button type="submit" class="btn send-button" id="sendBtn">
                             <i class="fas fa-paper-plane me-1"></i> Send
                         </button>
                     </div>
+                    <small class="text-muted mt-1">Press Enter to send, Shift+Enter for new line</small>
                 </form>
             </div>
         </div>
@@ -330,6 +331,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prompt'])) {
 
             // Focus the input field when the page loads
             promptInput.focus();
+
+            // Handle Enter key to submit the form, Shift+Enter to add a new line
+            promptInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
 
             // Handle form submission
             chatForm.addEventListener('submit', function(e) {
