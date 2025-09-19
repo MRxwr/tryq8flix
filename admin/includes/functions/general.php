@@ -107,15 +107,19 @@ function scrapePage($url) {
 }
 
 function curlCall($url) {
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_USERAGENT, "{$_SERVER['HTTP_USER_AGENT']}");
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-	$response = curl_exec($ch);
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+		CURLOPT_URL => $url,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_ENCODING => '',
+		CURLOPT_MAXREDIRS => 10,
+		CURLOPT_TIMEOUT => 0,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST => 'GET',
+	));
+	$response = curl_exec($curl);
+	curl_close($curl);
 	return $response;
 }
 
