@@ -9,4 +9,5 @@ require_once "egydead.php";
 require_once "topcima.php";
 require_once "wecima.php";
 require_once "notification.php";
+require_once "el7l.php";
 ?>
