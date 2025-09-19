@@ -91,6 +91,10 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }
                 $data = searchShahidSpaceListing($url);
                 echo dataOutput(array("shows" =>$data));die();
+            }elseif( $_GET["server"] == 6 ) {
+                $url = $website6 . "newvideos.php";
+                $data = scrapeShahidwBs($url);
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
