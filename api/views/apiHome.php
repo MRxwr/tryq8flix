@@ -94,6 +94,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             }elseif( $_GET["server"] == 6 ) {
                 $url = $website6 . "newvideos.php";
                 $data = scrapeShahidwBs($url);
+                $data = json_decode($data, true);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();

@@ -67,8 +67,6 @@ function scrapeShahidwBsServers($url) {
     return $servers;
 }
 function scrapeShahidwBs($url) {
-    GLOBAL $website3;
-    $url = ( !isset($url) || empty($url) ) ? $website3 : $url;
     $html = file_get_contents($url);
     $dom = str_get_html($html);
     if ($dom) {
