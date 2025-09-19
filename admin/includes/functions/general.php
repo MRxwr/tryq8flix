@@ -138,6 +138,7 @@ function curlCallBypass($url) {
 		'Connection: keep-alive',
 		'Upgrade-Insecure-Requests: 1',
 	]);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
 	$response = curl_exec($ch);
 	curl_close($ch);
 	return $response;
