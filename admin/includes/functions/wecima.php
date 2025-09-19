@@ -41,6 +41,7 @@ function wecimaListing($url) {
 }
 function scrapeWecimaServers($url) {
     $html = curlCall("{$url}");
+    var_dump($html);
     $dom = str_get_html($html);
     $data = [
         'shows' => []
