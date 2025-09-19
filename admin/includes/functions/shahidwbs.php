@@ -40,31 +40,35 @@ function shahidwBsListing($url) {
     return $data;
 }
 function scrapeShahidwBsServers($url) {
+    $url = str_replace("watch", "play", $url);
     $html = curlCall("{$url}");
     $dom = str_get_html($html);
     $data = [
         'shows' => []
     ];
     if ($dom) {
-        foreach ($dom->find('.WatchServersList ul li') as $server) {
-            $btn = $server->find('btn', 0);
-            if ($btn) {
-                $title = $btn->find('strong', 0)->plaintext;
-                $dataUrl = $btn->getAttribute('data-url');
-                $jsonData = [
-                    'link' => str_replace(" ", "", $dataUrl)
+        foreach ($dom->find('ul.list_servers li') as $server) {
+            $title = '';
+            $link = '';
+            $strong = $server->find('strong', 0);
+            if ($strong) {
+                $title = trim($strong->plaintext);
+            }
+            $dataEmbed = $server->getAttribute('data-embed');
+            if ($dataEmbed && preg_match("/src='([^']+)'/", $dataEmbed, $matches)) {
+                $link = $matches[1];
+            }
+            if ($title && $link) {
+                $data['shows'][] = [
+                    'link' => $link,
+                    'title' => $title
                 ];
-                $data['shows'][] = $jsonData;
             }
         }
-        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $dom->clear();
+        unset($dom);
     }
-    $servers = json_decode($servers, true);
-    $dom->clear();
-    unset($dom);
-    return $servers;
+    return json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }
 function scrapeShahidwBs($url) {
     $html = file_get_contents($url);
