@@ -1,6 +1,7 @@
 <?php
 function scrapEl7l($url) {
 	$html = curlCall($url);
+    var_dump($html);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('#pm-grid', 0);
 	if (strpos($url, 'category') !== false) {
