@@ -19,7 +19,6 @@ $website2 = "https://web5.topcinema.world";
 $website3 = "https://mycima.pics/";//"https://weciema.org/";//"https://wecima.watch/";
 $website4 = "https://tv1.egydead.live/";
 $website5 = "https://shahid4u.blog/";
-$website6 = "https://shahid.el7l.online/";
 $websiteLive = "https://yala-shoot-tv.live/";
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 //"Y0U1YZ5TQUH84HVVU2U31E6II1D776MU2XAMLCGMDEF0YXCD0CWK4PLMG0S6FI0O5ZDILNYE63W3SWW4";
