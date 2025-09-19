@@ -68,7 +68,7 @@ function scrapeShahidwBsServers($url) {
         $dom->clear();
         unset($dom);
     }
-    return json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    return $data['shows'];
 }
 function scrapeShahidwBs($url) {
     $html = file_get_contents($url);
