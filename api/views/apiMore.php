@@ -19,7 +19,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             }elseif( $_GET["server"] == 5 ){
                 $data = shahidSpaceMore($_GET["href"]);
             }elseif( $_GET["server"] == 6 ){
-                $data = shahidwBsMore($_GET["href"]);
+                $data = shahidwBsListing($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
