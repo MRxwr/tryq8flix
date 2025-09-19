@@ -4,32 +4,33 @@ function shahidwBsListing($url) {
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
-    foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
-        $link = $seasonLink->href;
-        $title = trim($seasonLink->plaintext);
+    // Scrape seasons from new HTML structure
+    $seasonTitles = [];
+    foreach ($htmlDom->find('.SeasonsBoxUL .Tab button') as $seasonBtn) {
+        $title = trim($seasonBtn->plaintext);
         $seasonNumber = preg_replace('/[^0-9]/', '', $title);
         $seasonsData[] = [
-            'link' => $link,
+            'link' => '',
             'title' => $title,
             'season_number' => $seasonNumber
         ];
+        $seasonTitles[] = $title;
     }
-    // Scrape episodes
-    foreach ($htmlDom->find('.Episodes--Seasons--Episodes a') as $episodeLink) {
-        $link = $episodeLink->href;
-        $title = trim($episodeLink->find('episodetitle', 0)->plaintext);
-        $episodeNumber = preg_replace('/[^0-9]/', '', $title);
-
-        $episodesData[] = [
-            'link' => $link,
-            'title' => $title,
-            'episode_number' => $episodeNumber
-        ];
-    }
-
-    if (strpos(strtolower($url), 'season') === false){
-        $episodesData = array_reverse($episodesData);
-        $seasonsData = array_reverse($seasonsData);
+    // Scrape episodes from new HTML structure
+    $seasonIdx = 0;
+    foreach ($htmlDom->find('.SeasonsEpisodesMain .Tab .tabcontent') as $seasonTab) {
+        $seasonTitle = isset($seasonTitles[$seasonIdx]) ? $seasonTitles[$seasonIdx] : '';
+        foreach ($seasonTab->find('ul a') as $episodeLink) {
+            $link = $episodeLink->href;
+            $title = trim($episodeLink->plaintext);
+            $episodeNumber = preg_replace('/[^0-9]/', '', $title);
+            $episodesData[] = [
+                'link' => $link,
+                'title' => $seasonTitle . ' - ' . $title,
+                'episode_number' => $episodeNumber
+            ];
+        }
+        $seasonIdx++;
     }
     $data = [
         'seasons' => $seasonsData,
