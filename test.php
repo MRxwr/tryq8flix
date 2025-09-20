@@ -2,10 +2,9 @@
 include_once('admin/includes/config.php');
 include_once('admin/includes/functions.php');
 
-
 $url = isset($_GET["url"]) ? trim($_GET["url"]) : 'https://tuk.tuktukarab.cfd/?s=naruto&page=1';
-// Fix spaces in URL (but don't break & or =)
-$url = preg_replace('/\s+/', '', $url);
+// Fix spaces in URL
+$url = str_replace(["\r", "\n", "\t", ' '], '', $url);
 
 echo "URL: " . htmlspecialchars($url) . "<br>";
 
@@ -19,12 +18,6 @@ curl_setopt_array($curl, array(
   CURLOPT_FOLLOWLOCATION => true,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
-  CURLOPT_USERAGENT => 'PostmanRuntime/7.46.1',
-  CURLOPT_HTTPHEADER => array(
-    'Accept: */*',
-    'Accept-Encoding: gzip, deflate, br',
-    'Connection: keep-alive'
-  )
 ));
 
 $response = curl_exec($curl);
