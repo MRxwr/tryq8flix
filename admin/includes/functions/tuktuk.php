@@ -2,9 +2,8 @@
 function tuktukHome($url) {
     $url = trim($url);
     $url = str_replace(' ', '+', $url);
-    $html = curlCall($url);
-    echo $url;
-    var_dump($html);
+    var_dump($url);
+    var_dump($html = curlCall($url));
     $dom = str_get_html($html);
     $data = [
         'shows' => []
