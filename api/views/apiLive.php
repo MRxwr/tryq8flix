@@ -62,7 +62,7 @@ function liveMatch($view) {
 		foreach ($dom->find('iframe') as $iframe) {
 			if ($iframe) { 
 				$jsonData = [
-					'src' => $iframe->getAttribute('src'),
+					'src' => $iframe->getAttribute('src') . "index.php",
 				];
 				$data['matches'][] = $jsonData;
 			}
