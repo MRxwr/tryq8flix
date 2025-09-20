@@ -2,9 +2,10 @@
 include_once('admin/includes/config.php');
 include_once('admin/includes/functions.php');
 
-$url = isset($_GET["url"]) ? trim($_GET["url"]) : 'https://mycima.surf/?s=one+piece&page=2';
-// Fix spaces in URL
-$url = str_replace(' ', '+', $url);
+
+$url = isset($_GET["url"]) ? trim($_GET["url"]) : 'https://tuk.tuktukarab.cfd/?s=naruto&page=1';
+// Fix spaces in URL (but don't break & or =)
+$url = preg_replace('/\s+/', '', $url);
 
 echo "URL: " . htmlspecialchars($url) . "<br>";
 
@@ -18,6 +19,7 @@ curl_setopt_array($curl, array(
   CURLOPT_FOLLOWLOCATION => true,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
+  CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 ));
 
 $response = curl_exec($curl);
