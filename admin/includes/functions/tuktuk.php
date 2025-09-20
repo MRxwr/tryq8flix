@@ -144,7 +144,7 @@ function tuktukServers($url) {
             }
             $servers[] = [
                 'name' => $name,
-                'link' => "https://tryq8flix.com/videoPlayer.php?link=" . $decodedLink
+                'link' => $decodedLink
             ];
         }
         $dom->clear();
