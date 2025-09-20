@@ -21,6 +21,7 @@ $website4 = "https://tv1.egydead.live/";
 $website5 = "https://shahid4u.blog/";
 $website6 = "https://vid.shahidwbas.tv/";
 $website7 = "https://mycima.surf/";
+$website8 = "https://tuk.tuktukarab.cfd/";
 $websiteLive = "https://yala-shoot-tv.live/";
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 ?>
