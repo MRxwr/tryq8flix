@@ -97,20 +97,19 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = json_decode($data, true);
                 echo dataOutput(array("shows" =>$data["shows"]));die();
             }elseif( $_GET["server"] == 7 ) {
-                $url = $website7;
-                if (isset($_GET["search"]) && !empty($_GET["search"])) {
-                    // Encode search query for URL
-                    $search = urlencode(trim($_GET["search"]));
-                    $url .= "?s={$search}";
+                $url = $website7 ;
+                if ( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $url .= "?s={$_GET["search"]}";
                 }
-                if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
                     $url .= "/page/{$_GET["page"]}";
-                } elseif (isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"]))) {
-                    $search = urlencode(trim($_GET["search"]));
-                    $url .= "?s={$search}&page={$_GET["page"]}";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $url .= "?s={$_GET["search"]}&page={$_GET["page"]}";
                 }
                 $data = myCimaHome($url);
-                echo dataOutput(array("shows" => $data));die();
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
