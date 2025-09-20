@@ -120,7 +120,6 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
                     $url .= "?s={$_GET["search"]}&page={$_GET["page"]}";
                 }
-                echo $url;
                 $data = tuktukHome($url);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
