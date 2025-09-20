@@ -99,8 +99,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             }elseif( $_GET["server"] == 7 ) {
                 $url = $website7 ;
                 $data = myCimaHome($url);
-                $data = json_decode($data, true);
-                echo dataOutput(array("shows" =>$data["shows"]));die();
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
