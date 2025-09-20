@@ -287,6 +287,28 @@ if (!$currentStream && !empty($liveStreams)) {
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: auto;
+        }
+        
+        .iframe-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            background: transparent;
+        }
+        
+        /* Additional security styling */
+        .player-container {
+            overflow: hidden;
+        }
+        
+        .player-container iframe {
+            max-width: 100%;
+            max-height: 100%;
         }
         
         .stream-status {
@@ -540,13 +562,41 @@ if (!$currentStream && !empty($liveStreams)) {
             
             $('#loadingModal').modal('show');
             
+            // Clean the URL to prevent redirects
+            const cleanUrl = cleanStreamUrl(currentStreamUrl);
+            
             // Check if the URL is an iframe embed or direct stream
-            if (currentStreamUrl.includes('embed') || currentStreamUrl.includes('.php')) {
+            if (cleanUrl.includes('embed') || cleanUrl.includes('.php')) {
                 // It's an iframe URL
-                playIframeStream(currentStreamUrl);
+                playIframeStream(cleanUrl);
             } else {
                 // It's a direct stream URL (m3u8, etc.)
-                playDirectStream(currentStreamUrl);
+                playDirectStream(cleanUrl);
+            }
+        }
+        
+        // Clean stream URL to remove tracking and redirect parameters
+        function cleanStreamUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                
+                // Remove tracking parameters
+                const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'ref', 'referrer', 'redirect'];
+                trackingParams.forEach(param => {
+                    urlObj.searchParams.delete(param);
+                });
+                
+                // For specific domains, apply additional cleaning
+                if (urlObj.hostname.includes('ok.ru')) {
+                    // Ensure nochat and autoplay are set correctly for ok.ru
+                    urlObj.searchParams.set('nochat', '1');
+                    urlObj.searchParams.set('autoplay', '1');
+                }
+                
+                return urlObj.toString();
+            } catch (e) {
+                // If URL parsing fails, return original
+                return url;
             }
         }
         
@@ -557,6 +607,101 @@ if (!$currentStream && !empty($liveStreams)) {
             iframe.className = 'stream-iframe';
             iframe.allowFullscreen = true;
             iframe.allow = 'autoplay; encrypted-media; fullscreen';
+            iframe.sandbox = 'allow-scripts allow-same-origin allow-presentation allow-fullscreen';
+            
+            // Create a wrapper to control iframe behavior
+            const iframeWrapper = document.createElement('div');
+            iframeWrapper.style.position = 'relative';
+            iframeWrapper.style.width = '100%';
+            iframeWrapper.style.height = '100%';
+            iframeWrapper.appendChild(iframe);
+            
+            // Block navigation and redirects
+            iframe.onload = function() {
+                try {
+                    // Monitor iframe location changes
+                    const originalSrc = iframe.src;
+                    
+                    // Check for unauthorized navigation every second
+                    const navigationChecker = setInterval(() => {
+                        try {
+                            if (iframe.contentWindow && iframe.contentWindow.location.href !== originalSrc) {
+                                console.log('Blocked iframe redirect attempt');
+                                iframe.src = originalSrc; // Reset to original URL
+                            }
+                        } catch (e) {
+                            // Cross-origin restrictions - expected behavior
+                        }
+                    }, 1000);
+                    
+                    // Store the checker so we can clear it later
+                    iframe.navigationChecker = navigationChecker;
+                    
+                    // Block iframe document interactions if accessible
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    if (iframeDoc) {
+                        // Block all external navigation
+                        iframeDoc.addEventListener('click', function(e) {
+                            // Check if the click target is a link
+                            let target = e.target;
+                            while (target && target !== iframeDoc) {
+                                if (target.tagName === 'A' && target.href && 
+                                    (target.href.includes('redirect') || 
+                                     target.href.includes('ad') || 
+                                     target.target === '_blank' ||
+                                     target.href !== iframe.src)) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('Blocked redirect link:', target.href);
+                                    return false;
+                                }
+                                target = target.parentElement;
+                            }
+                        }, true);
+                        
+                        // Block context menu
+                        iframeDoc.addEventListener('contextmenu', function(e) {
+                            e.preventDefault();
+                            return false;
+                        });
+                        
+                        // Override window methods
+                        if (iframe.contentWindow) {
+                            const originalOpen = iframe.contentWindow.open;
+                            iframe.contentWindow.open = function(url, name, features) {
+                                console.log('Blocked window.open attempt:', url);
+                                return null;
+                            };
+                            
+                            // Block location changes
+                            try {
+                                Object.defineProperty(iframe.contentWindow.location, 'href', {
+                                    set: function(value) {
+                                        console.log('Blocked location change:', value);
+                                        return false;
+                                    },
+                                    get: function() {
+                                        return originalSrc;
+                                    }
+                                });
+                            } catch (e) {
+                                // Cross-origin protection
+                            }
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.log('Cross-origin iframe detected, using basic protection');
+                }
+            };
+            
+            // Block iframe unload to prevent redirect detection
+            iframe.addEventListener('beforeunload', function(e) {
+                if (iframe.navigationChecker) {
+                    clearInterval(iframe.navigationChecker);
+                }
+            });
             
             // Create fullscreen container
             const container = document.createElement('div');
@@ -566,9 +711,9 @@ if (!$currentStream && !empty($liveStreams)) {
                 <button class="close-player" onclick="closePlayer()">
                     <i class="bi bi-x-lg"></i>
                 </button>
-                <div class="stream-status">سيرفر ${currentServer} - مباشر</div>
+                <div class="stream-status">سيرفر ${currentServer} - مباشر (محمي من الإعلانات)</div>
             `;
-            container.appendChild(iframe);
+            container.appendChild(iframeWrapper);
             
             document.body.appendChild(container);
             $('#loadingModal').modal('hide');
@@ -676,9 +821,16 @@ if (!$currentStream && !empty($liveStreams)) {
         
         // Close player function
         function closePlayer() {
-            // Remove any fullscreen iframe containers
+            // Clean up navigation checkers for iframes
             const existingContainers = document.querySelectorAll('.player-container');
             existingContainers.forEach(container => {
+                const iframes = container.querySelectorAll('iframe');
+                iframes.forEach(iframe => {
+                    if (iframe.navigationChecker) {
+                        clearInterval(iframe.navigationChecker);
+                    }
+                });
+                
                 if (container.id !== 'playerContainer') {
                     container.remove();
                 }
