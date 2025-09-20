@@ -4,7 +4,7 @@ include_once('admin/includes/functions.php');
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://mycima.surf/?s=one+piece',
+  CURLOPT_URL => 'https://mycima.surf/?s=one+piece&page=2',
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
