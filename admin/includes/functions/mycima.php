@@ -117,22 +117,59 @@ function myCimaListings($url) {
 }
 
 function myCimaServers($url) {
-    $html = curlCall("{$url}");
+    GLOBAL $website2;
+    $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
-    $servers = [];
+    $data = [
+        'shows' => []
+    ];
     if ($dom) {
-        foreach ($dom->find('.ServersList ul#watch li') as $li) {
-            $link = $li->getAttribute('data-watch');
-            $name = trim($li->plaintext);
-            $servers[] = [
-                'link' => $link
+        foreach ($dom->find('.server--item') as $server) {
+            $id = $server->getAttribute('data-id');
+            $i = $server->getAttribute('data-server');
+            $jsonData = [
+                'id' => $id,
+                'i' => $i,
+                'link' => "{$url}watch/",
             ];
+            $data['shows'][] = $jsonData;
         }
-        $dom->clear();
-        unset($dom);
+        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
         echo 'Error: Invalid DOM object.';
+        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
-    return $servers;
+    $servers = json_decode($servers, true);
+    $mainServer = [];
+    $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
+    $blackList = [0,3,4,5,6];
+    for ($i = 0; $i < sizeof($servers); $i++) {
+        if (in_array($i, $blackList)) {
+        }else{
+            unset($servers[$i]["link"]);
+            //$url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://web2.myCima.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
+            CURLOPT_HTTPHEADER => array(
+                'Referer: https://web2.myCima.cam',
+                'X-Requested-With: XMLHttpRequest'
+            ),
+            ));
+            $response = curl_exec($curl);
+            $link = extractLink($response);
+            curl_close($curl);
+            $mainServer[]["link"] = $link;
+        }
+    }
+    return $mainServer;
 }
 ?>
