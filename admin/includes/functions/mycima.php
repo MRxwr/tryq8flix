@@ -2,7 +2,6 @@
 function myCimaHome($url) {
     $url = trim($url);
     $url = str_replace(' ', '+', $url);
-    echo "Fetching URL: " . htmlspecialchars($url) . "<br>";
     $html = curlCall($url);
     $dom = str_get_html($html);
     $data = [
