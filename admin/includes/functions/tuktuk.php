@@ -129,30 +129,23 @@ function tuktukServers($url) {
     $dom = str_get_html($html);
     $servers = [];
     if ($dom) {
-        $lis = $dom->find('.ServersList ul#watch li');
-        $count = 0;
+        $lis = $dom->find('div.watch--servers--list ul li.server--item');
         foreach ($lis as $li) {
-            if ($count >= 5) break;
-            $link = $li->getAttribute('data-watch');
-            $name = trim($li->plaintext);
-            $iframeSrc = '';
-            if ($link) {
-                $serverHtml = curlCall($link);
-                $serverDom = str_get_html($serverHtml);
-                if ($serverDom) {
-                    $iframe = $serverDom->find('iframe', 0);
-                    if ($iframe && $iframe->getAttribute('src')) {
-                        $iframeSrc = $iframe->getAttribute('src');
-                    }
-                    $serverDom->clear();
-                    unset($serverDom);
-                }
+            $dataLink = $li->getAttribute('data-link');
+            $nameSpan = $li->find('span', 0);
+            $name = $nameSpan ? trim($nameSpan->plaintext) : '';
+            $decodedLink = '';
+            if ($dataLink) {
+                // PHP equivalent of decodeLink JS function
+                $split = explode('0REL0Y&', $dataLink);
+                $part = $split[0];
+                $reversed = strrev($part);
+                $decodedLink = base64_decode($reversed);
             }
             $servers[] = [
                 'name' => $name,
-                'link' => $iframeSrc ? $iframeSrc : $link
+                'link' => $decodedLink
             ];
-            $count++;
         }
         $dom->clear();
         unset($dom);
