@@ -70,11 +70,19 @@ function liveMatch($view) {
 						$foundIframe = $iframeDom->find('iframe', 0);
 						if ($foundIframe) {
 							$finalUrl = $foundIframe->getAttribute('src');
-							$jsonData = [
-								'src' => "https:" . $finalUrl,
-								'serv' => $serv
-							];
-							$data['matches'][] = $jsonData;
+							// Remove any link with 'wallplaster' in the domain
+							if (strpos($finalUrl, 'wallplaster') === false) {
+								// Ensure the url starts with https
+								$src = $finalUrl;
+								if (strpos($src, 'https:') !== 0) {
+									$src = 'https:' . $src;
+								}
+								$jsonData = [
+									'src' => $src,
+									'serv' => $serv
+								];
+								$data['matches'][] = $jsonData;
+							}
 						}
 					}
 				}
