@@ -55,14 +55,24 @@ function searchMatches() {
 function liveMatch($view) {
 	$html = curlCall("{$view}");
     $dom = str_get_html($html);
-    if ($dom) {
+	if ($dom) {
 		$data = [
 			'matches' => []
 		];
 		foreach ($dom->find('iframe') as $iframe) {
-			if ($iframe) { 
+			if ($iframe) {
+				$srcWithIndex = $iframe->getAttribute('src') . "index.php?serv=1";
+				$iframeHtml = curlCall($srcWithIndex);
+				$iframeDom = str_get_html($iframeHtml);
+				$finalUrl = '';
+				if ($iframeDom) {
+					$foundIframe = $iframeDom->find('iframe', 0);
+					if ($foundIframe) {
+						$finalUrl = $foundIframe->getAttribute('src');
+					}
+				}
 				$jsonData = [
-					'src' => $iframe->getAttribute('src') . "index.php?serv=1",
+					'src' => $finalUrl
 				];
 				$data['matches'][] = $jsonData;
 			}
@@ -70,8 +80,8 @@ function liveMatch($view) {
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		$matches = '';
-	} 
-    return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
+	}
+	return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
 }
 
 if( isset($_GET['action']) && $_GET['action'] == 'match' ){
