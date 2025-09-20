@@ -72,9 +72,9 @@ function liveMatch($view) {
 					}
 				}
 				$jsonData = [
-					'src' => $finalUrl
+					'src' => "https:" . $finalUrl
 				];
-				$data['matches'][] = "https:" . $jsonData['src'];
+				$data['matches'][] = $jsonData;
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
