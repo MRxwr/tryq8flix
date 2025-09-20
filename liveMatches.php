@@ -1,7 +1,7 @@
 <?php
 // liveMatches.php
 // Fetch live match links from the API
-$apiUrl = 'api/?endpoint=Live?action=match&match=' . urlencode($_GET['match'] ?? '');
+$apiUrl = 'http://tryq8flix.com/api/?endpoint=Live?action=match&match=' . urlencode($_GET['match'] ?? '');
 $matches = [];
 if (isset($_GET['match'])) {
     $json = file_get_contents($apiUrl);
