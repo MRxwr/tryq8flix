@@ -61,7 +61,7 @@ function liveMatch($view) {
 		];
 		foreach ($dom->find('iframe') as $iframe) {
 			if ($iframe) {
-				$srcWithIndex = $iframe->getAttribute('src') . "index.php?serv=1";
+				$srcWithIndex = $iframe->getAttribute('src') . "index.php?serv=3";
 				$iframeHtml = curlCall($srcWithIndex);
 				$iframeDom = str_get_html($iframeHtml);
 				$finalUrl = '';
