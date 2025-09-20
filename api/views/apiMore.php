@@ -20,6 +20,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = shahidSpaceMore($_GET["href"]);
             }elseif( $_GET["server"] == 6 ){
                 $data = shahidwBsListing($_GET["href"]);
+            }elseif( $_GET["server"] == 7 ){
+                $data = myCimaListings($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }

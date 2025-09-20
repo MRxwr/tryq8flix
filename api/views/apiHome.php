@@ -96,6 +96,11 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = scrapeShahidwBs($url);
                 $data = json_decode($data, true);
                 echo dataOutput(array("shows" =>$data["shows"]));die();
+            }elseif( $_GET["server"] == 7 ) {
+                $url = $website7 ;
+                $data = myCimaHome($url);
+                $data = json_decode($data, true);
+                echo dataOutput(array("shows" =>$data["shows"]));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
