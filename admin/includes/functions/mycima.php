@@ -125,7 +125,6 @@ function myCimaServers($url) {
             $link = $li->getAttribute('data-watch');
             $name = trim($li->plaintext);
             $servers[] = [
-                'name' => $name,
                 'link' => $link
             ];
         }
