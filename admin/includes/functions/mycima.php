@@ -121,7 +121,10 @@ function myCimaServers($url) {
     $dom = str_get_html($html);
     $servers = [];
     if ($dom) {
-        foreach ($dom->find('.ServersList ul#watch li') as $li) {
+        $lis = $dom->find('.ServersList ul#watch li');
+        $count = 0;
+        foreach ($lis as $li) {
+            if ($count >= 5) break;
             $link = $li->getAttribute('data-watch');
             $name = trim($li->plaintext);
             $iframeSrc = '';
@@ -141,6 +144,7 @@ function myCimaServers($url) {
                 'name' => $name,
                 'link' => $iframeSrc ? $iframeSrc : $link
             ];
+            $count++;
         }
         $dom->clear();
         unset($dom);

@@ -2,6 +2,10 @@
 $response = array(
     "servers" => array(
         array(
+            "id" => 7,
+            "name" => "MyCima",
+        ),
+        array(
             "id" => 1,
             "name" => "Wecima",
         ),
@@ -24,10 +28,6 @@ $response = array(
         array(
             "id" => 6,
             "name" => "ShahidwBs",
-        ),
-        array(
-            "id" => 7,
-            "name" => "MyCima",
         ),
     )
 );
