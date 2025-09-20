@@ -16,12 +16,39 @@ $liveStreams = [];
 
 // If match URL is provided, fetch live streams from API
 if (!empty($matchUrl)) {
-    $apiUrl = "api/views/apiLive.php?action=match&match=" . urlencode($matchUrl);
-    $apiResponse = curlCall($apiUrl);
-    $apiData = json_decode($apiResponse, true);
+    // Include necessary files for the API
+    require_once("templates/simple_html_dom.php");
     
-    if (isset($apiData['data']) && is_array($apiData['data'])) {
-        $liveStreams = $apiData['data'];
+    // Backup original GET parameters
+    $originalGet = $_GET;
+    
+    // Set up API parameters
+    $_GET['action'] = 'match';
+    $_GET['match'] = $matchUrl;
+    
+    // Capture the output from the API
+    ob_start();
+    include 'api/views/apiLive.php';
+    $apiResponse = ob_get_clean();
+    
+    // Restore original GET parameters
+    $_GET = $originalGet;
+    
+    if ($apiResponse) {
+        $apiData = json_decode($apiResponse, true);
+        
+        if (isset($apiData['data']) && is_array($apiData['data'])) {
+            $liveStreams = $apiData['data'];
+        } elseif (isset($apiData['ok']) && $apiData['ok'] && isset($apiData['data'])) {
+            // Handle the exact format from your API response
+            $liveStreams = $apiData['data'];
+        } else {
+            // Log the API response for debugging
+            error_log("API Response: " . $apiResponse);
+        }
+    } else {
+        // Log the failed API call
+        error_log("Failed to get API response");
     }
 } else {
     // Default static streams if no match URL provided
@@ -356,7 +383,8 @@ if (!$currentStream && !empty($liveStreams)) {
                             <h5 class="card-title">
                                 <i class="bi bi-play-circle-fill text-primary me-2"></i>
                                 السيرفر الحالي: <?php echo $currentStream['serv']; ?>
-                            </div>
+                            </h5>
+                            <p class="text-muted small">الرابط: <?php echo substr($currentStream['live'], 0, 50) . '...'; ?></p>
                             <div class="mt-3">
                                 <button class="btn btn-success btn-lg" onclick="playCurrentStream()">
                                     <i class="bi bi-play-fill me-2"></i>بدء المشاهدة
@@ -367,6 +395,24 @@ if (!$currentStream && !empty($liveStreams)) {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <?php else: ?>
+        <!-- Debug info when no current stream -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <h6>معلومات التشخيص:</h6>
+                    <p><strong>عدد السيرفرات:</strong> <?php echo count($liveStreams); ?></p>
+                    <p><strong>السيرفر المطلوب:</strong> <?php echo $selectedServer; ?></p>
+                    <?php if (!empty($liveStreams)): ?>
+                    <p><strong>السيرفرات المتاحة:</strong> 
+                    <?php foreach ($liveStreams as $stream): ?>
+                        <?php echo $stream['serv']; ?>,
+                    <?php endforeach; ?>
+                    </p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -407,6 +453,24 @@ if (!$currentStream && !empty($liveStreams)) {
                 <div class="alert alert-warning">
                     <h4><i class="bi bi-exclamation-triangle me-2"></i>لا توجد بث متاح</h4>
                     <p>عذراً، لا توجد روابط بث متاحة حالياً.</p>
+                    <?php if (!empty($matchUrl)): ?>
+                    <div class="mt-3">
+                        <h6>معلومات التشخيص:</h6>
+                        <p><strong>رابط المباراة:</strong> <?php echo htmlspecialchars($matchUrl); ?></p>
+                        <p><strong>استجابة API:</strong> <?php echo isset($apiResponse) ? (strlen($apiResponse) > 500 ? substr($apiResponse, 0, 500) . '...' : htmlspecialchars($apiResponse)) : 'لا توجد استجابة'; ?></p>
+                        <p><strong>عدد السيرفرات المستخرجة:</strong> <?php echo count($liveStreams); ?></p>
+                        <?php if (!empty($liveStreams)): ?>
+                        <p><strong>السيرفرات:</strong> 
+                        <?php foreach ($liveStreams as $stream): ?>
+                            <?php echo 'Server ' . $stream['serv'] . ' (' . substr($stream['live'], 0, 50) . '...), '; ?>
+                        <?php endforeach; ?>
+                        </p>
+                        <?php endif; ?>
+                        <button class="btn btn-secondary" onclick="retryAPI()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>إعادة المحاولة
+                        </button>
+                    </div>
+                    <?php endif; ?>
                     <a href="index.php" class="btn btn-primary">
                         <i class="bi bi-house me-2"></i>العودة للرئيسية
                     </a>
@@ -563,6 +627,11 @@ if (!$currentStream && !empty($liveStreams)) {
             }
             
             window.open(currentStreamUrl, '_blank');
+        }
+        
+        // Retry API call
+        function retryAPI() {
+            window.location.reload();
         }
         
         // Initialize Video.js player
