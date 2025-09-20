@@ -61,30 +61,49 @@ function myCimaListings($url) {
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
-    foreach ($htmlDom->find('section.allseasonss .Small--Box.Season') as $seasonBox) {
-        $link = $seasonBox->find('a', 0)->href;
-        $title = trim($seasonBox->find('.title', 0)->plaintext);
-        $seasonNumber = trim($seasonBox->find('.epnum', 0)->plaintext);
-        $seasonNumber = preg_replace('/[^0-9]/', '', $seasonNumber); // Extract only the number
 
+    // Scrape seasons
+    foreach ($htmlDom->find('section.allseasonss ul.Blocks--List .Small--Box') as $seasonBox) {
+        $a = $seasonBox->find('a', 0);
+        $link = $a ? $a->href : '';
+        $epnumDiv = $seasonBox->find('.epnum', 0);
+        $seasonNumber = $epnumDiv ? trim($epnumDiv->plaintext) : '';
+        $seasonNumberDigits = preg_replace('/[^0-9]/', '', $seasonNumber);
+        $innerTitle = $seasonBox->find('inner--title h2', 0);
+        $title = $innerTitle ? trim($innerTitle->plaintext) : '';
+        $poster = '';
+        $img = $seasonBox->find('img', 0);
+        if ($img && $img->getAttribute('data-src')) {
+            $poster = $img->getAttribute('data-src');
+        }
         $seasonsData[] = [
             'link' => $link,
             'title' => $title,
-            'season_number' => $seasonNumber
+            'season_number' => $seasonNumberDigits,
+            'season_text' => $seasonNumber,
+            'poster' => $poster
         ];
     }
 
     // Scrape episodes
     foreach ($htmlDom->find('section.allepcont .row a') as $episodeLink) {
         $link = $episodeLink->href;
-        $title = trim($episodeLink->find('.ep-info h2', 0)->plaintext);
-        $episodeNumber = trim($episodeLink->find('.epnum', 0)->plaintext);
-        $episodeNumber = preg_replace('/[^0-9]/', '', $episodeNumber); // Extract only the number
-
+        $epInfo = $episodeLink->find('.ep-info h2', 0);
+        $title = $epInfo ? trim($epInfo->plaintext) : '';
+        $epnumDiv = $episodeLink->find('.epnum', 0);
+        $episodeNumber = $epnumDiv ? trim($epnumDiv->plaintext) : '';
+        $episodeNumberDigits = preg_replace('/[^0-9]/', '', $episodeNumber);
+        $poster = '';
+        $img = $episodeLink->find('img', 0);
+        if ($img && $img->getAttribute('data-src')) {
+            $poster = $img->getAttribute('data-src');
+        }
         $episodesData[] = [
             'link' => $link,
             'title' => $title,
-            'episode_number' => $episodeNumber
+            'episode_number' => $episodeNumberDigits,
+            'episode_text' => $episodeNumber,
+            'poster' => $poster
         ];
     }
 
