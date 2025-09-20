@@ -74,7 +74,7 @@ function liveMatch($view) {
 				$jsonData = [
 					'src' => $finalUrl
 				];
-				$data['matches'][] = $jsonData;
+				$data['matches'][] = "https:" . $jsonData;
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
