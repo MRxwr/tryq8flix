@@ -124,9 +124,22 @@ function myCimaServers($url) {
         foreach ($dom->find('.ServersList ul#watch li') as $li) {
             $link = $li->getAttribute('data-watch');
             $name = trim($li->plaintext);
+            $iframeSrc = '';
+            if ($link) {
+                $serverHtml = curlCall($link);
+                $serverDom = str_get_html($serverHtml);
+                if ($serverDom) {
+                    $iframe = $serverDom->find('iframe', 0);
+                    if ($iframe && $iframe->getAttribute('src')) {
+                        $iframeSrc = $iframe->getAttribute('src');
+                    }
+                    $serverDom->clear();
+                    unset($serverDom);
+                }
+            }
             $servers[] = [
                 'name' => $name,
-                'link' => $link
+                'link' => $iframeSrc ? $iframeSrc : $link
             ];
         }
         $dom->clear();
