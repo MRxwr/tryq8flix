@@ -77,7 +77,7 @@ function liveMatch($view) {
 								if (strpos($src, 'https:') !== 0) {
 									$src = 'https:' . $src;
 								}
-								$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($src);
+								$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
 								$jsonData = [
 									'live' => $src,
 									'serv' => $serv,
