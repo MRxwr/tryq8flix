@@ -61,20 +61,23 @@ function liveMatch($view) {
 		];
 		foreach ($dom->find('iframe') as $iframe) {
 			if ($iframe) {
-				$srcWithIndex = $iframe->getAttribute('src') . "index.php?serv=3";
-				$iframeHtml = curlCall($srcWithIndex);
-				$iframeDom = str_get_html($iframeHtml);
-				$finalUrl = '';
-				if ($iframeDom) {
-					$foundIframe = $iframeDom->find('iframe', 0);
-					if ($foundIframe) {
-						$finalUrl = $foundIframe->getAttribute('src');
+				$baseSrc = $iframe->getAttribute('src');
+				for ($serv = 1; $serv <= 6; $serv++) {
+					$srcWithIndex = $baseSrc . "index.php?serv=" . $serv;
+					$iframeHtml = curlCall($srcWithIndex);
+					$iframeDom = str_get_html($iframeHtml);
+					if ($iframeDom) {
+						$foundIframe = $iframeDom->find('iframe', 0);
+						if ($foundIframe) {
+							$finalUrl = $foundIframe->getAttribute('src');
+							$jsonData = [
+								'src' => "https:" . $finalUrl,
+								'serv' => $serv
+							];
+							$data['matches'][] = $jsonData;
+						}
 					}
 				}
-				$jsonData = [
-					'src' => "https:" . $finalUrl
-				];
-				$data['matches'][] = $jsonData;
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
