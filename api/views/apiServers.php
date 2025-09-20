@@ -21,6 +21,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = shahidSpaceServers($url);
             }elseif( $_GET["server"] == 6 ){
                 $data = scrapeShahidwBsServers($url);
+            }elseif( $_GET["server"] == 7 ){
+                $data = myCimaServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
