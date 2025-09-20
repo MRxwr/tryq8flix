@@ -19,11 +19,10 @@ curl_setopt_array($curl, array(
   CURLOPT_FOLLOWLOCATION => true,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
-  CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  CURLOPT_USERAGENT => 'PostmanRuntime/7.46.1',
   CURLOPT_HTTPHEADER => array(
-    'Referer: https://tuk.tuktukarab.cfd/',
-    'Accept-Language: ar,en-US;q=0.9,en;q=0.8',
-    'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept: */*',
+    'Accept-Encoding: gzip, deflate, br',
     'Connection: keep-alive'
   )
 ));
