@@ -110,7 +110,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = myCimaHome($url);
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 8 ) {
-                $url = $website8 ;
+                $url = $website8 . "recent" ;
                 if ( isset($_GET["search"]) && !empty($_GET["search"]) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
                 }
