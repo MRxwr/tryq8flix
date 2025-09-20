@@ -10,140 +10,56 @@ $profileData = checkLogin();
 $x  = randomLetter();
 $xValue = md5(time());
 
-// Live streaming links array
-$liveStreams = [
-    [
-        'id' => 1,
-        'name' => 'أبو ظبي الرياضية 1',
-        'url' => 'https://admdn1.cdn.mangomolo.com/adsports1/smil:adsports1.stream.smil/chunklist_b4000000_t64MTA4MHA=.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder1.png'
-    ],
-    [
-        'id' => 2,
-        'name' => 'أبو ظبي الرياضية 2',
-        'url' => 'https://admdn5.cdn.mangomolo.com/adsports2/smil:adsports2.stream.smil/chunklist_b4000000_t64MTA4MHA=.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder2.png'
-    ],
-    [
-        'id' => 3,
-        'name' => 'الكويت الرياضية',
-        'url' => 'https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist_b2500000_t64MTA4MHA=.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder3.png'
-    ],
-    [
-        'id' => 4,
-        'name' => 'الكويت الرياضية بلس',
-        'url' => 'https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist_b2500000_t64MTA4MHA=.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder4.png'
-    ],
-    [
-        'id' => 5,
-        'name' => 'دبي الرياضية 1',
-        'url' => 'https://dmitnthvll.cdn.mangomolo.com/dubaisports/smil:dubaisports.smil/chunklist_b1600000.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder5.png'
-    ],
-    [
-        'id' => 6,
-        'name' => 'دبي الرياضية 2',
-        'url' => 'https://dmitwlvvll.cdn.mangomolo.com/dubaisportshd/smil:dubaisportshd.smil/chunklist_b1600000.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder6.png'
-    ],
-    [
-        'id' => 7,
-        'name' => 'دبي الرياضية 3',
-        'url' => 'https://dmitwlvvll.cdn.mangomolo.com/dubaisportshd5/smil:dubaisportshd5.smil/chunklist_b1600000.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder7.png'
-    ],
-    [
-        'id' => 8,
-        'name' => 'قناة الشارقة الرياضية',
-        'url' => 'https://svs.itworkscdn.net/smc4sportslive/smc4.smil/chunklist_b1600000.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder8.png'
-    ],
-    [
-        'id' => 9,
-        'name' => 'الإمارات الرياضية',
-        'url' => 'https://bcovlive-a.akamaihd.net/0764b2cc4e2c4ec0b0efc23cf1e11a56/ap-south-1/6313884884001/profile_0/chunklist.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder9.png'
-    ],
-    [
-        'id' => 10,
-        'name' => 'السعودية الرياضية',
-        'url' => 'https://edge.taghtia.com/sa/6.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder10.png'
-    ],
-    [
-        'id' => 11,
-        'name' => 'الرياضة السعودية',
-        'url' => 'https://edge.taghtia.com/sa/3.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder11.png'
-    ],
-    [
-        'id' => 12,
-        'name' => 'بحرين الرياضية',
-        'url' => 'https://5c7b683162943.streamlock.net/live/ngrp:bahrainsports_all/chunklist_b1524000.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder12.png'
-    ],
-    [
-        'id' => 13,
-        'name' => 'الأردن الرياضية',
-        'url' => 'https://jrtvsports-live.ercdn.net/jrtvsports/jrtvsports.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder13.png'
-    ],
-    [
-        'id' => 14,
-        'name' => 'قطر الرياضية 1',
-        'url' => 'https://qatarsports1-live.akamaized.net/hls/live/2086576/QatarSports1/master.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder14.png'
-    ],
-    [
-        'id' => 15,
-        'name' => 'قطر الرياضية 2',
-        'url' => 'https://qatarsports2-live.akamaized.net/hls/live/2086577/QatarSports2/master.m3u8',
-        'category' => 'sports',
-        'language' => 'ar',
-        'logo' => 'https://i.imgur.com/placeholder15.png'
-    ]
-];
+// Get match URL from parameter
+$matchUrl = isset($_GET['match']) ? $_GET['match'] : '';
+$liveStreams = [];
 
-// Get selected stream
-$selectedStream = null;
-if (isset($_GET['stream'])) {
-    $streamId = intval($_GET['stream']);
-    foreach ($liveStreams as $stream) {
-        if ($stream['id'] == $streamId) {
-            $selectedStream = $stream;
-            break;
-        }
+// If match URL is provided, fetch live streams from API
+if (!empty($matchUrl)) {
+    $apiUrl = "api/views/apiLive.php?action=match&match=" . urlencode($matchUrl);
+    $apiResponse = curlCall($apiUrl);
+    $apiData = json_decode($apiResponse, true);
+    
+    if (isset($apiData['data']) && is_array($apiData['data'])) {
+        $liveStreams = $apiData['data'];
     }
+} else {
+    // Default static streams if no match URL provided
+    $liveStreams = [
+        [
+            'live' => 'https://admdn1.cdn.mangomolo.com/adsports1/smil:adsports1.stream.smil/chunklist_b4000000_t64MTA4MHA=.m3u8',
+            'serv' => 1,
+            'name' => 'أبو ظبي الرياضية 1'
+        ],
+        [
+            'live' => 'https://admdn5.cdn.mangomolo.com/adsports2/smil:adsports2.stream.smil/chunklist_b4000000_t64MTA4MHA=.m3u8',
+            'serv' => 2,
+            'name' => 'أبو ظبي الرياضية 2'
+        ],
+        [
+            'live' => 'https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist_b2500000_t64MTA4MHA=.m3u8',
+            'serv' => 3,
+            'name' => 'الكويت الرياضية'
+        ]
+    ];
+}
+
+// Get selected server
+$selectedServer = isset($_GET['server']) ? intval($_GET['server']) : 1;
+$currentStream = null;
+
+// Find the current stream based on selected server
+foreach ($liveStreams as $stream) {
+    if ($stream['serv'] == $selectedServer) {
+        $currentStream = $stream;
+        break;
+    }
+}
+
+// If no stream found for selected server, use first available
+if (!$currentStream && !empty($liveStreams)) {
+    $currentStream = $liveStreams[0];
+    $selectedServer = $currentStream['serv'];
 }
 ?>
 <!doctype html>
@@ -300,6 +216,74 @@ if (isset($_GET['stream'])) {
         .grid-container {
             padding: 20px 0;
         }
+        
+        .server-selector {
+            margin-bottom: 30px;
+        }
+        
+        .server-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .server-btn {
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+        
+        .server-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .current-stream-info .card {
+            background: linear-gradient(135deg, #211f20 0%, #333 100%);
+            border: 1px solid #e50914;
+        }
+        
+        .stream-iframe-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .stream-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .stream-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+            .server-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .server-btn {
+                width: 200px;
+            }
+        }
     </style>
 </head>
 
@@ -330,14 +314,66 @@ if (isset($_GET['stream'])) {
         <!-- Page Header -->
         <div class="row mb-4">
             <div class="col-12">
+                <?php if (!empty($matchUrl)): ?>
+                <h1 class="text-center mb-3">
+                    <i class="bi bi-broadcast me-2"></i>مشاهدة المباراة مباشر
+                </h1>
+                <p class="text-center text-muted">اختر السيرفر المناسب لك</p>
+                <?php else: ?>
                 <h1 class="text-center mb-3">
                     <i class="bi bi-broadcast me-2"></i>البث المباشر للقنوات الرياضية
                 </h1>
                 <p class="text-center text-muted">اختر القناة التي تريد مشاهدتها</p>
+                <?php endif; ?>
             </div>
         </div>
 
-        <!-- Search and Filter -->
+        <?php if (!empty($liveStreams)): ?>
+        <!-- Server Selector -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="server-selector text-center">
+                    <h5 class="mb-3">السيرفرات المتاحة:</h5>
+                    <div class="server-buttons">
+                        <?php foreach ($liveStreams as $stream): ?>
+                        <button class="btn <?php echo ($stream['serv'] == $selectedServer) ? 'btn-primary' : 'btn-outline-primary'; ?> me-2 mb-2 server-btn" 
+                                onclick="switchServer(<?php echo $stream['serv']; ?>)">
+                            <i class="bi bi-server me-1"></i>سيرفر <?php echo $stream['serv']; ?>
+                        </button>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Stream Display -->
+        <?php if ($currentStream): ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="current-stream-info text-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-play-circle-fill text-primary me-2"></i>
+                                السيرفر الحالي: <?php echo $currentStream['serv']; ?>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-success btn-lg" onclick="playCurrentStream()">
+                                    <i class="bi bi-play-fill me-2"></i>بدء المشاهدة
+                                </button>
+                                <button class="btn btn-info btn-lg ms-2" onclick="openInNewTab()">
+                                    <i class="bi bi-box-arrow-up-right me-2"></i>فتح في نافذة جديدة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (empty($matchUrl)): ?>
+        <!-- Search and Filter (only for static streams) -->
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="search-box">
@@ -354,34 +390,30 @@ if (isset($_GET['stream'])) {
             </div>
         </div>
 
-        <!-- Streams Grid -->
+        <!-- Static Streams Grid (only when no match URL) -->
         <div class="grid-container">
             <div class="row" id="streamsGrid">
-                <?php foreach ($liveStreams as $stream): ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4 stream-item" 
-                     data-category="<?php echo $stream['category']; ?>" 
-                     data-name="<?php echo strtolower($stream['name']); ?>">
-                    <div class="card stream-card h-100" onclick="playStream(<?php echo $stream['id']; ?>, '<?php echo htmlspecialchars($stream['url']); ?>', '<?php echo htmlspecialchars($stream['name']); ?>')">
-                        <div class="position-relative">
-                            <div class="live-indicator">مباشر</div>
-                            <div class="stream-info text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-tv-fill" style="font-size: 48px; color: #e50914;"></i>
-                                </div>
-                                <div class="stream-name"><?php echo $stream['name']; ?></div>
-                                <div class="stream-category"><?php echo $stream['category']; ?></div>
-                                <div class="mt-3">
-                                    <button class="btn btn-primary btn-sm">
-                                        <i class="bi bi-play-fill me-1"></i>مشاهدة
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-12 text-center">
+                    <p class="text-muted">لا توجد قنوات متاحة حالياً</p>
                 </div>
-                <?php endforeach; ?>
             </div>
         </div>
+        <?php endif; ?>
+
+        <?php else: ?>
+        <!-- No streams available -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="alert alert-warning">
+                    <h4><i class="bi bi-exclamation-triangle me-2"></i>لا توجد بث متاح</h4>
+                    <p>عذراً، لا توجد روابط بث متاحة حالياً.</p>
+                    <a href="index.php" class="btn btn-primary">
+                        <i class="bi bi-house me-2"></i>العودة للرئيسية
+                    </a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Full Screen Player -->
@@ -419,6 +451,119 @@ if (isset($_GET['stream'])) {
 
     <script>
         let player = null;
+        let currentStreamUrl = '<?php echo isset($currentStream['live']) ? addslashes($currentStream['live']) : ''; ?>';
+        let currentServer = <?php echo $selectedServer; ?>;
+        let matchUrl = '<?php echo addslashes($matchUrl); ?>';
+        
+        // Switch server function
+        function switchServer(serverNum) {
+            const baseUrl = window.location.href.split('?')[0];
+            let newUrl = baseUrl + '?server=' + serverNum;
+            
+            if (matchUrl) {
+                newUrl += '&match=' + encodeURIComponent(matchUrl);
+            }
+            
+            window.location.href = newUrl;
+        }
+        
+        // Play current stream in fullscreen
+        function playCurrentStream() {
+            if (!currentStreamUrl) {
+                alert('لا يوجد رابط بث متاح');
+                return;
+            }
+            
+            $('#loadingModal').modal('show');
+            
+            // Check if the URL is an iframe embed or direct stream
+            if (currentStreamUrl.includes('embed') || currentStreamUrl.includes('.php')) {
+                // It's an iframe URL
+                playIframeStream(currentStreamUrl);
+            } else {
+                // It's a direct stream URL (m3u8, etc.)
+                playDirectStream(currentStreamUrl);
+            }
+        }
+        
+        // Play iframe stream
+        function playIframeStream(url) {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.className = 'stream-iframe';
+            iframe.allowFullscreen = true;
+            iframe.allow = 'autoplay; encrypted-media; fullscreen';
+            
+            // Create fullscreen container
+            const container = document.createElement('div');
+            container.className = 'player-container';
+            container.style.display = 'block';
+            container.innerHTML = `
+                <button class="close-player" onclick="closePlayer()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="stream-status">سيرفر ${currentServer} - مباشر</div>
+            `;
+            container.appendChild(iframe);
+            
+            document.body.appendChild(container);
+            $('#loadingModal').modal('hide');
+            
+            // Try to go fullscreen
+            setTimeout(() => {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                }
+            }, 1000);
+        }
+        
+        // Play direct stream (m3u8, etc.)
+        function playDirectStream(url) {
+            if (!player) {
+                initPlayer();
+            }
+            
+            player.src({
+                src: url,
+                type: getStreamType(url)
+            });
+            
+            $('#playerContainer').show();
+            
+            setTimeout(() => {
+                const playerContainer = document.getElementById('playerContainer');
+                if (playerContainer.requestFullscreen) {
+                    playerContainer.requestFullscreen();
+                }
+                player.play().catch(e => {
+                    console.error('Play error:', e);
+                    $('#loadingModal').modal('hide');
+                    alert('حدث خطأ في تشغيل البث. يرجى تجربة سيرفر آخر.');
+                    closePlayer();
+                });
+            }, 1000);
+        }
+        
+        // Get stream type based on URL
+        function getStreamType(url) {
+            if (url.includes('.m3u8')) {
+                return 'application/x-mpegURL';
+            } else if (url.includes('.mp4')) {
+                return 'video/mp4';
+            } else {
+                return 'application/x-mpegURL'; // Default to HLS
+            }
+        }
+        
+        // Open stream in new tab
+        function openInNewTab() {
+            if (!currentStreamUrl) {
+                alert('لا يوجد رابط بث متاح');
+                return;
+            }
+            
+            window.open(currentStreamUrl, '_blank');
+        }
         
         // Initialize Video.js player
         function initPlayer() {
@@ -440,14 +585,13 @@ if (isset($_GET['stream'])) {
                 }
             });
             
-            // Handle player events
             player.ready(function() {
                 console.log('Player is ready');
             });
             
             player.on('error', function(e) {
                 console.error('Player error:', e);
-                alert('حدث خطأ في تشغيل البث. يرجى المحاولة مرة أخرى.');
+                alert('حدث خطأ في تشغيل البث. يرجى تجربة سيرفر آخر.');
                 closePlayer();
             });
             
@@ -461,43 +605,16 @@ if (isset($_GET['stream'])) {
             });
         }
         
-        // Play stream function
-        function playStream(streamId, streamUrl, streamName) {
-            console.log('Playing stream:', streamName, streamUrl);
-            
-            // Show loading modal
-            $('#loadingModal').modal('show');
-            
-            // Initialize player if not already done
-            if (!player) {
-                initPlayer();
-            }
-            
-            // Set source and play
-            player.src({
-                src: streamUrl,
-                type: 'application/x-mpegURL'
-            });
-            
-            // Show player container
-            $('#playerContainer').show();
-            
-            // Enter fullscreen
-            setTimeout(() => {
-                if (player.requestFullscreen) {
-                    player.requestFullscreen();
-                }
-                player.play().catch(e => {
-                    console.error('Play error:', e);
-                    $('#loadingModal').modal('hide');
-                    alert('حدث خطأ في تشغيل البث. يرجى المحاولة مرة أخرى.');
-                    closePlayer();
-                });
-            }, 1000);
-        }
-        
         // Close player function
         function closePlayer() {
+            // Remove any fullscreen iframe containers
+            const existingContainers = document.querySelectorAll('.player-container');
+            existingContainers.forEach(container => {
+                if (container.id !== 'playerContainer') {
+                    container.remove();
+                }
+            });
+            
             if (player) {
                 player.pause();
                 if (document.exitFullscreen) {
@@ -508,46 +625,10 @@ if (isset($_GET['stream'])) {
             $('#loadingModal').modal('hide');
         }
         
-        // Search functionality
-        $('#searchInput').on('input', function() {
-            const searchTerm = $(this).val().toLowerCase();
-            filterStreams();
-        });
-        
-        // Category filter
-        $('#categoryFilter').on('change', function() {
-            filterStreams();
-        });
-        
-        // Filter streams function
-        function filterStreams() {
-            const searchTerm = $('#searchInput').val().toLowerCase();
-            const selectedCategory = $('#categoryFilter').val();
-            
-            $('.stream-item').each(function() {
-                const streamName = $(this).data('name');
-                const streamCategory = $(this).data('category');
-                
-                let showItem = true;
-                
-                // Filter by search term
-                if (searchTerm && !streamName.includes(searchTerm)) {
-                    showItem = false;
-                }
-                
-                // Filter by category
-                if (selectedCategory && streamCategory !== selectedCategory) {
-                    showItem = false;
-                }
-                
-                $(this).toggle(showItem);
-            });
-        }
-        
         // Handle fullscreen changes
         document.addEventListener('fullscreenchange', function() {
             if (!document.fullscreenElement) {
-                closePlayer();
+                // Don't auto-close, let user decide
             }
         });
         
@@ -558,20 +639,16 @@ if (isset($_GET['stream'])) {
             }
         });
         
-        // Initialize on page load
+        // Auto-play if current stream is available
         $(document).ready(function() {
             console.log('Live Matches page loaded');
+            console.log('Current stream URL:', currentStreamUrl);
+            console.log('Current server:', currentServer);
+            console.log('Match URL:', matchUrl);
             
-            // Auto-play if stream parameter is provided
-            <?php if ($selectedStream): ?>
-            setTimeout(() => {
-                playStream(
-                    <?php echo $selectedStream['id']; ?>, 
-                    '<?php echo htmlspecialchars($selectedStream['url']); ?>', 
-                    '<?php echo htmlspecialchars($selectedStream['name']); ?>'
-                );
-            }, 1000);
-            <?php endif; ?>
+            // Update server buttons state
+            $('.server-btn').removeClass('btn-primary').addClass('btn-outline-primary');
+            $(`.server-btn:contains("سيرفر ${currentServer}")`).removeClass('btn-outline-primary').addClass('btn-primary');
         });
     </script>
 </body>
