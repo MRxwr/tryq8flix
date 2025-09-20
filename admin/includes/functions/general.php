@@ -107,7 +107,6 @@ function scrapePage($url) {
 }
 
 function curlCall($url) {
-	var_dump($url. "\n" . $_SERVER['HTTP_USER_AGENT']);
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
