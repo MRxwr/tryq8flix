@@ -118,7 +118,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $url .= "recent/page/{$_GET["page"]}";
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $_GET["search"] = str_replace(" ","+",$_GET["search"]);
-                    $url .= "index.php?s={$_GET["search"]}&page={$_GET["page"]}";
+                    $url .= "?s={$_GET["search"]}&page={$_GET["page"]}";
                 }
                 $data = tuktukHome($url);
                 echo dataOutput(array("shows" =>$data));die();
