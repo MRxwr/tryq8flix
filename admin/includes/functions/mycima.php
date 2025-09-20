@@ -117,7 +117,7 @@ function myCimaListings($url) {
 }
 
 function myCimaServers($url) {
-    $html = curlCall("{$url}");
+    $html = curlCall("{$url}watch");
     $dom = str_get_html($html);
     $servers = [];
     if ($dom) {
