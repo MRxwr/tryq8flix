@@ -3,6 +3,7 @@ function tuktukHome($url) {
     $url = trim($url);
     $url = str_replace(' ', '+', $url);
     $html = curlCall($url);
+    echo $url;
     var_dump($html);
     $dom = str_get_html($html);
     $data = [
