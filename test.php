@@ -2,7 +2,10 @@
 include_once('admin/includes/config.php');
 include_once('admin/includes/functions.php');
 
-$url = isset($_GET["url"]) ? trim(urldecode($_GET["url"])) : 'https://mycima.surf/?s=one+piece&page=2';
+$url = isset($_GET["url"]) ? trim($_GET["url"]) : 'https://mycima.surf/?s=one+piece&page=2';
+// Fix spaces in URL
+$url = str_replace(' ', '+', $url);
+
 echo "URL: " . htmlspecialchars($url) . "<br>";
 
 $curl = curl_init();
