@@ -56,49 +56,63 @@ function tuktukListings($url) {
     $seasonsData = [];
     $episodesData = [];
 
-    // Scrape seasons
-    foreach ($htmlDom->find('section.allseasonss ul.Blocks--List .Small--Box') as $seasonBox) {
-        $a = $seasonBox->find('a', 0);
-        $link = $a ? $a->href : '';
-        $epnumDiv = $seasonBox->find('.epnum', 0);
-        $seasonNumber = $epnumDiv ? trim($epnumDiv->plaintext) : '';
-        $seasonNumberDigits = preg_replace('/[^0-9]/', '', $seasonNumber);
-        $innerTitle = $seasonBox->find('inner--title h2', 0);
-        $title = $innerTitle ? trim($innerTitle->plaintext) : '';
-        $poster = '';
-        $img = $seasonBox->find('img', 0);
-        if ($img && $img->getAttribute('data-src')) {
-            $poster = $img->getAttribute('data-src');
+    // Scrape seasons (new structure)
+    $seasonsList = $htmlDom->find('section.allseasonss ul.Blocks--List', 0);
+    if ($seasonsList) {
+        foreach ($seasonsList->find('div.Block--Item') as $seasonBox) {
+            $a = $seasonBox->find('a', 0);
+            $link = $a ? $a->href : '';
+            $img = $seasonBox->find('img', 0);
+            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
+            $title = '';
+            $h3 = $seasonBox->find('h3', 0);
+            if ($h3) {
+                $title = trim($h3->plaintext);
+            }
+            $seasonNumber = '';
+            $seasonNumberDigits = '';
+            // Try to extract season number from title if possible
+            if (preg_match('/(\d+)/u', $title, $matches)) {
+                $seasonNumber = $matches[1];
+                $seasonNumberDigits = $seasonNumber;
+            }
+            $seasonsData[] = [
+                'link' => $link,
+                'title' => $title,
+                'season_number' => $seasonNumberDigits,
+                'season_text' => $seasonNumber,
+                'poster' => $poster
+            ];
         }
-        $seasonsData[] = [
-            'link' => $link,
-            'title' => $title,
-            'season_number' => $seasonNumberDigits,
-            'season_text' => $seasonNumber,
-            'poster' => $poster
-        ];
     }
 
-    // Scrape episodes
-    foreach ($htmlDom->find('section.allepcont .row a') as $episodeLink) {
-        $link = $episodeLink->href;
-        $epInfo = $episodeLink->find('.ep-info h2', 0);
-        $title = $epInfo ? trim($epInfo->plaintext) : '';
-        $epnumDiv = $episodeLink->find('.epnum', 0);
-        $episodeNumber = $epnumDiv ? trim($epnumDiv->plaintext) : '';
-        $episodeNumberDigits = preg_replace('/[^0-9]/', '', $episodeNumber);
-        $poster = '';
-        $img = $episodeLink->find('img', 0);
-        if ($img && $img->getAttribute('data-src')) {
-            $poster = $img->getAttribute('data-src');
+    // Scrape episodes (new structure)
+    $episodesRow = $htmlDom->find('section.allepcont .row', 0);
+    if ($episodesRow) {
+        foreach ($episodesRow->find('a') as $episodeLink) {
+            $link = $episodeLink->href;
+            $img = $episodeLink->find('img', 0);
+            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
+            $epInfo = $episodeLink->find('.ep-info h2', 0);
+            $title = $epInfo ? trim($epInfo->plaintext) : '';
+            $epnumDiv = $episodeLink->find('.epnum', 0);
+            $episodeNumber = '';
+            $episodeNumberDigits = '';
+            if ($epnumDiv) {
+                // Extract number from text
+                if (preg_match('/(\d+)/u', $epnumDiv->plaintext, $matches)) {
+                    $episodeNumber = $matches[1];
+                    $episodeNumberDigits = $episodeNumber;
+                }
+            }
+            $episodesData[] = [
+                'link' => $link,
+                'title' => $title,
+                'episode_number' => $episodeNumberDigits,
+                'episode_text' => $episodeNumber,
+                'poster' => $poster
+            ];
         }
-        $episodesData[] = [
-            'link' => $link,
-            'title' => $title,
-            'episode_number' => $episodeNumberDigits,
-            'episode_text' => $episodeNumber,
-            'poster' => $poster
-        ];
     }
 
     $data = [
