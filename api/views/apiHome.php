@@ -98,8 +98,15 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 echo dataOutput(array("shows" =>$data["shows"]));die();
             }elseif( $_GET["server"] == 7 ) {
                 $url = $website7 ;
-                if( isset($_GET["page"]) && !empty($_GET["page"]) ){
+                if ( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $url .= "?s={$_GET["search"]}";
+                }
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
                     $url .= "/page/{$_GET["page"]}";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $url .= "?s={$_GET["search"]}&page={$_GET["page"]}";
                 }
                 $data = myCimaHome($url);
                 echo dataOutput(array("shows" =>$data));die();
