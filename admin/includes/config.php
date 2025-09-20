@@ -6,7 +6,7 @@ $password = "N@b$90949089";
 $dbname = "u905492195_tryq8";
 
 // Create connection
-$dbconnect = mysqli_connect($servername, $username, $password, $dbname);
+var_dump($dbconnect = mysqli_connect($servername, $username, $password, $dbname));
 
 // Check connection
 if (!$dbconnect) {
