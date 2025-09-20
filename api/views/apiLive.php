@@ -69,7 +69,7 @@ function liveMatch($view) {
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
-		echo 'Error: Invalid DOM object.';
+		$matches = '';
 	} 
     return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
 }
