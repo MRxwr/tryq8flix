@@ -2,9 +2,12 @@
 include_once('admin/includes/config.php');
 include_once('admin/includes/functions.php');
 
+$url = isset($_GET["url"]) ? trim(urldecode($_GET["url"])) : 'https://mycima.surf/?s=one+piece&page=2';
+echo "URL: " . htmlspecialchars($url) . "<br>";
+
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://mycima.surf/?s=one+piece&page=2',
+  CURLOPT_URL => $url,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_MAXREDIRS => 10,
