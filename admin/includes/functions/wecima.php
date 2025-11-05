@@ -69,6 +69,7 @@ function scrapeWecimaServers($url) {
 function scrapeWecima($url) {
     GLOBAL $website3;
     $url = ( !isset($url) || empty($url) ) ? $website3 : $url;
+    echo $url;
     $html = curlCall($url);
     var_dump($html);
     $dom = str_get_html($html);
