@@ -28,7 +28,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $url .= "/search/{$_GET["search"]}{$searchType}";
                 }
                 if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
-                    $url .= "/page/{$_GET["page"]}";
+                    $url .= "page/{$_GET["page"]}";
                 }
                 var_dump($_REQUEST);
                 $data = scrapeWecima("{$url}");
