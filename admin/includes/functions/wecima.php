@@ -69,10 +69,7 @@ function scrapeWecimaServers($url) {
 function scrapeWecima($url) {
     GLOBAL $website3;
     $url = ( !isset($url) || empty($url) ) ? $website3 : $url;
-    if( @!file_get_contents($url) ){
-        return 0;
-    }
-    $html = file_get_contents($url);
+    @$html = file_get_contents($url);
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
