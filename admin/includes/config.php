@@ -14,14 +14,14 @@ if (!$dbconnect) {
 }
 date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
-$website = "https://shahid4u.cx/";
-$website2 = "https://topcinema.pro/";
+$website = "https://shhahid4u.diy/";
+$website2 = "https://web6.topcinema.cloud/";
 $website3 = "https://wecima.beer/";
 $website4 = "https://a.a5s0d.sbs/";
 $website5 = "https://shahiid4u.live/";
 $website6 = "https://vid.shahidwbas.tv/";
 $website7 = "https://topcinema.surf/";
-$website8 = "https://tuktukcenma.cam/";
+$website8 = "https://tuk.tuktukarab.cfd/";
 $websiteLive = "https://yala-shoot-tv.live/";
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 ?>
