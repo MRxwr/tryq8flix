@@ -72,6 +72,7 @@ function scrapeWecima($url) {
     echo $url;
     $html = file_get_contents($url);
     $dom = str_get_html($html);
+    var_dump($html);
     if ($dom) {
         $data = [
             'shows' => []
