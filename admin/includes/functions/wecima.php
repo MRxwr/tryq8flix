@@ -4,6 +4,7 @@ function wecimaListing($url) {
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
+    // Scrape seasons
     foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
         $link = $seasonLink->href;
         $title = trim($seasonLink->plaintext);
@@ -14,12 +15,15 @@ function wecimaListing($url) {
             'season_number' => $seasonNumber
         ];
     }
-    // Scrape episodes
-    foreach ($htmlDom->find('.Episodes--Seasons--Episodes a') as $episodeLink) {
+    // Scrape episodes from new structure
+    foreach ($htmlDom->find('.EpisodesList a') as $episodeLink) {
         $link = $episodeLink->href;
-        $title = trim($episodeLink->find('episodetitle', 0)->plaintext);
+        $title = '';
+        $episodeTitleTag = $episodeLink->find('episodetitle', 0);
+        if ($episodeTitleTag) {
+            $title = trim($episodeTitleTag->plaintext);
+        }
         $episodeNumber = preg_replace('/[^0-9]/', '', $title);
-
         $episodesData[] = [
             'link' => $link,
             'title' => $title,
