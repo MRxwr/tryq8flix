@@ -5,12 +5,13 @@ function wecimaListing($url) {
     $seasonsData = [];
     $episodesData = [];
     
-    // Scrape seasons from List--Seasons--Episodes
+    // Scrape all seasons and get episodes for each
     foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
         $dataId = $seasonLink->getAttribute('data-id');
         $dataSeason = $seasonLink->getAttribute('data-season');
         $title = trim($seasonLink->plaintext);
         $seasonNumber = preg_replace('/[^0-9]/', '', $title);
+        $seasonNumber = str_pad($seasonNumber, 2, '0', STR_PAD_LEFT);
         
         // Make POST request to get episodes for this season
         $postData = [
@@ -21,41 +22,30 @@ function wecimaListing($url) {
         $episodesHtml = curlPost('https://wecima.click/ajax/Episode', $postData);
         $episodesDom = str_get_html($episodesHtml);
         
-        // Get the first episode link as the season link
-        $firstEpisode = $episodesDom ? $episodesDom->find('a', 0) : null;
-        $seasonLinkUrl = $firstEpisode ? $firstEpisode->href : '';
-        
-        $seasonsData[] = [
-            'link' => $seasonLinkUrl,
-            'title' => $title,
-            'season_number' => $seasonNumber
-        ];
-        
         if ($episodesDom) {
+            // Get all episodes for this season
+            foreach ($episodesDom->find('a') as $episodeLink) {
+                $link = $episodeLink->href;
+                $episodeTitleTag = $episodeLink->find('episodetitle', 0);
+                if ($episodeTitleTag) {
+                    $episodeTitle = trim($episodeTitleTag->plaintext);
+                    $episodeNumber = preg_replace('/[^0-9]/', '', $episodeTitle);
+                    $episodeNumber = str_pad($episodeNumber, 2, '0', STR_PAD_LEFT);
+                    
+                    $episodesData[] = [
+                        'link' => $link,
+                        'title' => "S{$seasonNumber}E{$episodeNumber}",
+                        'episode_number' => $episodeNumber
+                    ];
+                }
+            }
             $episodesDom->clear();
             unset($episodesDom);
         }
     }
-    
-    // Scrape episodes from current page EpisodesList
-    foreach ($htmlDom->find('.EpisodesList a') as $episodeLink) {
-        $link = $episodeLink->href;
-        $title = '';
-        $episodeTitleTag = $episodeLink->find('episodetitle', 0);
-        if ($episodeTitleTag) {
-            $title = trim($episodeTitleTag->plaintext);
-        }
-        $episodeNumber = preg_replace('/[^0-9]/', '', $title);
-        $episodesData[] = [
-            'link' => $link,
-            'title' => $title,
-            'episode_number' => $episodeNumber
-        ];
-    }
 
     if (strpos(strtolower($url), 'season') === false){
         $episodesData = array_reverse($episodesData);
-        $seasonsData = array_reverse($seasonsData);
     }
     $data = [
         'seasons' => $seasonsData,
