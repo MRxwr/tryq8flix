@@ -4,18 +4,40 @@ function wecimaListing($url) {
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
-    // Scrape seasons
+    
+    // Scrape seasons from List--Seasons--Episodes
     foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
-        $link = $seasonLink->href;
+        $dataId = $seasonLink->getAttribute('data-id');
+        $dataSeason = $seasonLink->getAttribute('data-season');
         $title = trim($seasonLink->plaintext);
         $seasonNumber = preg_replace('/[^0-9]/', '', $title);
+        
+        // Make POST request to get episodes for this season
+        $postData = [
+            'id' => $dataId,
+            'season' => $dataSeason
+        ];
+        
+        $episodesHtml = curlPost('https://wecima.click/ajax/Episode', $postData);
+        $episodesDom = str_get_html($episodesHtml);
+        
+        // Get the first episode link as the season link
+        $firstEpisode = $episodesDom ? $episodesDom->find('a', 0) : null;
+        $seasonLinkUrl = $firstEpisode ? $firstEpisode->href : '';
+        
         $seasonsData[] = [
-            'link' => $link,
+            'link' => $seasonLinkUrl,
             'title' => $title,
             'season_number' => $seasonNumber
         ];
+        
+        if ($episodesDom) {
+            $episodesDom->clear();
+            unset($episodesDom);
+        }
     }
-    // Scrape episodes from new structure
+    
+    // Scrape episodes from current page EpisodesList
     foreach ($htmlDom->find('.EpisodesList a') as $episodeLink) {
         $link = $episodeLink->href;
         $title = '';

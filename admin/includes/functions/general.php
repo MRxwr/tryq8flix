@@ -119,6 +119,22 @@ function curlCall($url) {
 	return $response;
 }
 
+function curlPost($url, $postData = []) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_USERAGENT, "{$_SERVER['HTTP_USER_AGENT']}");
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+	$response = curl_exec($ch);
+	curl_close($ch);
+	return $response;
+}
+
 function outputImage($imageUrl) {
     $image = file_get_contents($imageUrl);
     header('Content-Type: image/jpeg');
