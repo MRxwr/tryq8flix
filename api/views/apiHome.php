@@ -30,7 +30,6 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
                     $url .= "/page/{$_GET["page"]}";
                 }
-                echo $url;
                 $data = scrapeWecima("{$url}");
                 $data = json_decode($data, true);
                 echo dataOutput($data);die();
