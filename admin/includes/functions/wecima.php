@@ -64,7 +64,7 @@ function scrapeWecimaServers($url) {
         $dom->clear();
         unset($dom);
     }
-    return $data;
+    return $data['shows'];
 }
 function scrapeWecima($url) {
     GLOBAL $website3;
