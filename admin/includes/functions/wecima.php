@@ -5,42 +5,64 @@ function wecimaListing($url) {
     $seasonsData = [];
     $episodesData = [];
     
-    // Scrape all seasons and get episodes for each
-    foreach ($htmlDom->find('.List--Seasons--Episodes a') as $seasonLink) {
-        $dataId = $seasonLink->getAttribute('data-id');
-        $dataSeason = $seasonLink->getAttribute('data-season');
-        $title = trim($seasonLink->plaintext);
-        $seasonNumber = preg_replace('/[^0-9]/', '', $title);
-        $seasonNumber = str_pad($seasonNumber, 2, '0', STR_PAD_LEFT);
-        
-        // Make POST request to get episodes for this season
-        $postData = [
-            'post_id' => $dataId,
-            'season' => $dataSeason
-        ];
-        
-        $episodesHtml = curlPost('https://wecima.click/ajax/Episode', $postData);
-        $episodesDom = str_get_html($episodesHtml);
-        
-        if ($episodesDom) {
-            // Get all episodes for this season
-            foreach ($episodesDom->find('a') as $episodeLink) {
-                $link = $episodeLink->href;
-                $episodeTitleTag = $episodeLink->find('episodetitle', 0);
-                if ($episodeTitleTag) {
-                    $episodeTitle = trim($episodeTitleTag->plaintext);
-                    $episodeNumber = preg_replace('/[^0-9]/', '', $episodeTitle);
-                    $episodeNumber = str_pad($episodeNumber, 2, '0', STR_PAD_LEFT);
-                    
-                    $episodesData[] = [
-                        'link' => $link,
-                        'title' => "S{$seasonNumber}E{$episodeNumber}",
-                        'episode_number' => $episodeNumber
-                    ];
+    // Check if there are seasons
+    $seasonsList = $htmlDom->find('.List--Seasons--Episodes a');
+    
+    if (count($seasonsList) > 0) {
+        // Scrape all seasons and get episodes for each
+        foreach ($seasonsList as $seasonLink) {
+            $dataId = $seasonLink->getAttribute('data-id');
+            $dataSeason = $seasonLink->getAttribute('data-season');
+            $title = trim($seasonLink->plaintext);
+            $seasonNumber = preg_replace('/[^0-9]/', '', $title);
+            $seasonNumber = str_pad($seasonNumber, 2, '0', STR_PAD_LEFT);
+            
+            // Make POST request to get episodes for this season
+            $postData = [
+                'post_id' => $dataId,
+                'season' => $dataSeason
+            ];
+            
+            $episodesHtml = curlPost('https://wecima.click/ajax/Episode', $postData);
+            $episodesDom = str_get_html($episodesHtml);
+            
+            if ($episodesDom) {
+                // Get all episodes for this season
+                foreach ($episodesDom->find('a') as $episodeLink) {
+                    $link = $episodeLink->href;
+                    $episodeTitleTag = $episodeLink->find('episodetitle', 0);
+                    if ($episodeTitleTag) {
+                        $episodeTitle = trim($episodeTitleTag->plaintext);
+                        $episodeNumber = preg_replace('/[^0-9]/', '', $episodeTitle);
+                        $episodeNumber = str_pad($episodeNumber, 2, '0', STR_PAD_LEFT);
+                        
+                        $episodesData[] = [
+                            'link' => $link,
+                            'title' => "S{$seasonNumber}E{$episodeNumber}",
+                            'episode_number' => $episodeNumber
+                        ];
+                    }
                 }
+                $episodesDom->clear();
+                unset($episodesDom);
             }
-            $episodesDom->clear();
-            unset($episodesDom);
+        }
+    } else {
+        // No seasons, get episodes directly from EpisodesList
+        foreach ($htmlDom->find('.EpisodesList a') as $episodeLink) {
+            $link = $episodeLink->href;
+            $episodeTitleTag = $episodeLink->find('episodetitle', 0);
+            if ($episodeTitleTag) {
+                $episodeTitle = trim($episodeTitleTag->plaintext);
+                $episodeNumber = preg_replace('/[^0-9]/', '', $episodeTitle);
+                $episodeNumber = str_pad($episodeNumber, 2, '0', STR_PAD_LEFT);
+                
+                $episodesData[] = [
+                    'link' => $link,
+                    'title' => "E{$episodeNumber}",
+                    'episode_number' => $episodeNumber
+                ];
+            }
         }
     }
 
