@@ -100,6 +100,61 @@ function scrapeWecimaServers($url) {
     }
     return $data['shows'];
 }
+function scrapeWecimaSearch($query) {
+    $postData = ['q' => $query];
+    $response = curlPost('https://wecima.click/search', $postData);
+    $result = json_decode($response, true);
+    
+    if (!$result || !isset($result['output'])) {
+        return json_encode(['shows' => []], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+    
+    $data = ['shows' => []];
+    
+    foreach ($result['output'] as $htmlString) {
+        $dom = str_get_html($htmlString);
+        if (!$dom) continue;
+        
+        $item = $dom->find('.GridItem', 0);
+        if (!$item) continue;
+        
+        $thumbDiv = $item->find('.Thumb--GridItem', 0);
+        $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
+        $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
+        $h2 = $link ? $link->find('h2.hasyear', 0) : null;
+        
+        $imageUrl = '';
+        if ($bgSpan && $bgSpan->hasAttribute('style')) {
+            preg_match('/--image:url\(([^)]+)\)/', $bgSpan->getAttribute('style'), $matches);
+            $imageUrl = isset($matches[1]) ? $matches[1] : '';
+        }
+        
+        $title = '';
+        $year = '';
+        if ($h2) {
+            $titleText = $h2->plaintext;
+            preg_match('/\((\d{4})\)/', $titleText, $matches);
+            $year = isset($matches[1]) ? $matches[1] : '';
+            $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+        }
+        
+        $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
+        $data['shows'][] = [
+            'href' => $link ? $link->href : '',
+            'image' => $proxyImageUrl,
+            'episode' => '',
+            'category' => '',
+            'title' => $title,
+            'description' => $year,
+        ];
+        
+        $dom->clear();
+        unset($dom);
+    }
+    
+    return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+}
+
 function scrapeWecima($url) {
     GLOBAL $website3;
     $url = ( !isset($url) || empty($url) ) ? $website3 : $url;
