@@ -49,7 +49,7 @@ function scrapeWecimaServers($url) {
     $data = [ 'shows' => [] ];
     if ($dom) {
         foreach ($dom->find('.WatchServersList li btn') as $btn) {
-            $encoded = $btn->getAttribute('data-url');
+            echo $encoded = $btn->getAttribute('data-url');
             if ($encoded) {
                 $encoded = str_replace('+', '', $encoded);
                 $decoded = base64_decode($encoded);
