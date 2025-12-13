@@ -19,7 +19,7 @@ function wecimaListing($url) {
         ];
         
         $episodesHtml = curlPost('https://wecima.click/ajax/Episode', $postData);
-        $episodesDom = str_get_html($episodesHtml);
+        echo $episodesDom = str_get_html($episodesHtml);
         
         // Get the first episode link as the season link
         $firstEpisode = $episodesDom ? $episodesDom->find('a', 0) : null;
