@@ -46,29 +46,16 @@ function wecimaListing($url) {
 function scrapeWecimaServers($url) {
     $html = curlCall("{$url}");
     $dom = str_get_html($html);
-    $data = [
-        'shows' => []
-    ];
+    $link = '';
     if ($dom) {
-        foreach ($dom->find('.WatchServersList ul li') as $server) {
-            $btn = $server->find('btn', 0);
-            if ($btn) {
-                $title = $btn->find('strong', 0)->plaintext;
-                $dataUrl = $btn->getAttribute('data-url');
-                $jsonData = [
-                    'link' => str_replace(" ", "", $dataUrl)
-                ];
-                $data['shows'][] = $jsonData;
-            }
+        $iframe = $dom->find('iframe', 0);
+        if ($iframe && $iframe->hasAttribute('src')) {
+            $link = $iframe->getAttribute('src');
         }
-        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $dom->clear();
+        unset($dom);
     }
-    $servers = json_decode($servers, true);
-    $dom->clear();
-    unset($dom);
-    return $servers;
+    return [ 'shows' => [ [ 'link' => $link ] ] ];
 }
 function scrapeWecima($url) {
     GLOBAL $website3;
