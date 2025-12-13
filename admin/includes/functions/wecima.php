@@ -75,27 +75,31 @@ function scrapeWecima($url) {
         $data = [
             'shows' => []
         ];
-        foreach ($dom->find('.Grid--WecimaPosts .GridItem') as $item) {
+        foreach ($dom->find('.GridItem') as $item) {
             $thumbDiv = $item->find('.Thumb--GridItem', 0);
-            $link = $thumbDiv->find('a', 0);
-            $bgSpan = $thumbDiv->find('.BG--GridItem', 0);
-            $titleStrong = $thumbDiv->find('strong', 0);
+            $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
+            $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
+            $h2 = $link ? $link->find('h2.hasyear[itemprop=name]', 0) : null;
 
-            // Extract image URL from data-lazy-style attribute
+            // Extract image URL from data-src or style attribute
             $imageUrl = '';
             if ($bgSpan) {
-                preg_match('/url\((.*?)\)/', $bgSpan->getAttribute('data-lazy-style'), $matches);
-                $imageUrl = isset($matches[1]) ? $matches[1] : '';
+                if ($bgSpan->hasAttribute('data-src')) {
+                    $imageUrl = $bgSpan->getAttribute('data-src');
+                } elseif ($bgSpan->hasAttribute('style')) {
+                    preg_match('/background-image:\s*url\(["\']?(.*?)["\']?\)/', $bgSpan->getAttribute('style'), $matches);
+                    $imageUrl = isset($matches[1]) ? $matches[1] : '';
+                }
             }
 
-            // Extract year from the title
-            $year = '';
+            // Extract title and year from h2
             $title = '';
-            if ($titleStrong) {
-                $title = $titleStrong->plaintext;
-                preg_match('/\((\d{4})\)/', $title, $matches);
+            $year = '';
+            if ($h2) {
+                $titleText = $h2->plaintext;
+                preg_match('/\((\d{4})\)/', $titleText, $matches);
                 $year = isset($matches[1]) ? $matches[1] : '';
-                $title = trim(preg_replace('/\(\d{4}\)/', '', $title));
+                $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
             }
 
             $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
