@@ -51,8 +51,11 @@ function scrapeWecimaServers($url) {
         foreach ($dom->find('.WatchServersList li btn') as $btn) {
             $encoded = $btn->getAttribute('data-url');
             if ($encoded) {
-                $encoded = str_replace('+', '', $encoded);
-                echo $decoded = base64_decode($encoded);
+                // Remove + characters used for obfuscation
+                $cleaned = str_replace('+', '', $encoded);
+                // The encoded string starts with 'HM6Ly' which is 'https://' in base64
+                // Prepend 'ht' to complete 'https://'
+                $decoded = base64_decode('aHR0cHM6Ly' . substr($cleaned, 5));
                 $data['shows'][] = [ 'link' => $decoded ];
             }
         }
