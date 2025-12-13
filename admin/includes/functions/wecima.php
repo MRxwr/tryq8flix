@@ -75,7 +75,7 @@ function scrapeWecima($url) {
         $data = [
             'shows' => []
         ];
-        foreach ($dom->find('.GridItem') as $item) {
+        foreach ($dom->find('.Grid--WecimaPosts .GridItem') as $item) {
             $thumbDiv = $item->find('.Thumb--GridItem', 0);
             $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
             $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
