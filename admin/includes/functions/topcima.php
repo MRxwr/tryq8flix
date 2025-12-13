@@ -1,6 +1,7 @@
 <?php
 function domTopCinema($url) {
     $html = curlCall($url);
+    echo $html;
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []

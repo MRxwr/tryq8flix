@@ -1,7 +1,6 @@
 <?php
 function scrapEgyDead($url) {
 	$html = curlCall($url);
-    echo $html;
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
