@@ -136,6 +136,7 @@ function scrapeShahidwBs($url) {
     ));
     $html = curl_exec($curl);
     curl_close($curl);
+    echo "<pre>" . htmlspecialchars($html) . "</pre>";
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
