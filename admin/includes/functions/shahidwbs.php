@@ -123,7 +123,7 @@ function scrapeShahidwBs($url) {
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_HTTPHEADER => array(
             'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -136,7 +136,6 @@ function scrapeShahidwBs($url) {
     ));
     $html = curl_exec($curl);
     curl_close($curl);
-    echo "<pre>" . htmlspecialchars($html) . "</pre>";
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
