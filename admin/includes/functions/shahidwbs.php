@@ -73,6 +73,7 @@ function scrapeShahidwBsServers($url) {
 }
 function scrapeShahidwBs($url) {
     $html = file_get_contents($url);
+    echo $html;
     $dom = str_get_html($html);
     if ($dom) {
         $data = [

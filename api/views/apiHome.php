@@ -81,7 +81,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = searchShahidSpaceListing($url);
                 echo dataOutput(array("shows" =>$data));die();
             }elseif( $_GET["server"] == 6 ) {
-                $url = $website6 . "newvideos.php";
+                $url = $website6;
                 $data = scrapeShahidwBs($url);
                 $data = json_decode($data, true);
                 echo dataOutput(array("shows" =>$data["shows"]));die();
