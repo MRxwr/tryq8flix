@@ -2,7 +2,27 @@
 function myCimaHome($url) {
     $url = trim($url);
     $url = str_replace(' ', '+', $url);
-    $html = curlCall($url);
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_HTTPHEADER => array(
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language: en-US,en;q=0.9',
+            'Referer: https://topcinema.zone/',
+            'Origin: https://topcinema.zone'
+        ),
+    ));
+    $html = curl_exec($curl);
+    curl_close($curl);
     $dom = str_get_html($html);
     $data = [
         'shows' => []
@@ -57,7 +77,27 @@ function myCimaHome($url) {
 }
 
 function myCimaListings($url) {
-    $html = curlCall($url);
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_HTTPHEADER => array(
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language: en-US,en;q=0.9',
+            'Referer: https://topcinema.zone/',
+            'Origin: https://topcinema.zone'
+        ),
+    ));
+    $html = curl_exec($curl);
+    curl_close($curl);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -117,7 +157,27 @@ function myCimaListings($url) {
 }
 
 function myCimaServers($url) {
-    $html = curlCall("{$url}watch");
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "{$url}watch",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_HTTPHEADER => array(
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language: en-US,en;q=0.9',
+            'Referer: https://topcinema.zone/',
+            'Origin: https://topcinema.zone'
+        ),
+    ));
+    $html = curl_exec($curl);
+    curl_close($curl);
     $dom = str_get_html($html);
     $servers = [];
     if ($dom) {
@@ -129,7 +189,27 @@ function myCimaServers($url) {
             $name = trim($li->plaintext);
             $iframeSrc = '';
             if ($link) {
-                $serverHtml = curlCall($link);
+                $serverCurl = curl_init();
+                curl_setopt_array($serverCurl, array(
+                    CURLOPT_URL => $link,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_HTTPHEADER => array(
+                        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Language: en-US,en;q=0.9',
+                        'Referer: https://topcinema.zone/',
+                        'Origin: https://topcinema.zone'
+                    ),
+                ));
+                $serverHtml = curl_exec($serverCurl);
+                curl_close($serverCurl);
                 $serverDom = str_get_html($serverHtml);
                 if ($serverDom) {
                     $iframe = $serverDom->find('iframe', 0);
