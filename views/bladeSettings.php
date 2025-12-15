@@ -53,7 +53,7 @@
                             </a>
                             <div class="p-3 rounded" style="background: rgba(255,255,255,0.05);">
                                 <h6 class="fw-bold mb-2">Setup Instructions:</h6>
-                                <ol class="mb-0 ps-3 small text-muted">
+                                <ol class="mb-0 ps-3 small text-white">
                                     <li>Go to <strong>Settings</strong> > <strong>Safari</strong> > <strong>Extensions</strong></li>
                                     <li>Enable <strong>AdBlock Pro</strong></li>
                                     <li>Open the App and turn on "<strong>All Categories</strong>"</li>
