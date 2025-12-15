@@ -11,7 +11,7 @@
 <script>
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const href = urlParams.get('href');
+    const href = decryptLink(urlParams.get('href'));
     const server = urlParams.get('server');
     
     if(href && server) {
@@ -21,7 +21,7 @@ $(document).ready(function() {
                 
                 // If no seasons and no episodes, it's likely a movie -> go to servers
                 if ((!data.seasons || data.seasons.length === 0) && (!data.episodes || data.episodes.length === 0)) {
-                     window.location.replace(`?v=Servers&href=${encodeURIComponent(href)}&server=${server}`);
+                     window.location.replace(`?v=Servers&href=${encodeURIComponent(encryptLink(href))}&server=${server}`);
                      return;
                 }
 
@@ -38,7 +38,7 @@ $(document).ready(function() {
                     data.seasons.forEach(season => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="window.location.href='?v=More&href=${encodeURIComponent(season.link)}&server=${server}'" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="window.location.href='?v=More&href=${encodeURIComponent(encryptLink(season.link))}&server=${server}'" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h5 class="card-title">${season.title}</h5>
                                     </div>
@@ -54,7 +54,7 @@ $(document).ready(function() {
                     data.episodes.forEach(ep => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="window.location.href='?v=Servers&href=${encodeURIComponent(ep.link)}&server=${server}'" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="window.location.href='?v=Servers&href=${encodeURIComponent(encryptLink(ep.link))}&server=${server}'" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h6 class="card-title">${ep.title}</h6>
                                     </div>

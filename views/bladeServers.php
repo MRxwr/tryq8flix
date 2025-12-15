@@ -18,13 +18,13 @@
 <script>
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const href = urlParams.get('href');
+    const href = decryptLink(urlParams.get('href'));
     const server = urlParams.get('server');
     const type = urlParams.get('type'); // 'live' or normal
     
     if(type === 'live') {
         // Handle live match logic (different endpoint)
-        const link = urlParams.get('link');
+        const link = decryptLink(urlParams.get('link'));
         if (!link) {
             $('#servers-list').html('<p class="text-danger">Error: No match link provided.</p>');
             return;

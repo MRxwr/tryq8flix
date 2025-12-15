@@ -51,7 +51,7 @@ function performSearch() {
             response.data.shows.forEach(show => {
                 let html = `
                     <div class="col-6 col-md-3 col-lg-2 mb-4">
-                        <div class="movie-card w-100" onclick="window.location.href='?v=More&href=${encodeURIComponent(show.href)}&server=${serverId}'">
+                        <div class="movie-card w-100" onclick="window.location.href='?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${serverId}'">
                             <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${show.title}</div>
                         </div>

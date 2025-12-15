@@ -70,6 +70,30 @@
         .scroll-btn:hover { background: rgba(20, 20, 20, 0.8); color: #e50914; }
         .scroll-btn i { font-size: 2rem; }
     </style>
+    <script>
+        // Simple obfuscation/encryption for links
+        function encryptLink(str) {
+            if (!str) return '';
+            try {
+                // Base64 encode, then reverse string
+                return btoa(encodeURIComponent(str)).split('').reverse().join('');
+            } catch (e) {
+                console.error('Encryption failed', e);
+                return str;
+            }
+        }
+
+        function decryptLink(str) {
+            if (!str) return '';
+            try {
+                // Reverse string, then Base64 decode
+                return decodeURIComponent(atob(str.split('').reverse().join('')));
+            } catch (e) {
+                // Fallback if string wasn't encrypted or format changed
+                return str;
+            }
+        }
+    </script>
 </head>
 <body>
 <nav class="navbar fixed-top">
