@@ -6,6 +6,24 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             
+            <!-- Navigation -->
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fas fa-compass me-2"></i>Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="?v=Home" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                        <i class="fas fa-home me-2"></i> Home
+                    </a>
+                    <a href="?v=LiveMatchesList" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                        <i class="fas fa-futbol me-2"></i> Live Matches
+                    </a>
+                    <a href="?v=Search" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                        <i class="fas fa-search me-2"></i> Search
+                    </a>
+                </div>
+            </div>
+
             <!-- App Downloads -->
             <div class="card bg-dark text-white mb-4">
                 <div class="card-header border-secondary">

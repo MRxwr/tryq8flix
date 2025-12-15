@@ -47,22 +47,12 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg fixed-top">
-  <div class="container-fluid">
+<nav class="navbar fixed-top">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
     <a class="navbar-brand" href="?v=Home">TRYQ8FLIX</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="?v=Home">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="?v=LiveMatchesList">Live Matches</a></li>
-        <li class="nav-item"><a class="nav-link" href="?v=Search">Search</a></li>
-      </ul>
-      <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link" href="?v=Search"><i class="fas fa-search"></i></a></li>
-        <li class="nav-item"><a class="nav-link" href="?v=Settings"><i class="fas fa-cog"></i></a></li>
-      </ul>
+    <div class="d-flex align-items-center">
+        <a class="nav-link text-white me-3" href="?v=Search"><i class="fas fa-search fa-lg"></i></a>
+        <a class="nav-link text-white" href="?v=Settings"><i class="fas fa-cog fa-lg"></i></a>
     </div>
   </div>
 </nav>
