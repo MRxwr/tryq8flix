@@ -18,46 +18,55 @@
 
 <script>
 $(document).ready(function() {
-    // Fetch Banners for Hero
-    $.getJSON('api/index.php?endpoint=Banners', function(response) {
-        if(response.ok && response.data.length > 0) {
-            const banner = response.data[0];
-            $('#hero-section').css('background-image', 'url(' + banner.imageurl + ')');
-            // Assuming banner has title, if not we might need to fetch it or use static
-            // For now, let's just use a generic title or try to parse from url
-            $('#hero-title').text('Featured Content'); 
-            $('#hero-desc').text('Watch the latest movies and TV shows on TryQ8Flix.');
-        }
-    });
-
-    // Fetch Content for Rows
-    // We will fetch from different servers to simulate categories
-    const servers = [
-        {id: 1, name: 'Wecima (Trending)'},
-        {id: 4, name: 'Shahid Originals'},
-        {id: 7, name: 'MyCima Movies'}
-    ];
-
-    servers.forEach(server => {
-        $.getJSON('api/index.php?endpoint=Home&action=view&server=' + server.id, function(response) {
-            if(response.ok && response.data.shows) {
-                let rowHtml = `
-                    <div class="section-title">${server.name}</div>
-                    <div class="movie-row">
-                `;
+    // Fetch Main Data (Banners & Servers)
+    $.getJSON('api/index.php?endpoint=Main', function(response) {
+        if(response.ok) {
+            const data = response.data;
+            
+            // 1. Setup Hero Section from Banners
+            if(data.banners && data.banners.length > 0) {
+                // Pick a random banner or the first one
+                const banner = data.banners[Math.floor(Math.random() * data.banners.length)];
+                $('#hero-section').css('background-image', 'url(' + banner.imageurl + ')');
+                $('#hero-title').text(banner.title || 'Featured Content');
+                $('#hero-desc').text('Watch the latest movies and TV shows on TryQ8Flix.');
                 
-                response.data.shows.forEach(show => {
-                    rowHtml += `
-                        <div class="movie-card" onclick="window.location.href='?v=More&href=${encodeURIComponent(show.href)}&server=${server.id}'">
-                            <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-                        </div>
-                    `;
-                });
-                
-                rowHtml += `</div>`;
-                $('#content-rows').append(rowHtml);
+                // Update Play/More Info buttons if needed based on banner data
+                // For example, if banner has an endpoint/url, we could attach it to the button
+                if(banner.url && banner.server) {
+                     $('.btn-netflix').attr('onclick', `window.location.href='?v=More&href=${encodeURIComponent(banner.url)}&server=${banner.server}'`);
+                }
+            } else {
+                 $('#hero-title').text('Welcome to TryQ8Flix');
+                 $('#hero-desc').text('Browse our collection of movies and TV shows.');
             }
-        });
+
+            // 2. Setup Content Rows from Servers
+            if(data.servers && data.servers.length > 0) {
+                data.servers.forEach(server => {
+                    // Fetch content for each server
+                    $.getJSON('api/index.php?endpoint=Home&action=view&server=' + server.id, function(serverRes) {
+                        if(serverRes.ok && serverRes.data.shows && serverRes.data.shows.length > 0) {
+                            let rowHtml = `
+                                <div class="section-title">${server.name}</div>
+                                <div class="movie-row">
+                            `;
+                            
+                            serverRes.data.shows.forEach(show => {
+                                rowHtml += `
+                                    <div class="movie-card" onclick="window.location.href='?v=More&href=${encodeURIComponent(show.href)}&server=${server.id}'">
+                                        <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                    </div>
+                                `;
+                            });
+                            
+                            rowHtml += `</div>`;
+                            $('#content-rows').append(rowHtml);
+                        }
+                    });
+                });
+            }
+        }
     });
 });
 </script>
