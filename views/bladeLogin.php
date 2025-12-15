@@ -2,7 +2,7 @@
 
 <div class="login-container">
     <div class="login-card">
-        <h2 class="mb-4">Sign In</h2>
+        <h2 class="mb-4 text-white fw-bold" style="text-shadow: 1px 1px 8px #000, 0 0 2px #e50914;">Sign In</h2>
         <form id="loginForm">
             <div class="mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Email or phone number" required>
@@ -12,11 +12,11 @@
             </div>
             <button type="submit" class="btn btn-netflix w-100 mt-3">Sign In</button>
             
-            <div class="d-flex justify-content-between mt-3 text-muted small">
+            <div class="d-flex justify-content-between mt-3 small">
                 <div>
-                    <input type="checkbox" id="remember"> <label for="remember">Remember me</label>
+                    <input type="checkbox" id="remember"> <label for="remember" class="text-white" style="text-shadow: 1px 1px 6px #000;">Remember me</label>
                 </div>
-                <a href="?v=Forget" class="text-decoration-none text-muted">Need help?</a>
+                <a href="?v=Forget" class="text-decoration-none text-white" style="text-shadow: 1px 1px 6px #000;">Need help?</a>
             </div>
         </form>
         
