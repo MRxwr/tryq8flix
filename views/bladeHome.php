@@ -19,11 +19,11 @@
 <script>
 $(document).ready(function() {
     // iOS AdBlock Recommendation
-    if (/iPhone|iPad/.test(navigator.userAgent) && !window.MSStream) {
+    if (/iPhone|iPad/.test(navigator.userAgent) && !window.MSStream && !localStorage.getItem('adblock_recommendation_dismissed')) {
         // Check if AdBlock is active
         const testAd = document.createElement('div');
         testAd.innerHTML = '&nbsp;';
-        testAd.className = 'adsbox ad-banner';
+        testAd.className = 'adsbox ad-banner pub_300x250 pub_728x90 text-ad';
         testAd.style.position = 'absolute';
         testAd.style.top = '-1000px';
         document.body.appendChild(testAd);
@@ -56,7 +56,7 @@ $(document).ready(function() {
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close" onclick="localStorage.setItem('adblock_recommendation_dismissed', 'true')"></button>
                     </div>
                 `;
                 $('#content-rows').before(alertHtml);
