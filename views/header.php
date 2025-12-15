@@ -112,6 +112,15 @@
         }
 
         // Page Transition Logic
+        // Handle back/forward cache (bfcache) restoration
+        window.addEventListener('pageshow', (event) => {
+            const overlay = document.querySelector('.page-transition-overlay');
+            if (overlay) {
+                // Force hide overlay when page is shown (including back button)
+                overlay.classList.add('hidden');
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.querySelector('.page-transition-overlay');
             if (overlay) {
