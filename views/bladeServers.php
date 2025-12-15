@@ -80,7 +80,7 @@ function playVideo(url, btn) {
     if(btn) $(btn).addClass('active');
 
     $('#player-container').show();
-    $('#video-player').attr('src', url);
+    $('#video-player').attr('src', 'videoPlayer.php?link=' + encodeURIComponent(url));
     $('html, body').animate({
         scrollTop: $("#player-container").offset().top - 100
     }, 500);
