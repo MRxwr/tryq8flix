@@ -31,13 +31,23 @@
 <?php include 'footer.php'; ?>
 
 <script>
-// Fetch profile data if we had an endpoint, for now mock or use cookie data
-const cookie = document.cookie.split('; ').find(row => row.startsWith('tryq8flix2='));
-if(cookie) {
-    // In a real app we would call an API to get user details using the token
-    $('#profile-username').text('User'); 
-    $('#profile-email').text('user@example.com');
-} else {
-    window.location.href = '?v=Login';
-}
+$(document).ready(function() {
+    // Fetch profile data from API
+    $.getJSON('api/index.php?endpoint=User&action=profile', function(response) {
+        if(response.ok) {
+            const user = response.data;
+            $('#profile-username').text(user.username);
+            $('#profile-email').text(user.email);
+            if(user.avatar) {
+                $('img.rounded-circle').attr('src', user.avatar);
+            }
+        } else {
+            // If token is invalid or expired, redirect to login
+            window.location.href = '?v=Login';
+        }
+    }).fail(function() {
+        // Handle network errors
+        $('#profile-username').text('Error loading profile');
+    });
+});
 </script>
