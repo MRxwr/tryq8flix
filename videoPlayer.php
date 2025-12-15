@@ -109,7 +109,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     if($useVideoPlayer) {
         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
     } else {
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' sandbox='allow-forms allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox' allowFullScreen></iframe>"; 
+        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
     }
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
