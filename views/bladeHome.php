@@ -18,6 +18,52 @@
 
 <script>
 $(document).ready(function() {
+    // iOS AdBlock Recommendation
+    if (/iPhone|iPad/.test(navigator.userAgent) && !window.MSStream) {
+        // Check if AdBlock is active
+        const testAd = document.createElement('div');
+        testAd.innerHTML = '&nbsp;';
+        testAd.className = 'adsbox ad-banner';
+        testAd.style.position = 'absolute';
+        testAd.style.top = '-1000px';
+        document.body.appendChild(testAd);
+
+        setTimeout(function() {
+            // If height is 0, it was blocked/hidden by an extension
+            const isBlocked = testAd.offsetHeight === 0; 
+            document.body.removeChild(testAd);
+
+            if (!isBlocked) {
+                const alertHtml = `
+                    <div class="alert alert-dark alert-dismissible fade show" role="alert" style="margin: 2rem 4% 0 4%; border: 1px solid #333; background-color: #222; color: #fff;">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                <i class="fab fa-apple fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading mb-1">iOS User Recommendation</h5>
+                                <p class="mb-2 small">For the best experience without ads, we recommend installing <strong>AdBlock Pro</strong>.</p>
+                                <a href="https://apps.apple.com/us/app/adblock-pro-for-safari/id1018301773" target="_blank" class="btn btn-sm btn-light mb-2">
+                                    <i class="fas fa-download"></i> Install from App Store
+                                </a>
+                                <div class="mt-2 p-2 rounded" style="background: rgba(255,255,255,0.1); font-size: 0.85rem;">
+                                    <strong>Setup Instructions:</strong>
+                                    <ol class="mb-0 ps-3">
+                                        <li>Go to <strong>Settings</strong> > <strong>Safari</strong> > <strong>Extensions</strong></li>
+                                        <li>Enable <strong>AdBlock Pro</strong></li>
+                                        <li>Open the App and turn on "<strong>All Categories</strong>"</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                $('#content-rows').before(alertHtml);
+            }
+        }, 100);
+    }
+
     // Fetch Main Data (Banners & Servers)
     $.getJSON('api/index.php?endpoint=Main', function(response) {
         if(response.ok) {
