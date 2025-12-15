@@ -1,0 +1,71 @@
+<?php include 'header.php'; ?>
+
+<div class="container" style="margin-top: 100px;">
+    <h2 class="section-title">Select Server</h2>
+    <div id="servers-list" class="row">
+        <div class="text-center"><div class="spinner-border text-danger"></div></div>
+    </div>
+    
+    <div id="player-container" class="mt-5" style="display:none;">
+        <div class="ratio ratio-16x9">
+            <iframe id="video-player" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<?php include 'footer.php'; ?>
+
+<script>
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const href = urlParams.get('href');
+    const server = urlParams.get('server');
+    const type = urlParams.get('type'); // 'live' or normal
+    
+    if(type === 'live') {
+        // Handle live match logic (different endpoint)
+        const link = urlParams.get('link');
+        $.getJSON(`api/index.php?endpoint=Live&action=match&match=${encodeURIComponent(link)}`, function(response) {
+             $('#servers-list').empty();
+             if(response.ok && response.data.length > 0) {
+                 response.data.forEach(srv => {
+                     let html = `
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}')">
+                                Server ${srv.serv}
+                            </button>
+                        </div>
+                     `;
+                     $('#servers-list').append(html);
+                 });
+             }
+        });
+    } else if(href && server) {
+        $.getJSON(`api/index.php?endpoint=Servers&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
+            $('#servers-list').empty();
+            if(response.ok && response.data.length > 0) {
+                response.data.forEach((srv, index) => {
+                    let html = `
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.link}')">
+                                ${srv.name || 'Server ' + (index+1)}
+                            </button>
+                        </div>
+                    `;
+                    $('#servers-list').append(html);
+                });
+            } else {
+                $('#servers-list').html('<p>No servers found.</p>');
+            }
+        });
+    }
+});
+
+function playVideo(url) {
+    $('#player-container').show();
+    $('#video-player').attr('src', url);
+    $('html, body').animate({
+        scrollTop: $("#player-container").offset().top - 100
+    }, 500);
+}
+</script>
