@@ -61,15 +61,7 @@
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link" href="?v=Search"><i class="fas fa-search"></i></a></li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                <li><a class="dropdown-item" href="?v=Profile">Profile</a></li>
-                <li><a class="dropdown-item" href="?v=Logout">Logout</a></li>
-            </ul>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="?v=Settings"><i class="fas fa-cog"></i></a></li>
       </ul>
     </div>
   </div>
