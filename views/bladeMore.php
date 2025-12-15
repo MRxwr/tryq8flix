@@ -18,15 +18,22 @@ $(document).ready(function() {
         $.getJSON(`api/index.php?endpoint=More&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
             if(response.ok) {
                 const data = response.data;
+                
+                // If no seasons and no episodes, it's likely a movie -> go to servers
+                if ((!data.seasons || data.seasons.length === 0) && (!data.episodes || data.episodes.length === 0)) {
+                     window.location.replace(`?v=Servers&href=${encodeURIComponent(href)}&server=${server}`);
+                     return;
+                }
+
                 let html = `
                     <div class="row">
                         <div class="col-md-12 mb-4">
-                            <h2>${data.seasons.length > 0 ? 'Seasons' : 'Episodes'}</h2>
+                            <h2>${data.seasons && data.seasons.length > 0 ? 'Seasons' : 'Episodes'}</h2>
                         </div>
                     </div>
                 `;
                 
-                if(data.seasons.length > 0) {
+                if(data.seasons && data.seasons.length > 0) {
                     html += `<div class="row mb-5">`;
                     data.seasons.forEach(season => {
                         html += `
@@ -42,7 +49,7 @@ $(document).ready(function() {
                     html += `</div>`;
                 }
                 
-                if(data.episodes.length > 0) {
+                if(data.episodes && data.episodes.length > 0) {
                     html += `<h3>Episodes</h3><div class="row">`;
                     data.episodes.forEach(ep => {
                         html += `
