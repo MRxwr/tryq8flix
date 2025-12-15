@@ -38,7 +38,7 @@ $(document).ready(function() {
                  response.data.forEach(srv => {
                      let html = `
                         <div class="col-md-3 mb-3">
-                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}')">
+                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}', this)">
                                 Server ${srv.serv}
                             </button>
                         </div>
@@ -59,7 +59,7 @@ $(document).ready(function() {
                 response.data.forEach((srv, index) => {
                     let html = `
                         <div class="col-md-3 mb-3">
-                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.link}')">
+                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.link}', this)">
                                 ${srv.name || 'Server ' + (index+1)}
                             </button>
                         </div>
@@ -73,7 +73,12 @@ $(document).ready(function() {
     }
 });
 
-function playVideo(url) {
+function playVideo(url, btn) {
+    // Remove active class from all buttons
+    $('#servers-list .btn').removeClass('active');
+    // Add active class to clicked button
+    if(btn) $(btn).addClass('active');
+
     $('#player-container').show();
     $('#video-player').attr('src', url);
     $('html, body').animate({
