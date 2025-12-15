@@ -33,7 +33,7 @@ $(document).ready(function() {
         $.getJSON(`api/index.php?endpoint=Live&action=match&match=${encodeURIComponent(link)}`, function(response) {
              $('#servers-list').empty();
              
-             // Handle string response (in case of BOM or whitespace)
+             // Handle string response
              if (typeof response === 'string') {
                  try {
                      response = JSON.parse(response);
@@ -44,30 +44,33 @@ $(document).ready(function() {
                  }
              }
 
-             console.log("API Response:", response);
+             console.log("Live Match API Response:", response);
 
-             // Check if response is valid
-             if(response && response.data && Array.isArray(response.data) && response.data.length > 0) {
-                 let serversFound = false;
-                 response.data.forEach(srv => {
-                     if(srv.live) {
-                        serversFound = true;
-                        let html = `
-                            <div class="col-md-3 mb-3">
-                                <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}', this)">
-                                    Server ${srv.serv}
-                                </button>
-                            </div>
-                        `;
-                        $('#servers-list').append(html);
-                     }
-                 });
-                 
-                 if (!serversFound) {
-                     $('#servers-list').html('<p>No playable servers found in the response.</p>');
+             // Check if response has data array
+             if(response && response.data && Array.isArray(response.data)) {
+                 if(response.data.length > 0) {
+                     response.data.forEach((srv, index) => {
+                         // Support both 'live' (matches) and 'link' (movies) keys just in case
+                         const videoUrl = srv.live || srv.link;
+                         const serverLabel = srv.serv ? `Server ${srv.serv}` : (srv.name || `Server ${index + 1}`);
+
+                         if(videoUrl) {
+                            let html = `
+                                <div class="col-md-3 mb-3">
+                                    <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${videoUrl.replace(/'/g, "\\'")}', this)">
+                                        ${serverLabel}
+                                    </button>
+                                </div>
+                            `;
+                            $('#servers-list').append(html);
+                         }
+                     });
+                 } else {
+                     $('#servers-list').html('<p>No servers found for this match.</p>');
                  }
              } else {
-                 $('#servers-list').html(`<p>No servers found for this match. <br><small class="text-muted">${JSON.stringify(response)}</small></p>`);
+                 // Fallback: Dump the response to see what's wrong
+                 $('#servers-list').html(`<p>Unexpected response format. <br><small class="text-muted">${JSON.stringify(response)}</small></p>`);
              }
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error("API Request Failed:", textStatus, errorThrown);
