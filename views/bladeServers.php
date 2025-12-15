@@ -76,20 +76,39 @@ $(document).ready(function() {
     } else if(href && server) {
         $.getJSON(`api/index.php?endpoint=Servers&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
             $('#servers-list').empty();
-            if(response.ok && response.data.length > 0) {
+            
+            // Handle string response
+            if (typeof response === 'string') {
+                 try {
+                     response = JSON.parse(response);
+                 } catch (e) {
+                     console.error("Failed to parse JSON:", e);
+                     $('#servers-list').html(`<p class="text-danger">Invalid API Response</p>`);
+                     return;
+                 }
+            }
+
+            if(response && response.data && Array.isArray(response.data) && response.data.length > 0) {
                 response.data.forEach((srv, index) => {
-                    let html = `
-                        <div class="col-md-3 mb-3">
-                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.link}', this)">
-                                ${srv.name || 'Server ' + (index+1)}
-                            </button>
-                        </div>
-                    `;
-                    $('#servers-list').append(html);
+                    // Escape single quotes in URL just in case
+                    const safeLink = srv.link ? srv.link.replace(/'/g, "\\'") : '';
+                    if(safeLink) {
+                        let html = `
+                            <div class="col-md-3 mb-3">
+                                <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${safeLink}', this)">
+                                    ${srv.name || 'Server ' + (index+1)}
+                                </button>
+                            </div>
+                        `;
+                        $('#servers-list').append(html);
+                    }
                 });
             } else {
                 $('#servers-list').html('<p>No servers found.</p>');
             }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("API Request Failed:", textStatus, errorThrown);
+            $('#servers-list').html(`<p class="text-danger">Failed to load servers.</p>`);
         });
     }
 });
