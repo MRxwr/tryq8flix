@@ -115,10 +115,10 @@ $(document).ready(function() {
             const data = response.data[0]; // Assuming data is an array of settings
             let html = '';
             
-            if(data.whatsapp) html += `<a href="${data.whatsapp}" target="_blank" class="btn btn-outline-success btn-lg me-3 rounded-circle"><i class="fab fa-whatsapp"></i></a>`;
-            if(data.instagram) html += `<a href="${data.instagram}" target="_blank" class="btn btn-outline-danger btn-lg me-3 rounded-circle"><i class="fab fa-instagram"></i></a>`;
-            if(data.twitter) html += `<a href="${data.twitter}" target="_blank" class="btn btn-outline-info btn-lg me-3 rounded-circle"><i class="fab fa-twitter"></i></a>`;
-            if(data.tiktok) html += `<a href="${data.tiktok}" target="_blank" class="btn btn-outline-light btn-lg me-3 rounded-circle"><i class="fab fa-tiktok"></i></a>`;
+            if(data.whatsapp) html += `<a href="https://wa.me/${data.whatsapp}" target="_blank" class="btn btn-outline-success btn-lg me-3 rounded-circle"><i class="fab fa-whatsapp"></i></a>`;
+            if(data.instagram) html += `<a href="https://instagram.com/${data.instagram}" target="_blank" class="btn btn-outline-danger btn-lg me-3 rounded-circle"><i class="fab fa-instagram"></i></a>`;
+            if(data.twitter) html += `<a href="https://twitter.com/${data.twitter}" target="_blank" class="btn btn-outline-info btn-lg me-3 rounded-circle"><i class="fab fa-twitter"></i></a>`;
+            if(data.tiktok) html += `<a href="https://tiktok.com/@${data.tiktok}" target="_blank" class="btn btn-outline-light btn-lg me-3 rounded-circle"><i class="fab fa-tiktok"></i></a>`;
             
             $('#social-links').html(html || '<p class="text-muted">No social links available.</p>');
         } else {
