@@ -32,25 +32,28 @@ $(document).ready(function() {
 
         $.getJSON(`api/index.php?endpoint=Live&action=match&match=${encodeURIComponent(link)}`, function(response) {
              $('#servers-list').empty();
-             console.log('Live match response:', response);
              
-             if(response.ok && response.data && response.data.length > 0) {
+             // Ensure response.data is an array and has items
+             if(response.ok && Array.isArray(response.data) && response.data.length > 0) {
                  response.data.forEach(srv => {
-                     let html = `
-                        <div class="col-md-3 mb-3">
-                            <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}', this)">
-                                Server ${srv.serv}
-                            </button>
-                        </div>
-                     `;
-                     $('#servers-list').append(html);
+                     // Use srv.live for the video URL and srv.serv for the label
+                     if(srv.live) {
+                        let html = `
+                            <div class="col-md-3 mb-3">
+                                <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}', this)">
+                                    Server ${srv.serv}
+                                </button>
+                            </div>
+                        `;
+                        $('#servers-list').append(html);
+                     }
                  });
              } else {
                  $('#servers-list').html('<p>No servers found for this match.</p>');
              }
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error("API Request Failed:", textStatus, errorThrown);
-            $('#servers-list').html(`<p class="text-danger">Failed to load servers. Error: ${textStatus}</p>`);
+            $('#servers-list').html(`<p class="text-danger">Failed to load servers.</p>`);
         });
     } else if(href && server) {
         $.getJSON(`api/index.php?endpoint=Servers&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
