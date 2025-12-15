@@ -36,6 +36,34 @@
                 </div>
             </div>
 
+            <!-- Block Ads on Safari (iOS Only) -->
+            <div class="card bg-dark text-white mb-4" id="ios-adblock-settings" style="display:none;">
+                <div class="card-header border-secondary">
+                    <h5 class="mb-0"><i class="fab fa-safari me-2"></i>Block Ads on Safari</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <i class="fab fa-apple fa-3x text-muted"></i>
+                        </div>
+                        <div>
+                            <p class="mb-2">For the best experience on iPhone & iPad, we recommend installing <strong>AdBlock Pro</strong>.</p>
+                            <a href="https://apps.apple.com/us/app/adblock-pro-for-safari/id1018301773" target="_blank" class="btn btn-light btn-sm mb-3">
+                                <i class="fas fa-download me-1"></i> Install from App Store
+                            </a>
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.05);">
+                                <h6 class="fw-bold mb-2">Setup Instructions:</h6>
+                                <ol class="mb-0 ps-3 small text-muted">
+                                    <li>Go to <strong>Settings</strong> > <strong>Safari</strong> > <strong>Extensions</strong></li>
+                                    <li>Enable <strong>AdBlock Pro</strong></li>
+                                    <li>Open the App and turn on "<strong>All Categories</strong>"</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- CMS Pages -->
             <div class="card bg-dark text-white mb-4">
                 <div class="card-header border-secondary">
@@ -89,6 +117,11 @@
 
 <script>
 $(document).ready(function() {
+    // Show iOS AdBlock settings only on iOS devices
+    if (/iPhone|iPad/.test(navigator.userAgent) && !window.MSStream) {
+        $('#ios-adblock-settings').show();
+    }
+
     // Fetch App Version Links
     $.getJSON('api/index.php?endpoint=Version&action=version', function(response) {
         if(response.ok) {
