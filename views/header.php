@@ -67,7 +67,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                 <li><a class="dropdown-item" href="?v=Profile">Profile</a></li>
-                <li><a class="dropdown-item" href="?v=Logut">Logout</a></li>
+                <li><a class="dropdown-item" href="?v=Logout">Logout</a></li>
             </ul>
         </li>
       </ul>

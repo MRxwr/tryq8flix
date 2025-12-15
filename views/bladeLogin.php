@@ -33,15 +33,25 @@ $('#loginForm').submit(function(e) {
     e.preventDefault();
     const username = $('#username').val();
     const password = $('#password').val();
+    const remember = $('#remember').is(':checked');
     
     $.post('api/index.php?endpoint=User&action=login', {username: username, password: password}, function(response) {
-        const res = JSON.parse(response);
+        // jQuery might auto-parse JSON if the server sends correct headers
+        const res = (typeof response === 'string') ? JSON.parse(response) : response;
+        
         if(res.ok) {
-            // Save token to cookie or local storage
-            document.cookie = "tryq8flix2=" + res.data.keepalive + "; path=/";
+            // Set cookie expiration
+            let expires = "";
+            if (remember) {
+                const date = new Date();
+                date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days
+                expires = "; expires=" + date.toUTCString();
+            }
+            
+            document.cookie = "tryq8flix2=" + res.data.keepalive + expires + "; path=/";
             window.location.href = '?v=Home';
         } else {
-            alert(res.data.msg);
+            alert(res.data.msg || "Login failed");
         }
     });
 });
