@@ -50,7 +50,10 @@ $(document).ready(function() {
                         if(serverRes.ok && serverRes.data.shows && serverRes.data.shows.length > 0) {
                             const rowId = `row-${server.id}`;
                             let rowHtml = `
-                                <div class="section-title">${server.name}</div>
+                                <div class="d-flex justify-content-between align-items-center" style="margin: 2rem 4% 1rem 4%;">
+                                    <div class="section-title" style="margin: 0;">${server.name}</div>
+                                    <span class="text-muted small" style="cursor:pointer;" onclick="navigateTo('?v=Category&server=${server.id}&title=${encodeURIComponent(server.name)}')">View More <i class="fas fa-chevron-right"></i></span>
+                                </div>
                                 <div class="row-wrapper">
                                     <button class="scroll-btn scroll-left d-none d-md-flex" onclick="scrollRow('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
                                     <div class="movie-row" id="${rowId}">
