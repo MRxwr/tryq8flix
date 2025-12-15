@@ -52,7 +52,7 @@ $(document).ready(function() {
                             let rowHtml = `
                                 <div class="d-flex justify-content-between align-items-center" style="margin: 2rem 4% 1rem 4%;">
                                     <div class="section-title" style="margin: 0;">${server.name}</div>
-                                    <span class="text-muted small" style="cursor:pointer;" onclick="navigateTo('?v=Category&server=${server.id}&title=${encodeURIComponent(server.name)}')">View More <i class="fas fa-chevron-right"></i></span>
+                                    <span class="text-white small fw-bold" style="cursor:pointer;" onclick="navigateTo('?v=Category&server=${server.id}&title=${encodeURIComponent(server.name)}')">View More <i class="fas fa-chevron-right"></i></span>
                                 </div>
                                 <div class="row-wrapper">
                                     <button class="scroll-btn scroll-left d-none d-md-flex" onclick="scrollRow('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
