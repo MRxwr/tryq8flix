@@ -44,6 +44,31 @@
         .live-match-card { background-color: #2f2f2f; border-radius: 8px; margin-bottom: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
         .team-logo { width: 50px; height: 50px; object-fit: contain; }
         .match-time { font-weight: bold; color: #e50914; }
+
+        /* Scroll Buttons for Desktop */
+        .row-wrapper { position: relative; }
+        .scroll-btn {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4%;
+            background: rgba(20, 20, 20, 0.5);
+            border: none;
+            color: white;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            height: 100%; /* Ensure it covers the full height of the row */
+        }
+        .row-wrapper:hover .scroll-btn { opacity: 1; }
+        .scroll-left { left: 0; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+        .scroll-right { right: 0; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+        .scroll-btn:hover { background: rgba(20, 20, 20, 0.8); color: #e50914; }
+        .scroll-btn i { font-size: 2rem; }
     </style>
 </head>
 <body>

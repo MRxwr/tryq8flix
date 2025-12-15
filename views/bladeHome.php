@@ -47,9 +47,12 @@ $(document).ready(function() {
                     // Fetch content for each server
                     $.getJSON('api/index.php?endpoint=Home&action=view&server=' + server.id, function(serverRes) {
                         if(serverRes.ok && serverRes.data.shows && serverRes.data.shows.length > 0) {
+                            const rowId = `row-${server.id}`;
                             let rowHtml = `
                                 <div class="section-title">${server.name}</div>
-                                <div class="movie-row">
+                                <div class="row-wrapper">
+                                    <button class="scroll-btn scroll-left d-none d-md-flex" onclick="scrollRow('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
+                                    <div class="movie-row" id="${rowId}">
                             `;
                             
                             serverRes.data.shows.forEach(show => {
@@ -60,7 +63,9 @@ $(document).ready(function() {
                                 `;
                             });
                             
-                            rowHtml += `</div>`;
+                            rowHtml += `</div>
+                                    <button class="scroll-btn scroll-right d-none d-md-flex" onclick="scrollRow('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
+                                </div>`;
                             $('#content-rows').append(rowHtml);
                         }
                     });
@@ -69,4 +74,15 @@ $(document).ready(function() {
         }
     });
 });
+
+function scrollRow(elementId, direction) {
+    const container = document.getElementById(elementId);
+    const scrollAmount = container.clientWidth * 0.8; // Scroll 80% of the view width
+    
+    if (direction === 1) {
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    } else {
+        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+}
 </script>
