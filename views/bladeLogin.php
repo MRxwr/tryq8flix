@@ -49,7 +49,7 @@ $('#loginForm').submit(function(e) {
             }
             
             document.cookie = "tryq8flix2=" + res.data.keepalive + expires + "; path=/";
-            window.location.href = '?v=Home';
+            navigateTo('?v=Home');
         } else {
             alert(res.data.msg || "Login failed");
         }

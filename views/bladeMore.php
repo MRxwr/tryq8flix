@@ -38,7 +38,7 @@ $(document).ready(function() {
                     data.seasons.forEach(season => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="window.location.href='?v=More&href=${encodeURIComponent(encryptLink(season.link))}&server=${server}'" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(season.link))}&server=${server}')" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h5 class="card-title">${season.title}</h5>
                                     </div>
@@ -54,7 +54,7 @@ $(document).ready(function() {
                     data.episodes.forEach(ep => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="window.location.href='?v=Servers&href=${encodeURIComponent(encryptLink(ep.link))}&server=${server}'" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="navigateTo('?v=Servers&href=${encodeURIComponent(encryptLink(ep.link))}&server=${server}')" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h6 class="card-title">${ep.title}</h6>
                                     </div>

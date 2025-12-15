@@ -69,6 +69,23 @@
         .scroll-right { right: 0; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
         .scroll-btn:hover { background: rgba(20, 20, 20, 0.8); color: #e50914; }
         .scroll-btn i { font-size: 2rem; }
+
+        /* Page Transition Overlay */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #141414;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.4s ease-in-out;
+            pointer-events: none;
+        }
+        .page-transition-overlay.hidden {
+            opacity: 0;
+        }
     </style>
     <script>
         // Simple obfuscation/encryption for links
@@ -93,9 +110,54 @@
                 return str;
             }
         }
+
+        // Page Transition Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.querySelector('.page-transition-overlay');
+            if (overlay) {
+                // Fade out overlay on load
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 50); // Small delay to ensure render
+            }
+
+            // Intercept clicks for smooth transition
+            document.addEventListener('click', (e) => {
+                const link = e.target.closest('a');
+                // Check if it's a link, not opening in new tab, and is internal
+                if (link && link.href && !link.target && link.href.startsWith(window.location.origin)) {
+                    e.preventDefault();
+                    if (overlay) {
+                        overlay.classList.remove('hidden');
+                        setTimeout(() => {
+                            window.location.href = link.href;
+                        }, 400); // Wait for transition to finish
+                    } else {
+                        window.location.href = link.href;
+                    }
+                }
+                
+                // Also handle elements with onclick="window.location.href=..."
+                // This is trickier as we can't easily intercept inline JS.
+                // We'll rely on the fact that most of our navigation is via <a> or specific onclicks we can modify.
+            });
+            
+            // Monkey patch window.location.href setters if possible, or just helper function
+            window.navigateTo = function(url) {
+                if (overlay) {
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 400);
+                } else {
+                    window.location.href = url;
+                }
+            };
+        });
     </script>
 </head>
 <body>
+<div class="page-transition-overlay"></div>
 <nav class="navbar fixed-top">
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <a class="navbar-brand" href="?v=Home">TRYQ8FLIX</a>

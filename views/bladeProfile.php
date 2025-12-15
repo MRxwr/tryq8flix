@@ -43,7 +43,7 @@ $(document).ready(function() {
             }
         } else {
             // If token is invalid or expired, redirect to login
-            window.location.href = '?v=Login';
+            navigateTo('?v=Login');
         }
     }).fail(function() {
         // Handle network errors
