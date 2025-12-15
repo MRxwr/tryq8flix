@@ -33,11 +33,25 @@ $(document).ready(function() {
         $.getJSON(`api/index.php?endpoint=Live&action=match&match=${encodeURIComponent(link)}`, function(response) {
              $('#servers-list').empty();
              
-             // Ensure response.data is an array and has items
-             if(response.ok && Array.isArray(response.data) && response.data.length > 0) {
+             // Handle string response (in case of BOM or whitespace)
+             if (typeof response === 'string') {
+                 try {
+                     response = JSON.parse(response);
+                 } catch (e) {
+                     console.error("Failed to parse JSON:", e);
+                     $('#servers-list').html(`<p class="text-danger">Invalid API Response</p>`);
+                     return;
+                 }
+             }
+
+             console.log("API Response:", response);
+
+             // Check if response is valid
+             if(response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                 let serversFound = false;
                  response.data.forEach(srv => {
-                     // Use srv.live for the video URL and srv.serv for the label
                      if(srv.live) {
+                        serversFound = true;
                         let html = `
                             <div class="col-md-3 mb-3">
                                 <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${srv.live}', this)">
@@ -48,8 +62,12 @@ $(document).ready(function() {
                         $('#servers-list').append(html);
                      }
                  });
+                 
+                 if (!serversFound) {
+                     $('#servers-list').html('<p>No playable servers found in the response.</p>');
+                 }
              } else {
-                 $('#servers-list').html('<p>No servers found for this match.</p>');
+                 $('#servers-list').html(`<p>No servers found for this match. <br><small class="text-muted">${JSON.stringify(response)}</small></p>`);
              }
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.error("API Request Failed:", textStatus, errorThrown);
