@@ -25,9 +25,16 @@ $(document).ready(function() {
     if(type === 'live') {
         // Handle live match logic (different endpoint)
         const link = urlParams.get('link');
+        if (!link) {
+            $('#servers-list').html('<p class="text-danger">Error: No match link provided.</p>');
+            return;
+        }
+
         $.getJSON(`api/index.php?endpoint=Live&action=match&match=${encodeURIComponent(link)}`, function(response) {
              $('#servers-list').empty();
-             if(response.ok && response.data.length > 0) {
+             console.log('Live match response:', response);
+             
+             if(response.ok && response.data && response.data.length > 0) {
                  response.data.forEach(srv => {
                      let html = `
                         <div class="col-md-3 mb-3">
@@ -38,7 +45,12 @@ $(document).ready(function() {
                      `;
                      $('#servers-list').append(html);
                  });
+             } else {
+                 $('#servers-list').html('<p>No servers found for this match.</p>');
              }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("API Request Failed:", textStatus, errorThrown);
+            $('#servers-list').html(`<p class="text-danger">Failed to load servers. Error: ${textStatus}</p>`);
         });
     } else if(href && server) {
         $.getJSON(`api/index.php?endpoint=Servers&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
