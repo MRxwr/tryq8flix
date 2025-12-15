@@ -9,8 +9,8 @@
         <div class="text-center w-100"><div class="spinner-border text-danger"></div></div>
     </div>
 
-    <div class="text-center mt-4 mb-5">
-        <button id="loadMoreBtn" class="btn btn-netflix" style="display:none;">Load More</button>
+    <div class="text-center mt-4 mb-5" id="loading-indicator" style="display:none;">
+        <div class="spinner-border text-danger" role="status"></div>
     </div>
 </div>
 
@@ -20,6 +20,7 @@
 let currentPage = 1;
 let currentServer = 1;
 let isLoading = false;
+let hasMore = true;
 
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -39,16 +40,18 @@ $(document).ready(function() {
     }
 });
 
-$('#loadMoreBtn').click(function() {
-    if(!isLoading) {
-        currentPage++;
-        loadContent(currentPage);
+$(window).scroll(function() {
+    if($(window).scrollTop() + $(window).height() > $(document).height() - 200) {
+        if(!isLoading && hasMore) {
+            currentPage++;
+            loadContent(currentPage);
+        }
     }
 });
 
 function loadContent(page) {
     isLoading = true;
-    $('#loadMoreBtn').prop('disabled', true).text('Loading...');
+    if(page > 1) $('#loading-indicator').show();
     
     // If it's the first page, show spinner in the main area
     if(page === 1) {
@@ -71,23 +74,20 @@ function loadContent(page) {
                 $('#categoryResults').append(html);
             });
             
-            // Show load more button if we got results
-            $('#loadMoreBtn').show().prop('disabled', false).text('Load More');
         } else {
+            hasMore = false;
             if(page === 1) {
                 $('#categoryResults').html('<p class="text-center w-100">No content found.</p>');
-            } else {
-                $('#loadMoreBtn').hide(); // No more pages
             }
         }
         isLoading = false;
+        $('#loading-indicator').hide();
     }).fail(function() {
         if(page === 1) {
             $('#categoryResults').html('<p class="text-center w-100 text-danger">Failed to load content.</p>');
-        } else {
-            $('#loadMoreBtn').prop('disabled', false).text('Try Again');
         }
         isLoading = false;
+        $('#loading-indicator').hide();
     });
 }
 </script>
