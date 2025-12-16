@@ -241,7 +241,7 @@ function scrapeWecima($url) {
                 'image' => $proxyImageUrl,
                 'episode' => '',
                 'category' => '',
-                'title' => '',//$title,
+                'title' => $title,
                 'description' => $year,
             ];
             $data['shows'][] = $jsonData;

@@ -65,7 +65,7 @@ function loadContent(page) {
             response.data.shows.forEach(show => {
                 let html = `
                     <div class="col-6 col-md-3 col-lg-2 mb-4">
-                        <div class="movie-card w-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${currentServer}')">
+                        <div class="movie-card w-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${currentServer}&image=${encodeURIComponent(encryptLink(show.image))}&title=${encodeURIComponent(encryptLink(show.title))}')">
                             <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${show.title}</div>
                         </div>
