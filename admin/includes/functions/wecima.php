@@ -101,7 +101,9 @@ function scrapeWecimaServers($url) {
     return $data['shows'];
 }
 function scrapeWecimaSearch($query) {
-    $postData = ['q' => $query];
+    // Use http_build_query to ensure proper encoding (application/x-www-form-urlencoded)
+    // This handles Arabic characters correctly by percent-encoding them.
+    $postData = http_build_query(['q' => $query]);
     $response = curlPost('https://wecima.click/search', $postData);
     $result = json_decode($response, true);
     

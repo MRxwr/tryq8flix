@@ -45,7 +45,7 @@ function performSearch() {
     
     $('#searchResults').html('<div class="text-center w-100"><div class="spinner-border text-danger"></div></div>');
     
-    $.getJSON('api/index.php?endpoint=Home&action=view&page=1&server=' + serverId + '&search=' + (query), function(response) {
+    $.getJSON('api/index.php?endpoint=Home&action=view&page=1&server=' + serverId + '&search=' + encodeURIComponent(query), function(response) {
         $('#searchResults').empty();
         if(response.ok && response.data.shows) {
             response.data.shows.forEach(show => {
