@@ -26,9 +26,9 @@
         .movie-card { flex: 0 0 auto; width: 200px; margin-right: 10px; transition: transform 0.3s; cursor: pointer; position: relative; }
         .movie-card:hover { transform: scale(1.1); z-index: 10; }
         .movie-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; }
-        .movie-card .title-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 300px; display: none; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; padding: 15px; text-align: center; font-weight: bold; font-size: 14px; line-height: 1.4; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        .movie-card.img-error .title-overlay { display: flex; }
-        .movie-card.img-error img { display: none; }
+        .movie-card .title-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 300px; display: none; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; padding: 15px; text-align: center; font-weight: bold; font-size: 14px; line-height: 1.4; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); word-wrap: break-word; overflow-wrap: break-word; }
+        .movie-card.img-error .title-overlay { display: flex !important; }
+        .movie-card.img-error img { display: none !important; }
         
         .btn-netflix { background-color: #e50914; color: white; border: none; padding: 0.5rem 1.5rem; font-weight: bold; border-radius: 4px; }
         .btn-netflix:hover { background-color: #f40612; color: white; }
