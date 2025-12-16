@@ -80,8 +80,8 @@ $(document).ready(function() {
                 // Update Play/More Info buttons if needed based on banner data
                 // For example, if banner has an endpoint/url, we could attach it to the button
                 if(banner.url && banner.server) {
-                     $('.btn-netflix').attr('onclick', `navigateTo('?v=More&href=${encodeURIComponent(encryptLink(banner.url))}&server=${banner.server}')`);
-                     $('.btn-secondary-netflix').attr('onclick', `navigateTo('?v=More&href=${encodeURIComponent(encryptLink(banner.url))}&server=${banner.server}')`);
+                     $('.btn-netflix').attr('onclick', `navigateTo('?v=More&href=${encodeURIComponent(encryptLink(banner.url))}&server=${banner.server}&image=${encodeURIComponent(banner.imageurl)}&title=${encodeURIComponent(banner.title)}')`);
+                     $('.btn-secondary-netflix').attr('onclick', `navigateTo('?v=More&href=${encodeURIComponent(encryptLink(banner.url))}&server=${banner.server}&image=${encodeURIComponent(banner.imageurl)}&title=${encodeURIComponent(banner.title)}')`);
                 }
             } else {
                  $('#hero-title').text('Welcome to TryQ8Flix');
@@ -107,7 +107,7 @@ $(document).ready(function() {
                             
                             serverRes.data.shows.forEach(show => {
                                 rowHtml += `
-                                    <div class="movie-card" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${server.id}')">
+                                    <div class="movie-card" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${server.id}&image=${encodeURIComponent(show.image)}&title=${encodeURIComponent(show.title)}')">
                                         <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                                     </div>
                                 `;
