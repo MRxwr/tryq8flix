@@ -1,9 +1,23 @@
 <?php
+function shahidCurl($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    $html = curl_exec($ch);
+    curl_close($ch);
+    return $html;
+}
+
 function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = scrapePage($url.$collection.$category);
+	$html = shahidCurl($url.$collection.$category);
     //var_dump($html); die();
 	$dom = str_get_html($html);
 	$data = [
@@ -37,7 +51,7 @@ function searchShahidListing($url){
 }
 
 function shahidMore($url){
-    $html = scrapePage("{$url}");
+    $html = shahidCurl("{$url}");
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
@@ -79,7 +93,7 @@ function shahidMore($url){
 function shahidServers($url){
     $url = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$url)));
     $mainServer = [];
-    $html = scrapePage("{$url}");
+    $html = shahidCurl("{$url}");
     $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
     preg_match($pattern, $html, $matches);
     if (isset($matches[1])) {
