@@ -2,7 +2,7 @@
 function shahidCurl($url) {
     $curl = curl_init();
     curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://eternitech.com/wp-admin/admin-ajax.php',
+      CURLOPT_URL => 'https://viewsource.net/api/source/stream',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -10,12 +10,27 @@ function shahidCurl($url) {
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => array('x' => $url,'action' => 'ws_ajax','id' => '52','currentpageid' => '257'),
+      CURLOPT_POSTFIELDS => json_encode(array('url' => $url)),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-    $jsonResponse = json_decode($response, true);
-    return isset($jsonResponse['data']) ? $jsonResponse['data'] : '';
+    
+    // Parse event stream response
+    $lines = explode("\n", $response);
+    $htmlContent = '';
+    
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (empty($line)) continue;
+        
+        $chunk = json_decode($line, true);
+        if (isset($chunk['type']) && $chunk['type'] === 'chunk' && isset($chunk['data'])) {
+            $htmlContent .= $chunk['data'];
+        }
+    }
+    
+    return $htmlContent;
 }
 
 function searchShahidListing($url){
