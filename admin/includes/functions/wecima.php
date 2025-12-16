@@ -7,6 +7,7 @@ function wecimaListing($url) {
     
     // Check if there are seasons
     $seasonsList = $htmlDom->find('.List--Seasons--Episodes a');
+    $title = $htmlDom->find('.Title--Content--Single-begin h1', 0)->plaintext ?? 'Unknown Title';
     
     if (count($seasonsList) > 0) {
         // Scrape all seasons and get episodes for each
@@ -70,6 +71,7 @@ function wecimaListing($url) {
         $episodesData = array_reverse($episodesData);
     }
     $data = [
+        'title' => $title,
         'seasons' => $seasonsData,
         'episodes' => $episodesData
     ];
