@@ -105,12 +105,15 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         }
     }
 
-    // Decide which element to display
-    if($useVideoPlayer) {
-        echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
-    } else {
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
-    }
+    // Always use iframe for all incoming links
+    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>";
+    
+    // Keep old code commented for reference
+    // if($useVideoPlayer) {
+    //     echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+    // } else {
+    //     echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
+    // }
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
