@@ -41,7 +41,7 @@
         .modal-header { border-bottom: none; }
         .modal-footer { border-top: none; }
         
-        .live-match-card { background-color: #2f2f2f; border-radius: 8px; margin-bottom: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .live-match-card { position: relative; background-color: #2f2f2f; border-radius: 8px; margin-bottom: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
         .team-logo { width: 50px; height: 50px; object-fit: contain; }
         .match-time { font-weight: bold; color: #e50914; }
 
