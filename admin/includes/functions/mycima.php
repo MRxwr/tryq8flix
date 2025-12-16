@@ -56,9 +56,10 @@ function myCimaHome($url) {
             if ($numberDiv) {
                 $episode = $numberDiv->plaintext;
             }
+            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
             $jsonData = [
                 'href' => $link ? $link->href : '',
-                'image' => 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster)),
+                'image' => trim($poster),
                 'episode' => $episode,
                 'category' => $genre ? $genre->plaintext : '',
                 'title' => $title,
