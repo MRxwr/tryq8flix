@@ -19,7 +19,7 @@ function shahidCurl($url) {
     // Parse event stream response
     $lines = explode("\n", $response);
     $htmlContent = '';
-    
+    var_dump($lines); die();
     foreach ($lines as $line) {
         $line = trim($line);
         if (empty($line)) continue;
