@@ -18,6 +18,7 @@ function curlCallEgyDead($url) {
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     
     $response = curl_exec($ch);
+    var_dump($response);
     curl_close($ch);
     return $response;
 }
@@ -84,7 +85,6 @@ function scrapEgyDead($url) {
 	} else {
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
-    echo $url;
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	$dom->clear();
 	unset($dom);
