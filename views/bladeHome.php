@@ -93,6 +93,7 @@ $(document).ready(function() {
                 data.servers.forEach(server => {
                     // Fetch content for each server
                     $.getJSON('api/index.php?endpoint=Home&action=view&server=' + server.id, function(serverRes) {
+                        console.log('Server Response:', server.name, serverRes);
                         if(serverRes.ok && serverRes.data.shows && serverRes.data.shows.length > 0) {
                             const rowId = `row-${server.id}`;
                             let rowHtml = `
