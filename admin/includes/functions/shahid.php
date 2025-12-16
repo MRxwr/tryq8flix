@@ -45,7 +45,7 @@ function searchShahidListing($url){
             }
 			$jsonData = [
 				'href' => $href,
-				'image' => trim($realImageUrl),
+				'image' => trim($imageUrl),
 				'episode' => $show->find('.ep', 0)->plaintext,
 				'category' => $show->find('.categ', 0)->plaintext,
 				'title' => $show->find('.title', 0)->plaintext,

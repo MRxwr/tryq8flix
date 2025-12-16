@@ -20,6 +20,10 @@ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+// Add Referer header based on the target URL
+$parsedUrl = parse_url($url);
+$referer = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/';
+curl_setopt($ch, CURLOPT_REFERER, $referer);
 curl_setopt($ch, CURLOPT_HEADER, 1);
 
 // Execute cURL session and get the response
@@ -50,6 +54,7 @@ $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 $body = substr($response, $headerSize);
 
 // Set response headers
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: ' . $contentType);
 header('Cache-Control: public, max-age=86400'); // Cache for 1 day
 
