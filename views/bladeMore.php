@@ -1,6 +1,6 @@
 <?php include 'header.php'; ?>
 
-<div id="hero-section" class="hero" style="display:none; background-size: cover; background-position: center;">
+<div id="hero-section" class="hero" style="display:none; background-size: cover; background-position: center; align-items: flex-end; padding-bottom: 50px;">
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1 class="hero-title" id="hero-title">Loading...</h1>
