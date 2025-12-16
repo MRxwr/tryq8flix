@@ -19,17 +19,25 @@ function shahidCurl($url) {
     // Parse event stream response
     $lines = explode("\n", $response);
     $htmlContent = '';
-    var_dump($lines); die();
-    foreach ($lines as $line) {
+
+	foreach ($lines as $line) {
         $line = trim($line);
         if (empty($line)) continue;
+        
+        // Check if line starts with "data:" prefix (common in event streams)
+        if (strpos($line, 'data:') === 0) {
+            $line = trim(substr($line, 5)); // Remove "data:" prefix
+        }
         
         $chunk = json_decode($line, true);
         if (isset($chunk['type']) && $chunk['type'] === 'chunk' && isset($chunk['data'])) {
             $htmlContent .= $chunk['data'];
+        } elseif (isset($chunk['data'])) {
+            // Fallback if type is not set
+            $htmlContent .= $chunk['data'];
         }
     }
-    echo $htmlContent; die();
+    
     return $htmlContent;
 }
 
@@ -38,6 +46,16 @@ function searchShahidListing($url){
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	$html = shahidCurl($url.$collection.$category);
+    
+    // Debug: Check if HTML content is valid
+    if (empty($html)) {
+        echo 'Error: Empty HTML response from shahidCurl.';
+        return [];
+    }
+    
+    // Clean up HTML before parsing
+    $html = trim($html);
+    
     //var_dump($html); die();
 	$dom = str_get_html($html);
 	$data = [
