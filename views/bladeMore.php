@@ -21,16 +21,16 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const href = decryptLink(urlParams.get('href'));
     const server = urlParams.get('server');
-    const image = urlParams.get('image');
-    const title = urlParams.get('title');
+    const image = decryptLink(urlParams.get('image'));
+    const title = decryptLink(urlParams.get('title'));
     
     // Setup Hero Section
     if (image) {
-        $('#hero-section').css('background-image', 'url(' + decodeURIComponent(image) + ')');
+        $('#hero-section').css('background-image', 'url(' + image + ')');
         $('#hero-section').show();
     }
     if (title) {
-        $('#hero-title').text(decodeURIComponent(title));
+        $('#hero-title').text(title);
     }
 
     if(href && server) {
@@ -50,7 +50,7 @@ $(document).ready(function() {
 
                 // If no seasons and no episodes, it's likely a movie -> go to servers
                 if ((!data.seasons || data.seasons.length === 0) && (!data.episodes || data.episodes.length === 0)) {
-                     window.location.replace(`?v=Servers&href=${encodeURIComponent(encryptLink(href))}&server=${server}&image=${encodeURIComponent(image || '')}&title=${encodeURIComponent(title || '')}`);
+                     window.location.replace(`?v=Servers&href=${encodeURIComponent(encryptLink(href))}&server=${server}&image=${encodeURIComponent(encryptLink(image || ''))}&title=${encodeURIComponent(encryptLink(title || ''))}`);
                      return;
                 }
 
@@ -67,7 +67,7 @@ $(document).ready(function() {
                     data.seasons.forEach(season => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(season.link))}&server=${server}&image=${encodeURIComponent(image || '')}&title=${encodeURIComponent(title || '')} - ${encodeURIComponent(season.title)}')" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(season.link))}&server=${server}&image=${encodeURIComponent(encryptLink(image || ''))}&title=${encodeURIComponent(encryptLink((title || '') + ' - ' + season.title))}')" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h5 class="card-title">${season.title}</h5>
                                     </div>
@@ -89,7 +89,7 @@ $(document).ready(function() {
                     data.episodes.forEach(ep => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="navigateTo('?v=Servers&href=${encodeURIComponent(encryptLink(ep.link))}&server=${server}&image=${encodeURIComponent(image || '')}&title=${encodeURIComponent(title || '')} - ${encodeURIComponent(ep.title)}')" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="navigateTo('?v=Servers&href=${encodeURIComponent(encryptLink(ep.link))}&server=${server}&image=${encodeURIComponent(encryptLink(image || ''))}&title=${encodeURIComponent(encryptLink((title || '') + ' - ' + ep.title))}')" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h6 class="card-title">${ep.title}</h6>
                                     </div>
