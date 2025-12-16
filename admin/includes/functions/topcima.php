@@ -1,6 +1,41 @@
 <?php
+function TopCimaCurl($url) {
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://www.apivoid.com/tools/view-html-page-source/',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => array('url' => $url),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    
+    // Parse the response HTML to extract textarea content
+    $dom = str_get_html($response);
+    if ($dom) {
+        $textarea = $dom->find('textarea#resultText', 0);
+        if ($textarea) {
+            $htmlContent = $textarea->innertext;
+            // Decode HTML entities
+            $htmlContent = html_entity_decode($htmlContent, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $dom->clear();
+            unset($dom);
+            return $htmlContent;
+        }
+        $dom->clear();
+        unset($dom);
+    }
+    
+    return '';
+}
+
 function domTopCinema($url) {
-    $html = curlCall($url);
+    $html = TopCimaCurl($url);
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
@@ -33,7 +68,7 @@ function domTopCinema($url) {
 }
 
 function TopCenimaListings($url) {
-    $html = curlCall($url);
+    $html = TopCimaCurl($url);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -75,7 +110,7 @@ function TopCenimaListings($url) {
 
 function topCinemaServers($url) {
     GLOBAL $website2;
-    $html = curlCall("{$url}watch/");
+    $html = TopCimaCurl("{$url}watch/");
     $dom = str_get_html($html);
     $data = [
         'shows' => []
