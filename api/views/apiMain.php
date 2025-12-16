@@ -10,12 +10,12 @@ $response = array(
             "name" => "Top Cinema Zone",
         ),
         array(
-            "id" => 5,
-            "name" => "Shahid Space",
-        ),
-        array(
             "id" => 8,
             "name" => "TukTuk",
+        ),
+        array(
+            "id" => 5,
+            "name" => "Shahid Space",
         ),
         array(
             "id" => 4,
