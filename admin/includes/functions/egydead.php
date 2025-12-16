@@ -1,112 +1,38 @@
 <?php
-function curlCallEgyDead($url) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_ENCODING, ""); // Enable compression
-    
-    // Cookie handling
-    $cookieFile = sys_get_temp_dir() . '/cookie_egydead.txt';
-    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookieFile);
-    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFile);
-
-    // Mimic a modern browser
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    
-    $headers = [
-        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Language: en-US,en;q=0.9',
-        'Cache-Control: max-age=0',
-        'Sec-Ch-Ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-        'Sec-Ch-Ua-Mobile: ?0',
-        'Sec-Ch-Ua-Platform: "Windows"',
-        'Sec-Fetch-Dest: document',
-        'Sec-Fetch-Mode: navigate',
-        'Sec-Fetch-Site: none',
-        'Sec-Fetch-User: ?1',
-        'Upgrade-Insecure-Requests: 1'
-    ];
-    
-    // Extract host for Authority header
-    $parsedUrl = parse_url($url);
-    if (isset($parsedUrl['host'])) {
-        $headers[] = 'Authority: ' . $parsedUrl['host'];
-        $headers[] = 'Referer: https://' . $parsedUrl['host'] . '/';
-    }
-
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    return $response;
-}
-
 function scrapEgyDead($url) {
-	$html = curlCallEgyDead($url);
+	$html = curlCall($url);
 	$dom = str_get_html($html);
-	
-    $data = [
+	$mainSection = $dom->find('.main-section', 0);
+	if (strpos($url, 'category') !== false) {
+		$mainSection = $dom->find('.cat-page', 0);
+	}
+	if (strpos($url, '?s=') !== false) {
+		$mainSection = $dom->find('.posts-list', 0);
+	}
+	$data = [
 		'shows' => []
 	];
-
 	if ($dom) {
-        $items = [];
-        
-        // Try to find items in specific containers first
-        if (strpos($url, '?s=') !== false) {
-            // Search page
-            $container = $dom->find('.posts-list', 0);
-            if (!$container) $container = $dom->find('.search-page', 0);
-            if (!$container) $container = $dom->find('.Block--Item', 0);
-            
-            if ($container) {
-                $items = $container->find('.movieItem');
-            }
-        } elseif (strpos($url, 'category') !== false) {
-            // Category page
-            $container = $dom->find('.cat-page', 0);
-            if ($container) {
-                $items = $container->find('.movieItem');
-            }
-        } else {
-            // Main page or other pages
-            $container = $dom->find('.main-section', 0);
-            if ($container) {
-                $items = $container->find('.movieItem');
-            }
-        }
-        
-        // Fallback if no items found yet
-        if (empty($items)) {
-             $items = $dom->find('.movieItem');
-        }
+		if ($mainSection) {
+			foreach ($mainSection->find('.movieItem') as $movie) {
+				$link = $movie->find('a', 0);
+				$image = $movie->find('img', 0);
+				$title = $movie->find('.BottomTitle', 0);
+				$category = $movie->find('.cat_name', 0);
+				$episode = $movie->find('.number_episode em', 0);
+				$label = $movie->find('.label', 0);
 
-        foreach ($items as $movie) {
-            $link = $movie->find('a', 0);
-            $image = $movie->find('img', 0);
-            $title = $movie->find('.BottomTitle', 0);
-            if (!$title) $title = $movie->find('.movieTitle', 0);
-            
-            $category = $movie->find('.cat_name', 0);
-            $episode = $movie->find('.number_episode em', 0);
-            $label = $movie->find('.label', 0);
-
-            $movieData = [
-                'href' => $link ? $link->href : '',
-                'image' => $image ? $image->src : '',
-                'title' => $title ? $title->plaintext : '',
-                'category' => $category ? $category->plaintext : '',
-                'episode' => $episode ? $episode->plaintext : '',
-                'description' => $label ? $label->plaintext : '',
-            ];
-            $data['shows'][] = $movieData;
-        }
-        
+				$movieData = [
+					'href' => $link ? $link->href : '',
+					'image' => $image ? $image->src : '',
+					'title' => $title ? $title->plaintext : '',
+					'category' => $category ? $category->plaintext : '',
+					'episode' => $episode ? $episode->plaintext : '',
+					'description' => $label ? $label->plaintext : '',
+				];
+				$data['shows'][] = $movieData;
+			}
+		}
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		echo 'Error: Invalid DOM object.';
@@ -132,10 +58,10 @@ function egyDeadListing($url) {
         echo "<div>لا يوجد المزيد من الحلقات ... شاهد الفيديو مباشرة</div>"; die();
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
-        $html = curlCallEgyDead($_POST["id"]);
+        $html = curlCall($_POST["id"]);
         $html = extractSeasonUrlEgyDead($html);
     }
-    $html = curlCallEgyDead($html);
+    $html = curlCall($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -183,43 +109,16 @@ function egyDeadListing($url) {
 function egyDeadServers($url) {
     $_POST["id"] = $url;
     $curl = curl_init();
-    
-    $cookieFile = sys_get_temp_dir() . '/cookie_egydead.txt';
-    
-    $headers = [
-        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'Accept-Language: en-US,en;q=0.9',
-        'Cache-Control: max-age=0',
-        'Sec-Ch-Ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-        'Sec-Ch-Ua-Mobile: ?0',
-        'Sec-Ch-Ua-Platform: "Windows"',
-        'Sec-Fetch-Dest: document',
-        'Sec-Fetch-Mode: navigate',
-        'Sec-Fetch-Site: none',
-        'Sec-Fetch-User: ?1',
-        'Upgrade-Insecure-Requests: 1'
-    ];
-    
-    $parsedUrl = parse_url($url);
-    if (isset($parsedUrl['host'])) {
-        $headers[] = 'Authority: ' . $parsedUrl['host'];
-        $headers[] = 'Referer: https://' . $parsedUrl['host'] . '/';
-    }
-
     curl_setopt_array($curl, array(
-        CURLOPT_URL => "{$_POST["id"]}",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => array('View' => '1'),
-        CURLOPT_COOKIEJAR => $cookieFile,
-        CURLOPT_COOKIEFILE => $cookieFile,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        CURLOPT_HTTPHEADER => $headers
+    CURLOPT_URL => "{$_POST["id"]}",
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('View' => '1'),
     ));
     $html = curl_exec($curl);
     curl_close($curl);
