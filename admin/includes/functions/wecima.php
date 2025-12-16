@@ -113,45 +113,87 @@ function scrapeWecimaSearch($query) {
     
     $data = ['shows' => []];
     
-    foreach ($result['output'] as $htmlString) {
-        $dom = str_get_html($htmlString);
-        if (!$dom) continue;
-        
-        $item = $dom->find('.GridItem', 0);
-        if (!$item) continue;
-        
-        $thumbDiv = $item->find('.Thumb--GridItem', 0);
-        $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
-        $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
-        $h2 = $link ? $link->find('h2.hasyear', 0) : null;
-        
-        $imageUrl = '';
-        if ($bgSpan && $bgSpan->hasAttribute('style')) {
-            preg_match('/--image:url\(([^)]+)\)/', $bgSpan->getAttribute('style'), $matches);
-            $imageUrl = isset($matches[1]) ? $matches[1] : '';
+    // Handle if output is a string (HTML containing all items)
+    if (is_string($result['output'])) {
+        $dom = str_get_html($result['output']);
+        if ($dom) {
+            foreach ($dom->find('.GridItem') as $item) {
+                $thumbDiv = $item->find('.Thumb--GridItem', 0);
+                $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
+                $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
+                $h2 = $link ? $link->find('h2.hasyear', 0) : null;
+                
+                $imageUrl = '';
+                if ($bgSpan && $bgSpan->hasAttribute('style')) {
+                    preg_match('/--image:url\(([^)]+)\)/', $bgSpan->getAttribute('style'), $matches);
+                    $imageUrl = isset($matches[1]) ? $matches[1] : '';
+                }
+                
+                $title = '';
+                $year = '';
+                if ($h2) {
+                    $titleText = $h2->plaintext;
+                    preg_match('/\((\d{4})\)/', $titleText, $matches);
+                    $year = isset($matches[1]) ? $matches[1] : '';
+                    $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+                }
+                
+                $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
+                $data['shows'][] = [
+                    'href' => $link ? $link->href : '',
+                    'image' => $proxyImageUrl,
+                    'episode' => '',
+                    'category' => '',
+                    'title' => $title,
+                    'description' => $year,
+                ];
+            }
+            $dom->clear();
+            unset($dom);
         }
-        
-        $title = '';
-        $year = '';
-        if ($h2) {
-            $titleText = $h2->plaintext;
-            preg_match('/\((\d{4})\)/', $titleText, $matches);
-            $year = isset($matches[1]) ? $matches[1] : '';
-            $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+    } 
+    // Handle if output is an array of HTML strings (legacy/fallback)
+    elseif (is_array($result['output'])) {
+        foreach ($result['output'] as $htmlString) {
+            $dom = str_get_html($htmlString);
+            if (!$dom) continue;
+            
+            $item = $dom->find('.GridItem', 0);
+            if (!$item) continue;
+            
+            $thumbDiv = $item->find('.Thumb--GridItem', 0);
+            $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
+            $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
+            $h2 = $link ? $link->find('h2.hasyear', 0) : null;
+            
+            $imageUrl = '';
+            if ($bgSpan && $bgSpan->hasAttribute('style')) {
+                preg_match('/--image:url\(([^)]+)\)/', $bgSpan->getAttribute('style'), $matches);
+                $imageUrl = isset($matches[1]) ? $matches[1] : '';
+            }
+            
+            $title = '';
+            $year = '';
+            if ($h2) {
+                $titleText = $h2->plaintext;
+                preg_match('/\((\d{4})\)/', $titleText, $matches);
+                $year = isset($matches[1]) ? $matches[1] : '';
+                $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+            }
+            
+            $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
+            $data['shows'][] = [
+                'href' => $link ? $link->href : '',
+                'image' => $proxyImageUrl,
+                'episode' => '',
+                'category' => '',
+                'title' => $title,
+                'description' => $year,
+            ];
+            
+            $dom->clear();
+            unset($dom);
         }
-        
-        $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
-        $data['shows'][] = [
-            'href' => $link ? $link->href : '',
-            'image' => $proxyImageUrl,
-            'episode' => '',
-            'category' => '',
-            'title' => $title,
-            'description' => $year,
-        ];
-        
-        $dom->clear();
-        unset($dom);
     }
     
     return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
