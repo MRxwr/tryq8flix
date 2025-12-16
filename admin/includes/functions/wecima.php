@@ -9,6 +9,21 @@ function wecimaListing($url) {
     $seasonsList = $htmlDom->find('.List--Seasons--Episodes a');
     $title = $htmlDom->find('.Title--Content--Single-begin h1', 0)->plaintext ?? 'Unknown Title';
     
+    // Extract poster from style attribute
+    $posterElement = $htmlDom->find('.separated--top', 0);
+    $posterUrl = '';
+    if ($posterElement) {
+        $style = $posterElement->getAttribute('style');
+        if (preg_match('/url\([\'"]?(.*?)[\'"]?\)/', $style, $matches)) {
+            $posterUrl = $matches[1];
+        }
+    }
+    
+    $poster = '';
+    if (!empty($posterUrl)) {
+        $poster = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($posterUrl));
+    }
+    
     if (count($seasonsList) > 0) {
         // Scrape all seasons and get episodes for each
         foreach ($seasonsList as $seasonLink) {
@@ -72,6 +87,7 @@ function wecimaListing($url) {
     }
     $data = [
         'title' => $title,
+        'poster' => $poster,
         'seasons' => $seasonsData,
         'episodes' => $episodesData
     ];
