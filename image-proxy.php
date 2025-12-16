@@ -25,7 +25,6 @@ curl_setopt($ch, CURLOPT_HEADER, 1);
 // Execute cURL session and get the response
 $response = curl_exec($ch);
 
-var_dump($response);
 // Check if the request was successful
 if (curl_errno($ch)) {
     http_response_code(404);
