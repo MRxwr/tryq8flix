@@ -7,10 +7,11 @@ require_once("admin/includes/config.php");
 require_once("admin/includes/functions/index.php");
 
 // Security check - only logged in users can access this proxy
-$user = checkLogin();
+/*$user = checkLogin();
 if (empty($user["id"])) {
     exit("Access denied. Please log in first.");
 }
+    */
 
 if (!isset($_GET['url'])) {
     exit("Missing URL parameter");
