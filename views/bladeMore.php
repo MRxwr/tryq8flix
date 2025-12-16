@@ -54,16 +54,16 @@ $(document).ready(function() {
                      return;
                 }
 
-                let html = `
-                    <div class="row">
-                        <div class="col-md-12 mb-4">
-                            <h2>${data.seasons && data.seasons.length > 0 ? 'Seasons' : 'Episodes'}</h2>
-                        </div>
-                    </div>
-                `;
+                let html = '';
                 
                 if(data.seasons && data.seasons.length > 0) {
-                    html += `<div class="row mb-5">`;
+                    html += `
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <h2>Seasons</h2>
+                            </div>
+                        </div>
+                        <div class="row mb-5">`;
                     data.seasons.forEach(season => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
@@ -79,7 +79,13 @@ $(document).ready(function() {
                 }
                 
                 if(data.episodes && data.episodes.length > 0) {
-                    html += `<h3>Episodes</h3><div class="row">`;
+                    html += `
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <h2>Episodes</h2>
+                            </div>
+                        </div>
+                        <div class="row">`;
                     data.episodes.forEach(ep => {
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
