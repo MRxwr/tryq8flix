@@ -33,8 +33,17 @@ function searchShahidListing($url){
 			$style = $show->style;
 			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
 			$imageUrl = isset($matches[1]) ? $matches[1] : '';
+            if( !empty($imageUrl) ){
+                $imageUrl = "https://".$_SERVER['HTTP_HOST']."/image-proxy.php?url=".urlencode(trim($imageUrl));
+            }
+            $href = $show->href;
+            $parts = explode('/', $href);
+            if( count($parts) >= 5 ){
+                $parts[4] = urlencode($parts[4]);
+                $href = implode('/', $parts);
+            }
 			$jsonData = [
-				'href' => $show->href,
+				'href' => $href,
 				'image' => trim($imageUrl),
 				'episode' => $show->find('.ep', 0)->plaintext,
 				'category' => $show->find('.categ', 0)->plaintext,
