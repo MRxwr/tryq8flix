@@ -42,9 +42,10 @@ function tuktukHome($url) {
                     $title = trim($h3->plaintext);
                 }
                 // Keep same array keys, fill missing with empty string/array
+                $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
                 $jsonData = [
                     'href' => $href,
-                    'image' => 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image)),
+                    'image' => trim($image),
                     'episode' => '',
                     'category' => '',
                     'title' => $title,
