@@ -70,6 +70,11 @@ function shahidMore($url){
     $seasonsData = [];
     foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
         $link = $linkNode->href;
+        $parts = explode('/', $link);
+        if( count($parts) >= 5 ){
+            $parts[4] = urlencode($parts[4]);
+            $link = implode('/', $parts);
+        }
         $title = trim($linkNode->find('h3', 0)->plaintext);
                 if (stripos($link, 'season') !== false) {
             $seasonsData[] = [
@@ -82,6 +87,11 @@ function shahidMore($url){
     $episodesData = [];
     foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
         $link = $linkNode->href;
+        $parts = explode('/', $link);
+        if( count($parts) >= 5 ){
+            $parts[4] = urlencode($parts[4]);
+            $link = implode('/', $parts);
+        }
         $title = trim($linkNode->find('h3', 0)->plaintext);
         if (stripos($link, 'season') === false) {
             $episodesData[] = [
