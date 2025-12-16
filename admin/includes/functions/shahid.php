@@ -34,7 +34,7 @@ function searchShahidListing($url){
 			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
 			$imageUrl = isset($matches[1]) ? $matches[1] : '';
             if( !empty($imageUrl) ){
-                $imageUrl = "image-proxy.php?url=".urlencode(trim($imageUrl));
+                $imageUrl = "https://" .$_SERVER["HTTP_HOST"]. "/image-proxy.php?url=".urlencode(trim($imageUrl));
             }
 			$jsonData = [
 				'href' => $show->href,
