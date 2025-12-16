@@ -40,13 +40,12 @@ $('#searchInput').keypress(function(e) {
 
 function performSearch() {
     const query = $('#searchInput').val();
-    console.log('Searching for:', query , ' ' , encodeURIComponent(query));
     const serverId = $('#serverSelect').val();
     if(!query) return;
     
     $('#searchResults').html('<div class="text-center w-100"><div class="spinner-border text-danger"></div></div>');
     
-    $.getJSON('api/index.php?endpoint=Home&action=view&page=1&server=' + serverId + '&search=' + encodeURIComponent(query), function(response) {
+    $.getJSON('api/index.php?endpoint=Home&action=view&page=1&server=' + serverId + '&search=' + (query), function(response) {
         $('#searchResults').empty();
         if(response.ok && response.data.shows) {
             response.data.shows.forEach(show => {
