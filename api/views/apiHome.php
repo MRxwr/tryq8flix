@@ -30,7 +30,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $url .= "/?page={$_GET["page"]}/";
                 }
                 if( isset($_GET["search"]) && !empty($_GET["search"]) ){
-                    $_GET["search"] = str_replace(" ","+",$_GET["search"]);
+                    $_GET["search"] = urlencode($_GET["search"]);;
                     $url .= "/?s={$_GET["search"]}";
                 }
                 $data = scrapEgyDead("{$url}");
