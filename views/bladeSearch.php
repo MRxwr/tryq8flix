@@ -10,8 +10,8 @@
     </div>
     
     <div id="searchResults" class="row"></div>
-    <div id="loadMoreBtnContainer" class="text-center mt-4" style="display: none;">
-        <button class="btn btn-secondary-netflix" id="loadMoreBtn">Load More</button>
+    <div id="loadingIndicator" class="text-center mt-4" style="display: none;">
+        <div class="spinner-border text-danger"></div>
     </div>
 </div>
 
@@ -21,6 +21,8 @@
 let currentPage = 1;
 let currentQuery = '';
 let currentServerId = '';
+let isLoading = false;
+let hasMore = true;
 
 $(document).ready(function() {
     // Populate Server Dropdown
@@ -31,6 +33,15 @@ $(document).ready(function() {
                 options += `<option value="${server.id}">${server.name}</option>`;
             });
             $('#serverSelect').html(options);
+        }
+    });
+
+    // Infinite Scroll
+    $(window).scroll(function() {
+        if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            if(!isLoading && hasMore && currentQuery) {
+                performSearch(true);
+            }
         }
     });
 });
@@ -45,35 +56,34 @@ $('#searchInput').keypress(function(e) {
     }
 });
 
-$('#loadMoreBtn').click(function() {
-    performSearch(true);
-});
-
 function performSearch(isLoadMore = false) {
     const query = $('#searchInput').val();
     const serverId = $('#serverSelect').val();
     
     if(!query) return;
+    if(isLoading) return;
+    
+    isLoading = true;
     
     if (!isLoadMore) {
         currentPage = 1;
         currentQuery = query;
         currentServerId = serverId;
+        hasMore = true;
         $('#searchResults').empty();
         $('#searchResults').html('<div class="text-center w-100 loading-spinner"><div class="spinner-border text-danger"></div></div>');
-        $('#loadMoreBtnContainer').hide();
+        $('#loadingIndicator').hide();
     } else {
         currentPage++;
-        $('#loadMoreBtn').html('<div class="spinner-border spinner-border-sm text-light"></div> Loading...');
-        $('#loadMoreBtn').prop('disabled', true);
+        $('#loadingIndicator').show();
     }
     
     $.getJSON(`api/index.php?endpoint=Home&action=view&page=${currentPage}&server=${currentServerId}&search=${encodeURIComponent(currentQuery)}`, function(response) {
+        isLoading = false;
         if (!isLoadMore) {
             $('.loading-spinner').remove();
         } else {
-            $('#loadMoreBtn').html('Load More');
-            $('#loadMoreBtn').prop('disabled', false);
+            $('#loadingIndicator').hide();
         }
 
         if(response.ok && response.data.shows && response.data.shows.length > 0) {
@@ -88,17 +98,16 @@ function performSearch(isLoadMore = false) {
                 `;
                 $('#searchResults').append(html);
             });
-            
-            // Show load more button if we got results
-            $('#loadMoreBtnContainer').show();
         } else {
+            hasMore = false;
             if (!isLoadMore) {
                 $('#searchResults').html('<p class="text-center w-100">No results found.</p>');
-            } else {
-                // No more results for load more
-                $('#loadMoreBtnContainer').hide();
             }
         }
+    }).fail(function() {
+        isLoading = false;
+        $('#loadingIndicator').hide();
+        if (!isLoadMore) $('.loading-spinner').remove();
     });
 }
 </script>
