@@ -24,8 +24,17 @@ let hasMore = true;
 
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    currentServer = urlParams.get('server');
-    const title = urlParams.get('title');
+    let title;
+    
+    if (urlParams.has('q')) {
+        const decryptedQ = decryptLink(urlParams.get('q'));
+        const params = new URLSearchParams(decryptedQ);
+        currentServer = params.get('server');
+        title = params.get('title');
+    } else {
+        currentServer = urlParams.get('server');
+        title = urlParams.get('title');
+    }
     
     if(title) {
         $('#categoryTitle').text(decodeURIComponent(title));
@@ -63,9 +72,12 @@ function loadContent(page) {
         
         if(response.ok && response.data.shows && response.data.shows.length > 0) {
             response.data.shows.forEach(show => {
+                const encHref = encryptLink(show.href);
+                const encImage = encryptLink(show.image);
+                const encTitle = encryptLink(show.title);
                 let html = `
                     <div class="col-6 col-md-3 col-lg-2 mb-4">
-                        <div class="movie-card w-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${currentServer}&image=${encodeURIComponent(encryptLink(show.image))}&title=${encodeURIComponent(encryptLink(show.title))}')">
+                        <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${currentServer}', image: '${encImage}', title: '${encTitle}'})">
                             <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${show.title}</div>
                         </div>

@@ -16,6 +16,14 @@ $(document).ready(function() {
         if(response.ok && response.data.length > 0) {
             response.data.forEach(match => {
                 if(match.rightTeamName) {
+                    const qParams = {
+                        v: 'Servers',
+                        link: encryptLink(match.href),
+                        type: 'live'
+                    };
+                    const qString = Object.keys(qParams).map(key => key + '=' + encodeURIComponent(qParams[key])).join('&');
+                    const encryptedUrl = '?q=' + encodeURIComponent(encryptLink(qString));
+
                     let html = `
                         <div class="live-match-card">
                             <div class="d-flex align-items-center" style="width: 40%;">
@@ -31,7 +39,7 @@ $(document).ready(function() {
                                 <span>${match.leftTeamName}</span>
                                 <img src="${match.leftTeamLogo}" class="team-logo ms-3">
                             </div>
-                            <a href="?v=Servers&link=${encodeURIComponent(encryptLink(match.href))}&type=live" class="stretched-link"></a>
+                            <a href="${encryptedUrl}" class="stretched-link"></a>
                         </div>
                     `;
                     $('#matches-list').append(html);

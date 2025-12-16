@@ -162,6 +162,15 @@
                     window.location.href = url;
                 }
             };
+
+            window.navigateToEncrypted = function(params) {
+                // Construct query string from params object
+                const queryString = Object.keys(params).map(key => key + '=' + encodeURIComponent(params[key])).join('&');
+                // Encrypt the query string
+                const encrypted = encryptLink(queryString);
+                // Navigate
+                navigateTo('?q=' + encodeURIComponent(encrypted));
+            };
         });
     </script>
 </head>

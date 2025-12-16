@@ -18,9 +18,21 @@
 <script>
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const href = decryptLink(urlParams.get('href'));
-    const server = urlParams.get('server');
-    const type = urlParams.get('type'); // 'live' or normal
+    let href, server, type, link;
+
+    if (urlParams.has('q')) {
+        const decryptedQ = decryptLink(urlParams.get('q'));
+        const params = new URLSearchParams(decryptedQ);
+        href = decryptLink(params.get('href'));
+        server = params.get('server');
+        type = params.get('type');
+        link = decryptLink(params.get('link'));
+    } else {
+        href = decryptLink(urlParams.get('href'));
+        server = urlParams.get('server');
+        type = urlParams.get('type');
+        link = decryptLink(urlParams.get('link'));
+    }
     
     if(type === 'live') {
         // Handle live match logic (different endpoint)

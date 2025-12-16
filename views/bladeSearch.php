@@ -88,9 +88,12 @@ function performSearch(isLoadMore = false) {
 
         if(response.ok && response.data.shows && response.data.shows.length > 0) {
             response.data.shows.forEach(show => {
+                const encHref = encryptLink(show.href);
+                const encImage = encryptLink(show.image);
+                const encTitle = encryptLink(show.title);
                 let html = `
                     <div class="col-6 col-md-3 col-lg-2 mb-4">
-                        <div class="movie-card w-100" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${currentServerId}&image=${encodeURIComponent(encryptLink(show.image))}&title=${encodeURIComponent(encryptLink(show.title))}')">
+                        <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${currentServerId}', image: '${encImage}', title: '${encTitle}'})">
                             <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${show.title}</div>
                         </div>

@@ -4,6 +4,24 @@ require_once("admin/includes/functions.php");
 require_once("try2/templates/simple_html_dom.php");
 
 $profileData = checkLogin();
+
+// Decrypt 'q' parameter if present
+if (isset($_GET['q'])) {
+    $encrypted = $_GET['q'];
+    // Reverse string
+    $reversed = strrev($encrypted);
+    // Base64 decode
+    $decoded = base64_decode($reversed);
+    // URL decode
+    $queryString = urldecode($decoded);
+    
+    // Parse query string into array
+    parse_str($queryString, $params);
+    
+    // Merge into $_GET
+    $_GET = array_merge($_GET, $params);
+}
+
 $view = isset($_GET["v"]) ? $_GET["v"] : "Home";
 
 // Whitelist of views accessible without login

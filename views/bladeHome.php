@@ -80,8 +80,11 @@ $(document).ready(function() {
                 // Update Play/More Info buttons if needed based on banner data
                 // For example, if banner has an endpoint/url, we could attach it to the button
                 if(banner.url && banner.server) {
-                     $('.btn-netflix').attr('onclick', `navigateTo('?v=More&href=${encodeURIComponent(encryptLink(banner.url))}&server=${banner.server}&image=${encodeURIComponent(encryptLink(banner.imageurl))}&title=${encodeURIComponent(encryptLink(banner.title))}')`);
-                     $('.btn-secondary-netflix').attr('onclick', `navigateTo('?v=More&href=${encodeURIComponent(encryptLink(banner.url))}&server=${banner.server}&image=${encodeURIComponent(encryptLink(banner.imageurl))}&title=${encodeURIComponent(encryptLink(banner.title))}')`);
+                     const encHref = encryptLink(banner.url);
+                     const encImage = encryptLink(banner.imageurl);
+                     const encTitle = encryptLink(banner.title);
+                     $('.btn-netflix').attr('onclick', `navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})`);
+                     $('.btn-secondary-netflix').attr('onclick', `navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})`);
                 }
             } else {
                  $('#hero-title').text('Welcome to TryQ8Flix');
@@ -98,7 +101,7 @@ $(document).ready(function() {
                             let rowHtml = `
                                 <div class="d-flex justify-content-between align-items-center" style="margin: 2rem 4% 1rem 4%;">
                                     <div class="section-title" style="margin: 0;">${server.name}</div>
-                                    <span class="text-white small fw-bold" style="cursor:pointer;" onclick="navigateTo('?v=Category&server=${server.id}&title=${encodeURIComponent(server.name)}')">View More <i class="fas fa-chevron-right"></i></span>
+                                    <span class="text-white small fw-bold" style="cursor:pointer;" onclick="navigateToEncrypted({v: 'Category', server: '${server.id}', title: '${server.name}'})">View More <i class="fas fa-chevron-right"></i></span>
                                 </div>
                                 <div class="row-wrapper">
                                     <button class="scroll-btn scroll-left d-none d-md-flex" onclick="scrollRow('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
@@ -106,8 +109,11 @@ $(document).ready(function() {
                             `;
                             
                             serverRes.data.shows.forEach(show => {
+                                const encHref = encryptLink(show.href);
+                                const encImage = encryptLink(show.image);
+                                const encTitle = encryptLink(show.title);
                                 rowHtml += `
-                                    <div class="movie-card" onclick="navigateTo('?v=More&href=${encodeURIComponent(encryptLink(show.href))}&server=${server.id}&image=${encodeURIComponent(encryptLink(show.image))}&title=${encodeURIComponent(encryptLink(show.title))}')">
+                                    <div class="movie-card" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server.id}', image: '${encImage}', title: '${encTitle}'})">
                                         <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                                     </div>
                                 `;
