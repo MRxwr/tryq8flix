@@ -45,7 +45,7 @@ function searchShahidSpaceListing($url){
 
             $jsonData = [
                 'href'       => trim($href),
-                'image'      => $proxyImageUrl,
+                'image'      => trim($image),
                 'episode'    => trim($episode),
                 'views'      => '', // No views in new structure
                 'title'      => trim($title),
