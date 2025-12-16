@@ -1,7 +1,26 @@
 <?php
+function shahidSpaceCurl($url) {
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://eternitech.com/wp-admin/admin-ajax.php',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => array('x' => $url,'action' => 'ws_ajax','id' => '52','currentpageid' => '257'),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $jsonResponse = json_decode($response, true);
+    return isset($jsonResponse['data']) ? $jsonResponse['data'] : '';
+}
+
 function searchShahidSpaceListing($url){
 	GLOBAL $website, $_GET;
-	$html = scrapePage($url);
+	$html = shahidSpaceCurl($url);
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
@@ -48,7 +67,7 @@ function searchShahidSpaceListing($url){
 }
 
 function shahidSpaceMore($url){
-    $html = scrapePage("{$url}");
+    $html = shahidSpaceCurl("{$url}");
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -138,7 +157,7 @@ function shahidSpaceServers($url){
 		$videoUrl = rtrim($videoUrl, '/') . '/watch/';
 	}
     $mainServer = [];
-    $html = scrapePage("{$videoUrl}");
+    $html = shahidSpaceCurl("{$videoUrl}");
     $htmlDom = str_get_html($html);
     $servers = [];
     
