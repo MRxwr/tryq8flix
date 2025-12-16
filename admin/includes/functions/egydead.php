@@ -1,6 +1,27 @@
 <?php
+function curlCallEgyDead($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language: en-US,en;q=0.9,ar;q=0.8',
+        'Upgrade-Insecure-Requests: 1'
+    ]);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return $response;
+}
+
 function scrapEgyDead($url) {
-	$html = curlCall($url);
+	$html = curlCallEgyDead($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
@@ -59,10 +80,10 @@ function egyDeadListing($url) {
         echo "<div>لا يوجد المزيد من الحلقات ... شاهد الفيديو مباشرة</div>"; die();
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
-        $html = curlCall($_POST["id"]);
+        $html = curlCallEgyDead($_POST["id"]);
         $html = extractSeasonUrlEgyDead($html);
     }
-    $html = curlCall($html);
+    $html = curlCallEgyDead($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -120,6 +141,14 @@ function egyDeadServers($url) {
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
     CURLOPT_POSTFIELDS => array('View' => '1'),
+    CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    CURLOPT_HTTPHEADER => [
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language: en-US,en;q=0.9,ar;q=0.8',
+        'Upgrade-Insecure-Requests: 1'
+    ],
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_SSL_VERIFYHOST => false,
     ));
     $html = curl_exec($curl);
     curl_close($curl);
