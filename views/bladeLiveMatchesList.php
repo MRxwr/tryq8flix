@@ -31,7 +31,7 @@ $(document).ready(function() {
                                 <span>${match.leftTeamName}</span>
                                 <img src="${match.leftTeamLogo}" class="team-logo ms-3">
                             </div>
-                            <a href="?v=Servers&link=${encodeURIComponent(encryptLink(match.href))}&type=live" class="stretched-link"></a>
+                            <a href="?v=Servers&link=${encodeURIComponent(encryptLink(match.href.replace(/\s/g, '')))}&type=live" class="stretched-link"></a>
                         </div>
                     `;
                     $('#matches-list').append(html);
