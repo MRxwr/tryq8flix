@@ -112,9 +112,11 @@ $(document).ready(function() {
                                 const encHref = encryptLink(show.href);
                                 const encImage = encryptLink(show.image);
                                 const encTitle = encryptLink(show.title);
+                                const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                                 rowHtml += `
                                     <div class="movie-card" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server.id}', image: '${encImage}', title: '${encTitle}'})">
-                                        <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                        <img src="${show.image}" alt="${safeTitle}" onerror="this.parentElement.classList.add('img-error')">
+                                        <div class="title-overlay">${safeTitle}</div>
                                     </div>
                                 `;
                             });
