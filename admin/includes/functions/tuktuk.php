@@ -30,7 +30,7 @@ function tuktukHome($url) {
                 // Keep same array keys, fill missing with empty string/array
                 $jsonData = [
                     'href' => $href,
-                    'image' => $image,
+                    'image' => 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image)),
                     'episode' => '',
                     'category' => '',
                     'title' => $title,
