@@ -6,11 +6,13 @@ function curlCallEgyDead($url) {
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'Accept-Language: en-US,en;q=0.9,ar;q=0.8',
-        'Upgrade-Insecure-Requests: 1'
+        'Upgrade-Insecure-Requests: 1',
+        'Referer: https://a.a5s0d.sbs/'
     ]);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -23,40 +25,63 @@ function curlCallEgyDead($url) {
 function scrapEgyDead($url) {
 	$html = curlCallEgyDead($url);
 	$dom = str_get_html($html);
-	$mainSection = $dom->find('.main-section', 0);
-	if (strpos($url, 'category') !== false) {
-		$mainSection = $dom->find('.cat-page', 0);
-	}
-	if (strpos($url, '?s=') !== false) {
-		$mainSection = $dom->find('.posts-list', 0);
-	}
-	$data = [
+	
+    $data = [
 		'shows' => []
 	];
-	if ($dom) {
-		if ($mainSection) {
-			foreach ($mainSection->find('.movieItem') as $movie) {
-				$link = $movie->find('a', 0);
-				$image = $movie->find('img', 0);
-				$title = $movie->find('.BottomTitle', 0);
-				$category = $movie->find('.cat_name', 0);
-				$episode = $movie->find('.number_episode em', 0);
-				$label = $movie->find('.label', 0);
 
-				$movieData = [
-					'href' => $link ? $link->href : '',
-					'image' => $image ? $image->src : '',
-					'title' => $title ? $title->plaintext : '',
-					'category' => $category ? $category->plaintext : '',
-					'episode' => $episode ? $episode->plaintext : '',
-					'description' => $label ? $label->plaintext : '',
-				];
-				$data['shows'][] = $movieData;
-			}
-		}
+	if ($dom) {
+        $items = [];
+        
+        // Try to find items in specific containers first
+        if (strpos($url, '?s=') !== false) {
+            // Search page
+            $container = $dom->find('.posts-list', 0);
+            if (!$container) $container = $dom->find('.search-page', 0);
+            if (!$container) $container = $dom->find('.Block--Item', 0);
+            
+            if ($container) {
+                $items = $container->find('.movieItem');
+            }
+        } elseif (strpos($url, 'category') !== false) {
+            // Category page
+            $container = $dom->find('.cat-page', 0);
+            if ($container) {
+                $items = $container->find('.movieItem');
+            }
+        } else {
+            // Home/Main page
+            $container = $dom->find('.main-section', 0);
+            if ($container) {
+                $items = $container->find('.movieItem');
+            }
+        }
+        
+        // Fallback: if no items found yet, search globally for .movieItem
+        if (empty($items)) {
+            $items = $dom->find('.movieItem');
+        }
+
+        foreach ($items as $movie) {
+            $link = $movie->find('a', 0);
+            $image = $movie->find('img', 0);
+            $title = $movie->find('.BottomTitle', 0);
+            $category = $movie->find('.cat_name', 0);
+            $episode = $movie->find('.number_episode em', 0);
+            $label = $movie->find('.label', 0);
+
+            $movieData = [
+                'href' => $link ? $link->href : '',
+                'image' => $image ? $image->src : '',
+                'title' => $title ? $title->plaintext : '',
+                'category' => $category ? $category->plaintext : '',
+                'episode' => $episode ? $episode->plaintext : '',
+                'description' => $label ? $label->plaintext : '',
+            ];
+            $data['shows'][] = $movieData;
+        }
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
-		echo 'Error: Invalid DOM object.';
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
     echo $url;
