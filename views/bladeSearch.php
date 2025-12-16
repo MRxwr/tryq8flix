@@ -40,6 +40,7 @@ $('#searchInput').keypress(function(e) {
 
 function performSearch() {
     const query = $('#searchInput').val();
+    console.log('Searching for:', query , ' ' , encodeURIComponent(query));
     const serverId = $('#serverSelect').val();
     if(!query) return;
     
