@@ -93,7 +93,13 @@ $(document).ready(function() {
 
             // 2. Setup Content Rows from Servers
             if(data.servers && data.servers.length > 0) {
-                data.servers.forEach(server => {
+                // Create placeholder divs in order
+                data.servers.forEach((server, index) => {
+                    const placeholderId = `server-placeholder-${index}`;
+                    $('#content-rows').append(`<div id="${placeholderId}" data-server-order="${index}"></div>`);
+                });
+                
+                data.servers.forEach((server, index) => {
                     // Fetch content for each server
                     $.getJSON('api/index.php?endpoint=Home&action=view&page=1&server=' + server.id, function(serverRes) {
                         if(serverRes.ok && serverRes.data.shows && serverRes.data.shows.length > 0) {
@@ -124,7 +130,9 @@ $(document).ready(function() {
                             rowHtml += `</div>
                                     <button class="scroll-btn scroll-right d-none d-md-flex" onclick="scrollRow('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
                                 </div>`;
-                            $('#content-rows').append(rowHtml);
+                            
+                            // Insert into the correct placeholder position
+                            $(`#server-placeholder-${index}`).html(rowHtml);
                         }
                     });
                 });
