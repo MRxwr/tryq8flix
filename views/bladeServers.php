@@ -55,7 +55,6 @@ $(document).ready(function() {
                  }
              }
 
-             console.log(link);
              console.log("Live Match API Response:", response);
 
              // Check if response has data array
