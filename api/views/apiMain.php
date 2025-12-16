@@ -26,8 +26,8 @@ $response = array(
             "name" => "ShahidwBs",
         ),
         array(
-            "id" => 7,
-            "name" => "MyCima",
+            "id" => 7, 
+            "name" => "Top Cinema Zone",
         ),
         array(
             "id" => 8,
