@@ -38,6 +38,7 @@ function scrapEgyDead($url) {
 		echo 'Error: Invalid DOM object.';
 		$shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
+    echo $url;
 	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
 	$dom->clear();
 	unset($dom);
