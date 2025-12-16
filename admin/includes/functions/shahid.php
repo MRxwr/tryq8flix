@@ -15,7 +15,6 @@ function shahidCurl($url) {
     ));
     $response = curl_exec($curl);
     curl_close($curl);
-	var_dump($response);	
     
     // Parse event stream response
     $lines = explode("\n", $response);
@@ -30,7 +29,7 @@ function shahidCurl($url) {
             $htmlContent .= $chunk['data'];
         }
     }
-    
+    echo $htmlContent; die();
     return $htmlContent;
 }
 
