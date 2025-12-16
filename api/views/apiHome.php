@@ -33,7 +33,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $_GET["search"] = urlencode($_GET["search"]);;
                     $url .= "/?s={$_GET["search"]}";
                 }
-                if( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && empty($_GET["search"])) ){
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && isset($_GET["search"]) && !empty($_GET["search"]) ){
                     $_GET["search"] = urlencode($_GET["search"]);
                     $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
                 }
