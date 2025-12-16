@@ -36,7 +36,6 @@ $(document).ready(function() {
     
     if(type === 'live') {
         // Handle live match logic (different endpoint)
-        const link = decryptLink(urlParams.get('link'));
         if (!link) {
             $('#servers-list').html('<p class="text-danger">Error: No match link provided.</p>');
             return;
