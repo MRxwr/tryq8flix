@@ -208,7 +208,13 @@ function qessetServers($url) {
         if ($watchLink) {
             $href = $watchLink->href;
             
-            // Extract the base64 encoded post parameter
+            // Add main server with the full encoded link
+            $servers[] = [
+                'name' => 'main',
+                'link' => $href
+            ];
+            
+            // Extract the base64 encoded post parameter for ok.ru server
             if (preg_match('/post=([^&"]+)/', $href, $matches)) {
                 $base64Post = $matches[1];
                 
@@ -220,30 +226,15 @@ function qessetServers($url) {
                     foreach ($postData['servers'] as $server) {
                         $name = isset($server['name']) ? $server['name'] : '';
                         $id = isset($server['id']) ? $server['id'] : '';
-                        $link = '';
-                        
-                        // Build the appropriate URL based on server name
                         $nameLower = strtolower($name);
                         
-                        if (strpos($nameLower, 'arab hd') !== false) {
-                            $link = "https://v.turkvearab.com/embed-{$id}.html";
-                        } elseif (strpos($nameLower, 'estream') !== false) {
-                            $link = "https://arabveturk.com/embed-{$id}.html";
-                        } elseif (strpos($nameLower, 'ok') !== false) {
-                            $link = "https://ok.ru/videoembed/{$id}";
-                        } elseif (strpos($nameLower, 'red hd') !== false) {
-                            $link = "https://iplayerhls.com/e/{$id}";
-                        } elseif (strpos($nameLower, 'pro hd') !== false) {
-                            $link = "https://iplayerhls.com/e/{$id}";
-                        } elseif (strpos($nameLower, 'dailymotion') !== false) {
-                            $link = "https://www.dailymotion.com/embed/video/{$id}";
-                        }
-                        
-                        if ($link) {
+                        // Only add ok.ru server
+                        if (strpos($nameLower, 'ok') !== false) {
                             $servers[] = [
-                                'name' => $name,
-                                'link' => $link
+                                'name' => 'ok',
+                                'link' => "https://ok.ru/videoembed/{$id}"
                             ];
+                            break;
                         }
                     }
                 }
