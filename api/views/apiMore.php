@@ -24,6 +24,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = myCimaListings($_GET["href"]);
             }elseif( $_GET["server"] == 8 ){
                 $data = tuktukListings($_GET["href"]);
+            }elseif( $_GET["server"] == 9 ){
+                $data = qessetListings($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
