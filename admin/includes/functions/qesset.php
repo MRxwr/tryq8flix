@@ -128,24 +128,42 @@ function qessetListings($url) {
     }
 
     // Scrape episodes (new structure)
-    $episodesRow = $htmlDom->find('section.allepcont .row', 0);
-    if ($episodesRow) {
-        foreach ($episodesRow->find('a') as $episodeLink) {
-            $link = $episodeLink->href;
-            $img = $episodeLink->find('img', 0);
-            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $epInfo = $episodeLink->find('.ep-info h2', 0);
-            $title = $epInfo ? trim($epInfo->plaintext) : '';
-            $epnumDiv = $episodeLink->find('.epnum', 0);
+    foreach ($htmlDom->find('article.postEp') as $article) {
+        $blockPost = $article->find('div.block-post', 0);
+        if ($blockPost) {
+            $a = $blockPost->find('a', 0);
+            $link = $a ? $a->href : '';
+            $titleAttr = $a ? $a->getAttribute('title') : '';
+            
+            // Get episode number
             $episodeNumber = '';
             $episodeNumberDigits = '';
-            if ($epnumDiv) {
-                // Extract number from text
-                if (preg_match('/(\d+)/u', $epnumDiv->plaintext, $matches)) {
-                    $episodeNumber = $matches[1];
+            $episodeNumDiv = $blockPost->find('div.episodeNum', 0);
+            if ($episodeNumDiv) {
+                $episodeSpans = $episodeNumDiv->find('span');
+                if (count($episodeSpans) >= 2) {
+                    $episodeNumber = trim($episodeSpans[1]->plaintext);
                     $episodeNumberDigits = $episodeNumber;
                 }
             }
+            
+            // Get image from background-image style
+            $poster = '';
+            $imgSer = $blockPost->find('div.imgSer', 0);
+            if ($imgSer) {
+                $style = $imgSer->getAttribute('style');
+                if (preg_match('/background-image:\s*url\((.*?)\)/i', $style, $matches)) {
+                    $poster = trim($matches[1]);
+                }
+            }
+            
+            // Get title
+            $title = '';
+            $titleDiv = $blockPost->find('div.title', 0);
+            if ($titleDiv) {
+                $title = trim($titleDiv->plaintext);
+            }
+            
             $episodesData[] = [
                 'link' => $link,
                 'title' => $title,
