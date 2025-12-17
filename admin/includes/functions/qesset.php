@@ -184,33 +184,76 @@ function qessetListings($url) {
 }
 
 function qessetServers($url) {
-    $html = curlCall("{$url}watch");
+    $url = trim($url);
+    
+    // Use curl to fetch the page
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    $html = curl_exec($ch);
+    curl_close($ch);
+    
     $dom = str_get_html($html);
     $servers = [];
+    
     if ($dom) {
-        $lis = $dom->find('div.watch--servers--list ul li.server--item');
-        foreach ($lis as $li) {
-            $dataLink = $li->getAttribute('data-link');
-            $nameSpan = $li->find('span', 0);
-            $name = $nameSpan ? trim($nameSpan->plaintext) : '';
-            $decodedLink = '';
-            if ($dataLink) {
-                // PHP equivalent of decodeLink JS function
-                $split = explode('0REL0Y&', $dataLink);
-                $part = $split[0];
-                $reversed = strrev($part);
-                $decodedLink = base64_decode($reversed);
+        // Find the anchor tag with the watch link containing base64 post parameter
+        $watchLink = $dom->find('a[href*="watch?post="]', 0);
+        
+        if ($watchLink) {
+            $href = $watchLink->href;
+            
+            // Extract the base64 encoded post parameter
+            if (preg_match('/post=([^&"]+)/', $href, $matches)) {
+                $base64Post = $matches[1];
+                
+                // Decode the base64 string
+                $decodedJson = base64_decode($base64Post);
+                $postData = json_decode($decodedJson, true);
+                
+                if ($postData && isset($postData['servers'])) {
+                    foreach ($postData['servers'] as $server) {
+                        $name = isset($server['name']) ? $server['name'] : '';
+                        $id = isset($server['id']) ? $server['id'] : '';
+                        $link = '';
+                        
+                        // Build the appropriate URL based on server name
+                        $nameLower = strtolower($name);
+                        
+                        if (strpos($nameLower, 'arab hd') !== false) {
+                            $link = "https://v.turkvearab.com/embed-{$id}.html";
+                        } elseif (strpos($nameLower, 'estream') !== false) {
+                            $link = "https://arabveturk.com/embed-{$id}.html";
+                        } elseif (strpos($nameLower, 'ok') !== false) {
+                            $link = "https://ok.ru/videoembed/{$id}";
+                        } elseif (strpos($nameLower, 'red hd') !== false) {
+                            $link = "https://iplayerhls.com/e/{$id}";
+                        } elseif (strpos($nameLower, 'pro hd') !== false) {
+                            $link = "https://iplayerhls.com/e/{$id}";
+                        } elseif (strpos($nameLower, 'dailymotion') !== false) {
+                            $link = "https://www.dailymotion.com/embed/video/{$id}";
+                        }
+                        
+                        if ($link) {
+                            $servers[] = [
+                                'name' => $name,
+                                'link' => $link
+                            ];
+                        }
+                    }
+                }
             }
-            $servers[] = [
-                'name' => $name,
-                'link' => $decodedLink
-            ];
         }
+        
         $dom->clear();
         unset($dom);
-    } else {
-        echo 'Error: Invalid DOM object.';
     }
+    
     return $servers;
 }
 ?>
