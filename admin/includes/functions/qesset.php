@@ -22,14 +22,11 @@ function qessetHome($url) {
         'shows' => []
     ];
     if ($dom) {
-        // Find the load-post container
-        $loadPost = $dom->find('div#load-post', 0);
-        if ($loadPost) {
-            // Loop through each article.post
-            foreach ($loadPost->find('article.post') as $article) {
-                // Find the block-post div
-                $blockPost = $article->find('div.block-post', 0);
-                if ($blockPost) {
+        // Loop through each article.post
+        foreach ($dom->find('article.post') as $article) {
+            // Find the block-post div
+            $blockPost = $article->find('div.block-post', 0);
+            if ($blockPost) {
                     $a = $blockPost->find('a', 0);
                     $href = $a ? $a->href : '';
                     $titleAttr = $a ? $a->getAttribute('title') : '';
@@ -71,7 +68,6 @@ function qessetHome($url) {
                         'genres' => []
                     ];
                     $data['shows'][] = $jsonData;
-                }
             }
         }
         $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
