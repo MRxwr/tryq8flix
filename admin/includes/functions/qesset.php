@@ -22,37 +22,56 @@ function qessetHome($url) {
         'shows' => []
     ];
     if ($dom) {
-        $list = $dom->find('ul.Blocks--List', 0);
-        if ($list) {
-            foreach ($list->find('div.Block--Item') as $item) {
-                $a = $item->find('a', 0);
-                $href = $a ? $a->href : '';
-                $img = $item->find('img', 0);
-                $image = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-                $genres = [];
-                $genresList = $item->find('ul.Genres', 0);
-                if ($genresList) {
-                    foreach ($genresList->find('li') as $li) {
-                        $genres[] = trim($li->plaintext);
+        // Find the load-post container
+        $loadPost = $dom->find('div#load-post', 0);
+        if ($loadPost) {
+            // Loop through each article.post
+            foreach ($loadPost->find('article.post') as $article) {
+                // Find the block-post div
+                $blockPost = $article->find('div.block-post', 0);
+                if ($blockPost) {
+                    $a = $blockPost->find('a', 0);
+                    $href = $a ? $a->href : '';
+                    $titleAttr = $a ? $a->getAttribute('title') : '';
+                    
+                    // Get episode number
+                    $episode = '';
+                    $episodeNumDiv = $blockPost->find('div.episodeNum', 0);
+                    if ($episodeNumDiv) {
+                        $episodeSpans = $episodeNumDiv->find('span');
+                        if (count($episodeSpans) >= 2) {
+                            $episode = trim($episodeSpans[1]->plaintext);
+                        }
                     }
+                    
+                    // Get image from background-image style
+                    $image = '';
+                    $imgBg = $blockPost->find('div.imgBg', 0);
+                    if ($imgBg) {
+                        $style = $imgBg->getAttribute('style');
+                        if (preg_match('/background-image:\s*url\((.*?)\)/i', $style, $matches)) {
+                            $image = trim($matches[1]);
+                        }
+                    }
+                    
+                    // Get title
+                    $title = '';
+                    $titleDiv = $blockPost->find('div.title', 0);
+                    if ($titleDiv) {
+                        $title = trim($titleDiv->plaintext);
+                    }
+                    
+                    $jsonData = [
+                        'href' => $href,
+                        'image' => trim($image),
+                        'episode' => $episode,
+                        'category' => '',
+                        'title' => $title,
+                        'description' => $titleAttr,
+                        'genres' => []
+                    ];
+                    $data['shows'][] = $jsonData;
                 }
-                $title = '';
-                $h3 = $item->find('h3', 0);
-                if ($h3) {
-                    $title = trim($h3->plaintext);
-                }
-                // Keep same array keys, fill missing with empty string/array
-                $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
-                $jsonData = [
-                    'href' => $href,
-                    'image' => trim($image),
-                    'episode' => '',
-                    'category' => '',
-                    'title' => $title,
-                    'description' => '',
-                    'genres' => $genres
-                ];
-                $data['shows'][] = $jsonData;
             }
         }
         $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

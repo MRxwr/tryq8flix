@@ -116,6 +116,19 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }
                 $data = tuktukHome($url);
                 echo dataOutput(array("shows" =>$data));die();
+            }elseif( $_GET["server"] == 9 ) {
+                $url = $website9;
+                if ( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    // urlencode to handle Arabic characters and spaces
+                    $_GET["search"] = urlencode($_GET["search"]);
+                }
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
+                    $url .= "page/{$_GET["page"]}";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $url .= "?s={$_GET["search"]}&page={$_GET["page"]}";
+                }
+                $data = qessetHome($url);
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
