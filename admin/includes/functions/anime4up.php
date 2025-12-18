@@ -174,6 +174,9 @@ function anime4upListings($url) {
                 $a = $seasonBox->find('a', 0);
                 $link = $a ? $a->href : '';
                 
+                // Get title from anchor's title attribute (contains unique season info)
+                $title = $a && $a->title ? trim($a->title) : '';
+                
                 $img = $seasonBox->find('div.Poster img', 0);
                 $poster = '';
                 if ($img) {
@@ -183,9 +186,6 @@ function anime4upListings($url) {
                         $poster = $img->src;
                     }
                 }
-                
-                $h3 = $seasonBox->find('h3.title', 0);
-                $title = $h3 ? trim($h3->plaintext) : '';
                 
                 // Extract season number from div.epnum
                 $epnumDiv = $seasonBox->find('div.epnum', 0);
@@ -245,6 +245,9 @@ function anime4upListings($url) {
             foreach ($episodeLinks as $episodeLink) {
                 $link = $episodeLink->href;
                 
+                // Get title from anchor's title attribute (contains unique episode info)
+                $title = $episodeLink->title ? trim($episodeLink->title) : '';
+                
                 $img = $episodeLink->find('div.image img', 0);
                 $poster = '';
                 if ($img) {
@@ -254,9 +257,6 @@ function anime4upListings($url) {
                         $poster = $img->src;
                     }
                 }
-                
-                $epInfo = $episodeLink->find('div.ep-info h2', 0);
-                $title = $epInfo ? trim($epInfo->plaintext) : '';
                 
                 // Extract episode number from div.epnum
                 $epnumDiv = $episodeLink->find('div.epnum', 0);
