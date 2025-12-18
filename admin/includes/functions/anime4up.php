@@ -16,7 +16,7 @@ function anime4upHome($url) {
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
     curl_close($ch);
-
+var_dump($html);
     $dom = str_get_html($html);
     $data = [
         'shows' => []
