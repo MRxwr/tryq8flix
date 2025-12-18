@@ -138,8 +138,28 @@ $(document).ready(function() {
                 
                 // Check watched status
                 checkWatchedStatus(server);
+            } else {
+                $('#details-container').html(`
+                    <div class="text-center mt-5">
+                        <p class="text-danger mb-3">${response.data && response.data.msg ? response.data.msg : 'Failed to load content.'}</p>
+                        <button class="btn btn-netflix" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-2"></i> Try Again
+                        </button>
+                    </div>
+                `);
             }
+        }).fail(function() {
+            $('#details-container').html(`
+                <div class="text-center mt-5">
+                    <p class="text-danger mb-3">Network error or server timeout.</p>
+                    <button class="btn btn-netflix" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-2"></i> Try Again
+                    </button>
+                </div>
+            `);
         });
+    } else {
+        $('#details-container').html('<p class="text-center text-danger mt-5">Invalid parameters. Missing link or server.</p>');
     }
 });
 
