@@ -101,14 +101,13 @@ function animeSlayerListings($url) {
     $noscript = $htmlDom->find('noscript#diplayer', 0);
     if ($noscript) {
         $innerHtml = html_entity_decode($noscript->innertext);
-        $innerDom = str_get_html($innerHtml);
         
-        // Episodes
-        $epList = $innerDom->find('#EpList1', 0);
-        if ($epList) {
-            $index = 0;
-            foreach($epList->find('div.CSB') as $epDiv) {
-                $title = trim($epDiv->plaintext);
+        // Optimization: Use Regex instead of DOM parser for the episode list
+        // This avoids parsing the massive server list which causes performance issues with large shows (e.g. One Piece)
+        if (preg_match_all('/<div class="CSB"[^>]*>(.*?)<\/div>/s', $innerHtml, $matches)) {
+            $titles = $matches[1];
+            foreach($titles as $index => $title) {
+                $title = trim($title);
                 // Extract number
                 $epNum = filter_var($title, FILTER_SANITIZE_NUMBER_INT);
                 
@@ -123,11 +122,8 @@ function animeSlayerListings($url) {
                     'episode_text' => $epNum,
                     'poster' => ''
                 ];
-                $index++;
             }
         }
-        $innerDom->clear();
-        unset($innerDom);
     } else {
         // Fallback to old structure
         // Scrape seasons (new structure)
@@ -223,18 +219,29 @@ function animeSlayerServers($url) {
     $noscript = $htmlDom->find('noscript#diplayer', 0);
     if ($noscript) {
         $innerHtml = html_entity_decode($noscript->innertext);
-        $innerDom = str_get_html($innerHtml);
         
-        $serverList = $innerDom->find('#ServerList1', 0);
-        if ($serverList) {
-            // Find the specific div for this episode index
-            $serverDivs = $serverList->find('div.divv11');
-            if (isset($serverDivs[$epIndex])) {
-                $targetDiv = $serverDivs[$epIndex];
-                foreach($targetDiv->find('li') as $li) {
-                    $type = $li->getAttribute('type');
-                    $data = $li->getAttribute('data');
-                    $quality = $li->getAttribute('quality-data');
+        // Optimization: Explode string to find the specific server block instead of parsing full DOM
+        // The divs look like: <div class="divv11" >
+        // We use explode to quickly jump to the Nth block
+        $serverBlocks = explode('<div class="divv11" >', $innerHtml);
+        
+        // The first element is content before the first div, so index is +1
+        $targetIndex = $epIndex + 1;
+        
+        if (isset($serverBlocks[$targetIndex])) {
+            $block = $serverBlocks[$targetIndex];
+            
+            // Use regex to find LIs within this block
+            if (preg_match_all('/<li([^>]*)>(.*?)<\/li>/i', $block, $liMatches)) {
+                foreach ($liMatches[1] as $key => $attributes) {
+                    // Parse attributes
+                    $type = '';
+                    $data = '';
+                    $quality = '';
+                    
+                    if (preg_match('/type="([^"]*)"/i', $attributes, $m)) $type = $m[1];
+                    if (preg_match('/data="([^"]*)"/i', $attributes, $m)) $data = $m[1];
+                    if (preg_match('/quality-data="([^"]*)"/i', $attributes, $m)) $quality = $m[1];
                     
                     $link = '';
                     switch(strtolower($type)) {
@@ -272,8 +279,6 @@ function animeSlayerServers($url) {
                 }
             }
         }
-        $innerDom->clear();
-        unset($innerDom);
     } else {
         // Fallback to old method
         if ($htmlDom) {
