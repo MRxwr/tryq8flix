@@ -119,7 +119,7 @@ function fetchUserFavorites() {
     $.getJSON('api/index.php?endpoint=Favorites&action=list', function(response) {
         if(response.ok && response.data.favorites) {
             response.data.favorites.forEach(fav => {
-                userFavorites.add(fav.server + '|' + fav.link);
+                userFavorites.add(fav.server + '|' + fav.title);
             });
             updateFavoriteIcons();
         }
@@ -130,8 +130,8 @@ function updateFavoriteIcons() {
     $('.fav-btn').each(function() {
         const btn = $(this);
         const server = btn.data('server');
-        const link = btn.data('link');
-        if(userFavorites.has(server + '|' + link)) {
+        const title = btn.data('title');
+        if(title && userFavorites.has(server + '|' + title)) {
             btn.find('i').removeClass('far').addClass('fas').addClass('text-danger');
         } else {
             btn.find('i').removeClass('fas').removeClass('text-danger').addClass('far');
@@ -146,9 +146,9 @@ function toggleFavorite(server, link, poster, title, btnElement) {
     
     if(isFav) {
         if(confirm('Remove from favorites?')) {
-            $.post('api/index.php?endpoint=Favorites&action=remove', {server: server, link: link}, function(res) {
+            $.post('api/index.php?endpoint=Favorites&action=remove', {server: server, link: link, title: title}, function(res) {
                 if(res.ok) {
-                    userFavorites.delete(server + '|' + link);
+                    userFavorites.delete(server + '|' + title);
                     updateFavoriteIcons();
                     showToast('Removed from favorites');
                 }
@@ -158,7 +158,7 @@ function toggleFavorite(server, link, poster, title, btnElement) {
         if(confirm('Add to favorites?')) {
             $.post('api/index.php?endpoint=Favorites&action=add', {server: server, link: link, poster: poster, title: title}, function(res) {
                 if(res.ok) {
-                    userFavorites.add(server + '|' + link);
+                    userFavorites.add(server + '|' + title);
                     updateFavoriteIcons();
                     showToast('Added to favorites');
                 } else {
