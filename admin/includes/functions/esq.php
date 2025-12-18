@@ -220,11 +220,68 @@ function esqServers($url) {
                 if (preg_match('/=>\s*(.+)$/u', $decodedHash, $urlMatches)) {
                     $mainLink = trim($urlMatches[1]);
                     
-                    // Add main server
-                    $servers[] = [
-                        'name' => 'main',
-                        'link' => $mainLink
-                    ];
+                    // Fetch the main link page to get server list
+                    $ch2 = curl_init();
+                    curl_setopt($ch2, CURLOPT_URL, $mainLink);
+                    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch2, CURLOPT_FOLLOWLOCATION, true);
+                    curl_setopt($ch2, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch2, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+                    curl_setopt($ch2, CURLOPT_CONNECTTIMEOUT, 30);
+                    curl_setopt($ch2, CURLOPT_TIMEOUT, 60);
+                    $serverPageHtml = curl_exec($ch2);
+                    curl_close($ch2);
+                    
+                    $serverDom = str_get_html($serverPageHtml);
+                    
+                    if ($serverDom) {
+                        // Find all server links
+                        $serverLinks = $serverDom->find('a.aplr-link');
+                        
+                        foreach ($serverLinks as $serverLink) {
+                            $serverUrl = $serverLink->href;
+                            $serverName = trim($serverLink->plaintext);
+                            
+                            // Skip empty server names
+                            if (empty($serverName)) {
+                                continue;
+                            }
+                            
+                            // Fetch each server page to get the iframe
+                            $ch3 = curl_init();
+                            curl_setopt($ch3, CURLOPT_URL, $serverUrl);
+                            curl_setopt($ch3, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch3, CURLOPT_FOLLOWLOCATION, true);
+                            curl_setopt($ch3, CURLOPT_SSL_VERIFYPEER, false);
+                            curl_setopt($ch3, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+                            curl_setopt($ch3, CURLOPT_CONNECTTIMEOUT, 30);
+                            curl_setopt($ch3, CURLOPT_TIMEOUT, 60);
+                            $iframePageHtml = curl_exec($ch3);
+                            curl_close($ch3);
+                            
+                            $iframeDom = str_get_html($iframePageHtml);
+                            
+                            if ($iframeDom) {
+                                // Find the iframe with id="iframe"
+                                $iframe = $iframeDom->find('iframe#iframe', 0);
+                                
+                                if ($iframe) {
+                                    $iframeSrc = $iframe->src;
+                                    
+                                    $servers[] = [
+                                        'name' => $serverName,
+                                        'link' => $iframeSrc
+                                    ];
+                                }
+                                
+                                $iframeDom->clear();
+                                unset($iframeDom);
+                            }
+                        }
+                        
+                        $serverDom->clear();
+                        unset($serverDom);
+                    }
                 }
             }
         }
