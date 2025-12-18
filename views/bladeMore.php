@@ -5,6 +5,9 @@
     <div class="hero-content">
         <h1 class="hero-title" id="hero-title">Loading...</h1>
         <p class="hero-desc" id="hero-desc"></p>
+        <button id="favBtnHero" class="btn btn-secondary-netflix" style="display:none;">
+            <i class="far fa-heart"></i> Add to Favorites
+        </button>
     </div>
 </div>
 
@@ -39,10 +42,16 @@ $(document).ready(function() {
     if (image) {
         $('#hero-section').css('background-image', 'url(' + image + ')');
         $('#hero-section').show();
+        $('#favBtnHero').show();
+        checkFavorite(server, href);
     }
     if (title) {
         $('#hero-title').text(title);
     }
+
+    $('#favBtnHero').click(function() {
+        toggleFavoriteHero(server, href, image, $('#hero-title').text());
+    });
 
     if(href && server) {
         $.getJSON(`api/index.php?endpoint=More&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
@@ -130,4 +139,67 @@ $(document).ready(function() {
         });
     }
 });
+
+function checkFavorite(server, link) {
+    $.post('api/index.php?endpoint=Favorites&action=check', {server: server, link: link}, function(response) {
+        if(response.ok && response.data.isFavorite) {
+            updateHeroButton(true);
+        } else {
+            updateHeroButton(false);
+        }
+    }, 'json');
+}
+
+function updateHeroButton(isFav) {
+    const btn = $('#favBtnHero');
+    if(isFav) {
+        btn.html('<i class="fas fa-heart text-danger"></i> Remove from Favorites');
+        btn.data('isFav', true);
+    } else {
+        btn.html('<i class="far fa-heart"></i> Add to Favorites');
+        btn.data('isFav', false);
+    }
+}
+
+function toggleFavoriteHero(server, link, poster, title) {
+    const btn = $('#favBtnHero');
+    const isFav = btn.data('isFav');
+    
+    if(isFav) {
+        if(confirm('Remove from favorites?')) {
+            $.post('api/index.php?endpoint=Favorites&action=remove', {server: server, link: link}, function(res) {
+                if(res.ok) {
+                    updateHeroButton(false);
+                    showToast('Removed from favorites');
+                }
+            }, 'json');
+        }
+    } else {
+        if(confirm('Add to favorites?')) {
+            $.post('api/index.php?endpoint=Favorites&action=add', {server: server, link: link, poster: poster, title: title}, function(res) {
+                if(res.ok) {
+                    updateHeroButton(true);
+                    showToast('Added to favorites');
+                } else {
+                    alert(res.error.msg);
+                }
+            }, 'json');
+        }
+    }
+}
+
+function showToast(message) {
+    const toast = $(`<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div class="toast show align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>`);
+    $('body').append(toast);
+    setTimeout(() => { toast.fadeOut(500, () => toast.remove()); }, 3000);
+}
 </script>

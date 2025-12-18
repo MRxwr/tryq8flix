@@ -6,7 +6,9 @@ require_once("../try2/templates/simple_html_dom.php");
 
 if( isset($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['HTTP_AUTHORIZATION']) ){
     $token = str_replace("Bearer ","",$_SERVER["HTTP_AUTHORIZATION"]);
-}else{
+} elseif ( isset($_COOKIE['tryq8flix2']) && !empty($_COOKIE['tryq8flix2']) ) {
+    $token = $_COOKIE['tryq8flix2'];
+} else {
     $token = "";
 }
 
