@@ -9,10 +9,10 @@ $response = array(
             "id" => 10, 
             "name" => "Esq",
         ),
-        array(
+        /*array(
             "id" => 12, 
             "name" => "Anime4Up",
-        ),
+        ),*/
         array(
             "id" => 7, 
             "name" => "Top Cinema Zone",
@@ -37,14 +37,14 @@ $response = array(
             "id" => 4,
             "name" => "Shahid",
         ),
-        array(
+        /*array(
             "id" => 2,
             "name" => "EgyDead",
-        ),
-        array(
+        ),*/
+        /*array(
             "id" => 3,
             "name" => "TopCinema",
-        ),
+        ),*/
         array(
             "id" => 6,
             "name" => "ShahidwBs",
