@@ -45,10 +45,10 @@ $response = array(
             "id" => 3,
             "name" => "TopCinema",
         ),*/
-        array(
+        /*array(
             "id" => 6,
             "name" => "ShahidwBs",
-        ),
+        ),*/
     )
 );
 if ($banners = selectDB2("`id`, `title`, `endpoint`, `server`, `url`, `imageurl`","banners","`status` = '0' AND `hidden` = '0'")) {
