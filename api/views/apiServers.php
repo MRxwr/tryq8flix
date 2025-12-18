@@ -29,6 +29,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = qessetServers($url);
             }elseif( $_GET["server"] == 10 ){
                 $data = esqServers($url);
+            }elseif( $_GET["server"] == 11 ){
+                $data = animeSlayerServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
