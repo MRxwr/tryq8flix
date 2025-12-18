@@ -72,9 +72,15 @@ function esqHome($url) {
                 $episode = $matches[1];
             }
             
+            // Use image proxy
+            $imageUrl = trim($image);
+            if ($imageUrl) {
+                $imageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode($imageUrl);
+            }
+            
             $jsonData = [
                 'href' => $href,
-                'image' => trim($image),
+                'image' => $imageUrl,
                 'episode' => $episode,
                 'category' => $category,
                 'title' => $title,
