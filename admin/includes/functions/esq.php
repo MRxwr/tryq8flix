@@ -200,41 +200,31 @@ function esqServers($url) {
     $servers = [];
     
     if ($dom) {
-        // Find the anchor tag with the watch link containing base64 post parameter
-        $watchLink = $dom->find('a[href*="watch?post="]', 0);
+        // Find the anchor tag with class "xtgo" containing hash parameter
+        $xtgoLink = $dom->find('a.xtgo', 0);
         
-        if ($watchLink) {
-            $href = $watchLink->href;
+        if ($xtgoLink) {
+            $href = $xtgoLink->href;
             
-            // Add main server with the full encoded link
-            $servers[] = [
-                'name' => 'main',
-                'link' => $href
-            ];
-            
-            // Extract the base64 encoded post parameter for ok.ru server
-            if (preg_match('/post=([^&"]+)/', $href, $matches)) {
-                $base64Post = $matches[1];
+            // Extract the hash parameter from the URL
+            if (preg_match('/hash=([^&"]+)/', $href, $matches)) {
+                $encodedHash = $matches[1];
                 
-                // Decode the base64 string
-                $decodedJson = base64_decode($base64Post);
-                $postData = json_decode($decodedJson, true);
+                // Decode HTML entities first (&#038; -> &)
+                $encodedHash = html_entity_decode($encodedHash);
                 
-                if ($postData && isset($postData['servers'])) {
-                    foreach ($postData['servers'] as $server) {
-                        $name = isset($server['name']) ? $server['name'] : '';
-                        $id = isset($server['id']) ? $server['id'] : '';
-                        $nameLower = strtolower($name);
-                        
-                        // Only add ok.ru server
-                        if (strpos($nameLower, 'ok') !== false) {
-                            $servers[] = [
-                                'name' => 'ok',
-                                'link' => "https://ok.ru/videoembed/{$id}"
-                            ];
-                            break;
-                        }
-                    }
+                // Base64 decode the hash
+                $decodedHash = base64_decode($encodedHash);
+                
+                // Extract the URL after "=>"
+                if (preg_match('/=>\s*(.+)$/u', $decodedHash, $urlMatches)) {
+                    $mainLink = trim($urlMatches[1]);
+                    
+                    // Add main server
+                    $servers[] = [
+                        'name' => 'main',
+                        'link' => $mainLink
+                    ];
                 }
             }
         }
