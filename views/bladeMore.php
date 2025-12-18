@@ -43,7 +43,7 @@ $(document).ready(function() {
         $('#hero-section').css('background-image', 'url(' + image + ')');
         $('#hero-section').show();
         $('#favBtnHero').show();
-        checkFavorite(server, href);
+        // checkFavorite moved to after content load to prevent network errors
     }
     if (title) {
         $('#hero-title').text(title);
@@ -54,7 +54,11 @@ $(document).ready(function() {
     });
 
     if(href && server) {
-        $.getJSON(`api/index.php?endpoint=More&action=list&server=${server}&href=${encodeURIComponent(href)}`, function(response) {
+        $.ajax({
+            url: `api/index.php?endpoint=More&action=list&server=${server}&href=${encodeURIComponent(href)}`,
+            dataType: 'json',
+            timeout: 60000,
+            success: function(response) {
             if(response.ok) {
                 const data = response.data;
                 
@@ -138,6 +142,11 @@ $(document).ready(function() {
                 
                 // Check watched status
                 checkWatchedStatus(server);
+
+                // Check favorite status
+                if (image) {
+                    checkFavorite(server, href);
+                }
             } else {
                 $('#details-container').html(`
                     <div class="text-center mt-5">
@@ -148,7 +157,8 @@ $(document).ready(function() {
                     </div>
                 `);
             }
-        }).fail(function() {
+        }}).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("Load failed:", textStatus, errorThrown);
             $('#details-container').html(`
                 <div class="text-center mt-5">
                     <p class="text-danger mb-3">Network error or server timeout.</p>
