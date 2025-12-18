@@ -145,6 +145,15 @@ if( $_GET["action"] == "login" ){
     }else{
         echo dataError(array("msg" => "Invalid token"));die();
     }
+}elseif( $_GET["action"] == "favourites" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        echo dataOutput(array("username" => $user[0]["username"], "email" => $user[0]["email"], "avatar" => $user[0]["avatar"], "id" => $user[0]["id"]));die();
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
 }else{
     echo dataError(array("msg" => "404 action Not Found"));die();
 }
