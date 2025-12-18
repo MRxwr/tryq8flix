@@ -22,19 +22,20 @@ function anime4upHome($url) {
         'shows' => []
     ];
     if ($dom) {
-        $items = $dom->find('div.anime-card-container');
-        if ($items) {
+        // Try new structure first (Small--Box)
+        $items = $dom->find('div.Small--Box');
+        if ($items && count($items) > 0) {
             foreach ($items as $item) {
-                // Link (Episode link)
-                $epNumDiv = $item->find('div.ep_num a', 0);
-                $href = $epNumDiv ? $epNumDiv->href : '';
+                // Link
+                $a = $item->find('a.recent--block', 0);
+                $href = $a ? $a->href : '';
                 
                 // Image
-                $img = $item->find('div.anime-card-poster img', 0);
+                $img = $item->find('div.Poster img', 0);
                 $image = '';
                 if ($img) {
-                    if ($img->getAttribute('data-image')) {
-                        $image = $img->getAttribute('data-image');
+                    if ($img->getAttribute('data-src')) {
+                        $image = $img->getAttribute('data-src');
                     } elseif ($img->src) {
                         $image = $img->src;
                     }
@@ -42,25 +43,33 @@ function anime4upHome($url) {
 
                 // Title
                 $title = '';
-                $h3 = $item->find('div.anime-card-title h3 a', 0);
+                $h3 = $item->find('h3.title', 0);
                 if ($h3) {
                     $title = trim($h3->plaintext);
+                } elseif ($a && $a->title) {
+                    $title = trim($a->title);
                 }
 
-                // Category
-                $category = '';
-                $typeDiv = $item->find('div.anime-card-type a', 0);
-                if ($typeDiv) {
-                    $category = trim($typeDiv->plaintext);
-                }
-
-                // Episode
+                // Episode number
                 $episode = '';
-                if ($epNumDiv) {
-                    $episode = trim($epNumDiv->plaintext);
+                $numberDiv = $item->find('div.number em', 0);
+                if ($numberDiv) {
+                    $episode = trim($numberDiv->plaintext);
                 }
 
+                // Genres
                 $genres = [];
+                $genresList = $item->find('ul.liList li.genre');
+                foreach ($genresList as $genreItem) {
+                    $genres[] = trim($genreItem->plaintext);
+                }
+
+                // Category/Season
+                $category = '';
+                $seasonLi = $item->find('ul.liList li.anime_season', 0);
+                if ($seasonLi) {
+                    $category = trim($seasonLi->plaintext);
+                }
 
                 $jsonData = [
                     'href' => $href,
@@ -72,6 +81,60 @@ function anime4upHome($url) {
                     'genres' => $genres
                 ];
                 $data['shows'][] = $jsonData;
+            }
+        } else {
+            // Fallback to old structure (anime-card-container)
+            $items = $dom->find('div.anime-card-container');
+            if ($items) {
+                foreach ($items as $item) {
+                    // Link (Episode link)
+                    $epNumDiv = $item->find('div.ep_num a', 0);
+                    $href = $epNumDiv ? $epNumDiv->href : '';
+                    
+                    // Image
+                    $img = $item->find('div.anime-card-poster img', 0);
+                    $image = '';
+                    if ($img) {
+                        if ($img->getAttribute('data-image')) {
+                            $image = $img->getAttribute('data-image');
+                        } elseif ($img->src) {
+                            $image = $img->src;
+                        }
+                    }
+
+                    // Title
+                    $title = '';
+                    $h3 = $item->find('div.anime-card-title h3 a', 0);
+                    if ($h3) {
+                        $title = trim($h3->plaintext);
+                    }
+
+                    // Category
+                    $category = '';
+                    $typeDiv = $item->find('div.anime-card-type a', 0);
+                    if ($typeDiv) {
+                        $category = trim($typeDiv->plaintext);
+                    }
+
+                    // Episode
+                    $episode = '';
+                    if ($epNumDiv) {
+                        $episode = trim($epNumDiv->plaintext);
+                    }
+
+                    $genres = [];
+
+                    $jsonData = [
+                        'href' => $href,
+                        'image' => trim($image),
+                        'episode' => $episode,
+                        'category' => $category,
+                        'title' => $title,
+                        'description' => '',
+                        'genres' => $genres
+                    ];
+                    $data['shows'][] = $jsonData;
+                }
             }
         }
         $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

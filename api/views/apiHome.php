@@ -168,12 +168,12 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                     $_GET["search"] = urlencode($_GET["search"]);
                 }
                 if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
-                    $url .= "episode/page/{$_GET["page"]}/";
+                    $url .= "last/page/{$_GET["page"]}/";
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
-                    $url .= "?s={$_GET["search"]}";
+                    $url .= "?s={$_GET["search"]}&page={$_GET["page"]}/";
                 }
                 if( (!isset($_GET["search"]) || empty($_GET["search"])) && (!isset($_GET["page"]) || empty($_GET["page"])) ){
-                    $url .= "episode/";
+                    $url .= "last/";
                 }
                 $data = anime4upHome($url);
                 echo dataOutput(array("shows" =>$data));die();
