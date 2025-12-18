@@ -112,4 +112,75 @@ function loadContent(page) {
         $('#loading-indicator').hide();
     });
 }
+
+let userFavorites = new Set();
+
+function fetchUserFavorites() {
+    $.getJSON('api/index.php?endpoint=Favorites&action=list', function(response) {
+        if(response.ok && response.data.favorites) {
+            response.data.favorites.forEach(fav => {
+                userFavorites.add(fav.server + '|' + fav.link);
+            });
+            updateFavoriteIcons();
+        }
+    });
+}
+
+function updateFavoriteIcons() {
+    $('.fav-btn').each(function() {
+        const btn = $(this);
+        const server = btn.data('server');
+        const link = btn.data('link');
+        if(userFavorites.has(server + '|' + link)) {
+            btn.find('i').removeClass('far').addClass('fas').addClass('text-danger');
+        } else {
+            btn.find('i').removeClass('fas').removeClass('text-danger').addClass('far');
+        }
+    });
+}
+
+function toggleFavorite(server, link, poster, title, btnElement) {
+    event.stopPropagation();
+    const btn = $(btnElement);
+    const isFav = btn.find('i').hasClass('fas');
+    
+    if(isFav) {
+        if(confirm('Remove from favorites?')) {
+            $.post('api/index.php?endpoint=Favorites&action=remove', {server: server, link: link}, function(res) {
+                if(res.ok) {
+                    userFavorites.delete(server + '|' + link);
+                    updateFavoriteIcons();
+                    showToast('Removed from favorites');
+                }
+            }, 'json');
+        }
+    } else {
+        if(confirm('Add to favorites?')) {
+            $.post('api/index.php?endpoint=Favorites&action=add', {server: server, link: link, poster: poster, title: title}, function(res) {
+                if(res.ok) {
+                    userFavorites.add(server + '|' + link);
+                    updateFavoriteIcons();
+                    showToast('Added to favorites');
+                } else {
+                    alert(res.error.msg);
+                }
+            }, 'json');
+        }
+    }
+}
+
+function showToast(message) {
+    const toast = $(`<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div class="toast show align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>`);
+    $('body').append(toast);
+    setTimeout(() => { toast.fadeOut(500, () => toast.remove()); }, 3000);
+}
 </script>
