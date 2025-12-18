@@ -18,7 +18,7 @@
 <script>
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    let href, server, type, link;
+    let href, server, type, link, image, title;
 
     if (urlParams.has('q')) {
         const decryptedQ = decryptLink(urlParams.get('q'));
@@ -27,12 +27,24 @@ $(document).ready(function() {
         server = params.get('server');
         type = params.get('type');
         link = decryptLink(params.get('link'));
+        image = decryptLink(params.get('image'));
+        title = decryptLink(params.get('title'));
     } else {
         href = decryptLink(urlParams.get('href'));
         server = urlParams.get('server');
         type = urlParams.get('type');
         link = decryptLink(urlParams.get('link'));
+        image = decryptLink(urlParams.get('image'));
+        title = decryptLink(urlParams.get('title'));
     }
+    
+    // Store metadata for playVideo
+    window.currentMetadata = {
+        server: server,
+        image: image,
+        title: title,
+        href: href // This is the episode link usually
+    };
     
     if(type === 'live') {
         // Handle live match logic (different endpoint)
@@ -138,5 +150,16 @@ function playVideo(url, btn) {
     $('html, body').animate({
         scrollTop: $("#player-container").offset().top - 100
     }, 500);
+
+    // Add to History
+    const meta = window.currentMetadata;
+    if(meta && meta.server && meta.title && meta.image && meta.href) {
+        $.post('api/index.php?endpoint=History&action=add', {
+            server: meta.server,
+            title: meta.title,
+            poster: meta.image,
+            link: meta.href
+        });
+    }
 }
 </script>
