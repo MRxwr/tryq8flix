@@ -22,53 +22,66 @@ function esqHome($url) {
         'shows' => []
     ];
     if ($dom) {
-        // Loop through each article.post
-        foreach ($dom->find('article.post') as $article) {
-            // Find the block-post div
-            $blockPost = $article->find('div.block-post', 0);
-            if ($blockPost) {
-                    $a = $blockPost->find('a', 0);
-                    $href = $a ? $a->href : '';
-                    $titleAttr = $a ? $a->getAttribute('title') : '';
-                    
-                    // Get episode number
-                    $episode = '';
-                    $episodeNumDiv = $blockPost->find('div.episodeNum', 0);
-                    if ($episodeNumDiv) {
-                        $episodeSpans = $episodeNumDiv->find('span');
-                        if (count($episodeSpans) >= 2) {
-                            $episode = trim($episodeSpans[1]->plaintext);
-                        }
+        // Loop through each li.video-grid
+        foreach ($dom->find('li.video-grid') as $li) {
+            // Find the thumb div with anchor
+            $thumb = $li->find('div.thumb', 0);
+            if ($thumb) {
+                $a = $thumb->find('a', 0);
+                $href = $a ? $a->href : '';
+                
+                // Get image from data-src attribute
+                $image = '';
+                $img = $thumb->find('img', 0);
+                if ($img) {
+                    $image = $img->getAttribute('data-src');
+                    if (!$image) {
+                        $image = $img->src;
                     }
-                    
-                    // Get image from background-image style
-                    $image = '';
-                    $imgBg = $blockPost->find('div.imgBg', 0);
-                    if ($imgBg) {
-                        $style = $imgBg->getAttribute('style');
-                        if (preg_match('/background-image:\s*url\((.*?)\)/i', $style, $matches)) {
-                            $image = trim($matches[1]);
-                        }
-                    }
-                    
-                    // Get title
-                    $title = '';
-                    $titleDiv = $blockPost->find('div.title', 0);
-                    if ($titleDiv) {
-                        $title = trim($titleDiv->plaintext);
-                    }
-                    
-                    $jsonData = [
-                        'href' => $href,
-                        'image' => trim($image),
-                        'episode' => $episode,
-                        'category' => '',
-                        'title' => $title,
-                        'description' => $titleAttr,
-                        'genres' => []
-                    ];
-                    $data['shows'][] = $jsonData;
+                }
+                
+                // Get category
+                $category = '';
+                $catDiv = $thumb->find('div.cat', 0);
+                if ($catDiv) {
+                    $category = trim($catDiv->plaintext);
+                }
+                
+                // Get duration (could be used as extra info)
+                $duration = '';
+                $durationDiv = $thumb->find('div.duration', 0);
+                if ($durationDiv) {
+                    $duration = trim($durationDiv->plaintext);
+                }
             }
+            
+            // Get title from data section
+            $title = '';
+            $titleAttr = '';
+            $dataDiv = $li->find('div.data', 0);
+            if ($dataDiv) {
+                $titleH2 = $dataDiv->find('h2.title a', 0);
+                if ($titleH2) {
+                    $title = trim($titleH2->plaintext);
+                }
+            }
+            
+            // Extract episode number from title if present
+            $episode = '';
+            if (preg_match('/الحلقة\s+(\d+)/u', $title, $matches)) {
+                $episode = $matches[1];
+            }
+            
+            $jsonData = [
+                'href' => $href,
+                'image' => trim($image),
+                'episode' => $episode,
+                'category' => $category,
+                'title' => $title,
+                'description' => $duration,
+                'genres' => []
+            ];
+            $data['shows'][] = $jsonData;
         }
         $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
