@@ -10,8 +10,9 @@ function anime4upHome($url) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // Use a standard Desktop User-Agent
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    // Use Postman User-Agent to bypass Cloudflare
+    curl_setopt($ch, CURLOPT_USERAGENT, "PostmanRuntime/7.51.0");
+    curl_setopt($ch, CURLOPT_ENCODING, "");
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
@@ -91,7 +92,8 @@ function anime4upListings($url) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_USERAGENT, "PostmanRuntime/7.51.0");
+    curl_setopt($ch, CURLOPT_ENCODING, "");
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
