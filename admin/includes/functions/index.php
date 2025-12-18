@@ -15,5 +15,6 @@ require_once "tuktuk.php";
 require_once "qesset.php";
 require_once "esq.php";
 require_once "animeslayer.php";
+require_once "anime4up.php";
 
 ?>

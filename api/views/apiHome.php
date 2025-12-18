@@ -161,6 +161,22 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }
                 $data = animeSlayerHome($url);
                 echo dataOutput(array("shows" =>$data));die();
+            }elseif( $_GET["server"] == 12 ) {
+                $url = $website12;
+                if ( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    // urlencode to handle Arabic characters and spaces
+                    $_GET["search"] = urlencode($_GET["search"]);
+                }
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
+                    $url .= "episode/page/{$_GET["page"]}/";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $url .= "?s={$_GET["search"]}";
+                }
+                if( (!isset($_GET["search"]) || empty($_GET["search"])) && (!isset($_GET["page"]) || empty($_GET["page"])) ){
+                    $url .= "episode/";
+                }
+                $data = anime4upHome($url);
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
