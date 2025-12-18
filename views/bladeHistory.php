@@ -51,7 +51,7 @@ function loadHistory() {
                         <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${item.server}', image: '${encImage}', title: '${encTitle}'})">
                             <img src="${item.poster}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
-                            <div class="text-center text-muted" style="font-size: 0.7rem;">${dateStr}</div>
+                            <div class="text-center text-white-50 mt-1" style="font-size: 0.75rem;">${dateStr}</div>
                         </div>
                     </div>
                 `;
