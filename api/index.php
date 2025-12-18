@@ -11,8 +11,12 @@ if( isset($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['HTTP_AUTHORIZATION
 }
 
 // get viewed page from pages folder \\
-if( isset($_GET["endpoint"]) && searchFile("views","api{$_GET["endpoint"]}.php") ){
-	require_once("views/".searchFile("views","api{$_GET["endpoint"]}.php"));
+if( !isset($_GET["endpoint"]) || empty($_GET["endpoint"]) ){
+    echo dataOutput(array("msg" => "400 Bad Request - No endpoint specified"));die();
+}
+$endpointFile = "views/api{$_GET["endpoint"]}.php";
+if( isset($_GET["endpoint"]) && file_exists($endpointFile) ){
+	require_once($endpointFile);
 }else{
 	echo dataOutput(array("msg" => "404 endpoint Not Found"));die();
 }
