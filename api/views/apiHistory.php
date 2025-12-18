@@ -44,7 +44,12 @@ if( $_GET["action"] == "add" ){
     }
 
 } elseif ( $_GET["action"] == "list" ) {
-    $history = selectDBNew("watchedvideos", [$userId], "`userId` = ?", "`date` DESC");
+    if( isset($_GET["server"]) && !empty($_GET["server"]) ){
+        $history = selectDBNew("watchedvideos", [$userId, $_GET["server"]], "`userId` = ? AND `server` = ?", "`date` DESC");
+    } else {
+        $history = selectDBNew("watchedvideos", [$userId], "`userId` = ?", "`date` DESC");
+    }
+    
     if( $history ){
         echo dataOutput(array("history" => $history));
     } else {

@@ -135,10 +135,38 @@ $(document).ready(function() {
                 }
                 
                 $('#details-container').html(html);
+                
+                // Check watched status
+                checkWatchedStatus(server);
             }
         });
     }
 });
+
+function checkWatchedStatus(server) {
+    $.getJSON(`api/index.php?endpoint=History&action=list&server=${server}`, function(response) {
+        if(response.ok && response.data.history) {
+            const watchedLinks = new Set(response.data.history.map(item => item.link));
+            
+            $('.card[onclick]').each(function() {
+                const onclickAttr = $(this).attr('onclick');
+                // Extract href from onclick string: navigateToEncrypted({..., href: 'ENCRYPTED_STRING', ...})
+                // We need to parse the params object from the string.
+                // Regex to find href: '...'
+                const match = onclickAttr.match(/href:\s*'([^']+)'/);
+                if(match && match[1]) {
+                    const encryptedHref = match[1];
+                    const href = decryptLink(encryptedHref);
+                    
+                    if(watchedLinks.has(href)) {
+                        $(this).addClass('border-danger');
+                        $(this).find('.card-body').append('<span class="badge bg-danger position-absolute top-0 end-0 m-2">Watched</span>');
+                    }
+                }
+            });
+        }
+    });
+}
 
 function checkFavorite(server, link) {
     $.post('api/index.php?endpoint=Favorites&action=check', {server: server, link: link}, function(response) {
