@@ -47,6 +47,7 @@ $(document).ready(function() {
     } else {
         $('#categoryResults').html('<p class="text-center">Invalid Server ID</p>');
     }
+    fetchUserFavorites();
 });
 
 $(window).scroll(function() {
@@ -75,16 +76,25 @@ function loadContent(page) {
                 const encHref = encryptLink(show.href);
                 const encImage = encryptLink(show.image);
                 const encTitle = encryptLink(show.title);
+                const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                 let html = `
                     <div class="col-6 col-md-3 col-lg-2 mb-4">
                         <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${currentServer}', image: '${encImage}', title: '${encTitle}'})">
-                            <img src="${show.image}" alt="${show.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-                            <div class="mt-2 text-center small text-truncate">${show.title}</div>
+                            <img src="${show.image}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                            <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
+                            <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
+                                data-server="${currentServer}" data-link="${show.href}"
+                                style="z-index: 20; background: rgba(0,0,0,0.5); border: none;" 
+                                onclick="toggleFavorite('${currentServer}', '${show.href}', '${show.image}', '${safeTitle.replace(/'/g, "\\'")}', this)">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                     </div>
                 `;
                 $('#categoryResults').append(html);
             });
+            updateFavoriteIcons();
+
             
         } else {
             hasMore = false;
