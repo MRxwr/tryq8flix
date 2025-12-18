@@ -13,4 +13,6 @@ require_once "shahidwbs.php";
 require_once "mycima.php";
 require_once "tuktuk.php";
 require_once "qesset.php";
+require_once "esq.php";
+
 ?>

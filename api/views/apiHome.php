@@ -129,6 +129,19 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }
                 $data = qessetHome($url);
                 echo dataOutput(array("shows" =>$data));die();
+            }elseif( $_GET["server"] == 10 ) {
+                $url = $website10;
+                if ( isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    // urlencode to handle Arabic characters and spaces
+                    $_GET["search"] = urlencode($_GET["search"]);
+                }
+                if( isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"])) ){
+                    $url .= "page/{$_GET["page"]}";
+                }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
+                    $url .= "search/{$_GET["search"]}";
+                }
+                $data = esqHome($url);
+                echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }

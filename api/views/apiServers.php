@@ -27,6 +27,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = tuktukServers($url);
             }elseif( $_GET["server"] == 9 ){
                 $data = qessetServers($url);
+            }elseif( $_GET["server"] == 10 ){
+                $data = esqServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
