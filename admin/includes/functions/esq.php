@@ -147,48 +147,27 @@ function esqListings($url) {
     }
 
     // Scrape episodes (new structure)
-    foreach ($htmlDom->find('article.postEp') as $article) {
-        $blockPost = $article->find('div.block-post', 0);
-        if ($blockPost) {
-            $a = $blockPost->find('a', 0);
-            $link = $a ? $a->href : '';
-            $titleAttr = $a ? $a->getAttribute('title') : '';
+    $eplistDiv = $htmlDom->find('div.eplist', 0);
+    if ($eplistDiv) {
+        foreach ($eplistDiv->find('a.btn.btn-info') as $episodeLink) {
+            $link = $episodeLink->href;
+            $title = $episodeLink->getAttribute('title');
+            $episodeText = trim($episodeLink->plaintext);
             
-            // Get episode number
+            // Extract episode number from the link text (e.g., "حلقة 1")
             $episodeNumber = '';
             $episodeNumberDigits = '';
-            $episodeNumDiv = $blockPost->find('div.episodeNum', 0);
-            if ($episodeNumDiv) {
-                $episodeSpans = $episodeNumDiv->find('span');
-                if (count($episodeSpans) >= 2) {
-                    $episodeNumber = trim($episodeSpans[1]->plaintext);
-                    $episodeNumberDigits = $episodeNumber;
-                }
-            }
-            
-            // Get image from background-image style
-            $poster = '';
-            $imgSer = $blockPost->find('div.imgSer', 0);
-            if ($imgSer) {
-                $style = $imgSer->getAttribute('style');
-                if (preg_match('/background-image:\s*url\((.*?)\)/i', $style, $matches)) {
-                    $poster = trim($matches[1]);
-                }
-            }
-            
-            // Get title
-            $title = '';
-            $titleDiv = $blockPost->find('div.title', 0);
-            if ($titleDiv) {
-                $title = trim($titleDiv->plaintext);
+            if (preg_match('/حلقة\s+(\d+)/u', $episodeText, $matches)) {
+                $episodeNumber = $matches[1];
+                $episodeNumberDigits = $episodeNumber;
             }
             
             $episodesData[] = [
                 'link' => $link,
-                'title' => $title,
+                'title' => $title ? $title : $episodeText,
                 'episode_number' => $episodeNumberDigits,
                 'episode_text' => $episodeNumber,
-                'poster' => $poster
+                'poster' => ''
             ];
         }
     }
