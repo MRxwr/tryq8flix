@@ -97,7 +97,7 @@ function qessetListings($url) {
     $seasonsData = [];
     $episodesData = [];
 
-    // Scrape seasons (new structure)
+    // Scrape seasons (new structure) 
     $seasonsList = $htmlDom->find('section.allseasonss ul.Blocks--List', 0);
     if ($seasonsList) {
         foreach ($seasonsList->find('div.Block--Item') as $seasonBox) {
