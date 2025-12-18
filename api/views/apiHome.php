@@ -140,6 +140,9 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 }elseif( isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"])) ){
                     $url .= "search/{$_GET["search"]}";
                 }
+                if( (!isset($_GET["search"]) || empty($_GET["search"])) && (!isset($_GET["page"]) || empty($_GET["page"])) ){
+                    $url .= "latest/";
+                }
                 $data = esqHome($url);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
