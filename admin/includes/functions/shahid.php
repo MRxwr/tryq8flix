@@ -2,7 +2,7 @@
 function shahidCurl($url) {
     $curl = curl_init();
     curl_setopt_array($curl, array(
-      CURLOPT_URL => "{$url}",
+      CURLOPT_URL => 'https://viewsource.net/api/source/stream',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
