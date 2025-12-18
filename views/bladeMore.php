@@ -145,7 +145,7 @@ $(document).ready(function() {
 
                 // Check favorite status
                 if (image) {
-                    checkFavorite(server, href);
+                    checkFavorite(server, href, image);
                 }
             } else {
                 $('#details-container').html(`
@@ -198,8 +198,8 @@ function checkWatchedStatus(server) {
     });
 }
 
-function checkFavorite(server, link) {
-    $.post('api/index.php?endpoint=Favorites&action=check', {server: server, link: link}, function(response) {
+function checkFavorite(server, link, poster) {
+    $.post('api/index.php?endpoint=Favorites&action=check', {poster: poster}, function(response) {
         if(response.ok && response.data.isFavorite) {
             updateHeroButton(true);
         } else {
@@ -225,7 +225,7 @@ function toggleFavoriteHero(server, link, poster, title) {
     
     if(isFav) {
         if(confirm('Remove from favorites?')) {
-            $.post('api/index.php?endpoint=Favorites&action=remove', {server: server, link: link}, function(res) {
+            $.post('api/index.php?endpoint=Favorites&action=remove', {poster: poster}, function(res) {
                 if(res.ok) {
                     updateHeroButton(false);
                     showToast('Removed from favorites');

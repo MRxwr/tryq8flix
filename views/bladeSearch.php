@@ -98,7 +98,7 @@ function performSearch(isLoadMore = false) {
                             <img src="${show.image}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
                             <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
-                                data-server="${currentServerId}" data-link="${show.href}" data-title="${safeTitle.replace(/"/g, '&quot;')}"
+                                data-server="${currentServerId}" data-link="${show.href}" data-poster="${show.image}"
                                 style="z-index: 20; background: rgba(0,0,0,0.5); border: none;" 
                                 onclick="toggleFavorite('${currentServerId}', '${show.href}', '${show.image}', '${safeTitle.replace(/'/g, "\\'")}', this)">
                                 <i class="far fa-heart"></i>
@@ -132,7 +132,7 @@ function fetchUserFavorites() {
     $.getJSON('api/index.php?endpoint=Favorites&action=list', function(response) {
         if(response.ok && response.data.favorites) {
             response.data.favorites.forEach(fav => {
-                userFavorites.add(fav.server + '|' + fav.title);
+                userFavorites.add(fav.poster);
             });
             updateFavoriteIcons();
         }
@@ -142,9 +142,8 @@ function fetchUserFavorites() {
 function updateFavoriteIcons() {
     $('.fav-btn').each(function() {
         const btn = $(this);
-        const server = btn.data('server');
-        const title = btn.data('title');
-        if(title && userFavorites.has(server + '|' + title)) {
+        const poster = btn.data('poster');
+        if(poster && userFavorites.has(poster)) {
             btn.find('i').removeClass('far').addClass('fas').addClass('text-danger');
         } else {
             btn.find('i').removeClass('fas').removeClass('text-danger').addClass('far');
@@ -159,9 +158,9 @@ function toggleFavorite(server, link, poster, title, btnElement) {
     
     if(isFav) {
         if(confirm('Remove from favorites?')) {
-            $.post('api/index.php?endpoint=Favorites&action=remove', {server: server, link: link, title: title}, function(res) {
+            $.post('api/index.php?endpoint=Favorites&action=remove', {poster: poster}, function(res) {
                 if(res.ok) {
-                    userFavorites.delete(server + '|' + title);
+                    userFavorites.delete(poster);
                     updateFavoriteIcons();
                     showToast('Removed from favorites');
                 }
@@ -171,7 +170,7 @@ function toggleFavorite(server, link, poster, title, btnElement) {
         if(confirm('Add to favorites?')) {
             $.post('api/index.php?endpoint=Favorites&action=add', {server: server, link: link, poster: poster, title: title}, function(res) {
                 if(res.ok) {
-                    userFavorites.add(server + '|' + title);
+                    userFavorites.add(poster);
                     updateFavoriteIcons();
                     showToast('Added to favorites');
                 } else {
