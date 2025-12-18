@@ -8,10 +8,15 @@
         <div class="spinner-border text-danger"></div>
     </div>
     <div id="emptyState" class="text-center mt-5" style="display: none;">
-        <i class="far fa-sad-tear fa-4x mb-3 text-muted"></i>
+        <i class="far fa-sad-tear fa-4x mb-3 text-white-50"></i>
         <h3>No favorites yet</h3>
-        <p class="text-muted">Start adding movies and TV shows to your list!</p>
+        <p class="text-white-50">Start adding movies and TV shows to your list!</p>
         <a href="?v=Home" class="btn btn-netflix mt-3">Browse Content</a>
+        
+        <div id="suggestions" class="mt-5 text-start">
+            <h4 class="mb-3">Suggested for you</h4>
+            <div class="row" id="suggestionRows"></div>
+        </div>
     </div>
 </div>
 
@@ -52,10 +57,39 @@ function loadFavorites() {
             });
         } else {
             $('#emptyState').show();
+            loadSuggestions();
         }
     }).fail(function() {
         $('#loadingIndicator').hide();
         $('#favoritesResults').html('<p class="text-center text-danger">Failed to load favorites.</p>');
+    });
+}
+
+function loadSuggestions() {
+    // Fetch banners as suggestions
+    $.getJSON('api/index.php?endpoint=Main', function(response) {
+        if(response.ok && response.data.banners) {
+            const banners = response.data.banners.slice(0, 6); // Take first 6
+            let html = '';
+            banners.forEach(banner => {
+                if(banner.url && banner.server) {
+                    const encHref = encryptLink(banner.url);
+                    const encImage = encryptLink(banner.imageurl);
+                    const encTitle = encryptLink(banner.title);
+                    const safeTitle = banner.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                    
+                    html += `
+                        <div class="col-6 col-md-3 col-lg-2 mb-4">
+                            <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})">
+                                <img src="${banner.imageurl}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            $('#suggestionRows').html(html);
+        }
     });
 }
 
