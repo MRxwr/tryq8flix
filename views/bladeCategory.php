@@ -83,7 +83,7 @@ function loadContent(page) {
                             <img src="${show.image}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
                             <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
-                                data-server="${currentServer}" data-link="${show.href}"
+                                data-server="${currentServer}" data-link="${show.href}" data-title="${safeTitle.replace(/"/g, '&quot;')}"
                                 style="z-index: 20; background: rgba(0,0,0,0.5); border: none;" 
                                 onclick="toggleFavorite('${currentServer}', '${show.href}', '${show.image}', '${safeTitle.replace(/'/g, "\\'")}', this)">
                                 <i class="far fa-heart"></i>
