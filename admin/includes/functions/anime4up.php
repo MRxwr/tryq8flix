@@ -10,9 +10,8 @@ function anime4upHome($url) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // Use Postman User-Agent to bypass Cloudflare
-    curl_setopt($ch, CURLOPT_USERAGENT, "PostmanRuntime/7.51.0");
-    curl_setopt($ch, CURLOPT_ENCODING, "");
+    // Use a standard Desktop User-Agent
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
@@ -92,8 +91,7 @@ function anime4upListings($url) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_USERAGENT, "PostmanRuntime/7.51.0");
-    curl_setopt($ch, CURLOPT_ENCODING, "");
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
@@ -103,62 +101,90 @@ function anime4upListings($url) {
     $seasonsData = [];
     $episodesData = [];
 
-    // Scrape seasons (new structure)
-    $seasonsList = $htmlDom->find('section.allseasonss ul.Blocks--List', 0);
-    if ($seasonsList) {
-        foreach ($seasonsList->find('div.Block--Item') as $seasonBox) {
-            $a = $seasonBox->find('a', 0);
-            $link = $a ? $a->href : '';
-            $img = $seasonBox->find('img', 0);
-            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $title = '';
-            $h3 = $seasonBox->find('h3', 0);
-            if ($h3) {
-                $title = trim($h3->plaintext);
-            }
-            $seasonNumber = '';
-            $seasonNumberDigits = '';
-            // Try to extract season number from title if possible
-            if (preg_match('/(\d+)/u', $title, $matches)) {
-                $seasonNumber = $matches[1];
-                $seasonNumberDigits = $seasonNumber;
-            }
-            $seasonsData[] = [
-                'link' => $link,
-                'title' => $title,
-                'season_number' => $seasonNumberDigits,
-                'season_text' => $seasonNumber,
-                'poster' => $poster
-            ];
-        }
-    }
-
     // Scrape episodes (new structure)
-    $episodesRow = $htmlDom->find('section.allepcont .row', 0);
-    if ($episodesRow) {
-        foreach ($episodesRow->find('a') as $episodeLink) {
-            $link = $episodeLink->href;
-            $img = $episodeLink->find('img', 0);
-            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $epInfo = $episodeLink->find('.ep-info h2', 0);
-            $title = $epInfo ? trim($epInfo->plaintext) : '';
-            $epnumDiv = $episodeLink->find('.epnum', 0);
+    $episodesList = $htmlDom->find('ul#ULEpisodesList', 0);
+    if ($episodesList) {
+        foreach ($episodesList->find('li') as $li) {
+            $a = $li->find('a', 0);
+            $link = $a ? $a->href : '';
+            $title = $a ? trim($a->plaintext) : '';
+            
             $episodeNumber = '';
             $episodeNumberDigits = '';
-            if ($epnumDiv) {
-                // Extract number from text
-                if (preg_match('/(\d+)/u', $epnumDiv->plaintext, $matches)) {
-                    $episodeNumber = $matches[1];
-                    $episodeNumberDigits = $episodeNumber;
-                }
+            
+            // Extract number from text
+            if (preg_match('/(\d+)/u', $title, $matches)) {
+                $episodeNumber = $matches[1];
+                $episodeNumberDigits = $episodeNumber;
             }
+            
             $episodesData[] = [
                 'link' => $link,
                 'title' => $title,
                 'episode_number' => $episodeNumberDigits,
                 'episode_text' => $episodeNumber,
-                'poster' => $poster
+                'poster' => ''
             ];
+        }
+    } else {
+        // Fallback to old structure
+        // Scrape seasons (new structure)
+        $seasonsList = $htmlDom->find('section.allseasonss ul.Blocks--List', 0);
+        if ($seasonsList) {
+            foreach ($seasonsList->find('div.Block--Item') as $seasonBox) {
+                $a = $seasonBox->find('a', 0);
+                $link = $a ? $a->href : '';
+                $img = $seasonBox->find('img', 0);
+                $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
+                $title = '';
+                $h3 = $seasonBox->find('h3', 0);
+                if ($h3) {
+                    $title = trim($h3->plaintext);
+                }
+                $seasonNumber = '';
+                $seasonNumberDigits = '';
+                // Try to extract season number from title if possible
+                if (preg_match('/(\d+)/u', $title, $matches)) {
+                    $seasonNumber = $matches[1];
+                    $seasonNumberDigits = $seasonNumber;
+                }
+                $seasonsData[] = [
+                    'link' => $link,
+                    'title' => $title,
+                    'season_number' => $seasonNumberDigits,
+                    'season_text' => $seasonNumber,
+                    'poster' => $poster
+                ];
+            }
+        }
+
+        // Scrape episodes (new structure)
+        $episodesRow = $htmlDom->find('section.allepcont .row', 0);
+        if ($episodesRow) {
+            foreach ($episodesRow->find('a') as $episodeLink) {
+                $link = $episodeLink->href;
+                $img = $episodeLink->find('img', 0);
+                $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
+                $epInfo = $episodeLink->find('.ep-info h2', 0);
+                $title = $epInfo ? trim($epInfo->plaintext) : '';
+                $epnumDiv = $episodeLink->find('.epnum', 0);
+                $episodeNumber = '';
+                $episodeNumberDigits = '';
+                if ($epnumDiv) {
+                    // Extract number from text
+                    if (preg_match('/(\d+)/u', $epnumDiv->plaintext, $matches)) {
+                        $episodeNumber = $matches[1];
+                        $episodeNumberDigits = $episodeNumber;
+                    }
+                }
+                $episodesData[] = [
+                    'link' => $link,
+                    'title' => $title,
+                    'episode_number' => $episodeNumberDigits,
+                    'episode_text' => $episodeNumber,
+                    'poster' => $poster
+                ];
+            }
         }
     }
 
@@ -172,27 +198,52 @@ function anime4upListings($url) {
 }
 
 function anime4upServers($url) {
-    $html = curlCall("{$url}watch");
+    $html = curlCall("{$url}");
     $dom = str_get_html($html);
     $servers = [];
     if ($dom) {
-        $lis = $dom->find('div.watch--servers--list ul li.server--item');
-        foreach ($lis as $li) {
-            $dataLink = $li->getAttribute('data-link');
-            $nameSpan = $li->find('span', 0);
-            $name = $nameSpan ? trim($nameSpan->plaintext) : '';
-            $decodedLink = '';
-            if ($dataLink) {
-                // PHP equivalent of decodeLink JS function
-                $split = explode('0REL0Y&', $dataLink);
-                $part = $split[0];
-                $reversed = strrev($part);
-                $decodedLink = base64_decode($reversed);
+        // New structure check
+        $serverList = $dom->find('ul#episode-servers', 0);
+        if ($serverList) {
+            foreach ($serverList->find('li') as $li) {
+                $link = $li->getAttribute('data-watch');
+                $name = '';
+                $a = $li->find('a', 0);
+                if ($a) {
+                    // Get text but exclude span content if possible, or just clean it up
+                    $name = trim($a->plaintext);
+                    // Clean up "noscript" text if it appears due to parsing
+                    $name = str_replace('noscript', '', $name);
+                    $name = trim($name);
+                }
+                
+                if ($link) {
+                    $servers[] = [
+                        'name' => $name,
+                        'link' => $link
+                    ];
+                }
             }
-            $servers[] = [
-                'name' => $name,
-                'link' => $decodedLink
-            ];
+        } else {
+            // Fallback to old structure
+            $lis = $dom->find('div.watch--servers--list ul li.server--item');
+            foreach ($lis as $li) {
+                $dataLink = $li->getAttribute('data-link');
+                $nameSpan = $li->find('span', 0);
+                $name = $nameSpan ? trim($nameSpan->plaintext) : '';
+                $decodedLink = '';
+                if ($dataLink) {
+                    // PHP equivalent of decodeLink JS function
+                    $split = explode('0REL0Y&', $dataLink);
+                    $part = $split[0];
+                    $reversed = strrev($part);
+                    $decodedLink = base64_decode($reversed);
+                }
+                $servers[] = [
+                    'name' => $name,
+                    'link' => $decodedLink
+                ];
+            }
         }
         $dom->clear();
         unset($dom);
