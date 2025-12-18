@@ -48,7 +48,7 @@ function loadFavorites() {
                             <img src="${fav.poster}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
                             <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
                         </div>
-                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" style="z-index: 20;" onclick="removeFavorite('${fav.server}', '${fav.link}', this)">
+                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" style="z-index: 20;" onclick="removeFavorite('${fav.poster}', this)">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -93,12 +93,11 @@ function loadSuggestions() {
     });
 }
 
-function removeFavorite(server, link, btnElement) {
+function removeFavorite(poster, btnElement) {
     event.stopPropagation(); // Prevent card click
     if(confirm('Are you sure you want to remove this from your favorites?')) {
         $.post('api/index.php?endpoint=Favorites&action=remove', {
-            server: server,
-            link: link
+            poster: poster
         }, function(response) {
             if(response.ok) {
                 // Remove the element from DOM
@@ -106,13 +105,16 @@ function removeFavorite(server, link, btnElement) {
                     $(this).remove(); 
                     if($('#favoritesResults').children().length === 0) {
                         $('#emptyState').show();
+                        loadSuggestions();
                     }
                 });
                 showToast('Removed from favorites');
             } else {
                 alert(response.error.msg || 'Failed to remove');
             }
-        }, 'json');
+        }, 'json').fail(function() {
+            alert('Network error: Failed to remove from favorites');
+        });
     }
 }
 
