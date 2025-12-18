@@ -97,6 +97,13 @@ function animeSlayerListings($url) {
     $seasonsData = [];
     $episodesData = [];
 
+    if (!$htmlDom) {
+        return [
+            'seasons' => [],
+            'episodes' => []
+        ];
+    }
+
     // Check for the noscript tag content (New Structure)
     $noscript = $htmlDom->find('noscript#diplayer', 0);
     if ($noscript) {
