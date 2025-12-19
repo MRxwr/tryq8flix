@@ -102,7 +102,8 @@ $(document).ready(function() {
                     data.seasons.forEach(season => {
                         const encHref = encryptLink(season.link);
                         const encImage = encryptLink(image || '');
-                        const encTitle = encryptLink((title || '') + ' - ' + season.title);
+                        // Use season title directly without combining
+                        const encTitle = encryptLink(season.title);
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
                                 <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}'})" style="cursor:pointer;">
@@ -127,9 +128,8 @@ $(document).ready(function() {
                     data.episodes.forEach(ep => {
                         const encHref = encryptLink(ep.link);
                         const encImage = encryptLink(image || '');
-                        // Use episode title directly if it already contains the show name, otherwise combine
-                        const episodeTitle = ep.title.includes(title || '') ? ep.title : ((title || '') + ' - ' + ep.title);
-                        const encTitle = encryptLink(episodeTitle);
+                        // Use episode title directly without combining
+                        const encTitle = encryptLink(ep.title);
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
                                 <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}'})" style="cursor:pointer;">
