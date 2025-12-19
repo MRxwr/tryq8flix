@@ -1,5 +1,5 @@
 <?php
-function anime4upHome($url) {
+function animePecHome($url) {
     $url = trim($url);
     $url = str_replace(' ', '+', $url);
     
@@ -147,7 +147,7 @@ function anime4upHome($url) {
     return $shows = $shows["shows"];
 }
 
-function anime4upListings($url) {
+function animePecListings($url) {
     // Use a custom curl call with a fixed User-Agent
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -318,7 +318,7 @@ function anime4upListings($url) {
     return $data;
 }
 
-function anime4upServers($url) {
+function animePecServers($url) {
     // Append /watch to the URL if not already present
     if (strpos($url, '/watch') === false) {
         $url = rtrim($url, '/') . '/watch';

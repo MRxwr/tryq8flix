@@ -175,7 +175,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 if( (!isset($_GET["search"]) || empty($_GET["search"])) && (!isset($_GET["page"]) || empty($_GET["page"])) ){
                     $url .= "last/";
                 }
-                $data = anime4upHome($url);
+                $data = animePecHome($url);
                 echo dataOutput(array("shows" =>$data));die();
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
