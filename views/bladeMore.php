@@ -3,9 +3,6 @@
 <div id="hero-section" class="hero" style="display:none; background-size: cover; background-position: center; align-items: flex-end; padding-bottom: 50px;">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-        <button class="btn btn-secondary-netflix mb-2" onclick="history.back()">
-            <i class="fas fa-arrow-left"></i> Back
-        </button>
         <h1 class="hero-title" id="hero-title">Loading...</h1>
         <p class="hero-desc" id="hero-desc"></p>
         <button id="favBtnHero" class="btn btn-secondary-netflix" style="display:none;">
