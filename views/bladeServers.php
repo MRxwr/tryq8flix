@@ -1,6 +1,16 @@
 <?php include 'header.php'; ?>
 
-<div class="container" style="margin-top: 100px;">
+<div id="episode-hero" class="hero" style="display:none; background-size: cover; background-position: center; min-height: 300px;">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title" id="episode-title">Loading...</h1>
+        <button class="btn btn-secondary-netflix" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 20px;">
     <h2 class="section-title">Select Server</h2>
     <div id="servers-list" class="row">
         <div class="text-center"><div class="spinner-border text-danger"></div></div>
@@ -45,6 +55,13 @@ $(document).ready(function() {
         title: title,
         href: href // This is the episode link usually
     };
+    
+    // Display episode hero section
+    if (image && title) {
+        $('#episode-hero').css('background-image', 'url(' + image + ')');
+        $('#episode-title').text(title);
+        $('#episode-hero').show();
+    }
     
     if(type === 'live') {
         // Handle live match logic (different endpoint)
