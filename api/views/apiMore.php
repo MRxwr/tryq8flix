@@ -7,12 +7,6 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
         if( !isset($_GET["href"]) || empty($_GET["href"]) ){
             echo dataError(array("msg" => "href is required"));die();
         }
-        
-        // Pagination parameters for large anime series
-        $page = isset($_GET["page"]) ? intval($_GET["page"]) : null;
-        $perPage = isset($_GET["per_page"]) ? intval($_GET["per_page"]) : 50;
-        $forceRefresh = isset($_GET["refresh"]) && $_GET["refresh"] == "1";
-        
         if( isset($_GET["server"]) && !empty($_GET["server"]) ){
             if( $_GET["server"] == 1 ){
                 $data = wecimaListing($_GET["href"]);
@@ -37,8 +31,7 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
             }elseif( $_GET["server"] == 11 ){
                 $data = animeSlayerListings($_GET["href"]);
             }elseif( $_GET["server"] == 12 ){
-                // AnimePec with pagination support for 1000+ episode anime
-                $data = animePecListings($_GET["href"], $page, $perPage, $forceRefresh);
+                $data = animePecListings($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
