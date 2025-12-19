@@ -127,7 +127,9 @@ $(document).ready(function() {
                     data.episodes.forEach(ep => {
                         const encHref = encryptLink(ep.link);
                         const encImage = encryptLink(image || '');
-                        const encTitle = encryptLink((title || '') + ' - ' + ep.title);
+                        // Use episode title directly if it already contains the show name, otherwise combine
+                        const episodeTitle = ep.title.includes(title || '') ? ep.title : ((title || '') + ' - ' + ep.title);
+                        const encTitle = encryptLink(episodeTitle);
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
                                 <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}'})" style="cursor:pointer;">
