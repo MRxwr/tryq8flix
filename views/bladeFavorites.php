@@ -43,12 +43,25 @@ function loadFavorites() {
                 const safeTitle = fav.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                 
                 let html = `
-                    <div class="col-6 col-md-3 col-lg-2 mb-4 position-relative">
-                        <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${fav.server}', image: '${encImage}', title: '${encTitle}'})">
-                            <img src="${fav.poster}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-                            <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 px-2 position-relative">
+                        <div class="movie-card w-100 position-relative overflow-hidden rounded-3 shadow-sm" 
+                             style="transition: all 0.3s ease; cursor: pointer;"
+                             onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${fav.server}', image: '${encImage}', title: '${encTitle}'})"
+                             onmouseover="this.style.transform='scale(1.05) translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
+                             onmouseout="this.style.transform='scale(1) translateY(0)'; this.style.boxShadow='';"> 
+                            <div style="position: relative; padding-bottom: 150%; background: #1a1a1a;">
+                                <img src="${fav.poster}" alt="${safeTitle}" 
+                                     style="position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center;"
+                                     onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                <div class="position-absolute bottom-0 start-0 w-100 p-2" 
+                                     style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);">
+                                    <div class="text-white text-center small fw-semibold" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.3;">${safeTitle}</div>
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" style="z-index: 20;" onclick="removeFavorite('${fav.poster}', this)">
+                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" 
+                                style="z-index: 20; background: rgba(229,9,20,0.9); border: none; backdrop-filter: blur(10px); border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" 
+                                onclick="removeFavorite('${fav.poster}', this)">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -79,10 +92,21 @@ function loadSuggestions() {
                     const safeTitle = banner.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                     
                     html += `
-                        <div class="col-6 col-md-3 col-lg-2 mb-4">
-                            <div class="movie-card w-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})">
-                                <img src="${banner.imageurl}" alt="${safeTitle}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-                                <div class="mt-2 text-center small text-truncate">${safeTitle}</div>
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 px-2">
+                            <div class="movie-card w-100 position-relative overflow-hidden rounded-3 shadow-sm" 
+                                 style="transition: all 0.3s ease; cursor: pointer;"
+                                 onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})"
+                                 onmouseover="this.style.transform='scale(1.05) translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
+                                 onmouseout="this.style.transform='scale(1) translateY(0)'; this.style.boxShadow='';"> 
+                                <div style="position: relative; padding-bottom: 150%; background: #1a1a1a;">
+                                    <img src="${banner.imageurl}" alt="${safeTitle}" 
+                                         style="position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center;"
+                                         onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                    <div class="position-absolute bottom-0 start-0 w-100 p-2" 
+                                         style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);">
+                                        <div class="text-white text-center small fw-semibold" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.3;">${safeTitle}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
