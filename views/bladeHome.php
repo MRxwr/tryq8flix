@@ -11,6 +11,8 @@
 </div>
 
 <div id="content-rows">
+    <div id="continue-watching-section"></div>
+    <div id="favorites-section"></div>
     <!-- Rows will be injected here -->
 </div>
 
@@ -63,6 +65,86 @@ $(document).ready(function() {
             }
         }, 100);
     }
+
+    // Fetch Continue Watching (History)
+    $.getJSON('api/index.php?endpoint=History&action=list', function(response) {
+        if(response.ok && response.data.history && response.data.history.length > 0) {
+            const shows = response.data.history.slice(0, 20);
+            const rowId = 'row-history';
+            let rowHtml = `
+                <div class="d-flex justify-content-between align-items-center" style="margin: 2rem 4% 1rem 4%;">
+                    <div class="section-title" style="margin: 0;">Continue Watching</div>
+                    <a href="?v=History" class="text-white small fw-bold text-decoration-none">View More <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="row-wrapper">
+                    <button class="scroll-btn scroll-left d-none d-md-flex" onclick="scrollRow('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="movie-row" id="${rowId}">
+            `;
+            
+            shows.forEach(show => {
+                const encHref = encryptLink(show.link);
+                const encImage = encryptLink(show.poster);
+                const encTitle = encryptLink(show.title);
+                const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                
+                rowHtml += `
+                    <div class="movie-card" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})">
+                        <img src="${show.poster}" alt="${safeTitle}" onerror="this.parentElement.classList.add('img-error')">
+                        <div class="title-overlay">${safeTitle}</div>
+                    </div>
+                `;
+            });
+            
+            rowHtml += `</div>
+                    <button class="scroll-btn scroll-right d-none d-md-flex" onclick="scrollRow('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>`;
+            
+            $('#continue-watching-section').html(rowHtml);
+        }
+    });
+
+    // Fetch Favorites
+    $.getJSON('api/index.php?endpoint=Favorites&action=list', function(response) {
+        if(response.ok && response.data.favorites && response.data.favorites.length > 0) {
+            const shows = response.data.favorites.slice(0, 20);
+            const rowId = 'row-favorites';
+            let rowHtml = `
+                <div class="d-flex justify-content-between align-items-center" style="margin: 2rem 4% 1rem 4%;">
+                    <div class="section-title" style="margin: 0;">My Favorites</div>
+                    <a href="?v=Favorites" class="text-white small fw-bold text-decoration-none">View More <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="row-wrapper">
+                    <button class="scroll-btn scroll-left d-none d-md-flex" onclick="scrollRow('${rowId}', -1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="movie-row" id="${rowId}">
+            `;
+            
+            shows.forEach(show => {
+                const encHref = encryptLink(show.link);
+                const encImage = encryptLink(show.poster);
+                const encTitle = encryptLink(show.title);
+                const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                
+                rowHtml += `
+                    <div class="movie-card" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})">
+                        <img src="${show.poster}" alt="${safeTitle}" onerror="this.parentElement.classList.add('img-error')">
+                        <div class="title-overlay">${safeTitle}</div>
+                        <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
+                            data-server="${show.server}" data-link="${show.link}" data-poster="${show.poster}"
+                            style="z-index: 20; background: rgba(0,0,0,0.5); border: none;" 
+                            onclick="toggleFavorite('${show.server}', '${show.link}', '${show.poster}', '${safeTitle.replace(/'/g, "\\'")}', this)">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            rowHtml += `</div>
+                    <button class="scroll-btn scroll-right d-none d-md-flex" onclick="scrollRow('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
+                </div>`;
+            
+            $('#favorites-section').html(rowHtml);
+        }
+    });
 
     // Fetch Main Data (Banners & Servers)
     $.getJSON('api/index.php?endpoint=Main', function(response) {
