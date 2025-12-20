@@ -184,7 +184,7 @@
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <a class="navbar-brand" href="?v=Home">TRYQ8FLIX</a>
     <div class="d-flex align-items-center">
-        <a class="nav-link text-white me-3" href="?v=Favorites"><i class="fas fa-heart fa-lg"></i></a>
+        <a class="nav-link text-white me-3" href="?v=LiveMatchesList"><i class="fas fa-futbol fa-lg"></i></a>
         <a class="nav-link text-white me-3" href="?v=Search"><i class="fas fa-search fa-lg"></i></a>
         <a class="nav-link text-white" href="?v=Settings"><i class="fas fa-cog fa-lg"></i></a>
     </div>

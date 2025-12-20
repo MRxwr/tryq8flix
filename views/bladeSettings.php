@@ -47,9 +47,6 @@
                     <a href="?v=LiveMatchesList" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-futbol me-2"></i> Live Matches
                     </a>
-                    <a href="?v=Search" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
-                        <i class="fas fa-search me-2"></i> Search
-                    </a>
                     <a href="?v=Favorites" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-heart me-2"></i> My Favorites
                     </a>
