@@ -3,13 +3,23 @@
 <div class="container" style="margin-top: 100px;">
     <div class="row justify-content-center mb-5">
         <div class="col-md-10 col-lg-8">
-            <div class="input-group input-group-lg shadow">
-                <span class="input-group-text bg-dark border-secondary text-white-50"><i class="fas fa-server"></i></span>
-                <select class="form-select bg-dark text-white border-secondary focus-ring-none" id="serverSelect" style="max-width: 140px; border-left: none;">
-                    <option value="1" selected>Wecima</option>
-                </select>
-                <input type="text" class="form-control bg-dark text-white border-secondary" id="searchInput" placeholder="What do you want to watch?">
-                <button class="btn btn-netflix px-4" id="searchBtn"><i class="fas fa-search"></i></button>
+            <div class="p-2 rounded-3 shadow-lg" style="background-color: #222; border: 1px solid #333;">
+                <div class="row g-2">
+                    <div class="col-12 col-md-auto">
+                        <div class="input-group h-100">
+                            <span class="input-group-text bg-dark border-0 text-white-50"><i class="fas fa-server"></i></span>
+                            <select class="form-select bg-dark text-white border-0 focus-ring-none" id="serverSelect">
+                                <option value="1" selected>Wecima</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md">
+                        <div class="input-group h-100">
+                            <input type="text" class="form-control bg-dark text-white border-0" id="searchInput" placeholder="Search for movies, TV shows...">
+                            <button class="btn btn-netflix px-4" id="searchBtn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
