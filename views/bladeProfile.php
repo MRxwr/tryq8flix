@@ -10,13 +10,13 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label class="text-muted">Email</label>
-                    <div class="fs-5" id="profile-email">...</div>
+                    <label class="text-white-50 small text-uppercase fw-bold" style="font-size: 0.75rem;">Email</label>
+                    <div class="fs-6" id="profile-email">...</div>
                 </div>
                 
                 <div class="mb-3">
-                    <label class="text-muted">Subscription</label>
-                    <div class="fs-5">Premium Plan (4K HDR)</div>
+                    <label class="text-white-50 small text-uppercase fw-bold" style="font-size: 0.75rem;">Subscription</label>
+                    <div class="fs-6">Premium Plan (4K HDR)</div>
                 </div>
                 
                 <hr class="bg-secondary">
