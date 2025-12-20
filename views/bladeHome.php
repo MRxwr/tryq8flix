@@ -91,6 +91,12 @@ $(document).ready(function() {
                     <div class="movie-card" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})">
                         <img src="${show.poster}" alt="${safeTitle}" onerror="this.parentElement.classList.add('img-error')">
                         <div class="title-overlay">${safeTitle}</div>
+                        <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
+                            data-server="${show.server}" data-link="${show.link}" data-poster="${show.poster}"
+                            style="z-index: 20; background: rgba(0,0,0,0.5); border: none;" 
+                            onclick="toggleFavorite('${show.server}', '${show.link}', '${show.poster}', '${safeTitle.replace(/'/g, "\\'")}', this)">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
                 `;
             });
