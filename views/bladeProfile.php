@@ -22,11 +22,39 @@
                 <hr class="bg-secondary">
                 
                 <button class="btn btn-outline-light w-100 mb-3">Manage Profiles</button>
+                <button id="editProfileBtn" class="btn btn-outline-light w-100 mb-3">Edit Profile</button>
                 <button id="changePasswordBtn" class="btn btn-outline-light w-100 mb-3">Change Password</button>
                 <button id="deleteAccountBtn" class="btn btn-outline-danger w-100">Delete Account</button>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">Edit Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editProfileForm">
+            <div id="ep-message" class="mb-3"></div>
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control bg-secondary text-white border-0" id="editEmail" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Profile Picture</label>
+                <input type="file" class="form-control bg-secondary text-white border-0" id="editAvatar" accept="image/*">
+                <div class="form-text text-muted">Allowed formats: JPG, PNG, GIF, WEBP</div>
+            </div>
+            <button type="submit" class="btn btn-netflix w-100">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Delete Account Confirmation Modal -->
@@ -108,6 +136,57 @@ $(document).ready(function() {
     $('#changePasswordBtn').click(function() {
         var myModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
         myModal.show();
+    });
+
+    // Open Edit Profile Modal
+    $('#editProfileBtn').click(function() {
+        // Pre-fill email
+        $('#editEmail').val($('#profile-email').text());
+        var myModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+        myModal.show();
+    });
+
+    // Handle Edit Profile Submission
+    $('#editProfileForm').submit(function(e) {
+        e.preventDefault();
+        const btn = $(this).find('button[type="submit"]');
+        const originalText = btn.text();
+        btn.prop('disabled', true).text('Saving...');
+        $('#ep-message').html('');
+
+        const formData = new FormData();
+        formData.append('email', $('#editEmail').val());
+        const avatarFile = $('#editAvatar')[0].files[0];
+        if(avatarFile) {
+            formData.append('avatar', avatarFile);
+        }
+
+        $.ajax({
+            url: 'api/index.php?endpoint=User&action=profile&update=1',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                const res = (typeof response === 'string') ? JSON.parse(response) : response;
+                if(res.ok) {
+                    $('#ep-message').html('<div class="alert alert-success">' + res.data.msg + '</div>');
+                    // Update UI
+                    $('#profile-email').text($('#editEmail').val());
+                    // Reload page to see new avatar or fetch profile again
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    $('#ep-message').html('<div class="alert alert-danger">' + res.data.msg + '</div>');
+                    btn.prop('disabled', false).text(originalText);
+                }
+            },
+            error: function() {
+                $('#ep-message').html('<div class="alert alert-danger">Network error. Please try again.</div>');
+                btn.prop('disabled', false).text(originalText);
+            }
+        });
     });
 
     // Open Delete Account Modal

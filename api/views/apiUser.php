@@ -149,6 +149,49 @@ if( $_GET["action"] == "login" ){
     if( empty($token) ){
         echo dataError(array("msg" => "token is required"));die();
     }
+    if( isset($_GET["update"]) && $_GET["update"] == "1" ){
+        if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+            $data = array();
+            if( isset($_POST["email"]) && !empty($_POST["email"]) ){
+                if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+                    echo dataError(array("msg" => "Invalid email format"));die();
+                }
+                $data["email"] = $_POST["email"];
+            }
+            if( isset($_FILES["avatar"]) && !empty($_FILES["avatar"]["tmp_name"]) ){
+                $check = getimagesize($_FILES["avatar"]["tmp_name"]);
+                if($check === false) {
+                    echo dataError(array("msg" => "File is not an image"));die();
+                }
+                $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $_FILES["avatar"]["tmp_name"]);
+                finfo_close($finfo);
+                
+                if(!in_array($mime, $allowed)){
+                     echo dataError(array("msg" => "Only JPG, PNG, GIF, and WEBP files are allowed"));die();
+                }
+
+                $filename = uploadImage($_FILES["avatar"]["tmp_name"]);
+                if(!empty($filename)){
+                    $data["avatar"] = "logos/" . $filename;
+                } else {
+                    echo dataError(array("msg" => "Image upload failed"));die();
+                }
+            }
+            if( !empty($data) ){
+                if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+                    echo dataOutput(array("msg" => "Profile updated successfully"));die();
+                }else{
+                    echo dataError(array("msg" => "Something went wrong, please try again"));die();
+                }
+            }else{
+                echo dataError(array("msg" => "No data to update"));die();
+            }
+        }else{
+            echo dataError(array("msg" => "Invalid token"));die();
+        }
+    }
     if( $user = selectDB("users","`keepalive` = '{$token}'") ){
         echo dataOutput(array("username" => $user[0]["username"], "email" => $user[0]["email"], "avatar" => $user[0]["avatar"], "id" => $user[0]["id"]));die();
     }else{
