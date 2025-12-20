@@ -10,11 +10,17 @@
             <div class="mb-3">
                 <input type="email" class="form-control" id="email" placeholder="Email Address" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <input type="password" class="form-control" id="password" placeholder="Password" required>
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #8c8c8c;">
+                    <i class="fa fa-eye"></i>
+                </span>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #8c8c8c;">
+                    <i class="fa fa-eye"></i>
+                </span>
             </div>
             <button type="submit" class="btn btn-netflix w-100 mt-3">Sign Up</button>
         </form>
@@ -28,6 +34,18 @@
 <?php include 'footer.php'; ?>
 
 <script>
+$(document).on('click', '.toggle-password', function() {
+    const input = $(this).siblings('input');
+    const icon = $(this).find('i');
+    if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('fa-eye').addClass('fa-eye-slash');
+    } else {
+        input.attr('type', 'password');
+        icon.removeClass('fa-eye-slash').addClass('fa-eye');
+    }
+});
+
 $('#registerForm').submit(function(e) {
     e.preventDefault();
     const username = $('#username').val();
