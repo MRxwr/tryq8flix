@@ -2,8 +2,8 @@
 
 <div class="login-container">
     <div class="login-card">
-        <h2 class="mb-4">Forgot Password</h2>
-        <p class="text-muted">Enter your email address and we'll send you a link to reset your password.</p>
+        <h2 class="mb-4 text-white fw-bold" style="text-shadow: 1px 1px 8px #000, 0 0 2px #e50914;">Forgot Password</h2>
+        <p class="text-white">Enter your email address and we'll send you a link to reset your password.</p>
         <form id="forgetForm">
             <div class="mb-3">
                 <input type="email" class="form-control" id="email" placeholder="name@example.com" required>

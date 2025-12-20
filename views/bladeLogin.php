@@ -5,7 +5,7 @@
         <h2 class="mb-4 text-white fw-bold" style="text-shadow: 1px 1px 8px #000, 0 0 2px #e50914;">Sign In</h2>
         <form id="loginForm">
             <div class="mb-3">
-                <input type="text" class="form-control" id="username" placeholder="Email or phone number" required>
+                <input type="text" class="form-control" id="username" placeholder="username" required>
             </div>
             <div class="mb-3">
                 <input type="password" class="form-control" id="password" placeholder="Password" required>
@@ -20,8 +20,8 @@
             </div>
         </form>
         
-        <div class="mt-5 text-muted">
-            New to TryQ8Flix? <a href="#" class="text-white text-decoration-none">Sign up now</a>.
+        <div class="mt-5 text-white">
+            New to TryQ8Flix? <a href="?v=Register" class="text-white text-decoration-none">Sign up now</a>.
         </div>
     </div>
 </div>
