@@ -25,7 +25,7 @@ if (isset($_GET['q'])) {
 $view = isset($_GET["v"]) ? $_GET["v"] : "Home";
 
 // Whitelist of views accessible without login
-$publicViews = ["Login", "Forget"];
+$publicViews = ["Login", "Forget", "Register"];
 
 if (empty($profileData['id']) && !in_array($view, $publicViews)) {
     header("Location: ?v=Login");
