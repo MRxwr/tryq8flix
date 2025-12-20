@@ -210,12 +210,16 @@ $(document).ready(function() {
                                 const encTitle = encryptLink(show.title);
                                 const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                                 rowHtml += `
-                                    <div class="movie-card" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server.id}', image: '${encImage}', title: '${encTitle}'})">
-                                        <img src="${show.image}" alt="${safeTitle}" onerror="this.parentElement.classList.add('img-error')">
-                                        <div class="title-overlay">${safeTitle}</div>
+                                    <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
+                                         style="transition: all 0.3s ease; cursor: pointer;"
+                                         onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server.id}', image: '${encImage}', title: '${encTitle}'})"
+                                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
+                                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
+                                        <img src="${show.image}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
+                                        <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
                                             data-server="${server.id}" data-link="${show.href}" data-poster="${show.image}"
-                                            style="z-index: 20; background: rgba(0,0,0,0.5); border: none;" 
+                                            style="z-index: 20; background: rgba(0,0,0,0.7); border: none; backdrop-filter: blur(10px); border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" 
                                             onclick="toggleFavorite('${server.id}', '${show.href}', '${show.image}', '${safeTitle.replace(/'/g, "\\'")}', this)">
                                             <i class="far fa-heart"></i>
                                         </button>
