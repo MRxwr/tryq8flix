@@ -22,10 +22,32 @@
                 <hr class="bg-secondary">
                 
                 <button class="btn btn-outline-light w-100 mb-3">Manage Profiles</button>
-                <button id="changePasswordBtn" class="btn btn-outline-light w-100">Change Password</button>
+                <button id="changePasswordBtn" class="btn btn-outline-light w-100 mb-3">Change Password</button>
+                <button id="deleteAccountBtn" class="btn btn-outline-danger w-100">Delete Account</button>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-danger">Delete Account</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+        <p class="text-muted small">All your data, including watch history and favorites, will be permanently removed.</p>
+        <div id="da-message" class="mb-3"></div>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete My Account</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Change Password Modal -->
@@ -86,6 +108,36 @@ $(document).ready(function() {
     $('#changePasswordBtn').click(function() {
         var myModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
         myModal.show();
+    });
+
+    // Open Delete Account Modal
+    $('#deleteAccountBtn').click(function() {
+        var myModal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+        myModal.show();
+    });
+
+    // Handle Account Deletion
+    $('#confirmDeleteBtn').click(function() {
+        const btn = $(this);
+        btn.prop('disabled', true).text('Deleting...');
+        
+        $.post('api/index.php?endpoint=User&action=delete', function(response) {
+            const res = (typeof response === 'string') ? JSON.parse(response) : response;
+            if(res.ok) {
+                $('#da-message').html('<div class="alert alert-success">' + res.data.msg + '</div>');
+                setTimeout(() => {
+                    // Clear cookie and redirect to login
+                    document.cookie = "tryq8flix2=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = '?v=Login';
+                }, 2000);
+            } else {
+                $('#da-message').html('<div class="alert alert-danger">' + res.data.msg + '</div>');
+                btn.prop('disabled', false).text('Delete My Account');
+            }
+        }).fail(function() {
+            $('#da-message').html('<div class="alert alert-danger">Network error. Please try again.</div>');
+            btn.prop('disabled', false).text('Delete My Account');
+        });
     });
 
     // Toggle password visibility

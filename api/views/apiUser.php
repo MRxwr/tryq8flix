@@ -25,8 +25,17 @@ if( $_GET["action"] == "login" ){
         echo dataError(array("msg" => "token is required"));die();
     }
     if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        $userEmail = $user[0]["email"];
         $data = array("keepalive" => "", "status" => 1);
         if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+            // Send email notification
+            $emailData = array(
+                "to" => $userEmail,
+                "subject" => "Account Deleted",
+                "body" => "<p>Your account has been successfully deleted from TryQ8Flix.</p><p>We are sorry to see you go.</p>"
+            );
+            sendMail($emailData);
+            
             echo dataOutput(array("msg" => "User deleted successfully"));die();
         }else{
             echo dataError(array("msg" => "Something went wrong, please try again"));die();
