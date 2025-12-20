@@ -126,7 +126,7 @@ $(document).ready(function() {
             $('#profile-username').text(user.username);
             $('#profile-email').text(user.email);
             if(user.avatar) {
-                $('img.rounded-circle').attr('src', user.avatar);
+                $('#profile-avatar').attr('src', user.avatar);
             }
         } else {
             // If token is invalid or expired, redirect to login
