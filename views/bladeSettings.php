@@ -247,8 +247,18 @@ $(document).ready(function() {
     $('#editProfileBtn').click(function() {
         // Pre-fill email
         $('#editEmail').val($('#profile-email').text());
+        // Reset file input
+        $('#editAvatar').val('');
+        $('#fileName').text('No file chosen');
+        
         var myModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
         myModal.show();
+    });
+
+    // File Input Change Handler
+    $('#editAvatar').change(function() {
+        var fileName = $(this).val().split('\\').pop();
+        $('#fileName').text(fileName ? fileName : 'No file chosen');
     });
 
     // Handle Edit Profile Submission

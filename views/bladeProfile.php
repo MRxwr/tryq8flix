@@ -47,8 +47,14 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Profile Picture</label>
-                <input type="file" class="form-control bg-secondary text-white border-0" id="editAvatar" accept="image/*">
-                <div class="form-text text-muted">Allowed formats: JPG, PNG, GIF, WEBP</div>
+                <div class="d-flex align-items-center p-3 border border-secondary rounded bg-secondary bg-opacity-10">
+                    <label for="editAvatar" class="btn btn-netflix me-3">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>Choose Image
+                    </label>
+                    <span id="fileName" class="text-white-50 fst-italic text-truncate" style="max-width: 200px;">No file chosen</span>
+                </div>
+                <input type="file" class="d-none" id="editAvatar" accept="image/*">
+                <div class="form-text text-muted mt-2">Allowed formats: JPG, PNG, GIF, WEBP</div>
             </div>
             <button type="submit" class="btn btn-netflix w-100">Save Changes</button>
         </form>
@@ -142,8 +148,18 @@ $(document).ready(function() {
     $('#editProfileBtn').click(function() {
         // Pre-fill email
         $('#editEmail').val($('#profile-email').text());
+        // Reset file input
+        $('#editAvatar').val('');
+        $('#fileName').text('No file chosen');
+        
         var myModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
         myModal.show();
+    });
+
+    // File Input Change Handler
+    $('#editAvatar').change(function() {
+        var fileName = $(this).val().split('\\').pop();
+        $('#fileName').text(fileName ? fileName : 'No file chosen');
     });
 
     // Handle Edit Profile Submission
