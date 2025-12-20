@@ -1,12 +1,25 @@
 <?php include 'header.php'; ?>
 
 <div class="container" style="margin-top: 100px;">
-    <div class="input-group mb-5">
-        <select class="form-select bg-dark text-white border-secondary" id="serverSelect" style="max-width: 150px;">
-            <option value="1" selected>Wecima</option>
-        </select>
-        <input type="text" class="form-control bg-dark text-white border-secondary" id="searchInput" placeholder="Search for movies, TV shows...">
-        <button class="btn btn-netflix" id="searchBtn">Search</button>
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10 col-lg-8">
+            <div class="input-group input-group-lg shadow">
+                <span class="input-group-text bg-dark border-secondary text-white-50"><i class="fas fa-server"></i></span>
+                <select class="form-select bg-dark text-white border-secondary focus-ring-none" id="serverSelect" style="max-width: 140px; border-left: none;">
+                    <option value="1" selected>Wecima</option>
+                </select>
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="searchInput" placeholder="What do you want to watch?">
+                <button class="btn btn-netflix px-4" id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="initialMessage" class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-search fa-6x text-secondary opacity-25"></i>
+        </div>
+        <h3 class="text-white-50 fw-light">Find Movies & TV Shows</h3>
+        <p class="text-white-50 small">Enter a title above to start searching across our servers.</p>
     </div>
     
     <div id="searchResults" class="row"></div>
@@ -70,6 +83,7 @@ function performSearch(isLoadMore = false) {
         currentQuery = query;
         currentServerId = serverId;
         hasMore = true;
+        $('#initialMessage').hide();
         $('#searchResults').empty();
         $('#searchResults').html('<div class="text-center w-100 loading-spinner"><div class="spinner-border text-danger"></div></div>');
         $('#loadingIndicator').hide();
