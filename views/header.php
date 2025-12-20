@@ -23,11 +23,11 @@
         .section-title { font-size: 1.4rem; font-weight: bold; margin: 2rem 0 1rem 4%; color: #e5e5e5; }
         .movie-row { display: flex; overflow-x: auto; padding: 0 4% 2rem 4%; scrollbar-width: none; }
         .movie-row::-webkit-scrollbar { display: none; }
-        .movie-card { flex: 0 0 auto; width: 200px; margin-right: 10px; transition: transform 0.3s; cursor: pointer; position: relative; }
+        .movie-card { flex: 0 0 auto; width: 200px; height: 300px; margin-right: 10px; transition: transform 0.3s; cursor: pointer; position: relative; }
         .movie-card:hover { transform: scale(1.1); z-index: 10; }
-        .movie-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; }
-        .movie-card .title-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 300px; display: none; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; padding: 15px; text-align: center; font-weight: bold; font-size: 14px; line-height: 1.4; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        .movie-card.img-error .title-overlay { display: flex; }
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+        .movie-card .title-overlay { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); border-radius: 0 0 4px 4px; padding: 10px; text-align: center; font-weight: 600; font-size: 13px; line-height: 1.3; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .movie-card.img-error .title-overlay { display: flex; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; }
         .movie-card.img-error img { display: none; }
         
         .btn-netflix { background-color: #e50914; color: white; border: none; padding: 0.5rem 1.5rem; font-weight: bold; border-radius: 4px; }
