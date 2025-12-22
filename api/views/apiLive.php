@@ -126,7 +126,7 @@ function liveMatch($view) {
                             if ($foundIframe) {
                                 $finalUrl = $foundIframe->getAttribute('src');
                                 // Remove any link with 'wallplaster' in the domain
-                                if (strpos($finalUrl, 'wallplaster') === false) {
+                                //if (strpos($finalUrl, 'wallplaster') === false) {
                                     // Ensure the url starts with https
                                     $src = $finalUrl;
                                     if (strpos($src, 'https:') !== 0) {
@@ -139,7 +139,7 @@ function liveMatch($view) {
                                         'src' => $liveMatchesUrl
                                     ];
                                     $data['matches'][] = $jsonData;
-                                }
+                               // }
                             }
                         }
                     }
