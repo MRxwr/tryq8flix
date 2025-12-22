@@ -119,7 +119,7 @@ function tuktukListings($url) {
             $link = $episodeLink->href;
             $img = $episodeLink->find('img', 0);
             $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $epInfo = $episodeLink->find('.ep-info h2', 0);
+            $epInfo = $episodeLink->find('.ep-info h3', 0);
             $title = $epInfo ? trim($epInfo->plaintext) : '';
             $epnumDiv = $episodeLink->find('.epnum', 0);
             $episodeNumber = '';
