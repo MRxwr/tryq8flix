@@ -21,51 +21,43 @@ function searchMatches() {
         $data = [
             'matches' => []
         ];
-        $container = $dom->find('.col-md-8', 0);
-        if ($container) {
-            foreach ($container->find('.card.text-center') as $match) {
-                $onclick = $match->getAttribute('onclick');
-                $href = '';
-                if (preg_match("/goToMatch\((\d+),'([^']+)'\)/", $onclick, $matches_link)) {
-                    // Construct URL using the ID. Adjust path if needed based on actual site structure.
-                    $href = "{$websiteLive}/match/" . $matches_link[1]; 
-                }
-
-                $cols = $match->find('.col-md-4');
-                if (count($cols) >= 3) {
-                    $rightTeamName = trim($cols[0]->find('.matchTeam', 0)->plaintext ?? '');
-                    $rightTeamLogo = $cols[0]->find('.imgTeam', 0)->src ?? '';
-                    
-                    $leagueInfo = trim($cols[1]->find('.matchCompt', 0)->plaintext ?? '');
-                    $matchTimeRaw = trim($cols[1]->find('.matchTime', 0)->plaintext ?? '');
-                    
-                    $leftTeamName = trim($cols[2]->find('.matchTeam', 0)->plaintext ?? '');
-                    $leftTeamLogo = $cols[2]->find('.imgTeam', 0)->src ?? '';
-
-                    $result = '';
-                    $liveStatus = '';
-                    
-                    // Check if matchTimeRaw looks like a score (e.g., "1 - 1")
-                    if (preg_match('/\d+\s*-\s*\d+/', $matchTimeRaw)) {
-                        $result = $matchTimeRaw;
-                    } else {
-                        $liveStatus = $matchTimeRaw;
-                    }
-
-                    $jsonData = [
-                        'href' => $href,
-                        'rightTeamName' => $rightTeamName,
-                        'leftTeamName' => $leftTeamName,
-                        'rightTeamLogo' => $rightTeamLogo,
-                        'leftTeamLogo' => $leftTeamLogo,
-                        'matchTime' => $matchTimeRaw,
-                        'result' => $result,
-                        'liveStatus' => $liveStatus,
-                        'league' => $leagueInfo,
-                    ];
-                    $data['matches'][] = $jsonData;
-                }
-            }
+        foreach ($dom->find('.albaflex .match-container') as $match) {
+            $matchLink = $match->find('a', 0);
+			if( !empty($matchLink) ){
+				@$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
+				@$leftTeamName = $match->find('.left-team .team-name', 0)->plaintext;
+				@$rightTeamLogo = $match->find('.right-team .team-logo img', 0)->getAttribute('data-src');
+				@$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
+				@$matchTime = $match->find('.match-center .match-time', 0)->plaintext;
+				@$matchDate = $match->find('.match-center .date', 0)->plaintext;
+				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
+				@$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
+				$jsonData = [
+					'href' => isset($matchLink->href) ? trim($matchLink->href) : '',
+					'rightTeamName' => trim($rightTeamName),
+					'leftTeamName' => trim($leftTeamName),
+					'rightTeamLogo' => $rightTeamLogo,
+					'leftTeamLogo' => $leftTeamLogo,
+					'matchTime' => $matchTime,
+					'result' => $matchResult,
+					'liveStatus' => $matchDate,
+					'league' => trim($leagueInfo),
+				];
+				$data['matches'][] = $jsonData;
+			}else{
+				$jsonData = [
+					'href' => '',
+					'rightTeamName' => '',
+					'leftTeamName' => '',
+					'rightTeamLogo' => '',
+					'leftTeamLogo' => '',
+					'matchTime' => '',
+					'result' => '',
+					'liveStatus' => '',
+					'league' => '',
+				];
+				$data['matches'][] = $jsonData;
+			}
         }
         $matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
