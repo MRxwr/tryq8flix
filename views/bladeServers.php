@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div class="container" style="margin-top: 20px;">
+<div class="container" id="main-container" style="margin-top: 100px;">
     <h2 class="section-title">Select Server</h2>
     <div id="servers-list" class="row">
         <div class="text-center"><div class="spinner-border text-danger"></div></div>
@@ -61,6 +61,7 @@ $(document).ready(function() {
         $('#episode-hero').css('background-image', 'url(' + image + ')');
         $('#episode-title').text(title);
         $('#episode-hero').show();
+        $('#main-container').css('margin-top', '20px');
     }
     
     if(type === 'live') {
