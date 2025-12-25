@@ -4,6 +4,19 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1 class="hero-title" id="episode-title">Loading...</h1>
+        
+        <div class="d-flex justify-content-center gap-2 mb-3" id="episode-controls">
+             <button id="prev-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
+                <i class="fas fa-step-backward"></i> Previous
+             </button>
+             <button id="more-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;" onclick="goToMoreEpisodes()">
+                <i class="fas fa-list"></i> More Episodes
+             </button>
+             <button id="next-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
+                <i class="fas fa-step-forward"></i> Next
+             </button>
+        </div>
+
         <button class="btn btn-secondary-netflix" onclick="history.back()">
             <i class="fas fa-arrow-left"></i> Back
         </button>
@@ -28,7 +41,7 @@
 <script>
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    let href, server, type, link, image, title;
+    let href, server, type, link, image, title, more_link, series_title;
 
     if (urlParams.has('q')) {
         const decryptedQ = decryptLink(urlParams.get('q'));
@@ -39,6 +52,8 @@ $(document).ready(function() {
         link = decryptLink(params.get('link'));
         image = decryptLink(params.get('image'));
         title = decryptLink(params.get('title'));
+        more_link = decryptLink(params.get('more_link'));
+        series_title = decryptLink(params.get('series_title'));
     } else {
         href = decryptLink(urlParams.get('href'));
         server = urlParams.get('server');
@@ -46,6 +61,8 @@ $(document).ready(function() {
         link = decryptLink(urlParams.get('link'));
         image = decryptLink(urlParams.get('image'));
         title = decryptLink(urlParams.get('title'));
+        more_link = decryptLink(urlParams.get('more_link'));
+        series_title = decryptLink(urlParams.get('series_title'));
     }
     
     // Store metadata for playVideo
@@ -53,8 +70,71 @@ $(document).ready(function() {
         server: server,
         image: image,
         title: title,
-        href: href // This is the episode link usually
+        href: href, // This is the episode link usually
+        more_link: more_link,
+        series_title: series_title
     };
+
+    // Handle More Episodes Logic
+    if(more_link && server) {
+        $('#more-ep-btn').show();
+        
+        // Fetch episodes to determine Next/Prev
+        $.getJSON(`api/index.php?endpoint=More&action=list&server=${server}&href=${encodeURIComponent(more_link)}`, function(response) {
+            if(response.ok && response.data && response.data.episodes) {
+                const episodes = response.data.episodes;
+                const currentIndex = episodes.findIndex(ep => ep.link === href);
+                
+                if(currentIndex !== -1) {
+                    const currentNum = getEpisodeNumber(title);
+                    let nextEp = null;
+                    let prevEp = null;
+
+                    // Try to find strictly next/prev numbers
+                    if (currentNum !== null) {
+                        nextEp = episodes.find(ep => getEpisodeNumber(ep.title) === currentNum + 1);
+                        prevEp = episodes.find(ep => getEpisodeNumber(ep.title) === currentNum - 1);
+                    } 
+                    
+                    // Fallback to array index if number matching failed
+                    if (!nextEp && !prevEp) {
+                         // Check if list is reversed (N..1)
+                         // If adjacent element has smaller number, then list is reversed.
+                         const adjacentNext = episodes[currentIndex + 1];
+                         const adjacentPrev = episodes[currentIndex - 1];
+                         
+                         let isReversed = false;
+                         if (adjacentNext && currentNum !== null && getEpisodeNumber(adjacentNext.title) < currentNum) {
+                             isReversed = true;
+                         } else if (adjacentPrev && currentNum !== null && getEpisodeNumber(adjacentPrev.title) > currentNum) {
+                             isReversed = true;
+                         }
+
+                         if (isReversed) {
+                             // List is [Ep 10, Ep 9, ...]. Next (Ep 11) is at i-1. Prev (Ep 9) is at i+1.
+                             if(currentIndex - 1 >= 0) nextEp = episodes[currentIndex - 1];
+                             if(currentIndex + 1 < episodes.length) prevEp = episodes[currentIndex + 1];
+                         } else {
+                             // List is [Ep 1, Ep 2, ...]. Next (Ep 2) is at i+1. Prev (Ep 0) is at i-1.
+                             if(currentIndex + 1 < episodes.length) nextEp = episodes[currentIndex + 1];
+                             if(currentIndex - 1 >= 0) prevEp = episodes[currentIndex - 1];
+                         }
+                    }
+
+                    if(nextEp) {
+                        $('#next-ep-btn').show().click(function() {
+                            navigateToEpisode(nextEp);
+                        });
+                    }
+                    if(prevEp) {
+                        $('#prev-ep-btn').show().click(function() {
+                            navigateToEpisode(prevEp);
+                        });
+                    }
+                }
+            }
+        });
+    }
     
     // Display episode hero section
     if (image && title) {
@@ -177,6 +257,38 @@ function playVideo(url, btn) {
             title: meta.title,
             poster: meta.image,
             link: meta.href
+        });
+    }
+}
+
+function getEpisodeNumber(title) {
+    if(!title) return null;
+    const match = title.match(/\d+/);
+    return match ? parseInt(match[0]) : null;
+}
+
+function navigateToEpisode(ep) {
+    const meta = window.currentMetadata;
+    navigateToEncrypted({
+        v: 'Servers',
+        href: encryptLink(ep.link),
+        server: meta.server,
+        image: encryptLink(meta.image),
+        title: encryptLink(ep.title),
+        more_link: encryptLink(meta.more_link),
+        series_title: encryptLink(meta.series_title)
+    });
+}
+
+function goToMoreEpisodes() {
+    const meta = window.currentMetadata;
+    if(meta.more_link) {
+        navigateToEncrypted({
+            v: 'More',
+            href: encryptLink(meta.more_link),
+            server: meta.server,
+            image: encryptLink(meta.image),
+            title: encryptLink(meta.series_title || meta.title)
         });
     }
 }

@@ -122,6 +122,10 @@ $(document).ready(function() {
                             </div>
                         </div>
                         <div class="row">`;
+                    
+                    const encMoreLink = encryptLink(href);
+                    const encSeriesTitle = encryptLink(title || data.title || '');
+
                     data.episodes.forEach(ep => {
                         const encHref = encryptLink(ep.link);
                         const encImage = encryptLink(image || '');
@@ -129,7 +133,7 @@ $(document).ready(function() {
                         const encTitle = encryptLink(ep.title);
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}'})" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}', more_link: '${encMoreLink}', series_title: '${encSeriesTitle}'})" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h6 class="card-title">${ep.title}</h6>
                                     </div>
