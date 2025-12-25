@@ -5,18 +5,6 @@
     <div class="hero-content">
         <h1 class="hero-title" id="episode-title">Loading...</h1>
         
-        <div class="d-flex justify-content-center gap-2 mb-3" id="episode-controls">
-             <button id="prev-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
-                <i class="fas fa-step-backward"></i> Previous
-             </button>
-             <button id="more-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;" onclick="goToMoreEpisodes()">
-                <i class="fas fa-list"></i> More Episodes
-             </button>
-             <button id="next-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
-                <i class="fas fa-step-forward"></i> Next
-             </button>
-        </div>
-
         <button class="btn btn-secondary-netflix" onclick="history.back()">
             <i class="fas fa-arrow-left"></i> Back
         </button>
@@ -30,6 +18,17 @@
     </div>
     
     <div id="player-container" class="mt-5" style="display:none;">
+        <div class="d-flex justify-content-center gap-2 mb-3" id="episode-controls">
+             <button id="prev-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
+                <i class="fas fa-step-backward"></i> Previous
+             </button>
+             <button id="more-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;" onclick="goToMoreEpisodes()">
+                <i class="fas fa-list"></i> More Episodes
+             </button>
+             <button id="next-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
+                <i class="fas fa-step-forward"></i> Next
+             </button>
+        </div>
         <div class="ratio ratio-16x9">
             <iframe id="video-player" src="" allowfullscreen></iframe>
         </div>
