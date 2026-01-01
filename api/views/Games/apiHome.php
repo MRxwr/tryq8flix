@@ -1,2 +1,2 @@
 <?php
-echo outputData(array("msg" => "Hello World"));
+echo dataOutput(array("msg" => "Hello World"));
