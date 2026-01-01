@@ -22,7 +22,7 @@ if (strpos($endpoint, '/') !== false) {
     $parts = explode('/', $endpoint);
     $filename = array_pop($parts);
     $folder = implode('/', $parts);
-    echo $endpointFile = "views/{$folder}/api{$filename}.php";
+    $endpointFile = "views/{$folder}/api{$filename}.php";
 } else {
     $endpointFile = "views/api{$endpoint}.php";
 }
