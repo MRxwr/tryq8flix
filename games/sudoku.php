@@ -5,7 +5,7 @@
         margin: 0 auto;
         user-select: none;
         background: rgba(255, 255, 255, 0.03);
-        padding: 2rem;
+        padding: 1.5rem;
         border-radius: 16px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -20,10 +20,11 @@
         border-radius: 4px;
         overflow: hidden;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        margin-bottom: 1.5rem;
     }
 
     .sudoku-cell {
-        aspect-ratio: 1;
+        aspect-ratio: 1 / 1;
         background: #141414;
         display: flex;
         align-items: center;
@@ -33,6 +34,7 @@
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         color: #fff;
+        position: relative;
     }
 
     .sudoku-cell:hover {
@@ -83,10 +85,59 @@
 
     #sudoku-timer {
         font-family: 'Courier New', Courier, monospace;
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         font-weight: bold;
         color: #e50914;
         letter-spacing: 2px;
+    }
+
+    .number-pod {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .num-btn {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .num-btn:hover {
+        background: #e50914;
+        border-color: #e50914;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+    }
+
+    .num-btn.eraser-btn {
+        background: rgba(255, 255, 255, 0.1);
+        width: auto;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 576px) {
+        .sudoku-container {
+            padding: 1rem;
+        }
+
+        .num-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
     }
 </style>
 
@@ -151,11 +202,13 @@
 <audio id="victorySound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
 
 <script>
-    let sudokuBoard = [];
-    let solvedBoard = [];
-    let selectedCell = null;
-    let currentDifficulty = 'easy';
-    let timerInterval;
+    if (typeof sudokuBoard === 'undefined') {
+        var sudokuBoard = [];
+        var solvedBoard = [];
+        var selectedCell = null;
+        var currentDifficulty = 'easy';
+        var timerInterval;
+    }
 
     function initSudoku() {
         const html = `
@@ -179,7 +232,8 @@
     }
 
     function promptNewGame() {
-        const modal = new bootstrap.Modal(document.getElementById('difficultyModal'));
+        const modalEl = document.getElementById('difficultyModal');
+        const modal = new bootstrap.Modal(modalEl);
         modal.show();
     }
 
