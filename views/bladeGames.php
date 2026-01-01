@@ -210,6 +210,40 @@
     </div>
 </div>
 
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="fas fa-trophy fa-4x text-warning"></i>
+                </div>
+                <h2 class="mb-3">Victory!</h2>
+                <p class="text-white-50 mb-4">Amazing job! You've successfully solved the puzzle.</p>
+
+                <div class="stats-box d-flex justify-content-around">
+                    <div>
+                        <div class="text-white-50 small">Difficulty</div>
+                        <div id="modal-diff" class="fw-bold text-capitalize">Easy</div>
+                    </div>
+                    <div>
+                        <div class="text-white-50 small">Time</div>
+                        <div id="modal-time" class="fw-bold">00:00</div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-netflix" onclick="restartSudoku()">Play Again</button>
+                    <button class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sound Effect -->
+<audio id="victorySound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+
 <?php include 'footer.php'; ?>
 
 <script>
@@ -446,6 +480,60 @@
                 if (sudokuBoard[r][c] !== solvedBoard[r][c]) return false;
             }
         }
-        alert('Congratulations! You solved it!');
+
+        // Stop Timer
+        clearInterval(timerInterval);
+
+        // Play sound
+        const sound = document.getElementById('victorySound');
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log("Sound could not play"));
+        }
+
+        // Fire Confetti
+        const duration = 3 * 1000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: {
+                    x: 0
+                },
+                colors: ['#e50914', '#ffffff']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: {
+                    x: 1
+                },
+                colors: ['#e50914', '#ffffff']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+
+        // Show Modal
+        $('#modal-diff').text(currentDifficulty);
+        $('#modal-time').text($('#sudoku-timer').text());
+        const modalEl = document.getElementById('successModal');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    }
+
+    function restartSudoku() {
+        const modalEl = document.getElementById('successModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+        generateSudoku();
     }
 </script>
