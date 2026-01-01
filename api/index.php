@@ -29,6 +29,6 @@ if (strpos($endpoint, '/') !== false) {
 if (isset($_GET["endpoint"]) && file_exists($endpointFile)) {
     require_once($endpointFile);
 } else {
-    echo dataOutput(array("msg" => "404 endpoint Not Found"));
+    echo dataError(array("msg" => "404 endpoint Not Found: " . $endpointFile));
     die();
 }

@@ -218,8 +218,8 @@
     });
 
     function loadGames() {
-        $.getJSON('api/index.php?endpoint=games/Home&action=list', function(response) {
-            if (response.ok) {
+        $.getJSON('api/index.php?endpoint=Games/Home&action=list', function(response) {
+            if (response.ok && response.data && response.data.games) {
                 let html = '';
                 response.data.games.forEach(game => {
                     html += `
@@ -240,7 +240,8 @@
                 });
                 $('#games-grid').html(html);
             } else {
-                $('#games-grid').html('<div class="col-114 text-center">Failed to load games.</div>');
+                const errorMsg = (response.data && response.data.msg) ? response.data.msg : 'Failed to load games.';
+                $('#games-grid').html(`<div class="col-12 text-center py-5"><p class="text-white-50">${errorMsg}</p></div>`);
             }
         });
     }
