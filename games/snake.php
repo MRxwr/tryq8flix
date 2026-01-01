@@ -143,6 +143,47 @@
         // Modal for difficulty
         const modal = new bootstrap.Modal(document.getElementById('snakeDifficultyModal'));
         modal.show();
+
+        // Touch Controls
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        canvas.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            e.preventDefault();
+        }, {
+            passive: false
+        });
+
+        canvas.addEventListener('touchmove', function(e) {
+            if (!gameRunning) return;
+            e.preventDefault();
+
+            let touchEndX = e.touches[0].clientX;
+            let touchEndY = e.touches[0].clientY;
+
+            let dx = touchEndX - touchStartX;
+            let dy = touchEndY - touchStartY;
+
+            // Minimum swipe distance
+            if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    // Horizontal swipe
+                    if (dx > 0 && direction != 'LEFT') nextDirection = 'RIGHT';
+                    else if (dx < 0 && direction != 'RIGHT') nextDirection = 'LEFT';
+                } else {
+                    // Vertical swipe
+                    if (dy > 0 && direction != 'UP') nextDirection = 'DOWN';
+                    else if (dy < 0 && direction != 'DOWN') nextDirection = 'UP';
+                }
+                // Reset starts to prevent multiple direction changes in one swipe
+                touchStartX = touchEndX;
+                touchStartY = touchEndY;
+            }
+        }, {
+            passive: false
+        });
     }
 
     function setSnakeDifficulty(level) {
