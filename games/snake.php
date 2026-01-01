@@ -287,11 +287,13 @@
             score++;
             $('#snake-score').text(score);
 
-            // Play Eat Sound
+            // Play Eat Sound (Cloned for overlap)
             const eatSound = document.getElementById('snakeEatSound');
             if (eatSound) {
-                eatSound.currentTime = 0;
-                eatSound.play().catch(e => {});
+                const playClone = eatSound.cloneNode(true);
+                playClone.play().catch(e => {});
+                // Cleanup clone after playing
+                playClone.onended = () => playClone.remove();
             }
 
             food = {
