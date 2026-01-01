@@ -114,7 +114,7 @@
 </div>
 
 <!-- Sound Effects -->
-<audio id="snakeEatSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+<audio id="snakeEatSound" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3" preload="auto"></audio>
 <audio id="snakeCrashSound" src="https://assets.mixkit.co/active_storage/sfx/21/21-preview.mp3" preload="auto"></audio>
 
 <script>
@@ -195,8 +195,24 @@
         else if (level === 'medium') snakeSpeed = 100;
         else snakeSpeed = 60;
 
+        // Unlock audio for mobile
+        const s1 = document.getElementById('snakeEatSound');
+        const s2 = document.getElementById('snakeCrashSound');
+        if (s1) {
+            s1.play().then(() => {
+                s1.pause();
+                s1.currentTime = 0;
+            }).catch(e => {});
+        }
+        if (s2) {
+            s2.play().then(() => {
+                s2.pause();
+                s2.currentTime = 0;
+            }).catch(e => {});
+        }
+
         const modal = bootstrap.Modal.getInstance(document.getElementById('snakeDifficultyModal'));
-        modal.hide();
+        if (modal) modal.hide();
         startSnakeGame();
     }
 
