@@ -265,17 +265,23 @@
     let sudokuBoard = [];
     let solvedBoard = [];
     let selectedCell = null;
+    let currentDifficulty = 'easy';
 
     function initSudoku() {
         const html = `
         <div class="sudoku-container text-center">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="m-0">Sudoku</h3>
-                <div>
-                    <button class="btn btn-sm btn-outline-light me-2" onclick="generateSudoku('easy')">New Game</button>
-                    <span id="sudoku-timer">00:00</span>
-                </div>
+                <div id="sudoku-timer">00:00</div>
             </div>
+            
+            <div class="mb-4 d-flex justify-content-center gap-2">
+                <button class="btn btn-sm btn-outline-success diff-btn active" data-level="easy" onclick="setDifficulty('easy')">Easy</button>
+                <button class="btn btn-sm btn-outline-warning diff-btn" data-level="medium" onclick="setDifficulty('medium')">Medium</button>
+                <button class="btn btn-sm btn-outline-danger diff-btn" data-level="hard" onclick="setDifficulty('hard')">Hard</button>
+                <button class="btn btn-sm btn-netflix ms-2" onclick="generateSudoku()"><i class="fas fa-sync-alt"></i> New Game</button>
+            </div>
+
             <div class="sudoku-grid" id="sudoku-grid"></div>
             <div class="number-pod">
                 ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="num-btn" onclick="inputNumber(${n})">${n}</button>`).join('')}
@@ -285,13 +291,21 @@
     `;
         $('#game-container').html(html);
         startTimer();
-        generateSudoku('easy');
+        generateSudoku();
+    }
+
+    function setDifficulty(level) {
+        currentDifficulty = level;
+        $('.diff-btn').removeClass('active');
+        $(`.diff-btn[data-level="${level}"]`).addClass('active');
+        generateSudoku();
     }
 
     let timerInterval;
 
     function startTimer() {
         let seconds = 0;
+        $('#sudoku-timer').text('00:00');
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             seconds++;
@@ -301,9 +315,8 @@
         }, 1000);
     }
 
-    function generateSudoku(difficulty) {
-        // Basic Sudoku Generator (Simplified for demonstration)
-        // In a real app, you'd want a more robust algorithm
+    function generateSudoku() {
+        // Basic Sudoku Generator
         const base = [
             [5, 3, 4, 6, 7, 8, 9, 1, 2],
             [6, 7, 2, 1, 9, 5, 3, 4, 8],
@@ -316,12 +329,30 @@
             [3, 4, 5, 2, 8, 6, 1, 7, 9]
         ];
 
-        // Shuffle rows/cols within blocks to create variety
-        solvedBoard = JSON.parse(JSON.stringify(base));
+        // Shift the base board to create variety
+        function shuffleBoard(arr) {
+            let board = JSON.parse(JSON.stringify(arr));
+            // Shuffle blocks of 3 rows
+            for (let i = 0; i < 3; i++) {
+                let r1 = i * 3 + Math.floor(Math.random() * 3);
+                let r2 = i * 3 + Math.floor(Math.random() * 3);
+                [board[r1], board[r2]] = [board[r2], board[r1]];
+            }
+            return board;
+        }
+
+        solvedBoard = shuffleBoard(base);
         sudokuBoard = JSON.parse(JSON.stringify(solvedBoard));
 
-        // Randomly remove numbers based on difficulty
-        let removeCount = 40; // easy
+        // Difficulty Settings: Number of cells to remove
+        const difficultyMap = {
+            'easy': 30,
+            'medium': 45,
+            'hard': 55
+        };
+
+        let removeCount = difficultyMap[currentDifficulty] || 35;
+
         while (removeCount > 0) {
             let r = Math.floor(Math.random() * 9);
             let c = Math.floor(Math.random() * 9);
@@ -331,6 +362,7 @@
             }
         }
 
+        startTimer(); // Reset timer for new game
         renderBoard();
     }
 
