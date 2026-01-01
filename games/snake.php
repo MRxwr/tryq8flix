@@ -113,6 +113,10 @@
     </div>
 </div>
 
+<!-- Sound Effects -->
+<audio id="snakeEatSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+<audio id="snakeCrashSound" src="https://assets.mixkit.co/active_storage/sfx/21/21-preview.mp3" preload="auto"></audio>
+
 <script>
     let snake, food, direction, nextDirection, score, gameRunning, snakeTimerInterval, snakeGameLoop;
     let canvas, ctx;
@@ -266,6 +270,14 @@
         if (snakeX == food.x && snakeY == food.y) {
             score++;
             $('#snake-score').text(score);
+
+            // Play Eat Sound
+            const eatSound = document.getElementById('snakeEatSound');
+            if (eatSound) {
+                eatSound.currentTime = 0;
+                eatSound.play().catch(e => {});
+            }
+
             food = {
                 x: Math.floor(Math.random() * 19 + 1) * box,
                 y: Math.floor(Math.random() * 19 + 1) * box
@@ -299,6 +311,13 @@
         clearInterval(snakeGameLoop);
         clearInterval(snakeTimerInterval);
         document.removeEventListener('keydown', handleSnakeKey);
+
+        // Play Crash Sound
+        const crashSound = document.getElementById('snakeCrashSound');
+        if (crashSound) {
+            crashSound.currentTime = 0;
+            crashSound.play().catch(e => {});
+        }
 
         $('#final-snake-score').text(score);
         $('#final-snake-time').text($('#snake-time-display').text());
