@@ -210,6 +210,35 @@
     </div>
 </div>
 
+<!-- Difficulty Selection Modal -->
+<div class="modal fade" id="difficultyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title w-100 text-center mt-3">Select Difficulty</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <p class="text-white-50 mb-4">Choose your challenge level to start a new game.</p>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-outline-success py-3" onclick="setDifficultyAndStart('easy')">
+                        <i class="fas fa-leaf me-2"></i> Easy
+                        <div class="small opacity-50">Great for beginners</div>
+                    </button>
+                    <button class="btn btn-outline-warning py-3" onclick="setDifficultyAndStart('medium')">
+                        <i class="fas fa-mountain me-2"></i> Medium
+                        <div class="small opacity-50">A balanced challenge</div>
+                    </button>
+                    <button class="btn btn-outline-danger py-3" onclick="setDifficultyAndStart('hard')">
+                        <i class="fas fa-fire me-2"></i> Hard
+                        <div class="small opacity-50">For Sudoku masters</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -309,11 +338,8 @@
                 <div id="sudoku-timer">00:00</div>
             </div>
             
-            <div class="mb-4 d-flex justify-content-center gap-2">
-                <button class="btn btn-sm btn-outline-success diff-btn active" data-level="easy" onclick="setDifficulty('easy')">Easy</button>
-                <button class="btn btn-sm btn-outline-warning diff-btn" data-level="medium" onclick="setDifficulty('medium')">Medium</button>
-                <button class="btn btn-sm btn-outline-danger diff-btn" data-level="hard" onclick="setDifficulty('hard')">Hard</button>
-                <button class="btn btn-sm btn-netflix ms-2" onclick="generateSudoku()"><i class="fas fa-sync-alt"></i> New Game</button>
+            <div class="mb-4 d-flex justify-content-center">
+                <button class="btn btn-netflix px-4" onclick="promptNewGame()"><i class="fas fa-sync-alt me-2"></i> New Game</button>
             </div>
 
             <div class="sudoku-grid" id="sudoku-grid"></div>
@@ -328,10 +354,16 @@
         generateSudoku();
     }
 
-    function setDifficulty(level) {
+    function promptNewGame() {
+        const modal = new bootstrap.Modal(document.getElementById('difficultyModal'));
+        modal.show();
+    }
+
+    function setDifficultyAndStart(level) {
         currentDifficulty = level;
-        $('.diff-btn').removeClass('active');
-        $(`.diff-btn[data-level="${level}"]`).addClass('active');
+        const modalEl = document.getElementById('difficultyModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
         generateSudoku();
     }
 
@@ -534,6 +566,6 @@
         const modalEl = document.getElementById('successModal');
         const modal = bootstrap.Modal.getInstance(modalEl);
         if (modal) modal.hide();
-        generateSudoku();
+        promptNewGame();
     }
 </script>
