@@ -309,8 +309,8 @@
 
             if (obs.type === 'jump') {
                 // 3D Wooden Crate
-                // Side/Top faces
-                runnerCtx.fillStyle = '#5D2E0A'; // Side
+                // Left Side
+                runnerCtx.fillStyle = '#5D2E0A';
                 runnerCtx.beginPath();
                 runnerCtx.moveTo(pFront.x - fSize / 2, pFront.y);
                 runnerCtx.lineTo(pBack.x - bSize / 2, pBack.y);
@@ -318,7 +318,17 @@
                 runnerCtx.lineTo(pFront.x - fSize / 2, pFront.y - fH);
                 runnerCtx.fill();
 
-                runnerCtx.fillStyle = '#A0522D'; // Top
+                // Right Side
+                runnerCtx.fillStyle = '#4D2608';
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(pFront.x + fSize / 2, pFront.y);
+                runnerCtx.lineTo(pBack.x + bSize / 2, pBack.y);
+                runnerCtx.lineTo(pBack.x + bSize / 2, pBack.y - bH);
+                runnerCtx.lineTo(pFront.x + fSize / 2, pFront.y - fH);
+                runnerCtx.fill();
+
+                // Top Face
+                runnerCtx.fillStyle = '#A0522D';
                 runnerCtx.beginPath();
                 runnerCtx.moveTo(pFront.x - fSize / 2, pFront.y - fH);
                 runnerCtx.lineTo(pBack.x - bSize / 2, pBack.y - bH);
@@ -345,23 +355,34 @@
                 let fW = fSize * 1.33;
                 let bW = bSize * 1.33;
                 let legW = fSize * 0.1;
+                let bLegW = bSize * 0.1;
 
-                // Legs (simplified 3D)
-                runnerCtx.fillStyle = '#4D2608';
-                runnerCtx.fillRect(pFront.x - fW / 2, pFront.y - fH, legW, fH);
-                runnerCtx.fillRect(pFront.x + fW / 2 - legW, pFront.y - fH, legW, fH);
+                // Back Legs (drawn first)
+                runnerCtx.fillStyle = '#3D1F06';
+                runnerCtx.fillRect(pBack.x - bW / 2, pBack.y - bH, bLegW, bH);
+                runnerCtx.fillRect(pBack.x + bW / 2 - bLegW, pBack.y - bH, bLegW, bH);
 
-                // Table Top (3D Slab)
+                // Table Top slab (Side panels)
                 let thick = fSize * 0.15;
-                runnerCtx.fillStyle = '#5D2E0A'; // Side of slab
+                let bThick = bSize * 0.15;
+
+                runnerCtx.fillStyle = '#5D2E0A'; // Slab Sides
                 runnerCtx.beginPath();
                 runnerCtx.moveTo(pFront.x - fW / 2, pFront.y - fH);
                 runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH);
-                runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH + thick);
+                runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH + bThick);
                 runnerCtx.lineTo(pFront.x - fW / 2, pFront.y - fH + thick);
                 runnerCtx.fill();
 
-                runnerCtx.fillStyle = '#A0522D'; // Top of slab
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(pFront.x + fW / 2, pFront.y - fH);
+                runnerCtx.lineTo(pBack.x + bW / 2, pBack.y - bH);
+                runnerCtx.lineTo(pBack.x + bW / 2, pBack.y - bH + bThick);
+                runnerCtx.lineTo(pFront.x + fW / 2, pFront.y - fH + thick);
+                runnerCtx.fill();
+
+                // Slab Top
+                runnerCtx.fillStyle = '#A0522D';
                 runnerCtx.beginPath();
                 runnerCtx.moveTo(pFront.x - fW / 2, pFront.y - fH);
                 runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH);
@@ -369,8 +390,16 @@
                 runnerCtx.lineTo(pFront.x + fW / 2, pFront.y - fH);
                 runnerCtx.fill();
 
-                runnerCtx.fillStyle = '#8B4513'; // Front edge
+                // Front Legs
+                runnerCtx.fillStyle = '#4D2608';
+                runnerCtx.fillRect(pFront.x - fW / 2, pFront.y - fH, legW, fH);
+                runnerCtx.fillRect(pFront.x + fW / 2 - legW, pFront.y - fH, legW, fH);
+
+                // Front Edge of Top
+                runnerCtx.fillStyle = '#8B4513';
                 runnerCtx.fillRect(pFront.x - fW / 2, pFront.y - fH, fW, thick);
+                runnerCtx.strokeStyle = '#5D2E0A';
+                runnerCtx.strokeRect(pFront.x - fW / 2, pFront.y - fH, fW, thick);
             }
 
             // Collision Sensing (Player is around z=0.75)
