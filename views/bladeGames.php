@@ -137,6 +137,12 @@ if (is_dir($gamesPath)) {
         $('.jumper-overlay').hide(); // Hide any active jumper overlays
         $('.flap-overlay').hide(); // Hide any active flap overlays
         $('.drive-overlay').hide(); // Hide any active drive overlays
+        $('.bricks-overlay').hide();
+        $('.defender-overlay').hide();
+        $('.memory-overlay').hide();
+        $('.merge-overlay').hide();
+        $('.smasher-overlay').hide();
+        $('.code-overlay').hide();
         $('#games-home-view').fadeIn();
         $('#game-container').empty();
         // Stop any running game timers/intervals if they exist globally
