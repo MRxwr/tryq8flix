@@ -29,6 +29,13 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 "description" => "A high-speed endless runner. Dodge obstacles and survive the neon grid.",
                 "image" => "https://img.freepik.com/premium-vector/online-game-banner-neon-runner_23-2148530665.jpg",
                 "tag" => "Action"
+            ),
+            array(
+                "id" => "dino",
+                "title" => "Cyber Dino",
+                "description" => "Escape the digital extinction. Jump and duck through the neon desert.",
+                "image" => "https://img.freepik.com/premium-vector/t-rex-dinosaur-pixel-art-vector-illustration_611584-30.jpg",
+                "tag" => "Arcade"
             )
         );
         echo dataOutput(array("games" => $games));
