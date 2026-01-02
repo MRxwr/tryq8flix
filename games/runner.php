@@ -111,8 +111,8 @@
 
     const CANVAS_W = 400;
     const CANVAS_H = 600;
-    const HORIZON_Y = 250;
-    const PLANE_W = 800; // Conceptual width at bottom
+    const HORIZON_Y = 150; // Moved up for semi-top view
+    const PLANE_W = 1200; // Wider base for better ground visibility
 
     function initRunner() {
         const html = `
@@ -206,9 +206,11 @@
 
     function project(x, y, z) {
         // z: 0 to 1 (0 is far/horizon, 1 is camera)
-        const scale = z;
-        const pX = (CANVAS_W / 2) + (x * scale * PLANE_W / 2);
-        const pY = HORIZON_Y + (y * scale * (CANVAS_H - HORIZON_Y));
+        // Non-linear perspective for a semi-top-down "bird's eye" view
+        const perspective = Math.pow(z, 1.4);
+        const pX = (CANVAS_W / 2) + (x * perspective * PLANE_W / 2);
+        const pY = HORIZON_Y + (perspective * (CANVAS_H - HORIZON_Y));
+        const scale = 0.1 + (perspective * 0.9);
         return {
             x: pX,
             y: pY,
