@@ -369,21 +369,7 @@
 
         // Draw Player (Behind the obstacles if z > playerZ)
         let playerP = project(runnerCurrentX, runnerJumpY, 0.75); // Player at z=0.75
-        runnerCtx.save();
-        runnerCtx.translate(playerP.x, playerP.y);
-        runnerCtx.shadowBlur = 20;
-        runnerCtx.shadowColor = '#e50914';
-        runnerCtx.fillStyle = '#e50914';
-
-        let pW = playerP.scale * 40;
-        let pH = runnerIsSliding ? (playerP.scale * 20) : (playerP.scale * 60);
-        let pOffset = runnerIsSliding ? -pH : -pH;
-
-        runnerCtx.fillRect(-pW / 2, pOffset, pW, pH);
-        runnerCtx.strokeStyle = '#fff';
-        runnerCtx.lineWidth = 2;
-        runnerCtx.strokeRect(-pW / 2, pOffset, pW, pH);
-        runnerCtx.restore();
+        drawRunnerCharacter(playerP.x, playerP.y, playerP.scale);
 
         // Update Score
         runnerScore += runnerSpeed * 100;
@@ -391,6 +377,72 @@
         runnerSpeed += 0.00001;
 
         runnerLoop = requestAnimationFrame(drawRunnerLoop);
+    }
+
+    function drawRunnerCharacter(x, y, scale) {
+        runnerCtx.save();
+        runnerCtx.translate(x, y);
+
+        let s = scale * 1.5;
+        let anim = Math.sin(runnerFrame * 0.2);
+        let color = '#fff';
+
+        runnerCtx.strokeStyle = color;
+        runnerCtx.lineWidth = 4 * s;
+        runnerCtx.lineCap = 'round';
+
+        if (runnerIsSliding) {
+            // Sliding / Ducking Pose
+            runnerCtx.beginPath();
+            // Torso
+            runnerCtx.moveTo(0, -10 * s);
+            runnerCtx.lineTo(20 * s, -5 * s);
+            // Legs
+            runnerCtx.moveTo(20 * s, -5 * s);
+            runnerCtx.lineTo(40 * s, 0);
+            runnerCtx.moveTo(20 * s, -5 * s);
+            runnerCtx.lineTo(35 * s, -10 * s);
+            // Head
+            runnerCtx.stroke();
+            runnerCtx.beginPath();
+            runnerCtx.arc(5 * s, -15 * s, 6 * s, 0, Math.PI * 2);
+            runnerCtx.fillStyle = color;
+            runnerCtx.fill();
+        } else {
+            // Running Pose
+            let hipY = -30 * s;
+            let shoulderY = -60 * s;
+
+            // Head
+            runnerCtx.beginPath();
+            runnerCtx.arc(0, -75 * s, 7 * s, 0, Math.PI * 2);
+            runnerCtx.fillStyle = color;
+            runnerCtx.fill();
+
+            // Torso
+            runnerCtx.beginPath();
+            runnerCtx.moveTo(0, hipY);
+            runnerCtx.lineTo(0, shoulderY);
+
+            // Legs
+            let l1 = Math.sin(runnerFrame * 0.2) * 20 * s;
+            let l2 = Math.sin(runnerFrame * 0.2 + Math.PI) * 20 * s;
+
+            runnerCtx.moveTo(0, hipY);
+            runnerCtx.lineTo(l1, 0);
+            runnerCtx.moveTo(0, hipY);
+            runnerCtx.lineTo(l2, 0);
+
+            // Arms
+            runnerCtx.moveTo(0, shoulderY);
+            runnerCtx.lineTo(l2 * 0.8, shoulderY + 20 * s);
+            runnerCtx.moveTo(0, shoulderY);
+            runnerCtx.lineTo(l1 * 0.8, shoulderY + 20 * s);
+
+            runnerCtx.stroke();
+        }
+
+        runnerCtx.restore();
     }
 
     function runnerGameOver() {
