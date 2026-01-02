@@ -75,7 +75,7 @@
             <span class="text-danger">↑ JUMP</span> | <span class="text-info">↓ SLIDE</span><br>
             Use Arrows or Swipe to Move
         </p>
-        <button class="btn btn-netflix btn-lg px-5 shadow-lg" onclick="startRunnerGame()">INITIATE RUN</button>
+        <button class="btn btn-netflix btn-lg px-5 shadow-lg" onclick="startRunnerGame()">START MISSION</button>
     </div>
 </div>
 
@@ -111,8 +111,8 @@
 
     const CANVAS_W = 400;
     const CANVAS_H = 600;
-    const HORIZON_Y = 150; // Moved up for semi-top view
-    const PLANE_W = 400; // Match canvas width to keep road on-screen
+    const HORIZON_Y = 220; // Lower horizon for "behind the player" chase view
+    const PLANE_W = 600; // Conceptual width at bottom plane
 
     function initRunner() {
         const html = `
@@ -147,11 +147,11 @@
         // Touch Swipe
         let tsX, tsY;
         document.addEventListener('touchstart', e => {
+            if (!runnerActive) return;
             tsX = e.touches[0].clientX;
             tsY = e.touches[0].clientY;
-            if (runnerActive) e.preventDefault();
         }, {
-            passive: false
+            passive: true
         });
 
         document.addEventListener('touchend', e => {
@@ -173,7 +173,7 @@
 
     function triggerRunnerJump() {
         runnerIsJumping = true;
-        runnerJumpV = 12;
+        runnerJumpV = 10;
         const snd = document.getElementById('runnerJumpSound');
         if (snd) {
             snd.currentTime = 0;
@@ -204,13 +204,12 @@
         drawRunnerLoop();
     }
 
-    function project(x, y, z) {
-        // z: 0 to 1 (0 is far/horizon, 1 is camera)
-        // Non-linear perspective for a semi-top-down "bird's eye" view
-        const perspective = Math.pow(z, 1.4);
+    function project(x, alt, z) {
+        // z: 0 (horizon) to 1 (camera)
+        const perspective = Math.pow(z, 1.2);
         const pX = (CANVAS_W / 2) + (x * perspective * PLANE_W / 2);
-        const pY = HORIZON_Y + (perspective * (CANVAS_H - HORIZON_Y));
-        const scale = 0.1 + (perspective * 0.9);
+        const pY = HORIZON_Y + (perspective * (CANVAS_H - HORIZON_Y)) - (alt * perspective);
+        const scale = 0.05 + (perspective * 0.95);
         return {
             x: pX,
             y: pY,
@@ -221,47 +220,59 @@
     function drawRunnerLoop() {
         if (!runnerActive) return;
 
-        // Clear Background (Gradient)
-        let grad = runnerCtx.createLinearGradient(0, 0, 0, CANVAS_H);
-        grad.addColorStop(0, '#050010');
-        grad.addColorStop(0.4, '#100020');
-        grad.addColorStop(1, '#000000');
-        runnerCtx.fillStyle = grad;
-        runnerCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        // Draw Sky
+        let skyGrad = runnerCtx.createLinearGradient(0, 0, 0, HORIZON_Y);
+        skyGrad.addColorStop(0, '#000');
+        skyGrad.addColorStop(1, '#050015');
+        runnerCtx.fillStyle = skyGrad;
+        runnerCtx.fillRect(0, 0, CANVAS_W, HORIZON_Y);
 
-        // Draw Road (Perspective Lanes)
-        runnerCtx.strokeStyle = 'cyan';
+        // Draw Ground Surface
+        runnerCtx.fillStyle = '#050505';
+        runnerCtx.fillRect(0, HORIZON_Y, CANVAS_W, CANVAS_H - HORIZON_Y);
+
+        // Draw Road Base
+        runnerCtx.fillStyle = '#111';
+        let pL1 = project(-1.1, 0, 0);
+        let pR1 = project(1.1, 0, 0);
+        let pR2 = project(1.1, 0, 1.2);
+        let pL2 = project(-1.1, 0, 1.2);
+        runnerCtx.beginPath();
+        runnerCtx.moveTo(pL1.x, pL1.y);
+        runnerCtx.lineTo(pR1.x, pR1.y);
+        runnerCtx.lineTo(pR2.x, pR2.y);
+        runnerCtx.lineTo(pL2.x, pL2.y);
+        runnerCtx.fill();
+
+        // Draw Lane Borders
+        runnerCtx.strokeStyle = 'rgba(0, 255, 255, 0.4)';
         runnerCtx.lineWidth = 2;
-        runnerCtx.shadowBlur = 10;
-        runnerCtx.shadowColor = 'cyan';
-
-        const lanePositions = [-1.5, -0.5, 0.5, 1.5];
-        lanePositions.forEach(lx => {
-            let pFar = project(lx / 1.5, 0, 0);
-            let pNear = project(lx / 1.5, 0, 1);
+        const laneX = [-1.1, -0.36, 0.36, 1.1];
+        laneX.forEach(lx => {
+            let start = project(lx, 0, 0);
+            let end = project(lx, 0, 1.2);
             runnerCtx.beginPath();
-            runnerCtx.moveTo(pFar.x, pFar.y);
-            runnerCtx.lineTo(pNear.x, pNear.y);
+            runnerCtx.moveTo(start.x, start.y);
+            runnerCtx.lineTo(end.x, end.y);
             runnerCtx.stroke();
         });
 
-        // Moving Horizontal Lines
-        runnerCtx.shadowBlur = 0;
-        runnerCtx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
-        for (let i = 0; i < 15; i++) {
+        // Moving Street Lines (Horizontal)
+        runnerCtx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+        for (let i = 0; i < 12; i++) {
             let z = ((runnerFrame * runnerSpeed) % 0.1) + (i * 0.1);
-            if (z > 1) z -= 1;
-            let pL = project(-1, 0, z);
-            let pR = project(1, 0, z);
+            if (z > 1.2) z -= 1.2;
+            let start = project(-1.1, 0, z);
+            let end = project(1.1, 0, z);
             runnerCtx.beginPath();
-            runnerCtx.moveTo(pL.x, pL.y);
-            runnerCtx.lineTo(pR.x, pR.y);
+            runnerCtx.moveTo(start.x, start.y);
+            runnerCtx.lineTo(end.x, end.y);
             runnerCtx.stroke();
         }
 
         // Update Obstacles
         runnerFrame++;
-        if (runnerFrame % 50 === 0) {
+        if (runnerFrame % 60 === 0) {
             let lane = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
             let type = Math.random() > 0.5 ? 'jump' : 'slide';
             runnerObstacles.push({
@@ -271,50 +282,47 @@
             });
         }
 
-        // Draw Obstacles (Back to Front)
+        // Draw Obstacles (sort by Z for depth)
         runnerObstacles.sort((a, b) => a.z - b.z);
-
         for (let i = runnerObstacles.length - 1; i >= 0; i--) {
             let obs = runnerObstacles[i];
             obs.z += runnerSpeed;
 
-            let p = project(obs.lane * 0.66, 0, obs.z);
-            let size = p.scale * 80;
+            let p = project(obs.lane * 0.72, 0, obs.z);
+            let size = p.scale * 100;
 
             runnerCtx.save();
             runnerCtx.translate(p.x, p.y);
 
             if (obs.type === 'jump') {
-                // Ground Barrier
                 runnerCtx.fillStyle = '#ff00ff';
-                runnerCtx.shadowBlur = 15;
+                runnerCtx.shadowBlur = 10;
                 runnerCtx.shadowColor = '#ff00ff';
                 runnerCtx.fillRect(-size / 2, -size / 3, size, size / 3);
             } else {
-                // Floating Barrier
                 runnerCtx.fillStyle = '#00ffff';
-                runnerCtx.shadowBlur = 15;
+                runnerCtx.shadowBlur = 10;
                 runnerCtx.shadowColor = '#00ffff';
-                runnerCtx.fillRect(-size / 1.5, -size * 1.2, size * 1.33, size / 4);
+                runnerCtx.fillRect(-size / 1.5, -size * 1.5, size * 1.33, size / 4);
             }
             runnerCtx.restore();
 
-            // Collision (z is near 0.85 to 0.95)
-            if (obs.z > 0.8 && obs.z < 0.95 && obs.lane === runnerTargetLane) {
+            // Collision Sensing (Player is around z=0.75)
+            if (obs.z > 0.7 && obs.z < 0.85 && obs.lane === runnerTargetLane) {
                 if (obs.type === 'jump' && runnerJumpY < 40) runnerGameOver();
                 if (obs.type === 'slide' && !runnerIsSliding) runnerGameOver();
             }
 
-            if (obs.z > 1.2) runnerObstacles.splice(i, 1);
+            if (obs.z > 1.3) runnerObstacles.splice(i, 1);
         }
 
-        // Update Player
-        let targetX = runnerTargetLane * 0.66;
-        runnerCurrentX += (targetX - runnerCurrentX) * 0.15;
+        // Update Player Position
+        let targetX = runnerTargetLane * 0.72;
+        runnerCurrentX += (targetX - runnerCurrentX) * 0.12;
 
         if (runnerIsJumping) {
             runnerJumpY += runnerJumpV;
-            runnerJumpV -= 0.6;
+            runnerJumpV -= 0.5;
             if (runnerJumpY <= 0) {
                 runnerJumpY = 0;
                 runnerIsJumping = false;
@@ -326,23 +334,22 @@
             if (runnerSlideTimer <= 0) runnerIsSliding = false;
         }
 
-        // Project Player
-        let playerP = project(runnerCurrentX, 0, 0.9);
-        let pSize = 60;
-
+        // Draw Player (Behind the obstacles if z > playerZ)
+        let playerP = project(runnerCurrentX, runnerJumpY, 0.75); // Player at z=0.75
         runnerCtx.save();
-        runnerCtx.translate(playerP.x, playerP.y - runnerJumpY);
+        runnerCtx.translate(playerP.x, playerP.y);
         runnerCtx.shadowBlur = 20;
         runnerCtx.shadowColor = '#e50914';
         runnerCtx.fillStyle = '#e50914';
 
-        let py = runnerIsSliding ? -15 : -50;
-        let ph = runnerIsSliding ? 15 : 50;
+        let pW = playerP.scale * 40;
+        let pH = runnerIsSliding ? (playerP.scale * 20) : (playerP.scale * 60);
+        let pOffset = runnerIsSliding ? -pH : -pH;
 
-        runnerCtx.fillRect(-15, py, 30, ph);
+        runnerCtx.fillRect(-pW / 2, pOffset, pW, pH);
         runnerCtx.strokeStyle = '#fff';
         runnerCtx.lineWidth = 2;
-        runnerCtx.strokeRect(-15, py, 30, ph);
+        runnerCtx.strokeRect(-pW / 2, pOffset, pW, pH);
         runnerCtx.restore();
 
         // Update Score
