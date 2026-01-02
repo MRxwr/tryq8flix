@@ -161,7 +161,7 @@
                         <span id="score-Ties" class="score-value">0</span>
                     </div>
                     <div class="score-item">
-                        <span class="score-label">${tttMode === 'ai' ? 'CPU' : 'Player'} (O)</span>
+                        <span class="score-label" id="score-label-o">${tttMode === 'ai' ? 'CPU' : 'Player'} (O)</span>
                         <span id="score-O" class="score-value player-o">0</span>
                     </div>
                 </div>
@@ -195,6 +195,9 @@
             Ties: 0
         };
         updateTTTScores();
+        // Update labels
+        $('#score-label-o').text(mode === 'ai' ? 'CPU (O)' : 'Player (O)');
+
         const modal = bootstrap.Modal.getInstance(document.getElementById('tttModeModal'));
         if (modal) modal.hide();
         resetTTTBoard();
@@ -203,7 +206,7 @@
     function handleTTTClick(index) {
         if (!tttGameActive || tttBoard[index] !== '') return;
 
-        makeTTTMove(index, 'X');
+        makeTTTMove(index, currentPlayer);
 
         if (tttGameActive && tttMode === 'ai' && currentPlayer === 'O') {
             setTimeout(makeCPUMove, 500);
