@@ -59,7 +59,7 @@
 </style>
 
 <!-- Dino Overlays -->
-<div id="dino-start-overlay" class="dino-overlay">
+<div id="dino-start-overlay" class="dino-overlay" style="display: none;">
     <div class="text-center">
         <div class="mb-3" style="font-size: 4rem;">🦖</div>
         <h2 class="text-white mb-2">CYBER DINO</h2>
@@ -132,6 +132,7 @@
         dinoCtx = dinoCanvas.getContext('2d');
         $('#hi-score-val').text(String(dinoHighScore).padStart(5, '0'));
 
+        $('#dino-start-overlay').show();
         setupDinoControls();
     }
 
@@ -322,7 +323,7 @@
             dinoCtx.fillRect(20, -44, 24, 15); // Head
 
             // Legs
-            let foot = Math.sin(dinoFrame * 0.2) > 0 ? 5 : 0;
+            let foot = Math.sin(dino.frame * 0.2) > 0 ? 5 : 0;
             if (dino.isJumping) foot = 0;
             dinoCtx.fillRect(5, -5 + foot, 8, 5);
             dinoCtx.fillRect(17, -5 - foot, 8, 5);
