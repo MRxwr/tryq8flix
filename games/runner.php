@@ -11,6 +11,7 @@
         border: 2px solid #222;
         user-select: none;
         aspect-ratio: 2/3;
+        touch-action: none;
     }
 
     #runner-canvas {
@@ -151,11 +152,19 @@
             tsX = e.touches[0].clientX;
             tsY = e.touches[0].clientY;
         }, {
-            passive: true
+            passive: false
+        });
+
+        document.addEventListener('touchmove', e => {
+            if (!runnerActive) return;
+            e.preventDefault();
+        }, {
+            passive: false
         });
 
         document.addEventListener('touchend', e => {
             if (!runnerActive) return;
+            e.preventDefault();
             let teX = e.changedTouches[0].clientX;
             let teY = e.changedTouches[0].clientY;
             let dx = teX - tsX;
@@ -168,6 +177,8 @@
                 if (dy < -40 && !runnerIsJumping && !runnerIsSliding) triggerRunnerJump();
                 else if (dy > 40 && !runnerIsJumping) triggerRunnerSlide();
             }
+        }, {
+            passive: false
         });
     }
 
