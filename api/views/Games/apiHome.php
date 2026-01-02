@@ -43,6 +43,20 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 "description" => "Reach for the neon stars. A gravity-defying vertical adventure.",
                 "image" => "https://img.freepik.com/premium-vector/rocket-space-minimalist-pixel-art_611584-142.jpg",
                 "tag" => "Arcade"
+            ),
+            array(
+                "id" => "flap",
+                "title" => "Cyber Flap",
+                "description" => "Navigate the data pipes. A neon reimagining of a classic bird's flight.",
+                "image" => "https://img.freepik.com/premium-vector/pixel-art-yellow-bird-flying_611584-3.jpg",
+                "tag" => "Arcade"
+            ),
+            array(
+                "id" => "drive",
+                "title" => "Neon Highway",
+                "description" => "Drive through the digital congestion. Dodge dumpsters and broken code cars.",
+                "image" => "https://img.freepik.com/premium-vector/pixel-art-racing-car_611584-1.jpg",
+                "tag" => "Racing"
             )
         );
         echo dataOutput(array("games" => $games));
