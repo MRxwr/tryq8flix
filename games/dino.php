@@ -156,14 +156,49 @@
             if (e.code === 'ArrowDown') dino.isDucking = false;
         });
 
-        // Touch
+        // Touch Swipe Logic
+        let tsY;
         dinoCanvas.addEventListener('touchstart', e => {
             if (!dinoActive) return;
             e.preventDefault();
-            if (!dino.isJumping) {
-                dino.dy = -dino.jumpForce;
-                dino.isJumping = true;
-                playSound('dinoJumpSound');
+            tsY = e.touches[0].clientY;
+            dino.isDucking = false; // Reset ducking on new touch
+        }, {
+            passive: false
+        });
+
+        dinoCanvas.addEventListener('touchmove', e => {
+            if (!dinoActive) return;
+            e.preventDefault();
+        }, {
+            passive: false
+        });
+
+        dinoCanvas.addEventListener('touchend', e => {
+            if (!dinoActive) return;
+            e.preventDefault();
+            let teY = e.changedTouches[0].clientY;
+            let dy = teY - tsY;
+
+            if (dy < -30) { // Swipe Up
+                if (!dino.isJumping) {
+                    dino.dy = -dino.jumpForce;
+                    dino.isJumping = true;
+                    dino.isDucking = false;
+                    playSound('dinoJumpSound');
+                }
+            } else if (dy > 30) { // Swipe Down
+                dino.isDucking = true;
+                setTimeout(() => {
+                    dino.isDucking = false;
+                }, 500); // Auto-rise after 0.5s for touch
+            } else { // Simple Tap
+                if (!dino.isJumping) {
+                    dino.dy = -dino.jumpForce;
+                    dino.isJumping = true;
+                    dino.isDucking = false;
+                    playSound('dinoJumpSound');
+                }
             }
         }, {
             passive: false
