@@ -299,46 +299,79 @@
             let obs = runnerObstacles[i];
             obs.z += runnerSpeed;
 
-            let p = project(obs.lane * 0.72, 0, obs.z);
-            let size = p.scale * 100;
+            let pFront = project(obs.lane * 0.72, 0, obs.z);
+            let pBack = project(obs.lane * 0.72, 0, Math.max(0, obs.z - 0.08)); // Depth points
 
-            runnerCtx.save();
-            runnerCtx.translate(p.x, p.y);
+            let fSize = pFront.scale * 100;
+            let bSize = pBack.scale * 100;
+            let fH = fSize * (obs.type === 'jump' ? 0.6 : 1.5);
+            let bH = bSize * (obs.type === 'jump' ? 0.6 : 1.5);
 
             if (obs.type === 'jump') {
-                // Wooden Crate (Jump)
-                runnerCtx.fillStyle = '#8B4513'; // Saddle Brown
-                runnerCtx.shadowBlur = 5;
-                runnerCtx.shadowColor = 'rgba(0,0,0,0.5)';
-                runnerCtx.fillRect(-size / 2, -size / 1.8, size, size / 1.8);
-
-                // Crate Detail (Cross)
-                runnerCtx.strokeStyle = '#5D2E0A';
-                runnerCtx.lineWidth = Math.max(1, size / 15);
-                runnerCtx.strokeRect(-size / 2, -size / 1.8, size, size / 1.8);
+                // 3D Wooden Crate
+                // Side/Top faces
+                runnerCtx.fillStyle = '#5D2E0A'; // Side
                 runnerCtx.beginPath();
-                runnerCtx.moveTo(-size / 2, -size / 1.8);
-                runnerCtx.lineTo(size / 2, 0);
-                runnerCtx.moveTo(size / 2, -size / 1.8);
-                runnerCtx.lineTo(-size / 2, 0);
+                runnerCtx.moveTo(pFront.x - fSize / 2, pFront.y);
+                runnerCtx.lineTo(pBack.x - bSize / 2, pBack.y);
+                runnerCtx.lineTo(pBack.x - bSize / 2, pBack.y - bH);
+                runnerCtx.lineTo(pFront.x - fSize / 2, pFront.y - fH);
+                runnerCtx.fill();
+
+                runnerCtx.fillStyle = '#A0522D'; // Top
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(pFront.x - fSize / 2, pFront.y - fH);
+                runnerCtx.lineTo(pBack.x - bSize / 2, pBack.y - bH);
+                runnerCtx.lineTo(pBack.x + bSize / 2, pBack.y - bH);
+                runnerCtx.lineTo(pFront.x + fSize / 2, pFront.y - fH);
+                runnerCtx.fill();
+
+                // Front Face
+                runnerCtx.fillStyle = '#8B4513';
+                runnerCtx.fillRect(pFront.x - fSize / 2, pFront.y - fH, fSize, fH);
+                runnerCtx.strokeStyle = '#5D2E0A';
+                runnerCtx.lineWidth = Math.max(1, fSize / 15);
+                runnerCtx.strokeRect(pFront.x - fSize / 2, pFront.y - fH, fSize, fH);
+
+                // Front Detail (X)
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(pFront.x - fSize / 2, pFront.y - fH);
+                runnerCtx.lineTo(pFront.x + fSize / 2, pFront.y);
+                runnerCtx.moveTo(pFront.x + fSize / 2, pFront.y - fH);
+                runnerCtx.lineTo(pFront.x - fSize / 2, pFront.y);
                 runnerCtx.stroke();
             } else {
-                // Wooden Table (Slide)
-                runnerCtx.fillStyle = '#5D2E0A'; // Dark Brown for legs
-                let legW = size * 0.1;
-                runnerCtx.fillRect(-size / 1.5, -size * 1.5, legW, size * 1.5); // Left Leg
-                runnerCtx.fillRect(size / 1.5 - legW, -size * 1.5, legW, size * 1.5); // Right Leg
+                // 3D Wooden Table (Slide)
+                let fW = fSize * 1.33;
+                let bW = bSize * 1.33;
+                let legW = fSize * 0.1;
 
-                runnerCtx.fillStyle = '#8B4513'; // Saddle Brown for top
-                runnerCtx.fillRect(-size / 1.5, -size * 1.6, size * 1.33, size * 0.2); // Table Top
+                // Legs (simplified 3D)
+                runnerCtx.fillStyle = '#4D2608';
+                runnerCtx.fillRect(pFront.x - fW / 2, pFront.y - fH, legW, fH);
+                runnerCtx.fillRect(pFront.x + fW / 2 - legW, pFront.y - fH, legW, fH);
 
-                // Box on Table
-                runnerCtx.fillStyle = '#A0522D'; // Sienna
-                runnerCtx.fillRect(-size / 3, -size * 2.1, size / 1.5, size * 0.5);
-                runnerCtx.strokeStyle = '#5D2E0A';
-                runnerCtx.strokeRect(-size / 3, -size * 2.1, size / 1.5, size * 0.5);
+                // Table Top (3D Slab)
+                let thick = fSize * 0.15;
+                runnerCtx.fillStyle = '#5D2E0A'; // Side of slab
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(pFront.x - fW / 2, pFront.y - fH);
+                runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH);
+                runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH + thick);
+                runnerCtx.lineTo(pFront.x - fW / 2, pFront.y - fH + thick);
+                runnerCtx.fill();
+
+                runnerCtx.fillStyle = '#A0522D'; // Top of slab
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(pFront.x - fW / 2, pFront.y - fH);
+                runnerCtx.lineTo(pBack.x - bW / 2, pBack.y - bH);
+                runnerCtx.lineTo(pBack.x + bW / 2, pBack.y - bH);
+                runnerCtx.lineTo(pFront.x + fW / 2, pFront.y - fH);
+                runnerCtx.fill();
+
+                runnerCtx.fillStyle = '#8B4513'; // Front edge
+                runnerCtx.fillRect(pFront.x - fW / 2, pFront.y - fH, fW, thick);
             }
-            runnerCtx.restore();
 
             // Collision Sensing (Player is around z=0.75)
             if (obs.z > 0.7 && obs.z < 0.85 && obs.lane === runnerTargetLane) {
