@@ -112,7 +112,7 @@
     const CANVAS_W = 400;
     const CANVAS_H = 600;
     const HORIZON_Y = 150; // Moved up for semi-top view
-    const PLANE_W = 1200; // Wider base for better ground visibility
+    const PLANE_W = 400; // Match canvas width to keep road on-screen
 
     function initRunner() {
         const html = `
