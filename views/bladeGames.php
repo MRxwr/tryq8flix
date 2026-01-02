@@ -134,6 +134,7 @@ if (is_dir($gamesPath)) {
         $('#game-play-view').hide();
         $('.runner-overlay-modal').hide(); // Hide any active runner overlays
         $('.dino-overlay').hide(); // Hide any active dino overlays
+        $('.jumper-overlay').hide(); // Hide any active jumper overlays
         $('#games-home-view').fadeIn();
         $('#game-container').empty();
         // Stop any running game timers/intervals if they exist globally

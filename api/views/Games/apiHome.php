@@ -36,6 +36,13 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 "description" => "Escape the digital extinction. Jump and duck through the neon desert.",
                 "image" => "https://img.freepik.com/premium-vector/t-rex-dinosaur-pixel-art-vector-illustration_611584-30.jpg",
                 "tag" => "Arcade"
+            ),
+            array(
+                "id" => "jumper",
+                "title" => "Cyber Jumper",
+                "description" => "Reach for the neon stars. A gravity-defying vertical adventure.",
+                "image" => "https://img.freepik.com/premium-vector/rocket-space-minimalist-pixel-art_611584-142.jpg",
+                "tag" => "Arcade"
             )
         );
         echo dataOutput(array("games" => $games));
