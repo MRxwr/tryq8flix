@@ -1,32 +1,35 @@
 <!-- Cyber Dino CSS -->
 <style>
     .dino-container {
-        max-width: 600px;
+        max-width: 400px;
         margin: 0 auto;
-        background: #0a0a0a;
+        background: #000;
         border-radius: 20px;
         overflow: hidden;
         position: relative;
-        box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
-        border: 2px solid #1a1a1a;
+        box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        border: 2px solid #222;
         user-select: none;
         touch-action: none;
+        aspect-ratio: 2/3;
     }
 
     #dino-canvas {
         background: #050505;
         display: block;
         width: 100%;
-        height: auto;
+        height: 100%;
     }
 
     .dino-ui {
         position: absolute;
-        top: 15px;
-        right: 20px;
+        top: 20px;
+        width: 100%;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
         font-family: 'Courier New', Courier, monospace;
         color: #00ff41;
-        text-align: right;
         pointer-events: none;
         z-index: 5;
     }
@@ -39,7 +42,6 @@
     .dino-hi-score {
         font-size: 0.8rem;
         color: #008f11;
-        margin-right: 10px;
     }
 
     .dino-overlay {
@@ -60,24 +62,25 @@
 
 <!-- Dino Overlays -->
 <div id="dino-start-overlay" class="dino-overlay" style="display: none;">
-    <div class="text-center">
+    <div class="text-center p-4">
         <div class="mb-3" style="font-size: 4rem;">🦖</div>
         <h2 class="text-white mb-2">CYBER DINO</h2>
         <p class="text-white-50 small mb-4">
-            Avoid obstacles in the neon desert.<br>
+            Dodge digital obstacles in the neon void.<br>
             <span class="text-success">↑ JUMP</span> | <span class="text-info">↓ DUCK</span><br>
             Space / Arrows / Tap
         </p>
-        <button class="btn btn-netflix btn-lg px-5 shadow-lg" onclick="startDinoGame()">START RUN</button>
+        <button class="btn btn-netflix btn-lg px-5 shadow-lg" onclick="startDinoGame()">START MISSION</button>
     </div>
 </div>
 
 <div id="dino-gameover-overlay" class="dino-overlay" style="display:none;">
-    <h2 class="text-danger mb-2">EXTINCT</h2>
+    <h2 class="text-danger mb-2">SYSTEM FAILURE</h2>
+    <div class="small text-white-50 mb-1">SCORE ACHIEVED</div>
     <div id="dino-final-score" class="text-white h1 mb-4 fw-bold">00000</div>
     <div class="d-grid gap-2 w-75">
-        <button class="btn btn-netflix py-3" onclick="startDinoGame()">RE-REGENERATE</button>
-        <button class="btn btn-outline-light" onclick="dinoActive = false; showGamesHome();">EXIT SYSTEM</button>
+        <button class="btn btn-netflix py-3" onclick="startDinoGame()">RE-INITIALIZE</button>
+        <button class="btn btn-outline-light" onclick="dinoActive = false; showGamesHome();">QUIT TERMINAL</button>
     </div>
 </div>
 
@@ -92,26 +95,25 @@
     let dinoScore = 0;
     let dinoHighScore = localStorage.getItem('dinoHighScore') || 0;
 
-    // Game Constants
-    const D_WIDTH = 800;
-    const D_HEIGHT = 200;
-    const GROUND_Y = 170;
+    // Game Constants (Portrait)
+    const D_WIDTH = 400;
+    const D_HEIGHT = 600;
+    const GROUND_Y = 530;
     const GRAVITY = 0.6;
 
     // Game State
     let dinoTimer = 0;
-    let dinoSpeed = 7;
+    let dinoSpeed = 6;
     let obstacles = [];
-    let cloudFrame = 0;
     let clouds = [];
 
     const dino = {
-        x: 50,
+        x: 40,
         y: GROUND_Y,
-        w: 44,
-        h: 44,
+        w: 40,
+        h: 40,
         dy: 0,
-        jumpForce: 12,
+        jumpForce: 13,
         isJumping: false,
         isDucking: false,
         frame: 0
@@ -124,7 +126,7 @@
                     <span class="dino-hi-score">HI <span id="hi-score-val">00000</span></span>
                     <span id="score-val" class="dino-score">00000</span>
                 </div>
-                <canvas id="dino-canvas" width="800" height="200"></canvas>
+                <canvas id="dino-canvas" width="400" height="600"></canvas>
             </div>
         `;
         $('#game-container').html(html);
@@ -154,7 +156,7 @@
             if (e.code === 'ArrowDown') dino.isDucking = false;
         });
 
-        // Touch/Click
+        // Touch
         dinoCanvas.addEventListener('touchstart', e => {
             if (!dinoActive) return;
             e.preventDefault();
@@ -166,8 +168,6 @@
         }, {
             passive: false
         });
-
-        // Long press for ducking on touch? Let's use a simple tap-to-jump for now.
     }
 
     function playSound(id) {
@@ -183,15 +183,16 @@
         $('#dino-gameover-overlay').hide();
         dinoActive = true;
         dinoScore = 0;
-        dinoSpeed = 7;
+        dinoSpeed = 6;
         obstacles = [];
         clouds = [];
         dino.y = GROUND_Y;
         dino.dy = 0;
         dino.isJumping = false;
         dino.isDucking = false;
+        dinoTimer = 0;
 
-        requestAnimationFrame(updateDino);
+        updateDino();
     }
 
     function updateDino() {
@@ -199,24 +200,36 @@
 
         dinoCtx.clearRect(0, 0, D_WIDTH, D_HEIGHT);
 
-        // Ground
+        // Background Grid (Optional aesthetic)
+        dinoCtx.strokeStyle = 'rgba(0, 255, 65, 0.05)';
+        dinoCtx.lineWidth = 1;
+        for (let i = 0; i < D_HEIGHT; i += 50) {
+            dinoCtx.beginPath();
+            dinoCtx.moveTo(0, i);
+            dinoCtx.lineTo(D_WIDTH, i);
+            dinoCtx.stroke();
+        }
+
+        // Ground Line
         dinoCtx.strokeStyle = '#333';
+        dinoCtx.lineWidth = 2;
         dinoCtx.beginPath();
-        dinoCtx.moveTo(0, GROUND_Y + 2);
-        dinoCtx.lineTo(D_WIDTH, GROUND_Y + 2);
+        dinoCtx.moveTo(0, GROUND_Y);
+        dinoCtx.lineTo(D_WIDTH, GROUND_Y);
         dinoCtx.stroke();
 
-        // Clouds (Decorative)
-        if (Math.random() < 0.01) clouds.push({
+        // Clouds / Bits
+        if (Math.random() < 0.02) clouds.push({
             x: D_WIDTH,
-            y: Math.random() * 80 + 20,
-            v: Math.random() * 0.5 + 0.1
+            y: Math.random() * 300 + 50,
+            v: Math.random() * 1 + 0.5,
+            w: 20 + Math.random() * 40
         });
         clouds.forEach((c, i) => {
             c.x -= c.v;
-            dinoCtx.fillStyle = 'rgba(255,255,255,0.05)';
-            dinoCtx.fillRect(c.x, c.y, 40, 10);
-            if (c.x < -50) clouds.splice(i, 1);
+            dinoCtx.fillStyle = 'rgba(0, 255, 65, 0.1)';
+            dinoCtx.fillRect(c.x, c.y, c.w, 4);
+            if (c.x < -100) clouds.splice(i, 1);
         });
 
         // Dino Physics
@@ -230,25 +243,24 @@
             }
         }
 
-        // Animated Dino
         dino.frame++;
         drawCyberDino(dino.x, dino.y, dino.isDucking);
 
-        // Obstacles spawning
-        if (dinoTimer % 100 === 0) {
+        // Obstacles
+        if (dinoTimer % (Math.floor(60 + Math.random() * 40)) === 0 && dinoTimer > 30) {
             let type = Math.random() > 0.3 ? 'cactus' : 'bird';
             if (type === 'cactus') {
                 obstacles.push({
                     x: D_WIDTH,
                     y: GROUND_Y,
-                    w: 20 + Math.random() * 20,
-                    h: 30 + Math.random() * 20,
+                    w: 15 + Math.random() * 25,
+                    h: 30 + Math.random() * 30,
                     type: 'cactus'
                 });
             } else {
                 obstacles.push({
                     x: D_WIDTH,
-                    y: GROUND_Y - 50 - (Math.random() * 40),
+                    y: GROUND_Y - 45 - (Math.random() * 60),
                     w: 30,
                     h: 20,
                     type: 'bird'
@@ -257,12 +269,10 @@
         }
         dinoTimer++;
 
-        // Update & Draw Obstacles
         for (let i = obstacles.length - 1; i >= 0; i--) {
             const obs = obstacles[i];
             obs.x -= dinoSpeed;
 
-            // Draw Obstacle
             if (obs.type === 'cactus') {
                 dinoCtx.fillStyle = '#00ff41';
                 dinoCtx.shadowBlur = 10;
@@ -272,17 +282,16 @@
                 dinoCtx.fillStyle = '#00f6ff';
                 dinoCtx.shadowBlur = 10;
                 dinoCtx.shadowColor = '#00f6ff';
-                // Flapping bird
-                let flap = Math.sin(dinoTimer * 0.2) * 5;
-                dinoCtx.fillRect(obs.x, obs.y - flap, obs.w, obs.h);
+                let flap = Math.sin(dinoTimer * 0.2) * 8;
+                dinoCtx.fillRect(obs.x, obs.y - obs.h - flap, obs.w, obs.h);
             }
             dinoCtx.shadowBlur = 0;
 
             // Collision
-            let dx = dino.x;
-            let dy = dino.isDucking ? dino.y - 20 : dino.y - dino.h;
-            let dw = dino.w;
-            let dh = dino.isDucking ? 20 : dino.h;
+            let dw = dino.w - 10;
+            let dh = dino.isDucking ? 20 : dino.h - 5;
+            let dx = dino.x + 5;
+            let dy = dino.isDucking ? dino.y - 20 : dino.y - dino.h + 5;
 
             if (dx < obs.x + obs.w && dx + dw > obs.x && dy < obs.y && dy + dh > obs.y - obs.h) {
                 gameOverDino();
@@ -292,45 +301,39 @@
         }
 
         // Score update
-        dinoScore += 0.1;
+        dinoScore += 0.15;
         let s = Math.floor(dinoScore);
         $('#score-val').text(String(s).padStart(5, '0'));
-        if (s > 0 && s % 100 === 0 && dinoTimer % 1 === 0) {
-            // Milestone sound
-            if (dinoTimer % 50 === 0) playSound('dinoPointSound');
-        }
+        if (s > 0 && s % 100 === 0 && dinoTimer % 60 === 0) playSound('dinoPointSound');
 
-        dinoSpeed += 0.001;
+        dinoSpeed += 0.0015;
         requestAnimationFrame(updateDino);
     }
 
     function drawCyberDino(x, y, isDucking) {
         dinoCtx.save();
         dinoCtx.translate(x, y);
-
         dinoCtx.fillStyle = '#00ff41';
         dinoCtx.shadowBlur = 15;
         dinoCtx.shadowColor = '#00ff41';
 
         if (isDucking) {
-            // Ducking Dino
-            dinoCtx.fillRect(0, -25, 60, 25);
+            dinoCtx.fillRect(0, -25, 55, 25);
             dinoCtx.fillStyle = '#000';
-            dinoCtx.fillRect(45, -20, 5, 5); // Eye
+            dinoCtx.fillRect(40, -20, 4, 4); // Eye
         } else {
-            // Standing/Running Dino
-            dinoCtx.fillRect(0, -44, 30, 44); // Body
-            dinoCtx.fillRect(20, -44, 24, 15); // Head
-
+            // Body
+            dinoCtx.fillRect(0, -42, 28, 42);
+            // Head
+            dinoCtx.fillRect(18, -42, 22, 14);
             // Legs
-            let foot = Math.sin(dino.frame * 0.2) > 0 ? 5 : 0;
+            let foot = Math.sin(dino.frame * 0.25) > 0 ? 6 : 0;
             if (dino.isJumping) foot = 0;
-            dinoCtx.fillRect(5, -5 + foot, 8, 5);
-            dinoCtx.fillRect(17, -5 - foot, 8, 5);
-
+            dinoCtx.fillRect(4, foot === 6 ? -6 : -4, 8, 4);
+            dinoCtx.fillRect(16, foot === 6 ? -4 : -6, 8, 4);
             // Eye
             dinoCtx.fillStyle = '#000';
-            dinoCtx.fillRect(36, -40, 4, 4);
+            dinoCtx.fillRect(32, -38, 4, 4);
         }
         dinoCtx.restore();
     }
@@ -338,13 +341,11 @@
     function gameOverDino() {
         dinoActive = false;
         playSound('dinoHitSound');
-
         if (dinoScore > dinoHighScore) {
             dinoHighScore = Math.floor(dinoScore);
             localStorage.setItem('dinoHighScore', dinoHighScore);
             $('#hi-score-val').text(String(dinoHighScore).padStart(5, '0'));
         }
-
         $('#dino-final-score').text(String(Math.floor(dinoScore)).padStart(5, '0'));
         $('#dino-gameover-overlay').fadeIn();
     }
