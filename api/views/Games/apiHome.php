@@ -48,14 +48,14 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 "id" => "flap",
                 "title" => "Cyber Flap",
                 "description" => "Navigate the data pipes. A neon reimagining of a classic bird's flight.",
-                "image" => "https://img.freepik.com/premium-vector/pixel-art-yellow-bird-flying_611584-3.jpg",
+                "image" => "https://img.freepik.com/free-vector/pixel-art-yellow-bird-flying_611584-3.jpg",
                 "tag" => "Arcade"
             ),
             array(
                 "id" => "drive",
                 "title" => "Neon Highway",
                 "description" => "Drive through the digital congestion. Dodge dumpsters and broken code cars.",
-                "image" => "https://img.freepik.com/premium-vector/pixel-art-racing-car_611584-1.jpg",
+                "image" => "https://img.freepik.com/free-vector/pixel-art-racing-car-on-neon-background_611584-1.jpg",
                 "tag" => "Racing"
             )
         );

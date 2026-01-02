@@ -104,8 +104,8 @@
     // Game State
     let dinoTimer = 0;
     let dinoSpeed = 6;
-    let obstacles = [];
-    let clouds = [];
+    let dinoObstacles = [];
+    let dinoClouds = [];
 
     const dino = {
         x: 40,
@@ -219,8 +219,8 @@
         dinoActive = true;
         dinoScore = 0;
         dinoSpeed = 6;
-        obstacles = [];
-        clouds = [];
+        dinoObstacles = [];
+        dinoClouds = [];
         dino.y = GROUND_Y;
         dino.dy = 0;
         dino.isJumping = false;
@@ -254,17 +254,17 @@
         dinoCtx.stroke();
 
         // Clouds / Bits
-        if (Math.random() < 0.02) clouds.push({
+        if (Math.random() < 0.02) dinoClouds.push({
             x: D_WIDTH,
             y: Math.random() * 300 + 50,
             v: Math.random() * 1 + 0.5,
             w: 20 + Math.random() * 40
         });
-        clouds.forEach((c, i) => {
+        dinoClouds.forEach((c, i) => {
             c.x -= c.v;
             dinoCtx.fillStyle = 'rgba(0, 255, 65, 0.1)';
             dinoCtx.fillRect(c.x, c.y, c.w, 4);
-            if (c.x < -100) clouds.splice(i, 1);
+            if (c.x < -100) dinoClouds.splice(i, 1);
         });
 
         // Dino Physics
@@ -285,7 +285,7 @@
         if (dinoTimer % (Math.floor(60 + Math.random() * 40)) === 0 && dinoTimer > 30) {
             let type = Math.random() > 0.3 ? 'cactus' : 'bird';
             if (type === 'cactus') {
-                obstacles.push({
+                dinoObstacles.push({
                     x: D_WIDTH,
                     y: GROUND_Y,
                     w: 15 + Math.random() * 25,
@@ -293,7 +293,7 @@
                     type: 'cactus'
                 });
             } else {
-                obstacles.push({
+                dinoObstacles.push({
                     x: D_WIDTH,
                     y: GROUND_Y - 45 - (Math.random() * 60),
                     w: 30,
@@ -305,8 +305,8 @@
         dinoTimer++;
 
         // Update & Draw Obstacles
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            const obs = obstacles[i];
+        for (let i = dinoObstacles.length - 1; i >= 0; i--) {
+            const obs = dinoObstacles[i];
             obs.x -= dinoSpeed;
 
             dinoCtx.save();
@@ -359,7 +359,7 @@
                 gameOverDino();
             }
 
-            if (obs.x < -100) obstacles.splice(i, 1);
+            if (obs.x < -100) dinoObstacles.splice(i, 1);
         }
 
         // Score update

@@ -118,10 +118,10 @@
 <audio id="snakeCrashSound" src="https://assets.mixkit.co/active_storage/sfx/21/21-preview.mp3" preload="auto"></audio>
 
 <script>
-    let snake, food, direction, nextDirection, score, gameRunning, snakeTimerInterval, snakeGameLoop;
-    let canvas, ctx;
-    let box = 20;
-    let snakeSpeed = 100;
+    let snakeArr, snakeFood, snakeDirection, snakeNextDirection, snakeScoreVal, snakeGameActive, snakeTimerInterval, snakeGameLoop;
+    let snakeCanvas, snakeCtx;
+    let snakeBox = 20;
+    let snakeGameSpeed = 100;
 
     function initSnake() {
         const html = `
@@ -141,8 +141,8 @@
             </div>
         `;
         $('#game-container').html(html);
-        canvas = document.getElementById('snake-canvas');
-        ctx = canvas.getContext('2d');
+        snakeCanvas = document.getElementById('snake-canvas');
+        snakeCtx = snakeCanvas.getContext('2d');
 
         // Modal for difficulty
         const modal = new bootstrap.Modal(document.getElementById('snakeDifficultyModal'));
@@ -152,7 +152,7 @@
         let touchStartX = 0;
         let touchStartY = 0;
 
-        canvas.addEventListener('touchstart', function(e) {
+        snakeCanvas.addEventListener('touchstart', function(e) {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             e.preventDefault();
@@ -160,8 +160,8 @@
             passive: false
         });
 
-        canvas.addEventListener('touchmove', function(e) {
-            if (!gameRunning) return;
+        snakeCanvas.addEventListener('touchmove', function(e) {
+            if (!snakeGameActive) return;
             e.preventDefault();
 
             let touchEndX = e.touches[0].clientX;
@@ -174,12 +174,12 @@
             if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
                 if (Math.abs(dx) > Math.abs(dy)) {
                     // Horizontal swipe
-                    if (dx > 0 && direction != 'LEFT') nextDirection = 'RIGHT';
-                    else if (dx < 0 && direction != 'RIGHT') nextDirection = 'LEFT';
+                    if (dx > 0 && snakeDirection != 'LEFT') snakeNextDirection = 'RIGHT';
+                    else if (dx < 0 && snakeDirection != 'RIGHT') snakeNextDirection = 'LEFT';
                 } else {
                     // Vertical swipe
-                    if (dy > 0 && direction != 'UP') nextDirection = 'DOWN';
-                    else if (dy < 0 && direction != 'DOWN') nextDirection = 'UP';
+                    if (dy > 0 && snakeDirection != 'UP') snakeNextDirection = 'DOWN';
+                    else if (dy < 0 && snakeDirection != 'DOWN') snakeNextDirection = 'UP';
                 }
                 // Reset starts to prevent multiple direction changes in one swipe
                 touchStartX = touchEndX;
@@ -191,9 +191,9 @@
     }
 
     function setSnakeDifficulty(level) {
-        if (level === 'easy') snakeSpeed = 150;
-        else if (level === 'medium') snakeSpeed = 100;
-        else snakeSpeed = 60;
+        if (level === 'easy') snakeGameSpeed = 150;
+        else if (level === 'medium') snakeGameSpeed = 100;
+        else snakeGameSpeed = 60;
 
         // Unlock audio for mobile
         const s1 = document.getElementById('snakeEatSound');
@@ -213,79 +213,92 @@
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('snakeDifficultyModal'));
         if (modal) modal.hide();
-        startSnakeGame();
+        startSnakeGame(level);
     }
 
-    function startSnakeGame() {
-        snake = [{
-            x: 9 * box,
-            y: 10 * box
-        }];
-        food = {
-            x: Math.floor(Math.random() * 19 + 1) * box,
-            y: Math.floor(Math.random() * 19 + 1) * box
+    function startSnakeGame(difficulty) {
+        clearInterval(snakeTimerInterval);
+        clearInterval(snakeGameLoop);
+
+        const diffSettings = {
+            'easy': 150,
+            'medium': 100,
+            'hard': 70
         };
-        score = 0;
-        direction = 'RIGHT';
-        nextDirection = 'RIGHT';
-        gameRunning = true;
+        snakeGameSpeed = diffSettings[difficulty] || 100;
+
+        snakeArr = [{
+            x: 10 * snakeBox,
+            y: 10 * snakeBox
+        }];
+        snakeFood = spawnSnakeFood();
+        snakeDirection = "RIGHT";
+        snakeNextDirection = "RIGHT";
+        snakeScoreVal = 0;
+        snakeGameActive = true;
 
         $('#snake-score').text('0');
         startSnakeTimer();
 
-        if (snakeGameLoop) clearInterval(snakeGameLoop);
-        snakeGameLoop = setInterval(drawSnake, snakeSpeed);
+        snakeGameLoop = setInterval(drawSnake, snakeGameSpeed);
 
         document.addEventListener('keydown', handleSnakeKey);
     }
 
+    function spawnSnakeFood() {
+        return {
+            x: Math.floor(Math.random() * 19 + 1) * snakeBox,
+            y: Math.floor(Math.random() * 19 + 1) * snakeBox
+        };
+    }
+
     function handleSnakeKey(e) {
-        if (e.keyCode == 37 && direction != 'RIGHT') nextDirection = 'LEFT';
-        else if (e.keyCode == 38 && direction != 'DOWN') nextDirection = 'UP';
-        else if (e.keyCode == 39 && direction != 'LEFT') nextDirection = 'RIGHT';
-        else if (e.keyCode == 40 && direction != 'UP') nextDirection = 'DOWN';
+        if (e.keyCode == 37 && snakeDirection != 'RIGHT') snakeNextDirection = 'LEFT';
+        else if (e.keyCode == 38 && snakeDirection != 'DOWN') snakeNextDirection = 'UP';
+        else if (e.keyCode == 39 && snakeDirection != 'LEFT') snakeNextDirection = 'RIGHT';
+        else if (e.keyCode == 40 && snakeDirection != 'UP') snakeNextDirection = 'DOWN';
     }
 
     function handleSnakeControl(dir) {
-        if (dir == 'LEFT' && direction != 'RIGHT') nextDirection = 'LEFT';
-        else if (dir == 'UP' && direction != 'DOWN') nextDirection = 'UP';
-        else if (dir == 'RIGHT' && direction != 'LEFT') nextDirection = 'RIGHT';
-        else if (dir == 'DOWN' && direction != 'UP') nextDirection = 'DOWN';
+        if (dir == 'LEFT' && snakeDirection != 'RIGHT') snakeNextDirection = 'LEFT';
+        else if (dir == 'UP' && snakeDirection != 'DOWN') snakeNextDirection = 'UP';
+        else if (dir == 'RIGHT' && snakeDirection != 'LEFT') snakeNextDirection = 'RIGHT';
+        else if (dir == 'DOWN' && snakeDirection != 'UP') snakeNextDirection = 'DOWN';
     }
 
     function drawSnake() {
-        if (!gameRunning) return;
+        if (!snakeGameActive) return;
 
-        ctx.fillStyle = '#0a0a0a';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        snakeCtx.fillStyle = '#0a0a0a';
+        snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
 
-        for (let i = 0; i < snake.length; i++) {
-            ctx.fillStyle = (i == 0) ? "#e50914" : "#ffffff";
-            ctx.shadowBlur = (i == 0) ? 10 : 0;
-            ctx.shadowColor = "#e50914";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-            ctx.strokeStyle = "#0a0a0a";
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+        for (let i = 0; i < snakeArr.length; i++) {
+            snakeCtx.fillStyle = (i == 0) ? "#e50914" : "#ffffff";
+            snakeCtx.shadowBlur = (i == 0) ? 10 : 0;
+            snakeCtx.shadowColor = "#e50914";
+            snakeCtx.fillRect(snakeArr[i].x, snakeArr[i].y, snakeBox, snakeBox);
+            snakeCtx.strokeStyle = "#0a0a0a";
+            snakeCtx.strokeRect(snakeArr[i].x, snakeArr[i].y, snakeBox, snakeBox);
         }
 
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = "#00ff00";
-        ctx.fillStyle = "#00ff00";
-        ctx.fillRect(food.x, food.y, box, box);
-        ctx.shadowBlur = 0;
+        snakeCtx.shadowBlur = 15;
+        snakeCtx.shadowColor = "#00ff00";
+        snakeCtx.fillStyle = "#00ff00";
+        snakeCtx.fillRect(snakeFood.x, snakeFood.y, snakeBox, snakeBox);
+        snakeCtx.shadowBlur = 0;
 
-        direction = nextDirection;
-        let snakeX = snake[0].x;
-        let snakeY = snake[0].y;
+        snakeDirection = snakeNextDirection;
+        let snakeX = snakeArr[0].x;
+        let snakeY = snakeArr[0].y;
 
-        if (direction == "LEFT") snakeX -= box;
-        if (direction == "UP") snakeY -= box;
-        if (direction == "RIGHT") snakeX += box;
-        if (direction == "DOWN") snakeY += box;
+        if (snakeDirection == "LEFT") snakeX -= snakeBox;
+        if (snakeDirection == "UP") snakeY -= snakeBox;
+        if (snakeDirection == "RIGHT") snakeX += snakeBox;
+        if (snakeDirection == "DOWN") snakeY += snakeBox;
 
-        if (snakeX == food.x && snakeY == food.y) {
-            score++;
-            $('#snake-score').text(score);
+        if (snakeX == snakeFood.x && snakeY == snakeFood.y) {
+            snakeScoreVal++;
+            $('#snake-score').text(snakeScoreVal);
 
             // Play Eat Sound (Cloned for overlap)
             const eatSound = document.getElementById('snakeEatSound');
@@ -296,12 +309,9 @@
                 playClone.onended = () => playClone.remove();
             }
 
-            food = {
-                x: Math.floor(Math.random() * 19 + 1) * box,
-                y: Math.floor(Math.random() * 19 + 1) * box
-            };
+            snakeFood = spawnSnakeFood();
         } else {
-            snake.pop();
+            snakeArr.pop();
         }
 
         let newHead = {
@@ -309,15 +319,15 @@
             y: snakeY
         };
 
-        if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+        if (snakeX < 0 || snakeX >= snakeCanvas.width || snakeY < 0 || snakeY >= snakeCanvas.height || snakeCollision(newHead, snakeArr)) {
             gameOverSnake();
             return;
         }
 
-        snake.unshift(newHead);
+        snakeArr.unshift(newHead);
     }
 
-    function collision(head, array) {
+    function snakeCollision(head, array) {
         for (let i = 0; i < array.length; i++) {
             if (head.x == array[i].x && head.y == array[i].y) return true;
         }
@@ -325,7 +335,7 @@
     }
 
     function gameOverSnake() {
-        gameRunning = false;
+        snakeGameActive = false;
         clearInterval(snakeGameLoop);
         clearInterval(snakeTimerInterval);
         document.removeEventListener('keydown', handleSnakeKey);
@@ -337,7 +347,7 @@
             crashSound.play().catch(e => {});
         }
 
-        $('#final-snake-score').text(score);
+        $('#final-snake-score').text(snakeScoreVal);
         $('#final-snake-time').text($('#snake-time-display').text());
         const modal = new bootstrap.Modal(document.getElementById('snakeGameOverModal'));
         modal.show();

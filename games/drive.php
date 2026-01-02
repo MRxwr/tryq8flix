@@ -118,8 +118,8 @@
         targetX: LANE_WIDTH + LANE_WIDTH / 2,
         emotion: 'happy'
     };
-    let obstacles = [];
-    let driveFrame = 0;
+    let driveObstacles = [];
+    let driveFrameCount = 0;
 
     function initDrive() {
         const html = `
@@ -174,18 +174,18 @@
         driveActive = true;
         driveScore = 0;
         driveTime = 0;
-        driveFrame = 0;
+        driveFrameCount = 0;
         driveStartTime = Date.now();
         car.lane = 1;
         car.x = LANE_WIDTH + LANE_WIDTH / 2;
         car.targetX = car.x;
-        obstacles = [];
+        driveObstacles = [];
         updateDrive();
     }
 
     function updateDrive() {
         if (!driveActive) return;
-        driveFrame++;
+        driveFrameCount++;
         driveCtx.clearRect(0, 0, R_WIDTH, R_HEIGHT);
 
         // Timer
@@ -196,7 +196,7 @@
         // Draw Road Marks
         driveCtx.strokeStyle = 'rgba(255,255,255,0.1)';
         driveCtx.setLineDash([20, 20]);
-        driveCtx.lineDashOffset = -driveFrame * R_SPEED;
+        driveCtx.lineDashOffset = -driveFrameCount * R_SPEED;
         driveCtx.beginPath();
         driveCtx.moveTo(LANE_WIDTH, 0);
         driveCtx.lineTo(LANE_WIDTH, R_HEIGHT);
@@ -209,11 +209,11 @@
         car.x += (car.targetX - car.x) * 0.2;
 
         // Obstacles
-        if (driveFrame % (driveDiff === 'Turbo' ? 40 : 60) === 0) {
+        if (driveFrameCount % (driveDiff === 'Turbo' ? 40 : 60) === 0) {
             let l = Math.floor(Math.random() * 3);
             let types = ['trash', 'dumpster', 'broken_car'];
             let type = types[Math.floor(Math.random() * types.length)];
-            obstacles.push({
+            driveObstacles.push({
                 x: l * LANE_WIDTH + LANE_WIDTH / 2,
                 y: -100,
                 type,
@@ -222,8 +222,8 @@
             });
         }
 
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            let o = obstacles[i];
+        for (let i = driveObstacles.length - 1; i >= 0; i--) {
+            let o = driveObstacles[i];
             o.y += R_SPEED;
 
             drawObstacle(o);
@@ -233,7 +233,7 @@
                 gameOverDrive();
             }
 
-            if (o.y > R_HEIGHT + 100) obstacles.splice(i, 1);
+            if (o.y > R_HEIGHT + 100) driveObstacles.splice(i, 1);
         }
 
         // Scoring
@@ -241,7 +241,7 @@
         $('#drive-score-val').text(driveScore.toFixed(1) + 'km');
 
         // Emotion
-        let dangerFound = obstacles.some(o => Math.abs(o.y - car.y) < 150 && Math.abs(o.x - car.x) < 40);
+        let dangerFound = driveObstacles.some(o => Math.abs(o.y - car.y) < 150 && Math.abs(o.x - car.x) < 40);
         car.emotion = dangerFound ? 'shocked' : 'focused';
 
         drawCar(car.x, car.y, car.emotion);
@@ -255,7 +255,7 @@
             driveCtx.fillStyle = '#444';
             driveCtx.fillRect(-20, -40, 40, 80);
             driveCtx.fillStyle = '#ff0000'; // Hazards
-            if (driveFrame % 20 < 10) driveCtx.fillRect(-18, 30, 8, 5);
+            if (driveFrameCount % 20 < 10) driveCtx.fillRect(-18, 30, 8, 5);
         } else if (o.type === 'trash') {
             driveCtx.fillStyle = '#1a1a1a';
             driveCtx.fillRect(-15, -15, 30, 30);
