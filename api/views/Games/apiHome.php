@@ -15,6 +15,13 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 "description" => "Classic neon snake game with obstacles and power-ups.",
                 "image" => "https://img.freepik.com/premium-vector/snake-game-neon-style_23-2148606410.jpg",
                 "tag" => "Arcade"
+            ),
+            array(
+                "id" => "tictactoe",
+                "title" => "Tic Tac Toe",
+                "description" => "Play the ultimate X vs O battle against a friend or our AI.",
+                "image" => "https://img.freepik.com/premium-vector/tic-tac-toe-game-concept-illustration_23-2148606412.jpg",
+                "tag" => "Classic"
             )
         );
         echo dataOutput(array("games" => $games));
