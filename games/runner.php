@@ -384,62 +384,64 @@
         runnerCtx.translate(x, y);
 
         let s = scale * 1.5;
-        let anim = Math.sin(runnerFrame * 0.2);
         let color = '#fff';
+        let neonColor = '#e50914';
 
         runnerCtx.strokeStyle = color;
-        runnerCtx.lineWidth = 4 * s;
+        runnerCtx.lineWidth = 3 * s;
         runnerCtx.lineCap = 'round';
 
+        // Draw Skateboard
+        runnerCtx.fillStyle = '#222';
+        runnerCtx.fillRect(-20 * s, -5 * s, 40 * s, 4 * s);
+
+        // Wheels (Neon)
+        runnerCtx.fillStyle = neonColor;
+        runnerCtx.beginPath();
+        runnerCtx.arc(-15 * s, -1 * s, 2 * s, 0, Math.PI * 2);
+        runnerCtx.arc(15 * s, -1 * s, 2 * s, 0, Math.PI * 2);
+        runnerCtx.fill();
+
         if (runnerIsSliding) {
-            // Sliding / Ducking Pose
+            // Crouched Skater
             runnerCtx.beginPath();
-            // Torso
-            runnerCtx.moveTo(0, -10 * s);
-            runnerCtx.lineTo(20 * s, -5 * s);
-            // Legs
-            runnerCtx.moveTo(20 * s, -5 * s);
-            runnerCtx.lineTo(40 * s, 0);
-            runnerCtx.moveTo(20 * s, -5 * s);
-            runnerCtx.lineTo(35 * s, -10 * s);
-            // Head
+            // Torso (Low)
+            runnerCtx.moveTo(0, -5 * s);
+            runnerCtx.lineTo(-10 * s, -20 * s);
+            // Arms (Tucked)
+            runnerCtx.moveTo(-10 * s, -20 * s);
+            runnerCtx.lineTo(5 * s, -15 * s);
             runnerCtx.stroke();
+            // Head (Low)
             runnerCtx.beginPath();
-            runnerCtx.arc(5 * s, -15 * s, 6 * s, 0, Math.PI * 2);
+            runnerCtx.arc(-12 * s, -27 * s, 6 * s, 0, Math.PI * 2);
             runnerCtx.fillStyle = color;
             runnerCtx.fill();
         } else {
-            // Running Pose
-            let hipY = -30 * s;
-            let shoulderY = -60 * s;
+            // Standing Skater
+            let hipY = -5 * s;
+            let shoulderY = -45 * s;
+
+            // Standing Pose (one leg slightly bent)
+            runnerCtx.beginPath();
+            runnerCtx.moveTo(-5 * s, 0);
+            runnerCtx.lineTo(0, hipY); // Back leg
+            runnerCtx.moveTo(5 * s, 0);
+            runnerCtx.lineTo(0, hipY); // Front leg
+            runnerCtx.lineTo(-5 * s, shoulderY); // Torso (leaning)
+
+            // Arms (for balance)
+            runnerCtx.moveTo(-5 * s, shoulderY);
+            runnerCtx.lineTo(-20 * s, -35 * s);
+            runnerCtx.moveTo(-5 * s, shoulderY);
+            runnerCtx.lineTo(15 * s, -40 * s);
+            runnerCtx.stroke();
 
             // Head
             runnerCtx.beginPath();
-            runnerCtx.arc(0, -75 * s, 7 * s, 0, Math.PI * 2);
+            runnerCtx.arc(-8 * s, -55 * s, 7 * s, 0, Math.PI * 2);
             runnerCtx.fillStyle = color;
             runnerCtx.fill();
-
-            // Torso
-            runnerCtx.beginPath();
-            runnerCtx.moveTo(0, hipY);
-            runnerCtx.lineTo(0, shoulderY);
-
-            // Legs
-            let l1 = Math.sin(runnerFrame * 0.2) * 20 * s;
-            let l2 = Math.sin(runnerFrame * 0.2 + Math.PI) * 20 * s;
-
-            runnerCtx.moveTo(0, hipY);
-            runnerCtx.lineTo(l1, 0);
-            runnerCtx.moveTo(0, hipY);
-            runnerCtx.lineTo(l2, 0);
-
-            // Arms
-            runnerCtx.moveTo(0, shoulderY);
-            runnerCtx.lineTo(l2 * 0.8, shoulderY + 20 * s);
-            runnerCtx.moveTo(0, shoulderY);
-            runnerCtx.lineTo(l1 * 0.8, shoulderY + 20 * s);
-
-            runnerCtx.stroke();
         }
 
         runnerCtx.restore();
