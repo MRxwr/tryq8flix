@@ -269,28 +269,55 @@
         }
         dinoTimer++;
 
+        // Update & Draw Obstacles
         for (let i = obstacles.length - 1; i >= 0; i--) {
             const obs = obstacles[i];
             obs.x -= dinoSpeed;
 
+            dinoCtx.save();
             if (obs.type === 'cactus') {
+                // Neon Mountains
                 dinoCtx.fillStyle = '#00ff41';
-                dinoCtx.shadowBlur = 10;
+                dinoCtx.shadowBlur = 15;
                 dinoCtx.shadowColor = '#00ff41';
-                dinoCtx.fillRect(obs.x, obs.y - obs.h, obs.w, obs.h);
-            } else {
-                dinoCtx.fillStyle = '#00f6ff';
-                dinoCtx.shadowBlur = 10;
-                dinoCtx.shadowColor = '#00f6ff';
-                let flap = Math.sin(dinoTimer * 0.2) * 8;
-                dinoCtx.fillRect(obs.x, obs.y - obs.h - flap, obs.w, obs.h);
-            }
-            dinoCtx.shadowBlur = 0;
 
-            // Collision
-            let dw = dino.w - 10;
-            let dh = dino.isDucking ? 20 : dino.h - 5;
-            let dx = dino.x + 5;
+                dinoCtx.beginPath();
+                dinoCtx.moveTo(obs.x, obs.y);
+                dinoCtx.lineTo(obs.x + obs.w / 2, obs.y - obs.h);
+                dinoCtx.lineTo(obs.x + obs.w, obs.y);
+                dinoCtx.closePath();
+                dinoCtx.fill();
+
+                // Shading for 3D look
+                dinoCtx.fillStyle = 'rgba(0,0,0,0.3)';
+                dinoCtx.beginPath();
+                dinoCtx.moveTo(obs.x + obs.w / 2, obs.y - obs.h);
+                dinoCtx.lineTo(obs.x + obs.w, obs.y);
+                dinoCtx.lineTo(obs.x + obs.w / 2, obs.y);
+                dinoCtx.fill();
+            } else {
+                // Neon Clouds (Flying)
+                dinoCtx.fillStyle = '#00f6ff';
+                dinoCtx.shadowBlur = 15;
+                dinoCtx.shadowColor = '#00f6ff';
+
+                let ox = obs.x;
+                let oy = obs.y - obs.h;
+                let ow = obs.w;
+                let oh = obs.h;
+
+                dinoCtx.beginPath();
+                dinoCtx.arc(ox + ow * 0.25, oy + oh * 0.7, oh * 0.4, 0, Math.PI * 2);
+                dinoCtx.arc(ox + ow * 0.5, oy + oh * 0.4, oh * 0.6, 0, Math.PI * 2);
+                dinoCtx.arc(ox + ow * 0.75, oy + oh * 0.7, oh * 0.4, 0, Math.PI * 2);
+                dinoCtx.fill();
+            }
+            dinoCtx.restore();
+
+            // Collision Sensing
+            let dw = dino.w - 15;
+            let dh = dino.isDucking ? 20 : dino.h - 10;
+            let dx = dino.x + 10;
             let dy = dino.isDucking ? dino.y - 20 : dino.y - dino.h + 5;
 
             if (dx < obs.x + obs.w && dx + dw > obs.x && dy < obs.y && dy + dh > obs.y - obs.h) {
