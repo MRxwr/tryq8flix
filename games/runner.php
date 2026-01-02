@@ -63,7 +63,7 @@
 </style>
 
 <!-- Runner Modals/Overlay -->
-<div id="runner-start-overlay" class="runner-overlay-modal">
+<div id="runner-start-overlay" class="runner-overlay-modal" style="display: none;">
     <h2 class="text-white mb-4">CYBER RUNNER</h2>
     <p class="text-white-50 text-center px-4 mb-4 small">Dodge obstacles by swiping or using arrow keys.<br>Space to Jump, Down to Slide.</p>
     <button class="btn btn-netflix px-5" onclick="startRunnerGame()">START MISSION</button>
@@ -117,6 +117,7 @@
         runnerCanvas = document.getElementById('runner-canvas');
         runnerCtx = runnerCanvas.getContext('2d');
 
+        $('#runner-start-overlay').show();
         setupRunnerControls();
     }
 
