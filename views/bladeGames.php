@@ -132,6 +132,7 @@ if (is_dir($gamesPath)) {
 
     function showGamesHome() {
         $('#game-play-view').hide();
+        $('.runner-overlay-modal').hide(); // Hide any active runner overlays
         $('#games-home-view').fadeIn();
         $('#game-container').empty();
         // Stop any running game timers/intervals if they exist globally

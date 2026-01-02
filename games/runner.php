@@ -73,7 +73,7 @@
     <h2 class="text-danger mb-2">CRASHED</h2>
     <div class="text-white h1 mb-4" id="runner-final-score">0</div>
     <button class="btn btn-netflix px-5 mb-2" onclick="startRunnerGame()">RETRY</button>
-    <button class="btn btn-outline-light px-5" onclick="showGamesHome()">EXIT</button>
+    <button class="btn btn-outline-light px-5" onclick="runnerActive = false; showGamesHome();">EXIT</button>
 </div>
 
 <!-- Runner Sounds -->
