@@ -312,28 +312,65 @@
 
     function drawCyberDino(x, y, isDucking) {
         dinoCtx.save();
-        dinoCtx.translate(x, y);
+
+        let bounce = 0;
+        if (!dino.isJumping && !isDucking) {
+            bounce = Math.abs(Math.sin(dino.frame * 0.2)) * 3;
+        }
+
+        dinoCtx.translate(x, y - bounce);
         dinoCtx.fillStyle = '#00ff41';
         dinoCtx.shadowBlur = 15;
         dinoCtx.shadowColor = '#00ff41';
 
         if (isDucking) {
-            dinoCtx.fillRect(0, -25, 55, 25);
-            dinoCtx.fillStyle = '#000';
-            dinoCtx.fillRect(40, -20, 4, 4); // Eye
-        } else {
-            // Body
-            dinoCtx.fillRect(0, -42, 28, 42);
-            // Head
-            dinoCtx.fillRect(18, -42, 22, 14);
-            // Legs
-            let foot = Math.sin(dino.frame * 0.25) > 0 ? 6 : 0;
-            if (dino.isJumping) foot = 0;
-            dinoCtx.fillRect(4, foot === 6 ? -6 : -4, 8, 4);
-            dinoCtx.fillRect(16, foot === 6 ? -4 : -6, 8, 4);
+            // Ducking Dino Body
+            dinoCtx.fillRect(0, -25, 45, 25);
+            dinoCtx.fillRect(40, -25, 20, 15); // Stretched Head
+            // Tail
+            dinoCtx.beginPath();
+            dinoCtx.moveTo(0, -10);
+            dinoCtx.lineTo(-15, -5);
+            dinoCtx.lineTo(0, 0);
+            dinoCtx.fill();
             // Eye
             dinoCtx.fillStyle = '#000';
-            dinoCtx.fillRect(32, -38, 4, 4);
+            dinoCtx.fillRect(52, -22, 4, 4);
+        } else {
+            // Standing/Running Dino
+            // Tail
+            dinoCtx.beginPath();
+            dinoCtx.moveTo(0, -25);
+            dinoCtx.lineTo(-18, -35);
+            dinoCtx.lineTo(0, -10);
+            dinoCtx.fill();
+
+            // Body
+            dinoCtx.fillRect(0, -42, 26, 32);
+            // Neck
+            dinoCtx.fillRect(16, -52, 12, 15);
+            // Head
+            dinoCtx.fillRect(18, -55, 24, 15);
+            // Small Arm
+            dinoCtx.fillRect(24, -30, 8, 4);
+
+            // Legs Cycle
+            let leg1Offset = Math.sin(dino.frame * 0.3) * 8;
+            let leg2Offset = Math.sin(dino.frame * 0.3 + Math.PI) * 8;
+
+            if (dino.isJumping) {
+                leg1Offset = 0;
+                leg2Offset = 5;
+            }
+
+            // Leg 1
+            dinoCtx.fillRect(5, -12, 6, 8 + Math.max(0, -leg1Offset));
+            // Leg 2
+            dinoCtx.fillRect(16, -12, 6, 8 + Math.max(0, -leg2Offset));
+
+            // Eye
+            dinoCtx.fillStyle = '#111';
+            dinoCtx.fillRect(35, -52, 4, 4);
         }
         dinoCtx.restore();
     }
