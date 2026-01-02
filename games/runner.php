@@ -306,15 +306,37 @@
             runnerCtx.translate(p.x, p.y);
 
             if (obs.type === 'jump') {
-                runnerCtx.fillStyle = '#ff00ff';
-                runnerCtx.shadowBlur = 10;
-                runnerCtx.shadowColor = '#ff00ff';
-                runnerCtx.fillRect(-size / 2, -size / 3, size, size / 3);
+                // Wooden Crate (Jump)
+                runnerCtx.fillStyle = '#8B4513'; // Saddle Brown
+                runnerCtx.shadowBlur = 5;
+                runnerCtx.shadowColor = 'rgba(0,0,0,0.5)';
+                runnerCtx.fillRect(-size / 2, -size / 1.8, size, size / 1.8);
+
+                // Crate Detail (Cross)
+                runnerCtx.strokeStyle = '#5D2E0A';
+                runnerCtx.lineWidth = Math.max(1, size / 15);
+                runnerCtx.strokeRect(-size / 2, -size / 1.8, size, size / 1.8);
+                runnerCtx.beginPath();
+                runnerCtx.moveTo(-size / 2, -size / 1.8);
+                runnerCtx.lineTo(size / 2, 0);
+                runnerCtx.moveTo(size / 2, -size / 1.8);
+                runnerCtx.lineTo(-size / 2, 0);
+                runnerCtx.stroke();
             } else {
-                runnerCtx.fillStyle = '#00ffff';
-                runnerCtx.shadowBlur = 10;
-                runnerCtx.shadowColor = '#00ffff';
-                runnerCtx.fillRect(-size / 1.5, -size * 1.5, size * 1.33, size / 4);
+                // Wooden Table (Slide)
+                runnerCtx.fillStyle = '#5D2E0A'; // Dark Brown for legs
+                let legW = size * 0.1;
+                runnerCtx.fillRect(-size / 1.5, -size * 1.5, legW, size * 1.5); // Left Leg
+                runnerCtx.fillRect(size / 1.5 - legW, -size * 1.5, legW, size * 1.5); // Right Leg
+
+                runnerCtx.fillStyle = '#8B4513'; // Saddle Brown for top
+                runnerCtx.fillRect(-size / 1.5, -size * 1.6, size * 1.33, size * 0.2); // Table Top
+
+                // Box on Table
+                runnerCtx.fillStyle = '#A0522D'; // Sienna
+                runnerCtx.fillRect(-size / 3, -size * 2.1, size / 1.5, size * 0.5);
+                runnerCtx.strokeStyle = '#5D2E0A';
+                runnerCtx.strokeRect(-size / 3, -size * 2.1, size / 1.5, size * 0.5);
             }
             runnerCtx.restore();
 
