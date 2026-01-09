@@ -21,26 +21,41 @@ function searchMatches() {
         $data = [
             'matches' => []
         ];
-        foreach ($dom->find('.albaflex .match-container') as $match) {
+        // Find all matches with class AY_Match (live, comming-soon, not-started, finished)
+        foreach ($dom->find('.albaflex .AY_Match') as $match) {
             $matchLink = $match->find('a', 0);
 			if( !empty($matchLink) ){
-				@$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
-				@$leftTeamName = $match->find('.left-team .team-name', 0)->plaintext;
-				@$rightTeamLogo = $match->find('.right-team .team-logo img', 0)->getAttribute('data-src');
-				@$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
-				@$matchTime = $match->find('.match-center .match-time', 0)->plaintext;
-				@$matchDate = $match->find('.match-center .date', 0)->plaintext;
-				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
-				@$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
+				// Extract team 1 (TM1) info
+				@$leftTeamName = $match->find('.MT_Team.TM1 .TM_Name', 0)->plaintext;
+				@$leftTeamLogo = $match->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('src');
+				if(empty($leftTeamLogo)) {
+					@$leftTeamLogo = $match->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('data-src');
+				}
+				
+				// Extract team 2 (TM2) info
+				@$rightTeamName = $match->find('.MT_Team.TM2 .TM_Name', 0)->plaintext;
+				@$rightTeamLogo = $match->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('src');
+				if(empty($rightTeamLogo)) {
+					@$rightTeamLogo = $match->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('data-src');
+				}
+				
+				// Extract match data
+				@$matchTime = $match->find('.MT_Data .MT_Time', 0)->plaintext;
+				@$matchResult = $match->find('.MT_Data .MT_Result', 0)->plaintext;
+				@$matchStatus = $match->find('.MT_Data .MT_Stat', 0)->plaintext;
+				
+				// Extract league info (third li element)
+				@$leagueInfo = $match->find('.MT_Info ul li', 2)->plaintext;
+				
 				$jsonData = [
 					'href' => isset($matchLink->href) ? trim($matchLink->href) : '',
 					'rightTeamName' => trim($rightTeamName),
 					'leftTeamName' => trim($leftTeamName),
 					'rightTeamLogo' => $rightTeamLogo,
 					'leftTeamLogo' => $leftTeamLogo,
-					'matchTime' => $matchTime,
-					'result' => $matchResult,
-					'liveStatus' => $matchDate,
+					'matchTime' => trim($matchTime),
+					'result' => trim($matchResult),
+					'liveStatus' => trim($matchStatus),
 					'league' => trim($leagueInfo),
 				];
 				$data['matches'][] = $jsonData;
@@ -83,7 +98,11 @@ function liveMatch($view) {
                 $menuFound = false;
 
                 if ($playerDom) {
+                    // Try both .aplr-menu and .aplr-link class structures
                     $serverLinks = $playerDom->find('.aplr-menu li a');
+                    if (empty($serverLinks)) {
+                        $serverLinks = $playerDom->find('li a.aplr-link');
+                    }
                     if (!empty($serverLinks)) {
                         $menuFound = true;
                         foreach ($serverLinks as $link) {
