@@ -1,15 +1,52 @@
 <?php
-function liveCurl($url) {
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+function liveCurl($url, $referer = '') {
+    $url = trim($url); // Remove any trailing/leading spaces
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
+    curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
+    curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
+    
+    // Add more realistic headers
+    $headers = [
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language: en-US,en;q=0.9,ar;q=0.8',
+        'Accept-Encoding: gzip, deflate, br',
+        'Cache-Control: max-age=0',
+        'Connection: keep-alive',
+        'Upgrade-Insecure-Requests: 1',
+        'Sec-Fetch-Dest: document',
+        'Sec-Fetch-Mode: navigate',
+        'Sec-Fetch-Site: none',
+        'Sec-Fetch-User: ?1',
+    ];
+    
+    if (!empty($referer)) {
+        $headers[] = 'Referer: ' . $referer;
+    }
+    
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
     $response = curl_exec($ch);
+    $error = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+    
+    if ($error) {
+        echo "<pre>CURL ERROR for $url: " . htmlspecialchars($error) . "</pre>";
+    }
+    echo "<pre>HTTP Code for $url: $httpCode</pre>";
+    
     return $response;
 }
 
@@ -98,7 +135,7 @@ function liveMatch($view) {
 		// Find all iframes directly on the match page
 		foreach ($iframes as $iframe) {
 			if ($iframe) {
-				$baseSrc = $iframe->getAttribute('src');
+				$baseSrc = trim($iframe->getAttribute('src')); // Trim to remove spaces
 				echo "<pre>4. Iframe src: " . htmlspecialchars($baseSrc) . "</pre>";
 				
 				// Skip empty or invalid sources
@@ -113,8 +150,8 @@ function liveMatch($view) {
 				}
 				echo "<pre>6. Fetching player page: " . htmlspecialchars($baseSrc) . "</pre>";
 				
-				// Fetch the player page to find server links
-				$playerHtml = liveCurl($baseSrc);
+				// Fetch the player page to find server links - pass view URL as referer
+				$playerHtml = liveCurl($baseSrc, $view);
 				echo "<pre>7. Player page HTML length: " . strlen($playerHtml) . "</pre>";
 				
 				$playerDom = str_get_html($playerHtml);
@@ -152,7 +189,7 @@ function liveMatch($view) {
 							
 							// Fetch the individual server page
 							echo "<pre>12. Fetching server page: " . htmlspecialchars($serverUrl) . "</pre>";
-							$serverHtml = liveCurl($serverUrl);
+							$serverHtml = liveCurl($serverUrl, $baseSrc);
 							echo "<pre>13. Server page HTML length: " . strlen($serverHtml) . "</pre>";
 							
 							$serverDom = str_get_html($serverHtml);
