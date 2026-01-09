@@ -109,6 +109,13 @@
             position: relative;
         }
 
+        @media (max-width: 600px) {
+            .movie-card {
+                width: 100px;
+                height: 170px;
+            }
+        }
+
         .movie-card:hover {
             transform: scale(1.1);
             z-index: 10;
