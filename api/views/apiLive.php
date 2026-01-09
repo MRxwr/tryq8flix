@@ -64,89 +64,55 @@ function searchMatches() {
 }
 
 function liveMatch($view) {
-	$html = liveCurl("{$view}");
-    $dom = str_get_html($html);
-	if ($dom) {
-		$data = [
-			'matches' => []
+	$data = [
+		'matches' => []
+	];
+	
+	$queries = [];
+	
+	// Check if URL follows pattern to support multiple qualities
+	// Expected format from searchMatches: .../live/{id}/2
+	if (preg_match('/(.*\/live\/)(\d+)\/(\d+)/', $view, $matches)) {
+        $baseUrl = $matches[1];
+        $matchId = $matches[2];
+		
+		$queries[] = [
+			'url' => $baseUrl . $matchId . '/2',
+			'name' => 'High Quality (1080p)'
 		];
-		foreach ($dom->find('iframe') as $iframe) {
-			if ($iframe) {
-				$baseSrc = $iframe->getAttribute('src');
-                
-                // Try to find the server menu in the player page
-                $playerHtml = liveCurl($baseSrc);
-                $playerDom = str_get_html($playerHtml);
-                $menuFound = false;
-
-                if ($playerDom) {
-                    $serverLinks = $playerDom->find('.aplr-menu li a');
-                    if (!empty($serverLinks)) {
-                        $menuFound = true;
-                        foreach ($serverLinks as $link) {
-                            $serverUrl = $link->href;
-                            $serverName = trim($link->plaintext);
-                            
-                            // Fetch individual server page
-                            $serverHtml = liveCurl($serverUrl);
-                            $serverDom = str_get_html($serverHtml);
-                            if ($serverDom) {
-                                $videoIframe = $serverDom->find('iframe', 0);
-                                if ($videoIframe) {
-                                    $finalUrl = $videoIframe->getAttribute('src');
-                                    if (strpos($finalUrl, 'wallplaster') === false) {
-                                        $src = $finalUrl;
-                                        if (strpos($src, 'https:') !== 0) {
-                                            $src = 'https:' . $src;
-                                        }
-                                        $liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-                                        $jsonData = [
-                                            'live' => $src,
-                                            'name' => $serverName,
-                                            'src' => $liveMatchesUrl
-                                        ];
-                                        $data['matches'][] = $jsonData;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!$menuFound) {
-                    for ($serv = 1; $serv <= 6; $serv++) {
-                        $srcWithIndex = $baseSrc . "index.php?serv=" . $serv;
-                        $iframeHtml = liveCurl($srcWithIndex);
-                        $iframeDom = str_get_html($iframeHtml);
-                        if ($iframeDom) {
-                            $foundIframe = $iframeDom->find('iframe', 0);
-                            if ($foundIframe) {
-                                $finalUrl = $foundIframe->getAttribute('src');
-                                // Remove any link with 'wallplaster' in the domain
-                                //if (strpos($finalUrl, 'wallplaster') === false) {
-                                    // Ensure the url starts with https
-                                    $src = $finalUrl;
-                                    if (strpos($src, 'https:') !== 0) {
-                                        $src = 'https:' . $src;
-                                    }
-                                    $liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-                                    $jsonData = [
-                                        'live' => $src,
-                                        'serv' => $serv,
-                                        'src' => $liveMatchesUrl
-                                    ];
-                                    $data['matches'][] = $jsonData;
-                               // }
-                            }
-                        }
-                    }
-                }
+		$queries[] = [
+			'url' => $baseUrl . $matchId . '/1',
+			'name' => 'Normal Quality'
+		];
+	} else {
+		$queries[] = [
+			'url' => $view,
+			'name' => 'Server'
+		];
+	}
+	
+	foreach($queries as $q) {
+		$html = liveCurl($q['url']);
+		$dom = str_get_html($html);
+		if ($dom) {
+			$iframe = $dom->find('iframe', 0);
+			if($iframe){
+				$src = $iframe->getAttribute('src');
+				if( !empty($src) ){
+					if (strpos($src, '//') === 0) {
+						$src = 'https:' . $src;
+					}
+					$data['matches'][] = [
+						'live' => $src,
+						'name' => $q['name'],
+						'src' => $q['url']
+					];
+				}
 			}
 		}
-		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-	} else {
-		$matches = '';
 	}
+
+	$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
 }
 
