@@ -26,7 +26,7 @@ $website9 = "https://qesset.net/";
 $website10 = "https://ser.q-ask.video/";
 $website11 = "https://animeslayerweb.com/";
 $website12 = "https://k3zgx2.animepec.online/"; // anime4up
-$websiteLive = "https://www.mix-kora.com/";
+$websiteLive = "https://www.fullfootballmatch.com/";
 $websiteLive2 = "https://beinmatch1.live/";
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 ?>
