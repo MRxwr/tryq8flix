@@ -27,16 +27,16 @@ function searchMatches() {
 			if( !empty($matchLink) ){
 				// Extract team 1 (TM1) info
 				@$leftTeamName = $match->find('.MT_Team.TM1 .TM_Name', 0)->plaintext;
-				@$leftTeamLogo = $match->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('src');
+				@$leftTeamLogo = $match->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('data-src');
 				if(empty($leftTeamLogo)) {
-					@$leftTeamLogo = $match->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('data-src');
+					@$leftTeamLogo = $match->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('src');
 				}
 				
 				// Extract team 2 (TM2) info
 				@$rightTeamName = $match->find('.MT_Team.TM2 .TM_Name', 0)->plaintext;
-				@$rightTeamLogo = $match->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('src');
+				@$rightTeamLogo = $match->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('data-src');
 				if(empty($rightTeamLogo)) {
-					@$rightTeamLogo = $match->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('data-src');
+					@$rightTeamLogo = $match->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('src');
 				}
 				
 				// Extract match data
