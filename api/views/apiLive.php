@@ -88,33 +88,74 @@ function liveMatch($view) {
 		$data = [
 			'matches' => []
 		];
-		$serverCount = 0;
 		
 		// Find all iframes directly on the match page
 		foreach ($dom->find('iframe') as $iframe) {
 			if ($iframe) {
-				$src = $iframe->getAttribute('src');
+				$baseSrc = $iframe->getAttribute('src');
 				
 				// Skip empty or invalid sources
-				if (empty($src) || strpos($src, 'wallplaster') !== false) {
+				if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) {
 					continue;
 				}
 				
 				// Ensure the url starts with https
-				if (strpos($src, 'https:') !== 0 && strpos($src, 'http:') !== 0) {
-					$src = 'https:' . $src;
+				if (strpos($baseSrc, 'https:') !== 0 && strpos($baseSrc, 'http:') !== 0) {
+					$baseSrc = 'https:' . $baseSrc;
 				}
 				
-				$serverCount++;
-				$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+				// Fetch the player page to find server links
+				$playerHtml = liveCurl($baseSrc);
+				$playerDom = str_get_html($playerHtml);
 				
-				$jsonData = [
-					'live' => $src,
-					'name' => 'Server ' . $serverCount,
-					'serv' => $serverCount,
-					'src' => $liveMatchesUrl
-				];
-				$data['matches'][] = $jsonData;
+				if ($playerDom) {
+					// Find all server links with class aplr-link
+					$serverLinks = $playerDom->find('a.aplr-link');
+					
+					if (!empty($serverLinks)) {
+						foreach ($serverLinks as $link) {
+							$serverUrl = $link->href;
+							$serverName = trim($link->plaintext);
+							
+							// Skip if URL is empty
+							if (empty($serverUrl)) {
+								continue;
+							}
+							
+							// Fetch the individual server page
+							$serverHtml = liveCurl($serverUrl);
+							$serverDom = str_get_html($serverHtml);
+							
+							if ($serverDom) {
+								// Find the iframe on the server page
+								$videoIframe = $serverDom->find('iframe', 0);
+								
+								if ($videoIframe) {
+									$finalUrl = $videoIframe->getAttribute('src');
+									
+									// Skip wallplaster links
+									if (strpos($finalUrl, 'wallplaster') !== false) {
+										continue;
+									}
+									
+									// Ensure the url starts with https
+									if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
+										$finalUrl = 'https:' . $finalUrl;
+									}
+									
+									$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+									
+									$jsonData = [
+										'live' => $finalUrl,
+										'name' => $serverName,
+										'src' => $liveMatchesUrl
+									];
+									$data['matches'][] = $jsonData;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
