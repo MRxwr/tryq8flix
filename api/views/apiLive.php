@@ -102,9 +102,11 @@ function liveMatch($view) {
 					if (strpos($src, '//') === 0) {
 						$src = 'https:' . $src;
 					}
-					// Return raw matchplayer URL - app will wrap it
+					// Return full absolute URL with videoPlayer.php wrapper
+					$fullUrl = "https://tryq8flix.com/videoPlayer.php?link=" . urlencode($src);
+					
 					$data['matches'][] = [
-						'live' => $src,
+						'live' => $fullUrl,
 						'name' => $q['name'],
 						'src' => $q['url']
 					];
