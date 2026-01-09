@@ -1,7 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 function liveCurl($url, $referer = '') {
     $url = trim($url); // Remove any trailing/leading spaces
     $ch = curl_init();
@@ -13,8 +10,6 @@ function liveCurl($url, $referer = '') {
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    
-    // Don't set CURLOPT_ENCODING - let it pass through without decoding
     
     // Add more realistic headers
     $headers = [
@@ -32,14 +27,7 @@ function liveCurl($url, $referer = '') {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     
     $response = curl_exec($ch);
-    $error = curl_error($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    
-    if ($error) {
-        echo "<pre>CURL ERROR for $url: " . htmlspecialchars($error) . "</pre>";
-    }
-    echo "<pre>HTTP Code for $url: $httpCode</pre>";
     
     return $response;
 }
@@ -114,9 +102,6 @@ function searchMatches() {
 
 function liveMatch($view) {
 	$html = liveCurl("{$view}");
-	echo "<pre>1. Match Page URL: " . $view . "</pre>";
-	echo "<pre>2. Match Page HTML Length: " . strlen($html) . "</pre>";
-	
     $dom = str_get_html($html);
 	if ($dom) {
 		$data = [
@@ -124,17 +109,14 @@ function liveMatch($view) {
 		];
 		
 		$iframes = $dom->find('iframe');
-		echo "<pre>3. Found " . count($iframes) . " iframes on match page</pre>";
 		
 		// Find all iframes directly on the match page
 		foreach ($iframes as $iframe) {
 			if ($iframe) {
 				$baseSrc = trim($iframe->getAttribute('src')); // Trim to remove spaces
-				echo "<pre>4. Iframe src: " . htmlspecialchars($baseSrc) . "</pre>";
 				
 				// Skip empty or invalid sources
 				if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) {
-					echo "<pre>5. Skipping this iframe (empty or wallplaster)</pre>";
 					continue;
 				}
 				
@@ -142,11 +124,9 @@ function liveMatch($view) {
 				if (strpos($baseSrc, 'https:') !== 0 && strpos($baseSrc, 'http:') !== 0) {
 					$baseSrc = 'https:' . $baseSrc;
 				}
-				echo "<pre>6. Fetching player page: " . htmlspecialchars($baseSrc) . "</pre>";
 				
 				// Fetch the player page to find server links - pass view URL as referer
 				$playerHtml = liveCurl($baseSrc, $view);
-				echo "<pre>7. Player page HTML length: " . strlen($playerHtml) . "</pre>";
 				
 				$playerDom = str_get_html($playerHtml);
 				
@@ -154,18 +134,14 @@ function liveMatch($view) {
 					// Find all server links with class aplr-link
 					$serverLinks = $playerDom->find('a.aplr-link');
 					echo "<pre>8. Found " . count($serverLinks) . " server links with class 'aplr-link'</pre>";
-					echo "<pre>8. Found " . count($serverLinks) . " server links with class 'aplr-link'</pre>";
 					
 					if (!empty($serverLinks)) {
 						foreach ($serverLinks as $link) {
 							$serverUrl = $link->getAttribute('href');
 							$serverName = trim($link->plaintext);
 							
-							echo "<pre>9. Server Link - Name: " . htmlspecialchars($serverName) . ", Href: " . htmlspecialchars($serverUrl) . "</pre>";
-							
-							// Skip if URL is empty
-							if (empty($serverUrl)) {
-								echo "<pre>10. Skipping - empty URL</pre>";
+							// Skip if URL is empty or javascript
+							if (empty($serverUrl) || strpos($serverUrl, 'javascript:') === 0) {
 								continue;
 							}
 							
@@ -178,13 +154,10 @@ function liveMatch($view) {
 								} else {
 									$serverUrl = rtrim($baseSrc, '/') . '/' . $serverUrl;
 								}
-								echo "<pre>11. Converted to absolute URL: " . htmlspecialchars($serverUrl) . "</pre>";
 							}
 							
 							// Fetch the individual server page
-							echo "<pre>12. Fetching server page: " . htmlspecialchars($serverUrl) . "</pre>";
 							$serverHtml = liveCurl($serverUrl, $baseSrc);
-							echo "<pre>13. Server page HTML length: " . strlen($serverHtml) . "</pre>";
 							
 							$serverDom = str_get_html($serverHtml);
 							
@@ -194,11 +167,9 @@ function liveMatch($view) {
 								
 								if ($videoIframe) {
 									$finalUrl = $videoIframe->getAttribute('src');
-									echo "<pre>14. Found video iframe src: " . htmlspecialchars($finalUrl) . "</pre>";
 									
 									// Skip wallplaster links or empty
 									if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
-										echo "<pre>15. Skipping - empty or wallplaster</pre>";
 										continue;
 									}
 									
@@ -206,8 +177,6 @@ function liveMatch($view) {
 									if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
 										$finalUrl = 'https:' . $finalUrl;
 									}
-									
-									echo "<pre>16. Final URL added: " . htmlspecialchars($finalUrl) . "</pre>";
 									
 									$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
 									
@@ -217,42 +186,22 @@ function liveMatch($view) {
 										'src' => $liveMatchesUrl
 									];
 									$data['matches'][] = $jsonData;
-								} else {
-									echo "<pre>17. No iframe found on server page</pre>";
 								}
-							} else {
-								echo "<pre>18. Failed to parse server page DOM</pre>";
 							}
 						}
-					} else {
-						echo "<pre>19. No server links found (empty array)</pre>";
 					}
-				} else {
-					echo "<pre>20. Failed to parse player page DOM</pre>";
 				}
 			}
 		}
-		echo "<pre>21. Total servers added to data array: " . count($data['matches']) . "</pre>";
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
-		echo "<pre>22. Failed to parse match page DOM</pre>";
 		$matches = '';
 	}
 	return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
 }
 
 if( isset($_GET['action']) && $_GET['action'] == 'match' ){
-    echo "<pre>DEBUG MODE - Fetching match: " . htmlspecialchars($_GET['match']) . "</pre>";
-    echo "<hr>";
     $matches = liveMatch($_GET['match']);
-    echo "<hr>";
-    echo "<pre>FINAL RESULT:</pre>";
-    echo "<pre>" . print_r($matches, true) . "</pre>";
-    echo "<hr>";
-    /*
-    $data[] = array("src" => $_GET['match']);
-    $matches = $data;
-    */
     echo dataOutput($matches);
 }elseif( isset($_GET['action']) && $_GET['action'] == 'live' ){
     $matches = searchMatches();
