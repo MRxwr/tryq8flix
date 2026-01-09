@@ -21,37 +21,40 @@ function searchMatches() {
         $data = [
             'matches' => []
         ];
-        foreach ($dom->find('div[id=cardMatch]') as $match) {
-			
-			$onclick = $match->getAttribute('onclick');
-			$matchId = '';
-			if(preg_match("/goToMatch\((\d+)/", $onclick, $matchesArr)){
-				$matchId = $matchesArr[1];
-			}
-			
-			if( !empty($matchId) ){
-				$rightTeamImg = $match->find('.imgTeam', 0);
-				$leftTeamImg = $match->find('.imgTeam', 1);
-				
-				$rightTeamName = $match->find('.matchTeam', 0);
-				$leftTeamName = $match->find('.matchTeam', 1);
-				
-				$matchCompt = $match->find('.matchCompt', 0);
-				$matchTime = $match->find('.matchTime', 0);
-				$textMatch = $match->find('.textMatch', 0);
-
-				$href = $websiteLive2 . "bein/live/" . $matchId . "/2";
-				
+        foreach ($dom->find('.albaflex .match-container') as $match) {
+            $matchLink = $match->find('a', 0);
+			if( !empty($matchLink) ){
+				@$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
+				@$leftTeamName = $match->find('.left-team .team-name', 0)->plaintext;
+				@$rightTeamLogo = $match->find('.right-team .team-logo img', 0)->getAttribute('data-src');
+				@$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
+				@$matchTime = $match->find('.match-center .match-time', 0)->plaintext;
+				@$matchDate = $match->find('.match-center .date', 0)->plaintext;
+				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
+				@$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
 				$jsonData = [
-					'href' => $href,
-					'rightTeamName' => $rightTeamName ? trim($rightTeamName->plaintext) : '',
-					'leftTeamName' => $leftTeamName ? trim($leftTeamName->plaintext) : '',
-					'rightTeamLogo' => $rightTeamImg ? $rightTeamImg->src : '',
-					'leftTeamLogo' => $leftTeamImg ? $leftTeamImg->src : '',
-					'matchTime' => $matchTime ? trim($matchTime->plaintext) : '',
+					'href' => isset($matchLink->href) ? trim($matchLink->href) : '',
+					'rightTeamName' => trim($rightTeamName),
+					'leftTeamName' => trim($leftTeamName),
+					'rightTeamLogo' => $rightTeamLogo,
+					'leftTeamLogo' => $leftTeamLogo,
+					'matchTime' => $matchTime,
+					'result' => $matchResult,
+					'liveStatus' => $matchDate,
+					'league' => trim($leagueInfo),
+				];
+				$data['matches'][] = $jsonData;
+			}else{
+				$jsonData = [
+					'href' => '',
+					'rightTeamName' => '',
+					'leftTeamName' => '',
+					'rightTeamLogo' => '',
+					'leftTeamLogo' => '',
+					'matchTime' => '',
 					'result' => '',
-					'liveStatus' => $textMatch ? trim($textMatch->plaintext) : '',
-					'league' => $matchCompt ? trim($matchCompt->plaintext) : '',
+					'liveStatus' => '',
+					'league' => '',
 				];
 				$data['matches'][] = $jsonData;
 			}
@@ -64,58 +67,89 @@ function searchMatches() {
 }
 
 function liveMatch($view) {
-	$data = [
-		'matches' => []
-	];
-	
-	$queries = [];
-	
-	// Check if URL follows pattern to support multiple qualities
-	// Expected format from searchMatches: .../live/{id}/2
-	if (preg_match('/(.*\/live\/)(\d+)\/(\d+)/', $view, $matches)) {
-        $baseUrl = $matches[1];
-        $matchId = $matches[2];
-		
-		$queries[] = [
-			'url' => $baseUrl . $matchId . '/2',
-			'name' => 'High Quality (1080p)'
+	$html = liveCurl("{$view}");
+    $dom = str_get_html($html);
+	if ($dom) {
+		$data = [
+			'matches' => []
 		];
-		$queries[] = [
-			'url' => $baseUrl . $matchId . '/1',
-			'name' => 'Normal Quality'
-		];
-	} else {
-		$queries[] = [
-			'url' => $view,
-			'name' => 'Server'
-		];
-	}
-	
-	foreach($queries as $q) {
-		$html = liveCurl($q['url']);
-		$dom = str_get_html($html);
-		if ($dom) {
-			$iframe = $dom->find('iframe', 0);
-			if($iframe){
-				$src = $iframe->getAttribute('src');
-				if( !empty($src) ){
-					if (strpos($src, '//') === 0) {
-						$src = 'https:' . $src;
-					}
-					// Return full absolute URL with videoPlayer.php wrapper
-					$fullUrl = "https://tryq8flix.com/videoPlayer.php?link=" . urlencode($src);
-					
-					$data['matches'][] = [
-						'live' => $fullUrl,
-						'name' => $q['name'],
-						'src' => $q['url']
-					];
-				}
+		foreach ($dom->find('iframe') as $iframe) {
+			if ($iframe) {
+				$baseSrc = $iframe->getAttribute('src');
+                
+                // Try to find the server menu in the player page
+                $playerHtml = liveCurl($baseSrc);
+                $playerDom = str_get_html($playerHtml);
+                $menuFound = false;
+
+                if ($playerDom) {
+                    $serverLinks = $playerDom->find('.aplr-menu li a');
+                    if (!empty($serverLinks)) {
+                        $menuFound = true;
+                        foreach ($serverLinks as $link) {
+                            $serverUrl = $link->href;
+                            $serverName = trim($link->plaintext);
+                            
+                            // Fetch individual server page
+                            $serverHtml = liveCurl($serverUrl);
+                            $serverDom = str_get_html($serverHtml);
+                            if ($serverDom) {
+                                $videoIframe = $serverDom->find('iframe', 0);
+                                if ($videoIframe) {
+                                    $finalUrl = $videoIframe->getAttribute('src');
+                                    if (strpos($finalUrl, 'wallplaster') === false) {
+                                        $src = $finalUrl;
+                                        if (strpos($src, 'https:') !== 0) {
+                                            $src = 'https:' . $src;
+                                        }
+                                        $liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+                                        $jsonData = [
+                                            'live' => $src,
+                                            'name' => $serverName,
+                                            'src' => $liveMatchesUrl
+                                        ];
+                                        $data['matches'][] = $jsonData;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!$menuFound) {
+                    for ($serv = 1; $serv <= 6; $serv++) {
+                        $srcWithIndex = $baseSrc . "index.php?serv=" . $serv;
+                        $iframeHtml = liveCurl($srcWithIndex);
+                        $iframeDom = str_get_html($iframeHtml);
+                        if ($iframeDom) {
+                            $foundIframe = $iframeDom->find('iframe', 0);
+                            if ($foundIframe) {
+                                $finalUrl = $foundIframe->getAttribute('src');
+                                // Remove any link with 'wallplaster' in the domain
+                                //if (strpos($finalUrl, 'wallplaster') === false) {
+                                    // Ensure the url starts with https
+                                    $src = $finalUrl;
+                                    if (strpos($src, 'https:') !== 0) {
+                                        $src = 'https:' . $src;
+                                    }
+                                    $liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+                                    $jsonData = [
+                                        'live' => $src,
+                                        'serv' => $serv,
+                                        'src' => $liveMatchesUrl
+                                    ];
+                                    $data['matches'][] = $jsonData;
+                               // }
+                            }
+                        }
+                    }
+                }
 			}
 		}
+		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+	} else {
+		$matches = '';
 	}
-
-	$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	return ( isset($matches) && !empty($matches) ) ? json_decode($matches, true)['matches'] : array();
 }
 
