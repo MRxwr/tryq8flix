@@ -88,81 +88,33 @@ function liveMatch($view) {
 		$data = [
 			'matches' => []
 		];
+		$serverCount = 0;
+		
+		// Find all iframes directly on the match page
 		foreach ($dom->find('iframe') as $iframe) {
 			if ($iframe) {
-				$baseSrc = $iframe->getAttribute('src');
-                
-                // Try to find the server menu in the player page
-                $playerHtml = liveCurl($baseSrc);
-                $playerDom = str_get_html($playerHtml);
-                $menuFound = false;
-
-                if ($playerDom) {
-                    // Try both .aplr-menu and .aplr-link class structures
-                    $serverLinks = $playerDom->find('.aplr-menu li a');
-                    if (empty($serverLinks)) {
-                        $serverLinks = $playerDom->find('li a.aplr-link');
-                    }
-                    if (!empty($serverLinks)) {
-                        $menuFound = true;
-                        foreach ($serverLinks as $link) {
-                            $serverUrl = $link->href;
-                            $serverName = trim($link->plaintext);
-                            
-                            // Fetch individual server page
-                            $serverHtml = liveCurl($serverUrl);
-                            $serverDom = str_get_html($serverHtml);
-                            if ($serverDom) {
-                                $videoIframe = $serverDom->find('iframe', 0);
-                                if ($videoIframe) {
-                                    $finalUrl = $videoIframe->getAttribute('src');
-                                    if (strpos($finalUrl, 'wallplaster') === false) {
-                                        $src = $finalUrl;
-                                        if (strpos($src, 'https:') !== 0) {
-                                            $src = 'https:' . $src;
-                                        }
-                                        $liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-                                        $jsonData = [
-                                            'live' => $src,
-                                            'name' => $serverName,
-                                            'src' => $liveMatchesUrl
-                                        ];
-                                        $data['matches'][] = $jsonData;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!$menuFound) {
-                    for ($serv = 1; $serv <= 6; $serv++) {
-                        $srcWithIndex = $baseSrc . "index.php?serv=" . $serv;
-                        $iframeHtml = liveCurl($srcWithIndex);
-                        $iframeDom = str_get_html($iframeHtml);
-                        if ($iframeDom) {
-                            $foundIframe = $iframeDom->find('iframe', 0);
-                            if ($foundIframe) {
-                                $finalUrl = $foundIframe->getAttribute('src');
-                                // Remove any link with 'wallplaster' in the domain
-                                //if (strpos($finalUrl, 'wallplaster') === false) {
-                                    // Ensure the url starts with https
-                                    $src = $finalUrl;
-                                    if (strpos($src, 'https:') !== 0) {
-                                        $src = 'https:' . $src;
-                                    }
-                                    $liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-                                    $jsonData = [
-                                        'live' => $src,
-                                        'serv' => $serv,
-                                        'src' => $liveMatchesUrl
-                                    ];
-                                    $data['matches'][] = $jsonData;
-                               // }
-                            }
-                        }
-                    }
-                }
+				$src = $iframe->getAttribute('src');
+				
+				// Skip empty or invalid sources
+				if (empty($src) || strpos($src, 'wallplaster') !== false) {
+					continue;
+				}
+				
+				// Ensure the url starts with https
+				if (strpos($src, 'https:') !== 0 && strpos($src, 'http:') !== 0) {
+					$src = 'https:' . $src;
+				}
+				
+				$serverCount++;
+				$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+				
+				$jsonData = [
+					'live' => $src,
+					'name' => 'Server ' . $serverCount,
+					'serv' => $serverCount,
+					'src' => $liveMatchesUrl
+				];
+				$data['matches'][] = $jsonData;
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
