@@ -14,47 +14,44 @@ function liveCurl($url) {
 }
 
 function searchMatches() {
-	GLOBAL $websiteLive;
-	$html = liveCurl("{$websiteLive}");
+	GLOBAL $websiteLive2;
+	$html = liveCurl("{$websiteLive2}");
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
             'matches' => []
         ];
-        foreach ($dom->find('.albaflex .match-container') as $match) {
-            $matchLink = $match->find('a', 0);
-			if( !empty($matchLink) ){
-				@$rightTeamName = $match->find('.right-team .team-name', 0)->plaintext;
-				@$leftTeamName = $match->find('.left-team .team-name', 0)->plaintext;
-				@$rightTeamLogo = $match->find('.right-team .team-logo img', 0)->getAttribute('data-src');
-				@$leftTeamLogo = $match->find('.left-team .team-logo img', 0)->getAttribute('data-src');
-				@$matchTime = $match->find('.match-center .match-time', 0)->plaintext;
-				@$matchDate = $match->find('.match-center .date', 0)->plaintext;
-				@$matchResult = $match->find('.match-center .result', 0)->plaintext;
-				@$leagueInfo = $match->find('.match-info ul li', 2)->plaintext; // Assuming it's the third <li>
+        foreach ($dom->find('div[id=cardMatch]') as $match) {
+			
+			$onclick = $match->getAttribute('onclick');
+			$matchId = '';
+			if(preg_match("/goToMatch\((\d+)/", $onclick, $matchesArr)){
+				$matchId = $matchesArr[1];
+			}
+			
+			if( !empty($matchId) ){
+				$rightTeamImg = $match->find('.imgTeam', 0);
+				$leftTeamImg = $match->find('.imgTeam', 1);
+				
+				$rightTeamName = $match->find('.matchTeam', 0);
+				$leftTeamName = $match->find('.matchTeam', 1);
+				
+				$matchCompt = $match->find('.matchCompt', 0);
+				$matchTime = $match->find('.matchTime', 0);
+				$textMatch = $match->find('.textMatch', 0);
+
+				$href = $websiteLive2 . "bein/live/" . $matchId . "/2";
+				
 				$jsonData = [
-					'href' => isset($matchLink->href) ? trim($matchLink->href) : '',
-					'rightTeamName' => trim($rightTeamName),
-					'leftTeamName' => trim($leftTeamName),
-					'rightTeamLogo' => $rightTeamLogo,
-					'leftTeamLogo' => $leftTeamLogo,
-					'matchTime' => $matchTime,
-					'result' => $matchResult,
-					'liveStatus' => $matchDate,
-					'league' => trim($leagueInfo),
-				];
-				$data['matches'][] = $jsonData;
-			}else{
-				$jsonData = [
-					'href' => '',
-					'rightTeamName' => '',
-					'leftTeamName' => '',
-					'rightTeamLogo' => '',
-					'leftTeamLogo' => '',
-					'matchTime' => '',
+					'href' => $href,
+					'rightTeamName' => $rightTeamName ? trim($rightTeamName->plaintext) : '',
+					'leftTeamName' => $leftTeamName ? trim($leftTeamName->plaintext) : '',
+					'rightTeamLogo' => $rightTeamImg ? $rightTeamImg->src : '',
+					'leftTeamLogo' => $leftTeamImg ? $leftTeamImg->src : '',
+					'matchTime' => $matchTime ? trim($matchTime->plaintext) : '',
 					'result' => '',
-					'liveStatus' => '',
-					'league' => '',
+					'liveStatus' => $textMatch ? trim($textMatch->plaintext) : '',
+					'league' => $matchCompt ? trim($matchCompt->plaintext) : '',
 				];
 				$data['matches'][] = $jsonData;
 			}
