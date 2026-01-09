@@ -102,11 +102,9 @@ function liveMatch($view) {
 					if (strpos($src, '//') === 0) {
 						$src = 'https:' . $src;
 					}
-					// Wrap the extracted src in videoPlayer.php
-					$videoLnk = "https://tryq8flix.com/videoPlayer.php?link=" . urlencode($src);
-					
+					// Return raw src - app will wrap in videoPlayer.php
 					$data['matches'][] = [
-						'live' => $videoLnk,
+						'live' => $src,
 						'name' => $q['name'],
 						'src' => $q['url']
 					];
