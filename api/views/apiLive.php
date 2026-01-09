@@ -114,12 +114,23 @@ function liveMatch($view) {
 					
 					if (!empty($serverLinks)) {
 						foreach ($serverLinks as $link) {
-							$serverUrl = $link->href;
+							$serverUrl = $link->getAttribute('href');
 							$serverName = trim($link->plaintext);
 							
 							// Skip if URL is empty
 							if (empty($serverUrl)) {
 								continue;
+							}
+							
+							// Handle relative URLs - make them absolute based on baseSrc
+							if (strpos($serverUrl, 'http') !== 0) {
+								$parsedBase = parse_url($baseSrc);
+								$baseUrl = $parsedBase['scheme'] . '://' . $parsedBase['host'];
+								if (strpos($serverUrl, '/') === 0) {
+									$serverUrl = $baseUrl . $serverUrl;
+								} else {
+									$serverUrl = rtrim($baseSrc, '/') . '/' . $serverUrl;
+								}
 							}
 							
 							// Fetch the individual server page
@@ -133,8 +144,8 @@ function liveMatch($view) {
 								if ($videoIframe) {
 									$finalUrl = $videoIframe->getAttribute('src');
 									
-									// Skip wallplaster links
-									if (strpos($finalUrl, 'wallplaster') !== false) {
+									// Skip wallplaster links or empty
+									if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
 										continue;
 									}
 									
