@@ -14,8 +14,8 @@ function liveCurl($url) {
 }
 
 function searchMatches() {
-	GLOBAL $websiteLive2;
-	$html = liveCurl("{$websiteLive2}");
+	GLOBAL $websiteLive;
+	$html = liveCurl("{$websiteLive}");
     $dom = str_get_html($html);
     if ($dom) {
         $data = [
