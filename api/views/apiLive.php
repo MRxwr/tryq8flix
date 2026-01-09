@@ -211,7 +211,13 @@ function liveMatch($view) {
 }
 
 if( isset($_GET['action']) && $_GET['action'] == 'match' ){
+    echo "<pre>DEBUG MODE - Fetching match: " . htmlspecialchars($_GET['match']) . "</pre>";
+    echo "<hr>";
     $matches = liveMatch($_GET['match']);
+    echo "<hr>";
+    echo "<pre>FINAL RESULT:</pre>";
+    echo "<pre>" . print_r($matches, true) . "</pre>";
+    echo "<hr>";
     /*
     $data[] = array("src" => $_GET['match']);
     $matches = $data;
