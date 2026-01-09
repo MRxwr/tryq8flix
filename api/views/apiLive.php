@@ -133,7 +133,6 @@ function liveMatch($view) {
 				if ($playerDom) {
 					// Find all server links with class aplr-link
 					$serverLinks = $playerDom->find('a.aplr-link');
-					echo "<pre>8. Found " . count($serverLinks) . " server links with class 'aplr-link'</pre>";
 					
 					if (!empty($serverLinks)) {
 						foreach ($serverLinks as $link) {
