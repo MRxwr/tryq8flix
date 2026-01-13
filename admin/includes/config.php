@@ -15,7 +15,7 @@ if (!$dbconnect) {
 date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
 $website = "https://sheid4u.com/";
-$website2 = "https://web6.topcinema.cloud/home13/";
+$website2 = "https://web7.topcinema.cloud/";
 $website3 = "https://wecima.click/we";
 $website4 = "https://a.a5s0d.sbs/";
 $website5 = "https://shaheid4u.live/";
