@@ -35,9 +35,8 @@ function liveCurl($url, $referer = '')
 
 function searchMatches()
 {
-	global $websiteLive2;
-	$html = liveCurl("{$websiteLive2}");
-	var_dump($html);
+	global $websiteLive;
+	$html = liveCurl("{$websiteLive}");
 	$dom = str_get_html($html);
 	if ($dom) {
 		$data = [
