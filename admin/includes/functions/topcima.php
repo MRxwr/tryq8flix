@@ -99,7 +99,7 @@ function topCinemaServers($url) {
     $servers = json_decode($servers, true);
     $mainServer = [];
     $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
-    $blackList = [0,3,4,5,6];
+    $blackList = [];//[0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
         }else{
@@ -117,7 +117,7 @@ function topCinemaServers($url) {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
             CURLOPT_HTTPHEADER => array(
-                'Referer: https://web2.topcinema.cam',
+                'Referer: https://topcinema.fan',
                 'X-Requested-With: XMLHttpRequest'
             ),
             ));
