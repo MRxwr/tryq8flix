@@ -77,8 +77,6 @@ function topCinemaServers($url) {
     GLOBAL $website2;
     $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
-    echo "Scraping servers from: {$url}\n";
-    echo "HTML length: " . ($html) . "\n";
     $data = [
         'shows' => []
     ];
@@ -109,7 +107,7 @@ function topCinemaServers($url) {
             //$url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
             $curl = curl_init();
             curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://web2.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+            CURLOPT_URL => 'https://topcinema.fan/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
