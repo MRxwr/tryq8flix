@@ -107,7 +107,7 @@ function topCinemaServers($url) {
             //$url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
             $curl = curl_init();
             curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://topcinema.fan/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+            CURLOPT_URL => 'https://web7.topcinema.cloud/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -117,7 +117,7 @@ function topCinemaServers($url) {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
             CURLOPT_HTTPHEADER => array(
-                'Referer: https://topcinema.fan',
+                "Referer: {$url}watch/",
                 'X-Requested-With: XMLHttpRequest'
             ),
             ));
