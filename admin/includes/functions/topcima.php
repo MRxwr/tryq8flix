@@ -115,8 +115,13 @@ function topCinemaServers($url) {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
+            CURLOPT_POSTFIELDS => http_build_query(array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}")),
             CURLOPT_HTTPHEADER => array(
+                'User-Agent: PostmanRuntime/7.52.0',
+                'Accept: */*',
+                'Content-Type: application/x-www-form-urlencoded',
+                'Accept-Encoding: gzip, deflate, br',
+                'Connection: keep-alive',
                 "Referer: {$url}watch/",
                 'X-Requested-With: XMLHttpRequest'
             ),
