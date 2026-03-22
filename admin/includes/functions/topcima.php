@@ -77,7 +77,8 @@ function topCinemaServers($url) {
     GLOBAL $website2;
     $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
-    echo "Scraping servers from: {$url}watch/\n";
+    echo "Scraping servers from: {$url}\n";
+    echo "HTML length: " . strlen($html) . "\n";
     $data = [
         'shows' => []
     ];
