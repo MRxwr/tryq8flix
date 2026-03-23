@@ -120,28 +120,40 @@ function scrapeWecimaSearch($query) {
             foreach ($dom->find('.GridItem') as $item) {
                 $thumbDiv = $item->find('.Thumb--GridItem', 0);
                 $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
-                $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
-                $h2 = $link ? $link->find('h2.hasyear', 0) : null;
+                $bgSpan = $item->find('.BG--GridItem', 0);
+                $h2 = $link ? $link->find('.hasyear', 0) : null;
                 
                 $imageUrl = '';
-                if ($bgSpan && $bgSpan->hasAttribute('style')) {
-                    preg_match('/--image:url\(([^)]+)\)/', $bgSpan->getAttribute('style'), $matches);
-                    $imageUrl = isset($matches[1]) ? $matches[1] : '';
+                if ($bgSpan) {
+                    if ($bgSpan->hasAttribute('data-src')) {
+                        $imageUrl = $bgSpan->getAttribute('data-src');
+                    } elseif ($bgSpan->hasAttribute('data-lazy-style')) {
+                        if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('data-lazy-style'), $matches)) {
+                            $imageUrl = $matches[1];
+                        }
+                    } elseif ($bgSpan->hasAttribute('style')) {
+                        if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('style'), $matches)) {
+                            $imageUrl = $matches[1];
+                        }
+                    }
                 }
                 
                 $title = '';
                 $year = '';
                 if ($h2) {
-                    $titleText = $h2->plaintext;
-                    preg_match('/\((\d{4})\)/', $titleText, $matches);
-                    $year = isset($matches[1]) ? $matches[1] : '';
-                    $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+                    $titleText = trim($h2->plaintext);
+                    if (preg_match('/\(?\s*(\d{4})\s*\)?/', $titleText, $matches)) {
+                        $year = $matches[1];
+                        $title = trim(preg_replace('/\(\s*(\d{4})\s*\)/', '', $titleText));
+                    } else {
+                        $title = $titleText;
+                    }
                 }
                 
                 $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
                 $data['shows'][] = [
                     'href' => $link ? $link->href : '',
-                    'image' => $proxyImageUrl,
+                    'image' => trim($imageUrl),
                     'episode' => '',
                     'category' => '',
                     'title' => $title,
@@ -163,28 +175,40 @@ function scrapeWecimaSearch($query) {
             
             $thumbDiv = $item->find('.Thumb--GridItem', 0);
             $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
-            $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
-            $h2 = $link ? $link->find('h2.hasyear', 0) : null;
+            $bgSpan = $item->find('.BG--GridItem', 0);
+            $h2 = $link ? $link->find('.hasyear', 0) : null;
             
             $imageUrl = '';
-            if ($bgSpan && $bgSpan->hasAttribute('style')) {
-                preg_match('/--image:url\(([^)]+)\)/', $bgSpan->getAttribute('style'), $matches);
-                $imageUrl = isset($matches[1]) ? $matches[1] : '';
+            if ($bgSpan) {
+                if ($bgSpan->hasAttribute('data-src')) {
+                    $imageUrl = $bgSpan->getAttribute('data-src');
+                } elseif ($bgSpan->hasAttribute('data-lazy-style')) {
+                    if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('data-lazy-style'), $matches)) {
+                        $imageUrl = $matches[1];
+                    }
+                } elseif ($bgSpan->hasAttribute('style')) {
+                    if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('style'), $matches)) {
+                        $imageUrl = $matches[1];
+                    }
+                }
             }
             
             $title = '';
             $year = '';
             if ($h2) {
-                $titleText = $h2->plaintext;
-                preg_match('/\((\d{4})\)/', $titleText, $matches);
-                $year = isset($matches[1]) ? $matches[1] : '';
-                $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+                $titleText = trim($h2->plaintext);
+                if (preg_match('/\(?\s*(\d{4})\s*\)?/', $titleText, $matches)) {
+                    $year = $matches[1];
+                    $title = trim(preg_replace('/\(\s*(\d{4})\s*\)/', '', $titleText));
+                } else {
+                    $title = $titleText;
+                }
             }
             
             $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
             $data['shows'][] = [
                 'href' => $link ? $link->href : '',
-                'image' => $proxyImageUrl,
+                'image' => trim($imageUrl),
                 'episode' => '',
                 'category' => '',
                 'title' => $title,
