@@ -14,10 +14,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 $url = $website3;
                 if (isset($_GET["search"]) && !empty($_GET["search"])) {
                     // Use POST-based search
-                    $data = scrapeWecimaSearch($_GET["search"]);
-                    $data = json_decode($data, true);
-                    echo dataOutput($data);
-                    die();
+                    $url .= "/filtering/?keywords=" . urlencode($_GET["search"]);
                 }
                 if (isset($_GET["page"]) && !empty($_GET["page"])) {
                     $url .= "/page/{$_GET["page"]}";
