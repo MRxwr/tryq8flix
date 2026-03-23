@@ -79,6 +79,11 @@ function topCinemaServers($url) {
     $dom = str_get_html($html);
     $mainServer = [];
     
+    // Extract base domain for headers
+    $parsed = parse_url($url);
+    $baseHost = isset($parsed['host']) ? $parsed['host'] : 'web7.topcinema.cloud';
+    $origin = "{$parsed['scheme']}://{$baseHost}";
+
     if ($dom) {
         // Extract the main iframe link first if it exists
         $iframe = $dom->find('.player--iframe iframe', 0);
@@ -104,13 +109,13 @@ function topCinemaServers($url) {
         echo 'Error: Invalid DOM object.';
     }
     
-    $blackList = [0,3,4,5,6];
+    $blackList = []; //[0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
         }else{
             $curl = curl_init();
             curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://web7.topcinema.cloud/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
+            CURLOPT_URL => "{$origin}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -118,16 +123,21 @@ function topCinemaServers($url) {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
+            CURLOPT_POSTFIELDS => "id={$servers[$i]['id']}&i={$servers[$i]['i']}",
             CURLOPT_HTTPHEADER => array(
+                "Origin: {$origin}",
                 "Referer: {$url}watch/",
-                'X-Requested-With: XMLHttpRequest'
+                'X-Requested-With: XMLHttpRequest',
+                'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+                'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1'
             ),
             ));
             $response = curl_exec($curl);
             $link = extractLink($response);
             curl_close($curl);
-            $mainServer[]["link"] = $link;
+            if ($link) {
+                $mainServer[] = ["link" => $link];
+            }
         }
     }
     return $mainServer;
