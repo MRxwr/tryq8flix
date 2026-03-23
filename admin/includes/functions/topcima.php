@@ -99,7 +99,7 @@ function topCinemaServers($url) {
         echo 'Error: Invalid DOM object.';
     }
     
-    $blackList = [];//[0,3,4,5,6];
+    $blackList = [0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
         }else{
