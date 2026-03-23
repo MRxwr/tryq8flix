@@ -227,6 +227,8 @@ function scrapeWecima($url) {
                         $imageUrl = $bgSpan;
                     }
                 }
+            }else{
+                $imageUrl = $bgSpan;
             }
 
             // Extract title and year from hasyear element
