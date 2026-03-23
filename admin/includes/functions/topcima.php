@@ -111,27 +111,27 @@ function topCinemaServers($url) {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
+            CURLOPT_TIMEOUT => 30,
             CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
+            CURLOPT_POSTFIELDS => http_build_query(array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}")),
             CURLOPT_HTTPHEADER => array(
                 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept: */*',
                 'Accept-Language: en-US,en;q=0.9',
-                'Accept-Encoding: gzip, deflate, br',
-                'Connection: keep-alive',
+                'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+                'X-Requested-With: XMLHttpRequest',
                 "Origin: https://web7.topcinema.cloud",
                 "Referer: {$url}watch/",
-                'X-Requested-With: XMLHttpRequest',
                 'Sec-Fetch-Dest: empty',
                 'Sec-Fetch-Mode: cors',
-                'Sec-Fetch-Site: same-origin'
+                'Sec-Fetch-Site: same-origin',
+                'Connection: keep-alive'
             ),
             ));
             $response = curl_exec($curl);
-            var_dump($response);
             if (isset($response) && !empty($response)) {
                 $link = extractLink($response);
             } else {
