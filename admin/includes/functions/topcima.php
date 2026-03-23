@@ -117,15 +117,21 @@ function topCinemaServers($url) {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
             CURLOPT_HTTPHEADER => array(
-                'User-Agent: PostmanRuntime/7.52.0',
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept: */*',
+                'Accept-Language: en-US,en;q=0.9',
                 'Accept-Encoding: gzip, deflate, br',
                 'Connection: keep-alive',
+                "Origin: https://web7.topcinema.cloud",
                 "Referer: {$url}watch/",
-                'X-Requested-With: XMLHttpRequest'
+                'X-Requested-With: XMLHttpRequest',
+                'Sec-Fetch-Dest: empty',
+                'Sec-Fetch-Mode: cors',
+                'Sec-Fetch-Site: same-origin'
             ),
             ));
             $response = curl_exec($curl);
+            var_dump($response);
             if (isset($response) && !empty($response)) {
                 $link = extractLink($response);
             } else {
