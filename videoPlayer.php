@@ -106,7 +106,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     }
 
     // Always use iframe for all incoming links
-    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>";
+    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
     
     // Keep old code commented for reference
     // if($useVideoPlayer) {
