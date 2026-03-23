@@ -220,8 +220,11 @@ function scrapeWecima($url) {
                 if ($bgSpan->hasAttribute('data-src')) {
                     $imageUrl = $bgSpan->getAttribute('data-src');
                 } elseif ($bgSpan->hasAttribute('style')) {
-                    preg_match('/background-image:\s*url\(["\']?(.*?)["\']?\)/', $bgSpan->getAttribute('style'), $matches);
-                    $imageUrl = isset($matches[1]) ? $matches[1] : '';
+                    $style = $bgSpan->getAttribute('style');
+                    // Match both background-image: url() and --image: url()
+                    if (preg_match('/(?:background-image|--image)\s*:\s*url\((["\']?)(.*?)\1\)/', $style, $matches)) {
+                        $imageUrl = isset($matches[2]) ? $matches[2] : '';
+                    }
                 }
             }
 
@@ -238,7 +241,7 @@ function scrapeWecima($url) {
             $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
             $jsonData = [
                 'href' => $link ? $link->href : '',
-                'image' => $proxyImageUrl,
+                'image' => trim($imageUrl),//$proxyImageUrl,
                 'episode' => '',
                 'category' => '',
                 'title' => $title,
