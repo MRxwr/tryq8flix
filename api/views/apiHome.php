@@ -14,7 +14,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 $url = $website3;
                 if (isset($_GET["search"]) && !empty($_GET["search"])) {
                     // Use POST-based search
-                    $url .= "/filtering/?keywords=" . urlencode($_GET["search"]);
+                    $url .= "filtering/?keywords=" . urlencode($_GET["search"]);
                 }
                 if (isset($_GET["page"]) && !empty($_GET["page"])) {
                     $url .= "/page/{$_GET["page"]}";
