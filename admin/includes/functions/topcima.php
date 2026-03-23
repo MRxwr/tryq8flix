@@ -77,45 +77,37 @@ function topCinemaServers($url) {
     GLOBAL $website2;
     $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
-    $mainServer = [];
-    
-    // Extract base domain for headers
-    $parsed = parse_url($url);
-    $baseHost = isset($parsed['host']) ? $parsed['host'] : 'web7.topcinema.cloud';
-    $origin = "{$parsed['scheme']}://{$baseHost}";
-
+    $data = [
+        'shows' => []
+    ];
     if ($dom) {
-        // Extract the main iframe link first if it exists
-        $iframe = $dom->find('.player--iframe iframe', 0);
-        if ($iframe && $iframe->src) {
-            $src = $iframe->src;
-            // Handle protocol-relative URLs
-            if (strpos($src, '//') === 0) {
-                $src = 'https:' . $src;
-            }
-            $mainServer[] = ['link' => $src];
-        }
-
-        $servers = [];
         foreach ($dom->find('.server--item') as $server) {
             $id = $server->getAttribute('data-id');
             $i = $server->getAttribute('data-server');
-            $servers[] = [
+            $jsonData = [
                 'id' => $id,
                 'i' => $i,
+                'link' => "{$url}watch/",
             ];
+            $data['shows'][] = $jsonData;
         }
+        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
         echo 'Error: Invalid DOM object.';
+        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
-    
-    $blackList = []; //[0,3,4,5,6];
+    $servers = json_decode($servers, true);
+    $mainServer = [];
+    $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
+    $blackList = [0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
         }else{
+            unset($servers[$i]["link"]);
+            //$url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
             $curl = curl_init();
             curl_setopt_array($curl, array(
-            CURLOPT_URL => "{$origin}/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
+            CURLOPT_URL => 'https://web2.topcinema.cam/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -123,21 +115,16 @@ function topCinemaServers($url) {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => "id={$servers[$i]['id']}&i={$servers[$i]['i']}",
+            CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
             CURLOPT_HTTPHEADER => array(
-                "Origin: {$origin}",
-                "Referer: {$url}watch/",
-                'X-Requested-With: XMLHttpRequest',
-                'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-                'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1'
+                'Referer: https://web2.topcinema.cam',
+                'X-Requested-With: XMLHttpRequest'
             ),
             ));
             $response = curl_exec($curl);
             $link = extractLink($response);
             curl_close($curl);
-            if ($link) {
-                $mainServer[] = ["link" => $link];
-            }
+            $mainServer[]["link"] = $link;
         }
     }
     return $mainServer;
