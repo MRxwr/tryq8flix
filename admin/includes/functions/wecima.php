@@ -211,7 +211,7 @@ function scrapeWecima($url) {
         foreach ($dom->find('.GridItem') as $item) {
             $thumbDiv = $item->find('.Thumb--GridItem', 0);
             $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
-            $bgSpan = $thumbDiv ? $thumbDiv->find('.BG--GridItem', 0) : null;
+            $bgSpan = $item->find('span.BG--GridItem', 0);
             $h2 = $link ? $link->find('.hasyear', 0) : null;
 
             // Extract image URL from data-src or style attribute
@@ -223,12 +223,8 @@ function scrapeWecima($url) {
                     // Match --image: url(URL) or background-image: url(URL)
                     if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('style'), $matches)) {
                         $imageUrl = $matches[1];
-                    }else{
-                        $imageUrl = $bgSpan;
                     }
                 }
-            }else{
-                $imageUrl = $bgSpan;
             }
 
             // Extract title and year from hasyear element
