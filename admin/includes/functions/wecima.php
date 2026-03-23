@@ -214,18 +214,15 @@ function scrapeWecima($url) {
             $bgSpan = $item->find('.BG--GridItem', 0);
             $h2 = $link ? $link->find('.hasyear', 0) : null;
             
-            // Temporary debug:
-            if($bgSpan) {
-                print_r($bgSpan->outertext);
-            } else {
-                echo "bgSpan is null for this item";
-            }
-
-            // Extract image URL from data-src or style attribute
+            // Extract image URL from data-src, data-lazy-style, or style attribute
             $imageUrl = '';
             if ($bgSpan) {
                 if ($bgSpan->hasAttribute('data-src')) {
                     $imageUrl = $bgSpan->getAttribute('data-src');
+                } elseif ($bgSpan->hasAttribute('data-lazy-style')) {
+                    if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('data-lazy-style'), $matches)) {
+                        $imageUrl = $matches[1];
+                    }
                 } elseif ($bgSpan->hasAttribute('style')) {
                     // Match --image: url(URL) or background-image: url(URL)
                     if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('style'), $matches)) {
