@@ -213,7 +213,6 @@ function scrapeWecima($url) {
             $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
             $bgSpan = $item->find('.BG--GridItem', 0);
             $h2 = $link ? $link->find('.hasyear', 0) : null;
-            var_dump($bgSpan);
             // Extract image URL from data-src or style attribute
             $imageUrl = '';
             if ($bgSpan) {
