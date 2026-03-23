@@ -220,8 +220,10 @@ function scrapeWecima($url) {
                 if ($bgSpan->hasAttribute('data-src')) {
                     $imageUrl = $bgSpan->getAttribute('data-src');
                 } elseif ($bgSpan->hasAttribute('style')) {
-                    preg_match('/--image:\s*url\((.*?)\)/', $bgSpan->getAttribute('style'), $matches);
-                    $imageUrl = isset($matches[1]) ? $matches[1] : '';
+                    // Match --image: url(URL) or background-image: url(URL)
+                    if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('style'), $matches)) {
+                        $imageUrl = $matches[1];
+                    }
                 }
             }
 
@@ -229,10 +231,14 @@ function scrapeWecima($url) {
             $title = '';
             $year = '';
             if ($h2) {
-                $titleText = $h2->plaintext;
-                preg_match('/\((\d{4})\)/', $titleText, $matches);
-                $year = isset($matches[1]) ? $matches[1] : '';
-                $title = trim(preg_replace('/\(\d{4}\)/', '', $titleText));
+                $titleText = trim($h2->plaintext);
+                // Improved regex to handle spaces and formatting within the year parenthesis
+                if (preg_match('/\(?\s*(\d{4})\s*\)?/', $titleText, $matches)) {
+                    $year = $matches[1];
+                    $title = trim(preg_replace('/\(\s*(\d{4})\s*\)/', '', $titleText));
+                } else {
+                    $title = $titleText;
+                }
             }
 
             $proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($imageUrl));
