@@ -220,11 +220,8 @@ function scrapeWecima($url) {
                 if ($bgSpan->hasAttribute('data-src')) {
                     $imageUrl = $bgSpan->getAttribute('data-src');
                 } elseif ($bgSpan->hasAttribute('style')) {
-                    $style = $bgSpan->getAttribute('style');
-                    // Match both background-image: url() and --image: url()
-                    if (preg_match('/(?:background-image|--image)\s*:\s*url\((["\']?)(.*?)\1\)/', $style, $matches)) {
-                        $imageUrl = isset($matches[2]) ? $matches[2] : '';
-                    }
+                    preg_match('/background-image:\s*url\(["\']?(.*?)["\']?\)/', $bgSpan->getAttribute('style'), $matches);
+                    $imageUrl = isset($matches[1]) ? $matches[1] : '';
                 }
             }
 
