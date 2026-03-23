@@ -116,19 +116,14 @@ function topCinemaServers($url) {
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => http_build_query(array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}")),
+            CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
             CURLOPT_HTTPHEADER => array(
-                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent: PostmanRuntime/7.52.0',
                 'Accept: */*',
-                'Accept-Language: en-US,en;q=0.9',
-                'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With: XMLHttpRequest',
-                "Origin: https://web7.topcinema.cloud",
+                'Accept-Encoding: gzip, deflate, br',
+                'Connection: keep-alive',
                 "Referer: {$url}watch/",
-                'Sec-Fetch-Dest: empty',
-                'Sec-Fetch-Mode: cors',
-                'Sec-Fetch-Site: same-origin',
-                'Connection: keep-alive'
+                'X-Requested-With: XMLHttpRequest'
             ),
             ));
             $response = curl_exec($curl);
