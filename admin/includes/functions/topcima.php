@@ -111,27 +111,19 @@ function topCinemaServers($url) {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => 0,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => array('id' => "{$servers[$i]['id']}",'i' => "{$servers[$i]['i']}"),
             CURLOPT_HTTPHEADER => array(
-                'User-Agent: PostmanRuntime/7.52.0',
-                'Accept: */*',
-                'Accept-Encoding: gzip, deflate, br',
-                'Connection: keep-alive',
                 "Referer: {$url}watch/",
                 'X-Requested-With: XMLHttpRequest'
             ),
             ));
             $response = curl_exec($curl);
-            if (isset($response) && !empty($response)) {
-                $link = extractLink($response);
-            } else {
-                $link = "";
-            }
+            var_dump($response);
+            $link = extractLink($response);
             curl_close($curl);
             $mainServer[]["link"] = $link;
         }
