@@ -83,7 +83,12 @@ function topCinemaServers($url) {
         // Extract the main iframe link first if it exists
         $iframe = $dom->find('.player--iframe iframe', 0);
         if ($iframe && $iframe->src) {
-            $mainServer[] = ['link' => $iframe->src];
+            $src = $iframe->src;
+            // Handle protocol-relative URLs
+            if (strpos($src, '//') === 0) {
+                $src = 'https:' . $src;
+            }
+            $mainServer[] = ['link' => $src];
         }
 
         $servers = [];

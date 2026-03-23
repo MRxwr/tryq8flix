@@ -30,7 +30,7 @@
              </button>
         </div>
         <div class="ratio ratio-16x9">
-            <iframe id="video-player" src="" allowfullscreen></iframe>
+            <iframe id="video-player" src="" allowfullscreen referrerpolicy="no-referrer"></iframe>
         </div>
     </div>
 </div>
