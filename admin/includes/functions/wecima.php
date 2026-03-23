@@ -223,6 +223,8 @@ function scrapeWecima($url) {
                     // Match --image: url(URL) or background-image: url(URL)
                     if (preg_match('/(?:--image|background-image):\s*url\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $bgSpan->getAttribute('style'), $matches)) {
                         $imageUrl = $matches[1];
+                    }else{
+                        $imageUrl = $bgSpan;
                     }
                 }
             }
