@@ -245,7 +245,6 @@ function scrapeWecima($url) {
                 'description' => $year,
             ];
             $data['shows'][] = $jsonData;
-            var_dump($data['shows']);
         }
         return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
