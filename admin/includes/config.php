@@ -16,7 +16,7 @@ date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
 $website = "https://shahid4u.asia/";
 $website2 = "https://web7.topcinema.cloud/";
-$website3 = "https://wecima.click/we";
+$website3 = "https://mycima.horse/";
 $website4 = "https://f2h7y.sbs";
 $website5 = "https://shaheid4u.live/";
 $website6 = "https://w6.shahidwbas.tv/";
