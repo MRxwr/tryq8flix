@@ -77,34 +77,32 @@ function topCinemaServers($url) {
     GLOBAL $website2;
     $html = curlCall("{$url}watch/");
     $dom = str_get_html($html);
-    $data = [
-        'shows' => []
-    ];
+    $mainServer = [];
+    
     if ($dom) {
+        // Extract the main iframe link first if it exists
+        $iframe = $dom->find('.player--iframe iframe', 0);
+        if ($iframe && $iframe->src) {
+            $mainServer[] = ['link' => $iframe->src];
+        }
+
+        $servers = [];
         foreach ($dom->find('.server--item') as $server) {
             $id = $server->getAttribute('data-id');
             $i = $server->getAttribute('data-server');
-            $jsonData = [
+            $servers[] = [
                 'id' => $id,
                 'i' => $i,
-                'link' => "{$url}watch/",
             ];
-            $data['shows'][] = $jsonData;
         }
-        $servers = json_encode($data['shows'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
         echo 'Error: Invalid DOM object.';
-        $servers = json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
-    $servers = json_decode($servers, true);
-    $mainServer = [];
-    $ajaxUrl = "https://tryq8flix.com/requests2/index?type=getServer";
+    
     $blackList = [];//[0,3,4,5,6];
     for ($i = 0; $i < sizeof($servers); $i++) {
         if (in_array($i, $blackList)) {
         }else{
-            unset($servers[$i]["link"]);
-            //$url1 = makeRequest($ajaxUrl, array("data"=>$servers[$i]), "");
             $curl = curl_init();
             curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://web7.topcinema.cloud/wp-content/themes/movies2023/Ajaxat/Single/Server.php',
@@ -122,7 +120,6 @@ function topCinemaServers($url) {
             ),
             ));
             $response = curl_exec($curl);
-            var_dump($response);
             $link = extractLink($response);
             curl_close($curl);
             $mainServer[]["link"] = $link;
