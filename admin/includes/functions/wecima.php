@@ -211,7 +211,7 @@ function scrapeWecima($url) {
         foreach ($dom->find('.GridItem') as $item) {
             $thumbDiv = $item->find('.Thumb--GridItem', 0);
             $link = $thumbDiv ? $thumbDiv->find('a', 0) : null;
-            $bgSpan = $item->find('span.BG--GridItem', 0);
+            $bgSpan = $item->find('.BG--GridItem', 0);
             $h2 = $link ? $link->find('.hasyear', 0) : null;
             var_dump($bgSpan);
             // Extract image URL from data-src or style attribute
