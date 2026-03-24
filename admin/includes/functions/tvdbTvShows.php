@@ -60,6 +60,7 @@ function tvdbTvShowsListings($id) {
         $showId = $parts[0];
         $seasonNum = end($parts);
     }
+    var_dump($showId, $seasonNum);
 
     $token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjOGE0OGVjMiIsIm5iZiI6MTcyMDEzMjA4My4yOSwic3ViIjoiNjY4NzIxZjNhMTM1MjQyZWQ5MjY1ZmZhIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.l66VL660inwA8lNw9mzA7RBOvcWuVi_0f0fmw9FfhIM';
     
