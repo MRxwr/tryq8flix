@@ -200,6 +200,18 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 $data = tvdbTvShowsHome($url);
                 echo dataOutput(array("shows" => json_decode($data, true)["shows"]));
                 die();
+            }elseif ( $_GET["server"] == 14){
+                $url = "";
+                if ( (isset($_GET["page"]) && !empty($_GET["page"])) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
+                    $url .= "?page={$_GET["page"]}";
+                } elseif ( (!isset($_GET["page"]) || empty($_GET["page"])) && (isset($_GET["search"]) && !empty($_GET["search"]))) {
+                    $url .= "?search={$_GET["search"]}";
+                }elseif ( ( isset($_GET["page"]) && !empty($_GET["page"])) && (isset($_GET["search"]) && !empty($_GET["search"]))){
+                    $url .= "?search={$_GET["search"]}&page={$_GET["page"]}";
+                }
+                $data = tvdbMoviesHome($url);
+                echo dataOutput(array("shows" => json_decode($data, true)["shows"]));
+                die();
             } else {
                 echo dataError(array("msg" => "Invalid Server"));
                 die();

@@ -35,6 +35,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = animePecServers($url);
             }elseif( $_GET["server"] == 13 ){
                 $data = tvdbTvShowsServers($url);
+            }elseif( $_GET["server"] == 14 ){
+                $data = tvdbMoviesServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
