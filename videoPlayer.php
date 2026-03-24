@@ -119,7 +119,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 }
 ?>
 
-<script>
+    <script>
         function setupVideoPlayer(videoElement, sourceUrl) {
             if (sourceUrl.includes('.m3u8')) {
                 setupHlsPlayer(videoElement, sourceUrl);
