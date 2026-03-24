@@ -190,17 +190,12 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 die();
             }elseif ( $_GET["server"] == 13){
                 $url = "";
-                if (isset($_GET["search"]) && !empty($_GET["search"])) {
-                    // urlencode to handle Arabic characters and spaces
-                    $_GET["search"] = urlencode($_GET["search"]);
-                    $url .= "?search={$_GET["search"]}";
-                }
-                if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
+                if ( (isset($_GET["page"]) && !empty($_GET["page"])) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
                     $url .= "?page={$_GET["page"]}";
-                } elseif (isset($_GET["page"]) && !empty($_GET["page"]) && (isset($_GET["search"]) && !empty($_GET["search"]))) {
-                    $url .= "?search={$_GET["search"]}&page={$_GET["page"]}";
-                }elseif((!isset($_GET["page"]) || empty($_GET["page"])) && (isset($_GET["search"]) && !empty($_GET["search"]))){
+                } elseif ( (!isset($_GET["page"]) || empty($_GET["page"])) && (isset($_GET["search"]) && !empty($_GET["search"]))) {
                     $url .= "?search={$_GET["search"]}";
+                }elseif ( ( isset($_GET["page"]) && !empty($_GET["page"])) && (isset($_GET["search"]) && !empty($_GET["search"]))){
+                    $url .= "?search={$_GET["search"]}&page={$_GET["page"]}";
                 }
                 $data = tvdbTvShowsHome($url);
                 echo dataOutput(array("shows" => json_decode($data, true)["shows"]));
