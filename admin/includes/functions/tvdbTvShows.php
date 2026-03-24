@@ -110,7 +110,7 @@ function tvdbTvShowsListings($id) {
                 foreach ($epResult['episodes'] as $ep) {
                     $episodesData[] = [
                         'link' => "{$showId}/{$seasonToLoad}/{$ep['episode_number']}",
-                        'title' => "الحلقة " . $ep['episode_number'] . " - " . ($ep['name'] ?: ""),
+                        'title' => ( isset($ep['name'] ) ? $ep['name'] : "الحلقة " . $ep['episode_number']),
                         'episode_number' => $ep['episode_number'],
                         'episode_text' => $ep['episode_number'],
                         'poster' => $ep['still_path'] ? "https://image.tmdb.org/t/p/w500" . $ep['still_path'] : ""
