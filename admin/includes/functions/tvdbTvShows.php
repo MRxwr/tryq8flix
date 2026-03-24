@@ -1,7 +1,6 @@
 <?php
 function tvdbTvShowsHome($url) {
-    $token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjOGE0OGVjMiIsIm5iZiI6MTcyMDEzMjA4My4yOSwic3ViIjoiNjY4NzIxZjNhMTM1MjQyZWQ5MjY1ZmZhIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.l66VL660inwA8lNw9mzA7RBOvcWuVi_0f0fmw9FfhIM';
-    
+    GLOBAL $tvdbToken;    
     $page = 1;
     if (preg_match('/page=(\d+)/', $url, $matches)) {
         $page = $matches[1];
@@ -22,7 +21,7 @@ function tvdbTvShowsHome($url) {
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: Bearer " . $token,
+        "Authorization: Bearer " . $tvdbToken,
         "accept: application/json"
     ]);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -50,6 +49,7 @@ function tvdbTvShowsHome($url) {
 }
 
 function tvdbTvShowsListings($id) {
+    GLOBAL $tvdbToken;
     // If we're coming from the Home/Search $id is just the Show ID.
     // If we're clicking a Season, $id will be "ShowID/season/N".
     $showId = $id; 
@@ -60,13 +60,11 @@ function tvdbTvShowsListings($id) {
         $showId = $parts[0];
         $requestedSeason = end($parts);
     }
-
-    $token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjOGE0OGVjMiIsIm5iZiI6MTcyMDEzMjA4My4yOSwic3ViIjoiNjY4NzIxZjNhMTM1MjQyZWQ5MjY1ZmZhIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.l66VL660inwA8lNw9mzA7RBOvcWuVi_0f0fmw9FfhIM';
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Authorization: Bearer " . $token,
+        "Authorization: Bearer " . $tvdbToken,
         "accept: application/json"
     ]);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

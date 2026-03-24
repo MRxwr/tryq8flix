@@ -14,6 +14,12 @@ if (!$dbconnect) {
 }
 date_default_timezone_set('Asia/Kuwait');
 $date = date('Y-m-d H:i:s');
+
+//tokens
+$tvdbToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjOGE0OGVjMiIsIm5iZiI6MTcyMDEzMjA4My4yOSwic3ViIjoiNjY4NzIxZjNhMTM1MjQyZWQ5MjY1ZmZhIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.l66VL660inwA8lNw9mzA7RBOvcWuVi_0f0fmw9FfhIM';
+$scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
+
+//websites
 $website = "https://shahid4u.asia/";
 $website2 = "https://web7.topcinema.cloud/";
 $website3 = "https://mycima.horse/";
@@ -28,4 +34,4 @@ $website11 = "https://animeslayerweb.com/";
 $website12 = "https://k3zgx2.animepec.online/"; // anime4up
 $websiteLive = "https://www.koora24eg.com/";
 $websiteLive2 = "https://beinmatch1.live/";
-$scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
+
