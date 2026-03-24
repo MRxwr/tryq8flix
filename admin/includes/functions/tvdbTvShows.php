@@ -53,7 +53,7 @@ function tvdbTvShowsListings($id) {
     // If we're coming from the Home/Search $id is just the Show ID.
     // If we're clicking a Season, $id will be "ShowID/season/N".
     $showId = $id; 
-    $seasonNum = null;
+    $seasonNum[] = null;
 
     if (strpos($id, 'season/') !== false) {
         $parts = explode('/', $id);
@@ -83,33 +83,34 @@ function tvdbTvShowsListings($id) {
 
     if (isset($result['seasons'])) {
         foreach ($result['seasons'] as $season) {
-            $sNum = $season['season_number'];
             $seasonsData[] = [
-                'link' => "{$showId}/season/{$sNum}",
-                'title' => $season['name'] ?: "Season " . $sNum,
-                'season_number' => $sNum,
-                'season_text' => "Season " . $sNum,
+                'link' => "{$showId}/season/{$season['season_number']}",
+                'title' => $season['name'] ?: "Season " . $season['season_number'],
+                'season_number' => $season['season_number'],
+                'season_text' => "Season " . $season['season_number'],
                 'poster' => $season['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $season['poster_path'] : ""
             ];
-
-            // If we are currently iterating through the requested season, fetch its episodes
-            if ($seasonNum !== null && (int)$sNum === (int)$seasonNum) {
-                $epApiUrl = "https://api.themoviedb.org/3/tv/{$showId}/season/{$sNum}?language=ar";
-                curl_setopt($ch, CURLOPT_URL, $epApiUrl);
-                $epResponse = curl_exec($ch);
-                $epResult = json_decode($epResponse, true);
-                
-                if (isset($epResult['episodes'])) {
-                    foreach ($epResult['episodes'] as $ep) {
-                        $episodesData[] = [
-                            'link' => "{$showId}/{$sNum}/{$ep['episode_number']}",
-                            'title' => "الحلقة " . $ep['episode_number'] . " - " . ($ep['name'] ?: ""),
-                            'episode_number' => $ep['episode_number'],
-                            'episode_text' => $ep['episode_number'],
-                            'poster' => $ep['still_path'] ? "https://image.tmdb.org/t/p/w500" . $ep['still_path'] : ""
-                        ];
-                    }
-                }
+            $seasonNum[] = $season['season_number']; // Store season numbers for later use
+        }
+    }
+    
+    // 2. If a specific season was requested, fetch its episodes
+    if ($seasonNum !== null) {
+        $seasonNum = end($seasonNum); // Get the last season number if multiple seasons exist
+        $epApiUrl = "https://api.themoviedb.org/3/tv/{$showId}/season/{$seasonNum}?language=ar";
+        curl_setopt($ch, CURLOPT_URL, $epApiUrl);
+        $epResponse = curl_exec($ch);
+        $epResult = json_decode($epResponse, true);
+        
+        if (isset($epResult['episodes'])) {
+            foreach ($epResult['episodes'] as $ep) {
+                $episodesData[] = [
+                    'link' => "{$showId}/{$seasonNum}/{$ep['episode_number']}",
+                    'title' => "الحلقة " . $ep['episode_number'] . " - " . ($ep['name'] ?: ""),
+                    'episode_number' => $ep['episode_number'],
+                    'episode_text' => $ep['episode_number'],
+                    'poster' => $ep['still_path'] ? "https://image.tmdb.org/t/p/w500" . $ep['still_path'] : ""
+                ];
             }
         }
     }
