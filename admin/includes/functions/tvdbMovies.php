@@ -59,6 +59,9 @@ function tvdbMoviesServers($id) {
 }
 
 function tvdbMoviesListings($id) {
-    $apiUrl = "https://api.themoviedb.org/3/movie/{$id}?language=ar";
+    return[
+        "seasons" => [],
+        "episodes" => []
+    ];
 }
 ?>
