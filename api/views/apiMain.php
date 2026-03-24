@@ -14,7 +14,7 @@ $response = array(
         array("id" => 11, "name" => "Anime Slayer"),
         array("id" => 12, "name" => "Anime Pec"),
         array("id" => 13, "name" => "TVDB TV Shows"),
-        array("id" => 14, "name" => "TVDB TV Movies"),
+        array("id" => 14, "name" => "TVDB Movies"),
     )
 );
 if ($banners = selectDB2("`id`, `title`, `endpoint`, `server`, `url`, `imageurl`", "banners", "`status` = '0' AND `hidden` = '0'")) {
