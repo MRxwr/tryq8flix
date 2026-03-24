@@ -119,6 +119,7 @@ function scrapeWecimaServers($url) {
     }
     return $data['shows'];
 }
+
 function scrapeWecimaSearch($query) {
     GLOBAL $website3;
     // Use http_build_query to ensure proper encoding (application/x-www-form-urlencoded)
