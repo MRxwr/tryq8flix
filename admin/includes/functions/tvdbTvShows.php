@@ -50,52 +50,51 @@ function tvdbTvShowsHome($url) {
 }
 
 function tvdbTvShowsListings($id) {
-    if (!is_numeric($id)) {
-        // Handle if full URL was passed
-        if (preg_match('/\/tv\/(\d+)/', $id, $matches)) {
-            $id = $matches[1];
-        } else {
-            return ['seasons' => [], 'episodes' => []];
-        }
+    // If we're coming from the Home/Search $id is just the Show ID.
+    // If we're clicking a Season, $id will be "ShowID/season/N".
+    $showId = $id; 
+    $seasonNum = null;
+
+    if (strpos($id, 'season/') !== false) {
+        $parts = explode('/', $id);
+        $showId = $parts[0];
+        $seasonNum = end($parts);
     }
 
     $token = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjOGE0OGVjMiIsIm5iZiI6MTcyMDEzMjA4My4yOSwic3ViIjoiNjY4NzIxZjNhMTM1MjQyZWQ5MjY1ZmZhIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.l66VL660inwA8lNw9mzA7RBOvcWuVi_0f0fmw9FfhIM';
-    $apiUrl = "https://api.themoviedb.org/3/tv/{$id}?language=ar";
     
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         "Authorization: Bearer " . $token,
         "accept: application/json"
     ]);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    $response = curl_exec($ch);
-    curl_close($ch);
 
-    $result = json_decode($response, true);
     $seasonsData = [];
     $episodesData = [];
+
+    // 1. Always get Show Info to get list of Seasons
+    $apiUrl = "https://api.themoviedb.org/3/tv/{$showId}?language=ar";
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    $response = curl_exec($ch);
+    $result = json_decode($response, true);
 
     if (isset($result['seasons'])) {
         foreach ($result['seasons'] as $season) {
             $seasonsData[] = [
-                'link' => "{$id}/season/{$season['season_number']}",
-                'title' => $season['name'],
+                'link' => "{$showId}/season/{$season['season_number']}",
+                'title' => $season['name'] ?: "Season " . $season['season_number'],
                 'season_number' => $season['season_number'],
                 'season_text' => "Season " . $season['season_number'],
-                'poster' => "https://image.tmdb.org/t/p/w500" . $season['poster_path']
+                'poster' => $season['poster_path'] ? "https://image.tmdb.org/t/p/w500" . $season['poster_path'] : ""
             ];
         }
     }
     
-    // If season is requested via more_link format "ID/season/N"
-    if (strpos($_GET['href'], 'season/') !== false) {
-        $parts = explode('/', $_GET['href']);
-        $seasonNum = end($parts);
-        $id = $parts[0];
-        
-        $epApiUrl = "https://api.themoviedb.org/3/tv/{$id}/season/{$seasonNum}?language=ar";
+    // 2. If a specific season was requested, fetch its episodes
+    if ($seasonNum !== null) {
+        $epApiUrl = "https://api.themoviedb.org/3/tv/{$showId}/season/{$seasonNum}?language=ar";
         curl_setopt($ch, CURLOPT_URL, $epApiUrl);
         $epResponse = curl_exec($ch);
         $epResult = json_decode($epResponse, true);
@@ -103,15 +102,17 @@ function tvdbTvShowsListings($id) {
         if (isset($epResult['episodes'])) {
             foreach ($epResult['episodes'] as $ep) {
                 $episodesData[] = [
-                    'link' => "{$id}/{$seasonNum}/{$ep['episode_number']}",
-                    'title' => "الحلقة " . $ep['episode_number'] . " - " . $ep['name'],
+                    'link' => "{$showId}/{$seasonNum}/{$ep['episode_number']}",
+                    'title' => "الحلقة " . $ep['episode_number'] . " - " . ($ep['name'] ?: ""),
                     'episode_number' => $ep['episode_number'],
                     'episode_text' => $ep['episode_number'],
-                    'poster' => "https://image.tmdb.org/t/p/w500" . $ep['still_path']
+                    'poster' => $ep['still_path'] ? "https://image.tmdb.org/t/p/w500" . $ep['still_path'] : ""
                 ];
             }
         }
     }
+
+    curl_close($ch);
 
     return [
         'seasons' => $seasonsData,
