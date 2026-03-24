@@ -63,8 +63,6 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         }
         // If that fails, search for .mp4 or .m3u8 in the response
         else {
-            // Try different patterns to find video URLs
-            
             // Pattern 1: Look for video.mp4 pattern (for updown.icu and similar sites)
             if(preg_match('/https?:\/\/[^"\'\s]+\/video\.mp4/i', $response, $matches)) {
                 $videoUrl = $matches[0];
