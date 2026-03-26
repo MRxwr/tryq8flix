@@ -45,7 +45,7 @@ function tuktukHome($url) {
                 $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
                 $jsonData = [
                     'href' => $href,
-                    'image' => trim($image),
+                    'image' => trim($posterUrl),
                     'episode' => '',
                     'category' => '',
                     'title' => $title,
@@ -90,6 +90,7 @@ function tuktukListings($url) {
             $link = $a ? $a->href : '';
             $img = $seasonBox->find('img', 0);
             $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
+            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
             $title = '';
             $h3 = $seasonBox->find('h3', 0);
             if ($h3) {
@@ -107,7 +108,7 @@ function tuktukListings($url) {
                 'title' => $title,
                 'season_number' => $seasonNumberDigits,
                 'season_text' => $seasonNumber,
-                'poster' => $poster
+                'poster' => $posterUrl
             ];
         }
     }
@@ -119,6 +120,7 @@ function tuktukListings($url) {
             $link = $episodeLink->href;
             $img = $episodeLink->find('img', 0);
             $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
+            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
             $epInfo = $episodeLink->find('.ep-info h3', 0);
             $title = $epInfo ? trim($epInfo->plaintext) : '';
             $epnumDiv = $episodeLink->find('.epnum', 0);
@@ -136,7 +138,7 @@ function tuktukListings($url) {
                 'title' => $title,
                 'episode_number' => $episodeNumberDigits,
                 'episode_text' => $episodeNumber,
-                'poster' => $poster
+                'poster' => $posterUrl
             ];
         }
     }
