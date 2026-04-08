@@ -20,7 +20,7 @@ $tvdbToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGJjZWE4ZDI5YmNlOTkzZjBiZDJjNzVjO
 $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO2N60S332YVUSRD5T2NDOM3";
 
 //websites
-$website = "https://shahid4u.asia/";
+$website = "https://shahieed4u.net/";
 $website2 = "https://web7.topcinema.cloud/";
 $website3 = "https://mycima.horse/";
 $website4 = "https://f2h7y.sbs";
