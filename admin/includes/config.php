@@ -31,7 +31,7 @@ $website8 = "https://tuk.tuktukarab.cfd/";
 $website9 = "https://qesset.net/";
 $website10 = "https://ser.q-ask.video/";
 $website11 = "https://animeslayerweb.com/";
-$website12 = "https://k3zgx2.animepec.online/"; // anime4up
+$website12 = "https://y0vx70khe8u.animepec.online/"; // anime4up
 $websiteLive = "https://www.koora24eg.com/";
 $websiteLive2 = "https://beinmatch1.live/";
 
