@@ -327,26 +327,69 @@ function animePecServers($url) {
     $html = curlCall("{$url}");
     $dom = str_get_html($html);
     $servers = [];
+    
     if ($dom) {
         // Try new structure first: ul#watch
         $watchList = $dom->find('ul#watch', 0);
         if ($watchList) {
-            foreach ($watchList->find('li') as $li) {
-                $link = $li->getAttribute('data-watch');
-                $name = '';
-                $nameSpan = $li->find('span#serverName', 0);
-                if ($nameSpan) {
-                    $name = trim($nameSpan->plaintext);
-                }
+            // Extract post_id from the li elements
+            $firstLi = $watchList->find('li', 0);
+            $postId = $firstLi ? $firstLi->getAttribute('data-id') : '';
+            
+            if ($postId) {
+                // API endpoint for fetching server links
+                $apiUrl = 'https://y0vx70khe8u.animepec.online/wp-content/themes/animepec%203.1.1/Ajaxt/Single/GetServer.php';
                 
-                if ($link) {
-                    // Remove the embed6.blogspot.com wrapper
-                    $link = str_replace('https://embed6.blogspot.com/?url=', '', $link);
+                foreach ($watchList->find('li') as $li) {
+                    $index = $li->getAttribute('data-index');
+                    $type = $li->getAttribute('data-type');
+                    $name = '';
+                    $nameSpan = $li->find('span#serverName', 0);
+                    if ($nameSpan) {
+                        $name = trim($nameSpan->plaintext);
+                    }
                     
-                    $servers[] = [
-                        'name' => $name,
-                        'link' => $link
-                    ];
+                    if ($index !== null && $type) {
+                        // Make POST request to get the actual server link
+                        $ch = curl_init();
+                        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                            'post_id' => $postId,
+                            'index' => $index,
+                            'type' => $type
+                        ]));
+                        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+                        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+                        $response = curl_exec($ch);
+                        curl_close($ch);
+                        
+                        // Parse the response to extract iframe src
+                        $responseDom = str_get_html($response);
+                        if ($responseDom) {
+                            $iframe = $responseDom->find('iframe', 0);
+                            if ($iframe) {
+                                $iframeSrc = $iframe->src;
+                                
+                                // Remove the embed6.blogspot.com wrapper and decode URL
+                                if (strpos($iframeSrc, 'embed6.blogspot.com/?url=') !== false) {
+                                    $iframeSrc = str_replace('https://embed6.blogspot.com/?url=', '', $iframeSrc);
+                                    // URL decode the encoded URL
+                                    $iframeSrc = urldecode($iframeSrc);
+                                }
+                                
+                                $servers[] = [
+                                    'name' => $name,
+                                    'link' => $iframeSrc
+                                ];
+                            }
+                            $responseDom->clear();
+                            unset($responseDom);
+                        }
+                    }
                 }
             }
         }
