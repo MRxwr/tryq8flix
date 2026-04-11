@@ -361,6 +361,17 @@ function animePecServers($url) {
                             'type' => $type
                         ]));
                         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Accept: */*',
+                            'Accept-Language: en-US,en;q=0.9',
+                            'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+                            'Origin: https://y0vx70khe8u.animepec.online',
+                            'Referer: ' . $url,
+                            'X-Requested-With: XMLHttpRequest',
+                            'Sec-Fetch-Dest: empty',
+                            'Sec-Fetch-Mode: cors',
+                            'Sec-Fetch-Site: same-origin'
+                        ]);
                         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
                         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
