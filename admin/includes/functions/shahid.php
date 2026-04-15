@@ -75,7 +75,7 @@ function searchShahidListing($url){
             
             // Use image proxy for all images to avoid CORS/hotlink issues
             if (!empty($imageUrl)) {
-                //$imageUrl = "https://".$_SERVER['HTTP_HOST']."/image-proxy.php?url=".urlencode(trim($imageUrl));
+                $imageUrl = "https://".$_SERVER['HTTP_HOST']."/image-proxy.php?url=".urlencode(trim($imageUrl));
             }
             
             $href = $show->href;
