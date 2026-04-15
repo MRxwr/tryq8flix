@@ -12,9 +12,9 @@ function tvdbTvShowsHome($url) {
     }
 
     if (!empty($searchQuery)) {
-        $apiUrl = "https://api.themoviedb.org/3/search/tv?query=" . urlencode($searchQuery) . "&include_adult=false&language=ar&page={$page}";
+        $apiUrl = "https://api.themoviedb.org/3/search/tv?query=" . urlencode($searchQuery) . "&include_adult=false&language=en&page={$page}";
     } else {
-        $apiUrl = "https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=ar&page={$page}&sort_by=popularity.desc";
+        $apiUrl = "https://api.themoviedb.org/3/discover/tv?include_adult=false&include_null_first_air_dates=false&language=en&page={$page}&sort_by=popularity.desc";
     }
     
     $ch = curl_init();
@@ -73,7 +73,7 @@ function tvdbTvShowsListings($id) {
     $episodesData = [];
 
     // 1. Always get Show Info to get list of Seasons
-    $apiUrl = "https://api.themoviedb.org/3/tv/{$showId}?language=ar";
+    $apiUrl = "https://api.themoviedb.org/3/tv/{$showId}?language=en";
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     $response = curl_exec($ch);
     $result = json_decode($response, true);
@@ -99,7 +99,7 @@ function tvdbTvShowsListings($id) {
 
         // Fetch episodes for the determined season
         if ($seasonToLoad !== null) {
-            $epApiUrl = "https://api.themoviedb.org/3/tv/{$showId}/season/{$seasonToLoad}?language=ar";
+            $epApiUrl = "https://api.themoviedb.org/3/tv/{$showId}/season/{$seasonToLoad}?language=en";
             curl_setopt($ch, CURLOPT_URL, $epApiUrl);
             $epResponse = curl_exec($ch);
             $epResult = json_decode($epResponse, true);
