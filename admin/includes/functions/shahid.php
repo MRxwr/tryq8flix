@@ -11,7 +11,13 @@ function shahidCurl($url) {
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => json_encode(array('url' => $url)),
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json',
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept: application/json, text/plain, */*',
+        'Origin: https://viewsource.net',
+        'Referer: https://viewsource.net/'
+      ),
     ));
     $response = curl_exec($curl);
     curl_close($curl);
