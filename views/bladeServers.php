@@ -212,6 +212,12 @@ $(document).ready(function() {
             }
 
             if(response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                // Update hero background if backdrop is provided in response (for tvdb servers)
+                if (response.data[0] && response.data[0].backdrop) {
+                    $('#episode-hero').css('background-image', 'url(' + response.data[0].backdrop + ')');
+                    window.currentMetadata.image = response.data[0].backdrop;
+                }
+
                 response.data.forEach((srv, index) => {
                     // Escape single quotes in URL just in case
                     const safeLink = srv.link ? srv.link.replace(/'/g, "\\'") : '';

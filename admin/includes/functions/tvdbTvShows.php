@@ -36,6 +36,7 @@ function tvdbTvShowsHome($url) {
             $data['shows'][] = [
                 'href' => $item['id'],
                 'image' => "https://image.tmdb.org/t/p/w500" . $item['poster_path'],
+                'backdrop' => "https://image.tmdb.org/t/p/original" . $item['backdrop_path'],
                 'episode' => $item['vote_average'],
                 'category' => 'TV Show',
                 'title' => $item['name'] ?: $item['original_name'],
@@ -122,11 +123,13 @@ function tvdbTvShowsListings($id) {
 
     return [
         'seasons' => $seasonsData,
-        'episodes' => $episodesData
+        'episodes' => $episodesData,
+        'backdrop' => isset($result['backdrop_path']) ? "https://image.tmdb.org/t/p/original" . $result['backdrop_path'] : ""
     ];
 }
 
 function tvdbTvShowsServers($id_info) {
+    GLOBAL $tvdbToken;
     // Expect format: "ID/Season/Episode"
     $parts = explode('/', $id_info);
     if (count($parts) < 3) return [];
@@ -135,11 +138,25 @@ function tvdbTvShowsServers($id_info) {
     $s = $parts[1];
     $e = $parts[2];
 
+    $ch = curl_init();
+    $apiUrl = "https://api.themoviedb.org/3/tv/{$id}?language=en";
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: Bearer " . $tvdbToken,
+        "accept: application/json"
+    ]);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $res = json_decode($response, true);
+    $backdrop = (isset($res['backdrop_path']) && !empty($res['backdrop_path'])) ? "https://image.tmdb.org/t/p/original" . $res['backdrop_path'] : "";
+
     return [
-        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}"],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}"],
-        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}"],
-        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}"]
+        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop],
+        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop],
+        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop],
+        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop]
     ];
 } 
 ?>

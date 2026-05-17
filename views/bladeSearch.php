@@ -113,7 +113,9 @@ function performSearch(isLoadMore = false) {
         if(response.ok && response.data.shows && response.data.shows.length > 0) {
             response.data.shows.forEach(show => {
                 const encHref = encryptLink(show.href);
-                const encImage = encryptLink(show.image);
+                // Use backdrop if available, otherwise use standard image
+                const imageToSend = show.backdrop || show.image;
+                const encImage = encryptLink(imageToSend);
                 const encTitle = encryptLink(show.title);
                 const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                 let html = `

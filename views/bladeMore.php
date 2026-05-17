@@ -66,8 +66,14 @@ $(document).ready(function() {
                 if (!title && data.title) {
                      $('#hero-title').text(data.title);
                 }
-                // If we didn't have an image, maybe use poster from data if available?
-                if (!image && data.poster) {
+                // Use backdrop from API if available to update hero
+                if (data.backdrop) {
+                    image = data.backdrop; // Update local image variable to pass formatted backdrop to next page
+                    $('#hero-section').css('background-image', 'url(' + data.backdrop + ')');
+                    $('#hero-section').show();
+                    // Update current metadata link if needed (if image was decryptLink from URL)
+                    // This ensures favBtnHero uses the better image too
+                } else if (!image && data.poster) {
                     $('#hero-section').css('background-image', 'url(' + data.poster + ')');
                     $('#hero-section').show();
                 }
