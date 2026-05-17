@@ -17,7 +17,7 @@ require_once "esq.php";
 require_once "animeslayer.php";
 require_once "animePec.php";
 require_once "tvdbMovies.php";
-require_once "tvdbTvShows.php";
+require_once "tvdbTvShows.php"; 
 require_once "system.php";
 
 ?>

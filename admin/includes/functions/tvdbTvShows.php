@@ -141,5 +141,5 @@ function tvdbTvShowsServers($id_info) {
         ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}"],
         ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}"]
     ];
-}
+} 
 ?>
