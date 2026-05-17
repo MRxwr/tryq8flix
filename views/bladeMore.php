@@ -70,8 +70,16 @@ $(document).ready(function() {
                 // Set Overview and Release Date
                 if (data.overview || data.release_date) {
                     let infoHtml = '';
-                    if (data.release_date) infoHtml += `<span class="badge bg-danger me-2">${data.release_date.split('-')[0]}</span>`;
-                    if (data.overview) infoHtml += `<p class="mt-3 text-light" style="max-width: 800px; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${data.overview}</p>`;
+                    if (data.release_date) {
+                        const year = data.release_date.split('-')[0];
+                        infoHtml += `<div class="d-flex align-items-center gap-3 mb-3">
+                                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(229, 9, 20, 0.85); font-weight: 600; letter-spacing: 0.5px;">${year}</span>
+                                        <span class="text-white-50 small"><i class="fas fa-closed-captioning me-1"></i> HD / Ultra 4K</span>
+                                     </div>`;
+                    }
+                    if (data.overview) {
+                        infoHtml += `<p class="mt-2 text-light info-overview" style="max-width: 700px; font-size: 1.05rem; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.5); opacity: 0.9; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;">${data.overview}</p>`;
+                    }
                     $('#hero-desc').html(infoHtml);
                 }
 

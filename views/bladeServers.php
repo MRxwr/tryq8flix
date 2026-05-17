@@ -221,11 +221,19 @@ $(document).ready(function() {
                 
                 // Show Overview and Date under title
                 let infoHtml = '';
-                if (firstSrv.date) infoHtml += `<span class="badge bg-danger me-2">${firstSrv.date.split('-')[0]}</span>`;
-                if (firstSrv.overview) infoHtml += `<p class="mt-3 text-light small" style="max-width: 800px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${firstSrv.overview}</p>`;
+                if (firstSrv.date) {
+                    const year = firstSrv.date.split('-')[0];
+                    infoHtml += `<div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge rounded-pill bg-danger px-2 py-1" style="font-size: 0.75rem;">${year}</span>
+                                    <span class="text-white-50" style="font-size: 0.75rem;">Movies & Series</span>
+                                 </div>`;
+                }
+                if (firstSrv.overview) {
+                    infoHtml += `<p class="mt-2 text-white-50 info-overview" style="max-width: 650px; font-size: 0.95rem; line-height: 1.5; text-shadow: 0 1px 3px rgba(0,0,0,0.5); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${firstSrv.overview}</p>`;
+                }
                 
                 if (infoHtml) {
-                    $('#episode-title').after(`<div class="hero-info">${infoHtml}</div>`);
+                    $('#episode-title').after(`<div class="hero-info my-3">${infoHtml}</div>`);
                 }
 
                 response.data.forEach((srv, index) => {
