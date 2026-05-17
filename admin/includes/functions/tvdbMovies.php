@@ -64,12 +64,14 @@ function tvdbMoviesServers($id) {
     curl_close($ch);
     $res = json_decode($response, true);
     $backdrop = (isset($res['backdrop_path']) && !empty($res['backdrop_path'])) ? "https://image.tmdb.org/t/p/original" . $res['backdrop_path'] : "";
+    $overview = isset($res['overview']) ? $res['overview'] : "";
+    $date = isset($res['release_date']) ? $res['release_date'] : "";
 
     return [
-        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}", 'backdrop' => $backdrop],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/movie/{$id}", 'backdrop' => $backdrop],
-        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}", 'backdrop' => $backdrop],
-        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}", 'backdrop' => $backdrop]
+        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 }
 
@@ -87,12 +89,14 @@ function tvdbMoviesListings($id) {
     $response = curl_exec($ch);
     curl_close($ch);
     $result = json_decode($response, true);
-    $backdrop = isset($result['backdrop_path']) ? "https://image.tmdb.org/t/p/original" . $result['backdrop_path'] : "";
+    $backdrop = (isset($result['backdrop_path']) && !empty($result['backdrop_path'])) ? "https://image.tmdb.org/t/p/original" . $result['backdrop_path'] : "";
 
     return[
         "seasons" => [],
         "episodes" => [],
-        "backdrop" => $backdrop
+        "backdrop" => $backdrop,
+        "overview" => isset($result['overview']) ? $result['overview'] : "",
+        "release_date" => isset($result['release_date']) ? $result['release_date'] : ""
     ];
 }
 ?>

@@ -124,7 +124,9 @@ function tvdbTvShowsListings($id) {
     return [
         'seasons' => $seasonsData,
         'episodes' => $episodesData,
-        'backdrop' => isset($result['backdrop_path']) ? "https://image.tmdb.org/t/p/original" . $result['backdrop_path'] : ""
+        'backdrop' => isset($result['backdrop_path']) ? "https://image.tmdb.org/t/p/original" . $result['backdrop_path'] : "",
+        'overview' => isset($result['overview']) ? $result['overview'] : "",
+        'release_date' => isset($result['first_air_date']) ? $result['first_air_date'] : ""
     ];
 }
 
@@ -151,12 +153,14 @@ function tvdbTvShowsServers($id_info) {
     curl_close($ch);
     $res = json_decode($response, true);
     $backdrop = (isset($res['backdrop_path']) && !empty($res['backdrop_path'])) ? "https://image.tmdb.org/t/p/original" . $res['backdrop_path'] : "";
+    $overview = isset($res['overview']) ? $res['overview'] : "";
+    $date = isset($res['first_air_date']) ? $res['first_air_date'] : "";
 
     return [
-        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop],
-        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop],
-        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop]
+        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 } 
 ?>

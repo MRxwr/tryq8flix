@@ -66,6 +66,15 @@ $(document).ready(function() {
                 if (!title && data.title) {
                      $('#hero-title').text(data.title);
                 }
+                
+                // Set Overview and Release Date
+                if (data.overview || data.release_date) {
+                    let infoHtml = '';
+                    if (data.release_date) infoHtml += `<span class="badge bg-danger me-2">${data.release_date.split('-')[0]}</span>`;
+                    if (data.overview) infoHtml += `<p class="mt-3 text-light" style="max-width: 800px; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${data.overview}</p>`;
+                    $('#hero-desc').html(infoHtml);
+                }
+
                 // Use backdrop from API if available to update hero immediately if it changed
                 if (data.backdrop && data.backdrop !== image) {
                     image = data.backdrop; 

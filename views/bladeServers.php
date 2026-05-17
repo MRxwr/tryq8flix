@@ -212,10 +212,20 @@ $(document).ready(function() {
             }
 
             if(response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                const firstSrv = response.data[0];
                 // Update hero background if backdrop is provided in response (for tvdb servers)
-                if (response.data[0] && response.data[0].backdrop) {
-                    $('#episode-hero').css('background-image', 'url(' + response.data[0].backdrop + ')');
-                    window.currentMetadata.image = response.data[0].backdrop;
+                if (firstSrv.backdrop) {
+                    $('#episode-hero').css('background-image', 'url(' + firstSrv.backdrop + ')');
+                    window.currentMetadata.image = firstSrv.backdrop;
+                }
+                
+                // Show Overview and Date under title
+                let infoHtml = '';
+                if (firstSrv.date) infoHtml += `<span class="badge bg-danger me-2">${firstSrv.date.split('-')[0]}</span>`;
+                if (firstSrv.overview) infoHtml += `<p class="mt-3 text-light small" style="max-width: 800px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${firstSrv.overview}</p>`;
+                
+                if (infoHtml) {
+                    $('#episode-title').after(`<div class="hero-info">${infoHtml}</div>`);
                 }
 
                 response.data.forEach((srv, index) => {
