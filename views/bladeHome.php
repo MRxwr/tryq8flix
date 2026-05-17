@@ -194,39 +194,51 @@
             }
         });
 
-        // Fetch Main Data (Banners & Servers)
+        // Fetch Main Data (Servers)
         $.getJSON('api/index.php?endpoint=Main', function(response) {
             if (response.ok) {
                 const data = response.data;
 
-                // 1. Setup Hero Section from Banners
-                if (data.banners && data.banners.length > 0) {
-                    // Pick a random banner or the first one
-                    const banner = data.banners[Math.floor(Math.random() * data.banners.length)];
-                    $('#hero-section').css('background-image', 'url(' + banner.imageurl + ')');
-                    $('#hero-title').text(banner.title || 'Featured Content');
-                    $('#hero-desc').text('Watch the latest movies and TV shows on TryQ8Flix.');
-
-                    // Update Play/More Info buttons if needed based on banner data
-                    // For example, if banner has an endpoint/url, we could attach it to the button
-                    if (banner.url && banner.server) {
-                        const encHref = encryptLink(banner.url);
-                        const encImage = encryptLink(banner.imageurl);
-                        const encTitle = encryptLink(banner.title);
-                        $('.btn-netflix').attr('onclick', `navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})`);
-                        $('.btn-secondary-netflix').attr('onclick', `navigateToEncrypted({v: 'More', href: '${encHref}', server: '${banner.server}', image: '${encImage}', title: '${encTitle}'})`);
+                // Function to set random hero from TVDB servers
+                const setRandomHero = (shows, serverId) => {
+                    if (!shows || shows.length === 0) return;
+                    const show = shows[Math.floor(Math.random() * shows.length)];
+                    const backdrop = show.backdrop || show.image;
+                    
+                    $('#hero-section').css('background-image', 'url(' + backdrop + ')');
+                    $('#hero-title').text(show.title);
+                    
+                    let infoHtml = '';
+                    if (show.description) {
+                        infoHtml += `<div class="d-flex align-items-center gap-3 mb-3">
+                                        <span class="badge rounded-pill px-3 py-2" style="background: rgba(229, 9, 20, 0.85); font-weight: 600; letter-spacing: 0.5px;">${show.description}</span>
+                                        <span class="text-white-50 small"><i class="fas fa-closed-captioning me-1"></i> HD / Ultra 4K</span>
+                                     </div>`;
                     }
-                } else {
-                    $('#hero-title').text('Welcome to TryQ8Flix');
-                    $('#hero-desc').text('Browse our collection of movies and TV shows.');
-                }
+                    infoHtml += `<p class="mt-2 text-light" style="max-width: 600px; font-size: 1.1rem; text-shadow: 0 2px 8px rgba(0,0,0,0.8); opacity: 0.9;">Watch ${show.title} on TryQ8Flix. High quality streaming available now.</p>`;
+                    $('#hero-desc').html(infoHtml);
+
+                    const encHref = encryptLink(show.href);
+                    const encImage = encryptLink(backdrop);
+                    const encTitle = encryptLink(show.title);
+                    
+                    $('.btn-netflix').attr('onclick', `navigateToEncrypted({v: 'More', href: '${encHref}', server: '${serverId}', image: '${encImage}', title: '${encTitle}'})`);
+                    $('.btn-secondary-netflix').attr('onclick', `navigateToEncrypted({v: 'More', href: '${encHref}', server: '${serverId}', image: '${encImage}', title: '${encTitle}'})`);
+                };
 
                 // 2. Setup Content Rows from Servers
                 if (data.servers && data.servers.length > 0) {
+                    let heroSet = false;
                     data.servers.forEach((server, index) => {
                         // Fetch content for each server
                         $.getJSON('api/index.php?endpoint=Home&action=view&page=1&server=' + server.id, function(serverRes) {
                             if (serverRes.ok && serverRes.data.shows && serverRes.data.shows.length > 0) {
+                                // Set Random Hero from TVDB servers (13 or 14)
+                                if (!heroSet && (server.id == "13" || server.id == "14")) {
+                                    setRandomHero(serverRes.data.shows, server.id);
+                                    heroSet = true;
+                                }
+
                                 const rowId = `row-${server.id}`;
                                 let rowHtml = `
                                 <div class="d-flex justify-content-between align-items-center" style="margin: 2rem 4% 1rem 4%;">
