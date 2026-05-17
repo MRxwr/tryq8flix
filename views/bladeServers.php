@@ -1,11 +1,11 @@
 <?php include 'header.php'; ?>
 
-<div id="episode-hero" class="hero" style="display:none; background-size: cover; background-position: center; min-height: 300px;">
+<div id="episode-hero" class="hero" style="display:none; background-size: cover; background-position: center; min-height: 500px; display: flex; align-items: flex-end; padding-bottom: 40px;">
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="hero-title" id="episode-title">Loading...</h1>
+    <div class="hero-content w-100">
+        <h1 class="hero-title fw-bold" id="episode-title" style="font-size: 3.5rem; text-shadow: 0 4px 10px rgba(0,0,0,0.8);">Loading...</h1>
         
-        <button class="btn btn-secondary-netflix" onclick="history.back()">
+        <button class="btn btn-secondary-netflix mt-3" onclick="history.back()">
             <i class="fas fa-arrow-left"></i> Back
         </button>
     </div>
