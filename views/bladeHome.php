@@ -1,12 +1,14 @@
 <?php include 'header.php'; ?>
 
-<div id="hero-section" class="hero" style="background-image: url('https://image.tmdb.org/t/p/original/9yBVqNruk6Ykr9zD297HQNAmUe7.jpg');">
+<div id="hero-section" class="hero" style="background-image: url('https://image.tmdb.org/t/p/original/9yBVqNruk6Ykr9zD297HQNAmUe7.jpg'); min-height: 80vh; display: flex; align-items: flex-end; padding-bottom: 60px;">
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1 class="hero-title" id="hero-title">Loading...</h1>
-        <p class="hero-desc" id="hero-desc">Please wait while we fetch the latest content for you.</p>
-        <button class="btn btn-netflix"><i class="fas fa-play"></i> Play</button>
-        <button class="btn btn-secondary-netflix"><i class="fas fa-info-circle"></i> More Info</button>
+    <div class="hero-content w-100">
+        <h1 class="hero-title fw-bold mb-3" id="hero-title" style="font-size: 4rem; text-shadow: 0 4px 15px rgba(0,0,0,0.8); line-height: 1.1;">Loading...</h1>
+        <p class="hero-desc mb-4" id="hero-desc" style="max-width: 600px; font-size: 1.1rem; text-shadow: 0 2px 8px rgba(0,0,0,0.8); opacity: 0.9;">Please wait while we fetch the latest content for you.</p>
+        <div class="d-flex gap-3">
+            <button class="btn btn-netflix px-4 py-2 fw-bold"><i class="fas fa-play me-2"></i> Play</button>
+            <button class="btn btn-secondary-netflix px-4 py-2 fw-bold"><i class="fas fa-info-circle me-2"></i> More Info</button>
+        </div>
     </div>
 </div>
 
