@@ -15,8 +15,7 @@ ini_set("display_errors", "1");
 error_reporting(E_ALL);
 include_once("bookeey.php");
 $bookeeyPipe = new bookeey;
-$bookeeyPipe->setIsTestModeEnable(1);          // Enable Test Mode
-$bookeeyPipe->setMerchantID('mer23000173');    // Set the Merchant ID (using test credentials if needed)
+$bookeeyPipe->setMerchantID('mer23000173');    // Set the Merchant ID
 $bookeeyPipe->setSecretKey('4653344');    // Set the Secret Key
  // Pass Transaction Ids in the array
 $orderIds = array(
