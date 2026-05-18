@@ -35,10 +35,9 @@ function tvdbTvShowsHome($url) {
     if (isset($result['results'])) {
         foreach ($result['results'] as $item) {
             $data['shows'][] = [
-                'href' => $item['id'],
+                'href' => (string)$item['id'],
                 'image' => "https://image.tmdb.org/t/p/w500" . $item['poster_path'],
-                'backdrop' => "https://image.tmdb.org/t/p/original" . $item['backdrop_path'],
-                'episode' => $item['vote_average'],
+                'episode' => (string)$item['vote_average'],
                 'category' => 'TV Show',
                 'title' => $item['name'] ?: $item['original_name'],
                 'description' => $item['first_air_date'] ? substr($item['first_air_date'], 0, 4) : '',
