@@ -681,7 +681,10 @@ class bookeey {
             if ($decodeOutput['PayUrl'] == '') {
                 echo "Error Message: ".$decodeOutput['ErrorMessage'];
             }else{
-                header("Location: ".$decodeOutput['PayUrl']);
+                // REDIRECT REMOVED FOR DEBUGGING
+                echo "<h3>Redirection paused for debugging</h3>";
+                echo "<b>Payment URL:</b> <a href='".$decodeOutput['PayUrl']."'>".$decodeOutput['PayUrl']."</a><br>";
+                // header("Location: ".$decodeOutput['PayUrl']);
             }   
         }else if(isset($decodeOutput['Message'])){
             echo "Error Message: ".$decodeOutput['Message'];
