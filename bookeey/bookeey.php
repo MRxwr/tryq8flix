@@ -655,6 +655,14 @@ class bookeey {
         $serverOutput = curl_exec($ch);
         $curlError = curl_error($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        echo "<h3>API Debug Info:</h3>";
+        echo "<b>URL:</b> " . $paymentGatewayUrl . "<br>";
+        echo "<b>HTTP Code:</b> " . $httpCode . "<br>";
+        if ($curlError) echo "<b>CURL Error:</b> " . $curlError . "<br>";
+        echo "<b>Raw Payload Sent:</b> <pre>" . json_encode($postParams, JSON_PRETTY_PRINT) . "</pre>";
+        echo "<b>Raw Server Response:</b> <pre>" . htmlspecialchars($serverOutput) . "</pre>";
+
         $decodeOutput = json_decode($serverOutput, true);
         curl_close ($ch);
 

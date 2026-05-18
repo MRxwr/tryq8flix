@@ -48,6 +48,7 @@ if($isEnable){
             )
         );
 
+        echo "<h2>Debugging Output</h2>";
         $bookeeyPipe->initiatePayment($transactionDetails);
         exit;
     }
