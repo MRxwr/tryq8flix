@@ -130,7 +130,7 @@ const TEST_BOOKEEY_PAYMENT_GATEWAY_URL = "https://apps.bookeey.com/pgapi/api/pay
  * Type: String
  * CRITICAL: DO NOT CHANGE THIS VALUE.
  */
-const LIVE_BOOKEEY_PAYMENT_GATEWAY_URL = "https://pg.bookeey.com/internalapi/api/payment/requestLink";
+const LIVE_BOOKEEY_PAYMENT_GATEWAY_URL = "https://api.bookeey.com/api/payment/requestLink";
 
 /**
  * Test Bookeey Payment Requery URL
@@ -144,7 +144,7 @@ const TEST_BOOKEEY_PAYMENT_REQUERY_URL = "https://apps.bookeey.com/pgapi/api/pay
  * Type: String
  * CRITICAL: DO NOT CHANGE THIS VALUE.
  */
-const LIVE_BOOKEEY_PAYMENT_REQUERY_URL = "https://pg.bookeey.com/internalapi/api/payment/paymentstatus";
+const LIVE_BOOKEEY_PAYMENT_REQUERY_URL = "https://api.bookeey.com/api/payment/paymentstatus";
 
 /**
  * Payment Options
