@@ -15,6 +15,7 @@ function tvdbMoviesHome($url) {
         $apiUrl = "https://api.themoviedb.org/3/search/movie?query=" . urlencode($searchQuery) . "&include_adult=false&language=en&page={$page}";
     } else {
         $apiUrl = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page={$page}&sort_by=popularity.desc";
+        $apiUrl = "https://api.themoviedb.org/3/trending/movie/day?language=en-US";
     }
     
     $ch = curl_init();
