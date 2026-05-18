@@ -35,9 +35,10 @@ function tvdbMoviesHome($url) {
     if (isset($result['results'])) {
         foreach ($result['results'] as $item) {
             $data['shows'][] = [
-                'href' => (string)$item['id'],
+                'href' => $item['id'],
                 'image' => "https://image.tmdb.org/t/p/w500" . $item['poster_path'],
-                'episode' => (string)$item['vote_average'],
+                'backdrop' => "https://image.tmdb.org/t/p/original" . $item['backdrop_path'],
+                'episode' => $item['vote_average'],
                 'category' => 'Movie',
                 'title' => $item['title'] ?: $item['original_title'],
                 'description' => $item['release_date'] ? substr($item['release_date'], 0, 4) : '',
