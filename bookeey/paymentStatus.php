@@ -22,6 +22,13 @@ $orderIds = array(
     "17791444092"
     );
 $transactionData = $bookeeyPipe->getPaymentStatus($orderIds);
+echo "<h3>Body:</h3>";
+echo "<pre>";
+print_r($orderIds);
+echo "</pre>";
+
+echo "<h3>Result:</h3>";
 echo "<pre>";
 print_r($transactionData);
+echo "</pre>";
 ?>

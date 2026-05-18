@@ -713,7 +713,10 @@ class bookeey {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postParams));
+        $jsonParams = json_encode($postParams);
+        echo "<h3>Request URL:</h3><pre>" . $requeryUrl . "</pre>";
+        echo "<h3>Request Body (JSON):</h3><pre>" . $jsonParams . "</pre>";
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonParams);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $serverOutput = curl_exec($ch);
