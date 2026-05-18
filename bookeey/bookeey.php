@@ -501,7 +501,7 @@ class bookeey {
      * Return Type: String
      */
     function getLiveBookeeyPaymentRequeryUrl() {
-        return $this->liveBookeeyPaymentGatewayUrl;
+        return $this->liveBookeeyPaymentRequeryUrl;
     }
 
 
