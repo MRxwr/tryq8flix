@@ -27,7 +27,7 @@ if($isEnable){
     $bookeeyPipe->setSecretKey('4653344');    // Set the Secret Key
     $bookeeyPipe->setIsTestModeEnable(0);  // FORCE LIVE MODE
     $bookeeyPipe->setOrderId(time());  // Set Order ID - This should be unique for each transaction.
-    $bookeeyPipe->setAmount(1.000);  // Set amount in KWD
+    $bookeeyPipe->setAmount(1.000);  // Set amount in KWD 
     $bookeeyPipe->setPayerName("Test User");  // Set Payer Name
     $bookeeyPipe->setPayerPhone("12345678");  // Set Payer Phone Numner
     
