@@ -85,13 +85,13 @@ if($isEnable){
 <script type="text/javascript">
 function updateCheckout() {
     var selectedPaymentOption = getRadioVal( document.getElementById('bookeeyPaymentForm'), 'payoptions' );
-    var url = "buy.php?selectedPaymentOption="+selectedPaymentOption;
+    var url = "order.php?selectedPaymentOption="+selectedPaymentOption;
     window.location.replace(url);
 }
 
 function initiatePayment() {
     var selectedPaymentOption = getRadioVal( document.getElementById('bookeeyPaymentForm'), 'payoptions' );
-    var url = "buy.php?selectedPaymentOption="+selectedPaymentOption+"&initPayment=1";
+    var url = "order.php?selectedPaymentOption="+selectedPaymentOption+"&initPayment=1";
     window.location.replace(url);
 }
 
