@@ -123,7 +123,7 @@ const FAILURE_URL = "http://localhost:9090/bookeey_library/failure.php";
  * Type: String
  * CRITICAL: DO NOT CHANGE THIS VALUE.
  */
-const TEST_BOOKEEY_PAYMENT_GATEWAY_URL = "https://test.bookeey.com/pgapi/api/payment/requestLink";
+const TEST_BOOKEEY_PAYMENT_GATEWAY_URL = "https://apps.bookeey.com/pgapi/api/payment/requestLink";
 
 /**
  * Live Bookeey Payment Gateway URL
@@ -137,7 +137,7 @@ const LIVE_BOOKEEY_PAYMENT_GATEWAY_URL = "https://pg.bookeey.com/internalapi/api
  * Type: String
  * CRITICAL: DO NOT CHANGE THIS VALUE.
  */
-const TEST_BOOKEEY_PAYMENT_REQUERY_URL = "https://test.bookeey.com/pgapi/api/payment/paymentstatus";
+const TEST_BOOKEEY_PAYMENT_REQUERY_URL = "https://apps.bookeey.com/pgapi/api/payment/paymentstatus";
 
 /**
  * Live Bookeey Payment Requery URL
@@ -501,7 +501,7 @@ class bookeey {
      * Return Type: String
      */
     function getLiveBookeeyPaymentRequeryUrl() {
-        return $this->liveBookeeyPaymentRequeryUrl;
+        return $this->liveBookeeyPaymentGatewayUrl;
     }
 
 
@@ -713,10 +713,7 @@ class bookeey {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_POST, true);
-        $jsonParams = json_encode($postParams);
-        echo "<h3>Request URL:</h3><pre>" . $requeryUrl . "</pre>";
-        echo "<h3>Request Body (JSON):</h3><pre>" . $jsonParams . "</pre>";
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonParams);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postParams));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $serverOutput = curl_exec($ch);
