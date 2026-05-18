@@ -15,14 +15,21 @@ ini_set("display_errors", "1");
 error_reporting(E_ALL);
 include_once("bookeey.php");
 $bookeeyPipe = new bookeey;
-$bookeeyPipe->setMerchantID('mer160009');    // Set the Merchant ID
-$bookeeyPipe->setSecretKey('1234567');    // Set the Secret Key
+$bookeeyPipe->setIsTestModeEnable(1);          // Enable Test Mode
+$bookeeyPipe->setMerchantID('mer23000173');    // Set the Merchant ID (using test credentials if needed)
+$bookeeyPipe->setSecretKey('4653344');    // Set the Secret Key
  // Pass Transaction Ids in the array
 $orderIds = array(
-    "211744346",
-    "272884101"
-);
+    "17791444092"
+    );
 $transactionData = $bookeeyPipe->getPaymentStatus($orderIds);
+echo "<h3>Body:</h3>";
+echo "<pre>";
+print_r($orderIds);
+echo "</pre>";
+
+echo "<h3>Result:</h3>";
 echo "<pre>";
 print_r($transactionData);
+echo "</pre>";
 ?>
