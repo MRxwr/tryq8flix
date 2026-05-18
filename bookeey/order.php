@@ -21,11 +21,11 @@ $isEnable = $bookeeyPipe->isEnable();
 if($isEnable){
     /* $bookeeyPipe->setTitle('Custom Title');
     $bookeeyPipe->setDescription('Custom Description'); */
-    $bookeeyPipe->setSuccessUrl('https://createapi.link/bookeey/success.php');
-    $bookeeyPipe->setFailureUrl('https://createapi.link/bookeey/failure.php');
+    $bookeeyPipe->setSuccessUrl('https://tryq8flix.com/bookeey/success.php');
+    $bookeeyPipe->setFailureUrl('https://tryq8flix.com/bookeey/failure.php');
     $bookeeyPipe->setMerchantID('mer23000173');    // Set the Merchant ID
     $bookeeyPipe->setSecretKey('4653344');    // Set the Secret Key
-    $bookeeyPipe->setIsTestModeEnable(1);  // FORCE LIVE MODE
+    $bookeeyPipe->setIsTestModeEnable(0);  // FORCE LIVE MODE
     $bookeeyPipe->setOrderId(time());  // Set Order ID - This should be unique for each transaction.
     $bookeeyPipe->setAmount(1.000);  // Set amount in KWD 
     $bookeeyPipe->setPayerName("Test User");  // Set Payer Name
