@@ -69,7 +69,7 @@ const IS_ENABLE = 1;
  * Type: Integer
  * Possible Values:  0 (Enable Live Mode) | 1 (Enable Test Mode)
  */
-const IS_TEST_MODE_ENABLE = 1;
+const IS_TEST_MODE_ENABLE = 0;
 
 /**
  * Payment Method Title

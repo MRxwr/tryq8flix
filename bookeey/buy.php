@@ -11,8 +11,8 @@
  * 
  */
 
-ini_set("display_errors", "1");
 error_reporting(E_ALL);
+ini_set("display_errors", "1");
 include_once("bookeey.php");
 $bookeeyPipe = new bookeey;
 $isEnable = $bookeeyPipe->isEnable();
@@ -22,8 +22,8 @@ if($isEnable){
     $bookeeyPipe->setDescription('Custom Description'); */
     $bookeeyPipe->setSuccessUrl('https://createapi.link/bookeey/success.php');
     $bookeeyPipe->setFailureUrl('https://createapi.link/bookeey/failure.php');
-    $bookeeyPipe->setMerchantID('mer160009');    // Set the Merchant ID
-    $bookeeyPipe->setSecretKey('1234567');    // Set the Secret Key
+    $bookeeyPipe->setMerchantID('mer23000173');    // Set the Merchant ID
+    $bookeeyPipe->setSecretKey('4653344');    // Set the Secret Key
     $bookeeyPipe->setOrderId(time());  // Set Order ID - This should be unique for each transaction.
     $bookeeyPipe->setAmount(1.000);  // Set amount in KWD
     $bookeeyPipe->setPayerName("Test User");  // Set Payer Name
@@ -41,12 +41,13 @@ if($isEnable){
         // Pass sub merchant id(s) and amount(s) in the below format.
         $transactionDetails = array(
             array(
-                "SubMerchUID" => "mer160009",
+                "SubMerchUID" => "mer23000173",
                 "Txn_AMT" => 1.000
             )
         );
 
         $bookeeyPipe->initiatePayment($transactionDetails);
+        exit;
     }
 
     $mode = ($bookeeyPipe->isTestModeEnable()) ? "Test Mode Enabled" : "Live Mode Enabled";
@@ -82,13 +83,13 @@ if($isEnable){
 <script type="text/javascript">
 function updateCheckout() {
     var selectedPaymentOption = getRadioVal( document.getElementById('bookeeyPaymentForm'), 'payoptions' );
-    var url = "https://createapi.link/bookeey/buy.php?selectedPaymentOption="+selectedPaymentOption;
+    var url = "buy.php?selectedPaymentOption="+selectedPaymentOption;
     window.location.replace(url);
 }
 
 function initiatePayment() {
     var selectedPaymentOption = getRadioVal( document.getElementById('bookeeyPaymentForm'), 'payoptions' );
-    var url = "https://createapi.link/bookeey/buy.php?selectedPaymentOption="+selectedPaymentOption+"&initPayment=1";
+    var url = "buy.php?selectedPaymentOption="+selectedPaymentOption+"&initPayment=1";
     window.location.replace(url);
 }
 
