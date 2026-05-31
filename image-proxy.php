@@ -9,7 +9,8 @@ if (!isset($_GET['url'])) {
 }
 
 $url = $_GET['url']; // Keep the URL as-is, don't decode it
-
+echo file_get_contents($url); // Just to check if the URL is valid and accessible
+die();
 // Initialize cURL session
 $ch = curl_init();
 
