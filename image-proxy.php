@@ -31,7 +31,7 @@ if (!isset($_GET['url'])) {
     exit;
 }
 
-$url = $_GET['url']; // Keep the URL as-is, don't decode it
+$url = urldecode($_GET['url']); // Keep the URL as-is, don't decode it
 
 // Initialize cURL session
 $ch = curl_init();
