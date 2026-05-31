@@ -161,40 +161,18 @@ function shahidServers($url){
     $mainServer = [];
     $html = shahidCurl("{$url}");
     $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
-    
-    if (preg_match($pattern, $html, $matches)) {
-        $jsonStr = $matches[1];
-        $serversData = json_decode($jsonStr, true);
-        
-        // If decoding fails, it might be due to escaping. JS string literals often escape quotes.
-        if ($serversData === null) {
-            $jsonStr = stripslashes($jsonStr);
-            $serversData = json_decode($jsonStr, true);
-        }
-
-        if (is_array($serversData)) {
-            // Sort by rank if available (lower rank first)
-            usort($serversData, function($a, $b) {
-                return ($a['rank'] ?? 100) - ($b['rank'] ?? 100);
-            });
-
-            foreach ($serversData as $server) {
-                if (isset($server["url"]) && !empty($server["url"])) {
-                    $serverImg = $server["img"] ?? "";
-                    if (!empty($serverImg) && strpos($serverImg, 'http') === 0) {
-                        $serverImg = "https://".$_SERVER['HTTP_HOST']."/image-proxy.php?url=".urlencode(trim($serverImg));
-                    }
-                    $mainServer[] = [
-                        "id" => $server["id"] ?? "",
-                        "link" => $server["url"],
-                        "name" => $server["name"] ?? "Server",
-                        "img" => $serverImg
-                    ];
-                }
-            }
-        }
+    preg_match($pattern, $html, $matches);
+    if (isset($matches[1])) {
+        $serversData = json_decode($matches[1], true);
+        $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Server information not found.';
+		$server = json_encode(array());
     }
-
+    $servers = json_decode($server,true);
+    foreach ($servers as $server) {
+        $mainServer[]["link"] = $server["url"];
+    }
     return $mainServer;
 }
 
@@ -217,11 +195,11 @@ function outputData($shows){
 			$realTitle = explode("الحلقة",$shows[$i]["title"]);
 			$output .= "
 				<div class='col-xl-4 col-lg-6 col-md-6 col-sm-12 p-1'>
-					<div class='card w-100' tabindex='0'>
+					<div class='card w-100'>
 						<div class='card-body'>
 							<div class='row w-100 p-0 m-0'>
 								<div class='col-4 p-1'>
-									<img src='{$shows[$i]["image"]}' style='width:100%;height:170px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+									<img src='requests?type=getImages&url={$shows[$i]["image"]}' style='width:100%;height:170px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
 								</div>
 								<div class='col-8 p-1'>
 									<div style='height:170px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
