@@ -8,27 +8,57 @@ if (!isset($_GET['url'])) {
     exit;
 }
 
-$url = $_GET['url']; // Keep the URL as-is, don't decode it
-/*
-// Initialize cURL session
-$ch = curl_init();
+$url = $_GET['url'];
 
-// Set cURL options
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-// Add Referer header based on the target URL
-$parsedUrl = parse_url($url);
-$referer = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/';
-curl_setopt($ch, CURLOPT_REFERER, $referer);
-curl_setopt($ch, CURLOPT_HEADER, 1);
+$cacheDir = 'temp_images/';
+if (!is_dir($cacheDir)) {
+    mkdir($cacheDir, 0777, true);
+}
 
-// Execute cURL session and get the response
-$response = curl_exec($ch);
-*/
+// Cleanup old files (older than 5 mins)
+$now = time();
+if ($handle = opendir($cacheDir)) {
+    while (false !== ($file = readdir($handle))) {
+        if ($file != "." && $file != "..") {
+            $filePath = $cacheDir . $file;
+            if ($now - filemtime($filePath) > 300) {
+                unlink($filePath);
+            }
+        }
+    }
+    closedir($handle);
+}
+
+$cacheFileName = md5($url);
+$cacheFileBase = $cacheDir . $cacheFileName;
+
+// Find existing cache file regardless of extension
+$existingFiles = glob($cacheFileBase . '.*');
+$cacheFile = null;
+$cacheMeta = $cacheFileBase . '.json';
+
+if (!empty($existingFiles)) {
+    foreach ($existingFiles as $file) {
+        if (strpos($file, '.json') === false) {
+            $cacheFile = $file;
+            break;
+        }
+    }
+}
+
+// Serve from cache if it exists and is less than 5 minutes old
+if ($cacheFile && file_exists($cacheFile) && file_exists($cacheMeta) && ($now - filemtime($cacheFile) < 300)) {
+    $meta = json_decode(file_get_contents($cacheMeta), true);
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: ' . $meta['Content-Type']);
+    header('Cache-Control: public, max-age=300');
+    // Suggest a filename for the browser
+    $ext = pathinfo($cacheFile, PATHINFO_EXTENSION);
+    header('Content-Disposition: inline; filename="' . $cacheFileName . '.' . $ext . '"');
+    readfile($cacheFile);
+    exit;
+}
+
 $ch = curl_init();
 
 curl_setopt_array($ch, array(
@@ -45,7 +75,8 @@ curl_setopt_array($ch, array(
         'Origin: https://codebeautify.org',
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     ),
-    CURLOPT_SSL_VERIFYPEER => false
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_HEADER => true
 ));
 
 // Execute cURL session and get the response
@@ -71,14 +102,44 @@ if ($httpcode != 200) {
 // Get content type
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
+// Map common content types to extensions
+$extensions = [
+    'image/jpeg' => 'jpg',
+    'image/jpg' => 'jpg',
+    'image/png' => 'png',
+    'image/gif' => 'gif',
+    'image/webp' => 'webp',
+    'image/svg+xml' => 'svg',
+    'image/x-icon' => 'ico'
+];
+
+$ext = 'bin';
+if (isset($extensions[strtolower($contentType)])) {
+    $ext = $extensions[strtolower($contentType)];
+} else {
+    // Try to get extension from URL if content-type is generic
+    $urlPath = parse_url($url, PHP_URL_PATH);
+    $urlExt = pathinfo($urlPath, PATHINFO_EXTENSION);
+    if ($urlExt && strlen($urlExt) <= 4) {
+        $ext = $urlExt;
+    }
+}
+
+$cacheFile = $cacheFileBase . '.' . $ext;
+
 // Get header size and extract the body
 $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 $body = substr($response, $headerSize);
 
+// Save to cache
+file_put_contents($cacheFile, $body);
+file_put_contents($cacheMeta, json_encode(['Content-Type' => $contentType]));
+
 // Set response headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: ' . $contentType);
-header('Cache-Control: public, max-age=86400'); // Cache for 1 day
+header('Content-Disposition: inline; filename="' . $cacheFileName . '.' . $ext . '"');
+header('Cache-Control: public, max-age=300'); // Cache for 5 mins
 
 // Output the image
 echo $body;
