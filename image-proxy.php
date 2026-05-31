@@ -49,10 +49,23 @@ if (!empty($existingFiles)) {
 // Serve from cache if it exists and is less than 5 minutes old
 if ($cacheFile && file_exists($cacheFile) && file_exists($cacheMeta) && ($now - filemtime($cacheFile) < 300)) {
     $meta = json_decode(file_get_contents($cacheMeta), true);
+    $contentType = $meta['Content-Type'];
+    
+    // Safety check: if content type is not an image, try to guess from extension
+    if (strpos($contentType, 'image/') !== 0) {
+        $ext = pathinfo($cacheFile, PATHINFO_EXTENSION);
+        $mimes = [
+            'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png',
+            'gif' => 'image/gif', 'webp' => 'image/webp', 'svg' => 'image/svg+xml'
+        ];
+        if (isset($mimes[$ext])) {
+            $contentType = $mimes[$ext];
+        }
+    }
+
     header('Access-Control-Allow-Origin: *');
-    header('Content-Type: ' . $meta['Content-Type']);
+    header('Content-Type: ' . $contentType);
     header('Cache-Control: public, max-age=300');
-    // Suggest a filename for the browser
     $ext = pathinfo($cacheFile, PATHINFO_EXTENSION);
     header('Content-Disposition: inline; filename="' . $cacheFileName . '.' . $ext . '"');
     readfile($cacheFile);
@@ -103,7 +116,7 @@ if ($httpcode != 200) {
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
 // Map common content types to extensions
-$extensions = [
+$mimes = [
     'image/jpeg' => 'jpg',
     'image/jpg' => 'jpg',
     'image/png' => 'png',
@@ -114,14 +127,19 @@ $extensions = [
 ];
 
 $ext = 'bin';
-if (isset($extensions[strtolower($contentType)])) {
-    $ext = $extensions[strtolower($contentType)];
+if (isset($mimes[strtolower($contentType)])) {
+    $ext = $mimes[strtolower($contentType)];
 } else {
     // Try to get extension from URL if content-type is generic
     $urlPath = parse_url($url, PHP_URL_PATH);
     $urlExt = pathinfo($urlPath, PATHINFO_EXTENSION);
     if ($urlExt && strlen($urlExt) <= 4) {
         $ext = $urlExt;
+        // Also fix the content type if we found an extension
+        $invMimes = array_flip($mimes);
+        if (isset($invMimes[$ext])) {
+            $contentType = $invMimes[$ext];
+        }
     }
 }
 
@@ -130,6 +148,19 @@ $cacheFile = $cacheFileBase . '.' . $ext;
 // Get header size and extract the body
 $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 $body = substr($response, $headerSize);
+
+// Final check: if we still have a non-image content-type but data looks like image
+if (strpos($contentType, 'image/') !== 0 && !empty($body)) {
+    if (strpos($body, "\xff\xd8") === 0) { $contentType = 'image/jpeg'; $newExt = 'jpg'; }
+    elseif (strpos($body, "\x89PNG") === 0) { $contentType = 'image/png'; $newExt = 'png'; }
+    elseif (strpos($body, "GIF8") === 0) { $contentType = 'image/gif'; $newExt = 'gif'; }
+    elseif (strpos($body, "RIFF") === 0 && strpos($body, "WEBP") === 8) { $contentType = 'image/webp'; $newExt = 'webp'; }
+    
+    if (isset($newExt)) {
+        $ext = $newExt;
+        $cacheFile = $cacheFileBase . '.' . $ext;
+    }
+}
 
 // Save to cache
 file_put_contents($cacheFile, $body);
