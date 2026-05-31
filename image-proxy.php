@@ -8,9 +8,8 @@ if (!isset($_GET['url'])) {
     exit;
 }
 
-$url = $_GET['url']; // Keep the URL as-is, don't decode it
-echo file_get_contents($url); // Just to check if the URL is valid and accessible
-die();
+$url = $_GET['url'];
+
 // Initialize cURL session
 $ch = curl_init();
 
@@ -23,18 +22,18 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_ENCODING, "");
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-// Set headers for better compatibility
+// Set headers to match your Chrome screenshot exactly
 $parsedUrl = parse_url($url);
 $host = $parsedUrl['host'] ?? '';
 
 $headers = [
     "Host: $host",
-    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
     "Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
     "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
     "Referer: https://shahiidd4u.net/?order=last",
     "Dnt: 1",
-    "Sec-Ch-Ua: \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\", \"Not/A)Brand\";v=\"99\"",
+    "Sec-Ch-Ua: \"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
     "Sec-Ch-Ua-Mobile: ?0",
     "Sec-Ch-Ua-Platform: \"Windows\"",
     "Connection: keep-alive",
@@ -61,7 +60,9 @@ if (curl_errno($ch)) {
 $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 if ($httpcode != 200) {
     http_response_code($httpcode);
-    echo 'Image not found. Status code: ' . $httpcode;
+    echo "Status code: $httpcode\n\n";
+    echo "Response from server:\n";
+    echo substr($response, curl_getinfo($ch, CURLINFO_HEADER_SIZE));
     curl_close($ch);
     exit;
 }
