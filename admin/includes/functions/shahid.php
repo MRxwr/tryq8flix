@@ -73,10 +73,10 @@ function searchShahidListing($url){
 			preg_match('/\burl\s*\(\s*[\'"]?(.*?)[\'"]?\s*\)/', $style, $matches);
 			$imageUrl = isset($matches[1]) ? $matches[1] : '';
             
-           /* // Use image proxy for all images to avoid CORS/hotlink issues
+            // Use image proxy for all images to avoid CORS/hotlink issues
             if (!empty($imageUrl)) {
                 $imageUrl = "https://".$_SERVER['HTTP_HOST']."/image-proxy.php?url=".urlencode(trim($imageUrl));
-            }*/
+            }
             
             $href = $show->href;
             $parts = explode('/', $href);
