@@ -37,6 +37,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = tvdbTvShowsServers($url);
             }elseif( $_GET["server"] == 14 ){
                 $data = tvdbMoviesServers($url);
+            }elseif( $_GET["server"] == 15 ){
+                $data = EgyDeadLATServers($url);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }
