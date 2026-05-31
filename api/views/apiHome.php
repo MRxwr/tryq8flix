@@ -212,6 +212,24 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 $data = tvdbMoviesHome($url);
                 echo dataOutput(array("shows" => json_decode($data, true)["shows"]));
                 die();
+            } elseif ($_GET["server"] == 15) {
+                $url = $website13;
+                //strip last /
+                $url = rtrim($url, '/');
+                if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
+                    $url .= "/?page={$_GET["page"]}/";
+                }
+                if (isset($_GET["search"]) && !empty($_GET["search"]) && (!isset($_GET["page"]) || empty($_GET["page"]))) {
+                    $_GET["search"] = urlencode($_GET["search"]);;
+                    $url .= "/?s={$_GET["search"]}";
+                }
+                if (isset($_GET["page"]) && !empty($_GET["page"]) && isset($_GET["search"]) && !empty($_GET["search"])) {
+                    $_GET["search"] = urlencode($_GET["search"]);
+                    $url .= "/page/{$_GET["page"]}/?s={$_GET["search"]}";
+                }
+                $data = scrapEgyDeadLAT("{$url}");
+                echo dataOutput(array("shows" => $data));
+                die();
             } else {
                 echo dataError(array("msg" => "Invalid Server"));
                 die();

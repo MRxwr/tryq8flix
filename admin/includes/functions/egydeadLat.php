@@ -1,5 +1,5 @@
 <?php
-function scrapEgyDead($url) {
+function scrapEgyDeadLAT($url) {
 	$html = curlCall($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
@@ -44,14 +44,14 @@ function scrapEgyDead($url) {
 	return $shows = $shows["shows"];
 }
 
-function extractSeasonUrlEgyDead($html) {
+function extractSeasonUrlEgyDeadLAT($html) {
     if (preg_match('/<a itemprop="url" href="(https:\/\/[^"]*\/season\/[^"]*)"/', $html, $matches)) {
         return $matches[1];
     }
     return null;
 }
 
-function egyDeadListing($url) {
+function EgyDeadLATListing($url) {
 	$_POST["id"] = $url;
 	$html = $_POST["id"];
     if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
@@ -62,7 +62,7 @@ function egyDeadListing($url) {
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
         $html = curlCall($_POST["id"]);
-        $html = extractSeasonUrlEgyDead($html);
+        $html = extractSeasonUrlEgyDeadLAT($html);
     }
     $html = curlCall($html);
     $htmlDom = str_get_html($html);
@@ -109,7 +109,7 @@ function egyDeadListing($url) {
 	return $data;
 }
 
-function egyDeadServers($url) {
+function EgyDeadLATServers($url) {
     $_POST["id"] = $url;
     $curl = curl_init();
     curl_setopt_array($curl, array(
