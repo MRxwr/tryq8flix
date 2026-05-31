@@ -144,9 +144,41 @@ function curlPost($url, $postData = []) {
 }
 
 function outputImage($imageUrl) {
-    $image = file_get_contents($imageUrl);
-    header('Content-Type: image/jpeg');
-    echo $image;
+    // Initialize cURL session to use CodeBeautify as a proxy to bypass IP blocks
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+        CURLOPT_URL => 'https://www.codebeautify.com/URLService',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => array('path' => $imageUrl),
+        CURLOPT_HTTPHEADER => array(
+            'Origin: https://codebeautify.org',
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        ),
+        CURLOPT_SSL_VERIFYPEER => false
+    ));
+
+    $image = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpcode == 200 && !empty($image)) {
+        // Automatically detect the image type
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($image);
+        header('Content-Type: ' . $mimeType);
+        header('Cache-Control: public, max-age=86400');
+        echo $image;
+    } else {
+        // Fallback or error image if needed
+        http_response_code(404);
+        echo "Image could not be retrieved.";
+    }
 }
 
 // make function to convert image url to base64
