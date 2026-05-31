@@ -19,26 +19,25 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_ENCODING, ""); // Handle compressed responses
+curl_setopt($ch, CURLOPT_ENCODING, "");
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-// Add modern browser headers to avoid 403
+// Set headers individually for better compatibility
 $parsedUrl = parse_url($url);
 $host = $parsedUrl['host'] ?? '';
-$referer = $parsedUrl['scheme'] . '://' . $host . '/';
+$origin = ($parsedUrl['scheme'] ?? 'https') . '://' . $host;
 
 $headers = [
-    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-    'Accept-Language: en-US,en;q=0.9,ar;q=0.8',
-    'Cache-Control: no-cache',
-    'Pragma: no-cache',
-    'Referer: ' . $referer, // Some sites require exactly the domain
-    'Origin: ' . $parsedUrl['scheme'] . '://' . $host,
-    'Sec-Fetch-Dest: image',
-    'Sec-Fetch-Mode: no-cors',
-    'Sec-Fetch-Site: same-origin',
-    'Connection: keep-alive',
-    'Host: ' . $host
+    "Host: $host",
+    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    "Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+    "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
+    "Referer: $origin/",
+    "Origin: $origin",
+    "Connection: keep-alive",
+    "Sec-Fetch-Dest: image",
+    "Sec-Fetch-Mode: no-cors",
+    "Sec-Fetch-Site: same-origin"
 ];
 
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
