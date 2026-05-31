@@ -1,7 +1,6 @@
 <?php
 function shahidCurl($url) {
     $curl = curl_init();
-    /*
     curl_setopt_array($curl, array(
       CURLOPT_URL => 'https://viewsource.net/api/source/stream',
       CURLOPT_RETURNTRANSFER => true,
@@ -15,28 +14,11 @@ function shahidCurl($url) {
       CURLOPT_HTTPHEADER => array(
         'Content-Type: application/json',
         'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept: application/json, text/plain, ',
+        'Accept: application/json, text/plain, */*',
         'Origin: https://viewsource.net',
         'Referer: https://viewsource.net/'
       ),
     ));
-    */
-    curl_setopt_array($curl, array(
-    CURLOPT_URL => 'https://www.codebeautify.com/URLService',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => '',
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 30,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => array('path' => $url),
-    CURLOPT_HTTPHEADER => array(
-        'Origin: https://codebeautify.org',
-        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    ),
-    CURLOPT_SSL_VERIFYPEER => false
-));
     $response = curl_exec($curl);
     curl_close($curl);
     
