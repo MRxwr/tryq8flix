@@ -22,18 +22,20 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_ENCODING, "");
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-// Set headers individually for better compatibility
+// Set headers for better compatibility
 $parsedUrl = parse_url($url);
 $host = $parsedUrl['host'] ?? '';
-$origin = ($parsedUrl['scheme'] ?? 'https') . '://' . $host;
 
 $headers = [
     "Host: $host",
-    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
     "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
-    "Referer: $origin/",
-    "Origin: $origin",
+    "Referer: https://shahiidd4u.net/?order=last",
+    "Dnt: 1",
+    "Sec-Ch-Ua: \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\", \"Not/A)Brand\";v=\"99\"",
+    "Sec-Ch-Ua-Mobile: ?0",
+    "Sec-Ch-Ua-Platform: \"Windows\"",
     "Connection: keep-alive",
     "Sec-Fetch-Dest: image",
     "Sec-Fetch-Mode: no-cors",
