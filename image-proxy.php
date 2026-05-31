@@ -1,7 +1,34 @@
 <?php
 // image-proxy.php
 // Usage: image-proxy.php?url=<image_url>
+
+if (!isset($_GET['url'])) {
+    http_response_code(400);
+    echo 'Missing url parameter.';
+    exit;
+}
+
+$url = $_GET['url']; // Keep the URL as-is, don't decode it
 /*
+// Initialize cURL session
+$ch = curl_init();
+
+// Set cURL options
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+// Add Referer header based on the target URL
+$parsedUrl = parse_url($url);
+$referer = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/';
+curl_setopt($ch, CURLOPT_REFERER, $referer);
+curl_setopt($ch, CURLOPT_HEADER, 1);
+
+// Execute cURL session and get the response
+$response = curl_exec($ch);
+*/
 $ch = curl_init();
 
 curl_setopt_array($ch, array(
@@ -20,34 +47,6 @@ curl_setopt_array($ch, array(
     ),
     CURLOPT_SSL_VERIFYPEER => false
 ));
-
-// Execute cURL session and get the response
-$response = curl_exec($ch);
-*/
-
-if (!isset($_GET['url'])) {
-    http_response_code(400);
-    echo 'Missing url parameter.';
-    exit;
-}
-
-$url = urldecode($_GET['url']); // Keep the URL as-is, don't decode it
-
-// Initialize cURL session
-$ch = curl_init();
-
-// Set cURL options
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-// Add Referer header based on the target URL
-$parsedUrl = parse_url($url);
-$referer = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/';
-curl_setopt($ch, CURLOPT_REFERER, $referer);
-curl_setopt($ch, CURLOPT_HEADER, 1);
 
 // Execute cURL session and get the response
 $response = curl_exec($ch);
