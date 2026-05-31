@@ -22,7 +22,7 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 // Add Referer header based on the target URL
 $parsedUrl = parse_url($url);
-$referer = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/';
+echo $referer = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/';
 curl_setopt($ch, CURLOPT_REFERER, $referer);
 curl_setopt($ch, CURLOPT_HEADER, 1);
 
