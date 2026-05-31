@@ -161,18 +161,36 @@ function shahidServers($url){
     $mainServer = [];
     $html = shahidCurl("{$url}");
     $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
-    preg_match($pattern, $html, $matches);
-    if (isset($matches[1])) {
-        $serversData = json_decode($matches[1], true);
-        $server = json_encode($serversData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        echo 'Error: Server information not found.';
-		$server = json_encode(array());
+    
+    if (preg_match($pattern, $html, $matches)) {
+        $jsonStr = $matches[1];
+        $serversData = json_decode($jsonStr, true);
+        
+        // If decoding fails, it might be due to escaping. JS string literals often escape quotes.
+        if ($serversData === null) {
+            $jsonStr = stripslashes($jsonStr);
+            $serversData = json_decode($jsonStr, true);
+        }
+
+        if (is_array($serversData)) {
+            // Sort by rank if available (lower rank first)
+            usort($serversData, function($a, $b) {
+                return ($a['rank'] ?? 100) - ($b['rank'] ?? 100);
+            });
+
+            foreach ($serversData as $server) {
+                if (isset($server["url"]) && !empty($server["url"])) {
+                    $mainServer[] = [
+                        "id" => $server["id"] ?? "",
+                        "link" => $server["url"],
+                        "name" => $server["name"] ?? "Server",
+                        "img" => $server["img"] ?? ""
+                    ];
+                }
+            }
+        }
     }
-    $servers = json_decode($server,true);
-    foreach ($servers as $server) {
-        $mainServer[]["link"] = $server["url"];
-    }
+
     return $mainServer;
 }
 
