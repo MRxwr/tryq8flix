@@ -407,12 +407,12 @@
     <div class="page-transition-overlay"></div>
     <nav class="navbar fixed-top">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <a class="navbar-brand" href="?v=Home">TRYQ8FLIX</a>
+            <a class="navbar-brand" href="?v=Home" tabindex="0">TRYQ8FLIX</a>
             <div class="d-flex align-items-center">
-                <a class="nav-link text-white me-3" href="?v=Games"><i class="fas fa-gamepad fa-lg"></i></a>
-                <a class="nav-link text-white me-3" href="?v=LiveMatchesList"><i class="fas fa-futbol fa-lg"></i></a>
-                <a class="nav-link text-white me-3" href="?v=Search"><i class="fas fa-search fa-lg"></i></a>
-                <a class="nav-link text-white" href="?v=Settings"><i class="fas fa-cog fa-lg"></i></a>
+                <a class="nav-link text-white me-3" href="?v=Games" tabindex="0"><i class="fas fa-gamepad fa-lg"></i></a>
+                <a class="nav-link text-white me-3" href="?v=LiveMatchesList" tabindex="0"><i class="fas fa-futbol fa-lg"></i></a>
+                <a class="nav-link text-white me-3" href="?v=Search" tabindex="0"><i class="fas fa-search fa-lg"></i></a>
+                <a class="nav-link text-white" href="?v=Settings" tabindex="0"><i class="fas fa-cog fa-lg"></i></a>
             </div>
         </div>
     </nav>

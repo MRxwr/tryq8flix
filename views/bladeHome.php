@@ -123,10 +123,11 @@
 
                     rowHtml += `
                     <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
+                         tabindex="0"
                          style="transition: all 0.3s ease; cursor: pointer;"
                          onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})"
-                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
-                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
+                         onmouseover="this.focus();"
+                         onmouseout="this.blur();">
                         <img src="${show.poster}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
                         <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
@@ -170,10 +171,11 @@
 
                     rowHtml += `
                     <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
+                         tabindex="0"
                          style="transition: all 0.3s ease; cursor: pointer;"
                          onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})"
-                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
-                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
+                         onmouseover="this.focus();"
+                         onmouseout="this.blur();">
                         <img src="${show.poster}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
                         <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
@@ -194,11 +196,80 @@
             }
         });
 
+        // Whitelist of buttons for D-pad
+        $('.btn, .nav-link').attr('tabindex', '0');
+
+        // TV Remote Navigation (Spatial Navigation)
+        $(document).on('keydown', function(e) {
+            const focusables = $('[tabindex="0"]:visible');
+            let index = focusables.index(document.activeElement);
+
+            // If nothing is focused, start at the first item
+            if (index === -1) {
+                focusables.eq(0).focus();
+                return;
+            }
+
+            const current = focusables.eq(index);
+            const rect = current[0].getBoundingClientRect();
+
+            function findNearest(direction) {
+                let nearest = null;
+                let minDistance = Infinity;
+
+                focusables.each(function() {
+                    if (this === current[0]) return;
+                    const r = this.getBoundingClientRect();
+                    let distance;
+
+                    if (direction === 'right' && r.left >= rect.right - 10) {
+                        distance = Math.pow(r.left - rect.right, 2) + Math.pow(r.top - rect.top, 2);
+                    } else if (direction === 'left' && r.right <= rect.left + 10) {
+                        distance = Math.pow(rect.left - r.right, 2) + Math.pow(r.top - rect.top, 2);
+                    } else if (direction === 'down' && r.top >= rect.bottom - 10) {
+                        distance = Math.pow(r.top - rect.bottom, 2) + Math.pow(r.left - rect.left, 2);
+                    } else if (direction === 'up' && r.bottom <= rect.top + 10) {
+                        distance = Math.pow(rect.top - r.bottom, 2) + Math.pow(r.left - rect.left, 2);
+                    }
+
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearest = $(this);
+                    }
+                });
+                return nearest;
+            }
+
+            let next = null;
+            if (e.keyCode === 39) next = findNearest('right');
+            if (e.keyCode === 37) next = findNearest('left');
+            if (e.keyCode === 40) next = findNearest('down');
+            if (e.keyCode === 38) next = findNearest('up');
+            if (e.keyCode === 13) current.click(); // Enter/OK
+
+            if (next) {
+                e.preventDefault();
+                next.focus();
+                next[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                });
+            }
+        });
+
+        // Set initial focus
+        setTimeout(() => {
+            if (!document.activeElement || document.activeElement === document.body) {
+                $('[tabindex="0"]:visible').first().focus();
+            }
+        }, 1000);
+
         // Fetch Main Data (Servers)
         $.getJSON('api/index.php?endpoint=Main', function(response) {
             if (response.ok) {
                 const data = response.data;
-
+                
                 // Function to set random hero from TVDB servers
                 const setRandomHero = (shows, serverId) => {
                     if (!shows || shows.length === 0) return;
@@ -252,17 +323,17 @@
 
                                 serverRes.data.shows.forEach(show => {
                                     const encHref = encryptLink(show.href);
-                                    // Prefer backdrop for high-quality background on next pages
                                     const imageForNextPage = show.backdrop || show.image;
                                     const encImage = encryptLink(imageForNextPage);
                                     const encTitle = encryptLink(show.title);
                                     const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                                     rowHtml += `
                                     <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
+                                         tabindex="0"
                                          style="transition: all 0.3s ease; cursor: pointer;"
                                          onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server.id}', image: '${encImage}', title: '${encTitle}'})"
-                                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
-                                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
+                                         onmouseover="this.focus();"
+                                         onmouseout="this.blur();">
                                         <img src="${show.image}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
                                         <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
@@ -279,7 +350,6 @@
                                     <button class="scroll-btn scroll-right d-none d-md-flex" onclick="scrollRow('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
                                 </div>`;
 
-                                // Append directly to container (First to load appears first)
                                 $('#content-rows').append(rowHtml);
                             }
                         });
