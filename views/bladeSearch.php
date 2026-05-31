@@ -8,15 +8,15 @@
                     <div class="col-12 col-md-auto">
                         <div class="input-group h-100">
                             <span class="input-group-text bg-dark border-0 text-white-50"><i class="fas fa-server"></i></span>
-                            <select class="form-select bg-dark text-white border-0 focus-ring-none" id="serverSelect" tabindex="0">
+                            <select class="form-select bg-dark text-white border-0 focus-ring-none" id="serverSelect">
                                 <option value="1" selected>Wecima</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-12 col-md">
                         <div class="input-group h-100">
-                            <input type="text" class="form-control bg-dark text-white border-0" id="searchInput" placeholder="Search for movies, TV shows..." tabindex="0">
-                            <button class="btn btn-netflix px-4" id="searchBtn" tabindex="0"><i class="fas fa-search"></i></button>
+                            <input type="text" class="form-control bg-dark text-white border-0" id="searchInput" placeholder="Search for movies, TV shows...">
+                            <button class="btn btn-netflix px-4" id="searchBtn"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,6 @@ function performSearch(isLoadMore = false) {
                 let html = `
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 px-2">
                         <div class="movie-card w-100 position-relative overflow-hidden rounded-3 shadow-sm" 
-                             tabindex="0"
                              style="transition: all 0.3s ease; cursor: pointer;"
                              onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${currentServerId}', image: '${encImage}', title: '${encTitle}'})"
                              onmouseover="this.style.transform='scale(1.05) translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"

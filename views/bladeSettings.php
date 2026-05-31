@@ -27,10 +27,10 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-block text-center">
-                        <button id="editProfileBtn" class="btn btn-outline-light mb-2 movie-card" tabindex="0"><i class="fas fa-edit me-2"></i>Edit Profile</button>
-                        <button id="changePasswordBtn" class="btn btn-outline-light mb-2 movie-card" tabindex="0"><i class="fas fa-key me-2"></i>Change Password</button>
-                        <button id="deleteAccountBtn" class="btn btn-outline-danger mb-2 movie-card" tabindex="0"><i class="fas fa-trash-alt me-2"></i>Delete Account</button>
-                        <a href="?v=Logout" class="btn btn-danger mb-2 movie-card" tabindex="0"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                        <button id="editProfileBtn" class="btn btn-outline-light mb-2"><i class="fas fa-edit me-2"></i>Edit Profile</button>
+                        <button id="changePasswordBtn" class="btn btn-outline-light mb-2"><i class="fas fa-key me-2"></i>Change Password</button>
+                        <button id="deleteAccountBtn" class="btn btn-outline-danger mb-2"><i class="fas fa-trash-alt me-2"></i>Delete Account</button>
+                        <a href="?v=Logout" class="btn btn-danger mb-2"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                     </div>
                 </div>
             </div>
@@ -41,13 +41,13 @@
                     <h5 class="mb-0"><i class="fas fa-compass me-2"></i>Menu</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a href="?v=Home" class="list-group-item list-group-item-action bg-dark text-white border-secondary movie-card" tabindex="0">
+                    <a href="?v=Home" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-home me-2"></i> Home
                     </a>
-                    <a href="?v=Favorites" class="list-group-item list-group-item-action bg-dark text-white border-secondary movie-card" tabindex="0">
+                    <a href="?v=Favorites" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-heart me-2"></i> My Favorites
                     </a>
-                    <a href="?v=History" class="list-group-item list-group-item-action bg-dark text-white border-secondary movie-card" tabindex="0">
+                    <a href="?v=History" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-history me-2"></i> Watch History
                     </a>
                 </div>

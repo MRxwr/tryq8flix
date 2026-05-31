@@ -3,7 +3,7 @@
 <div class="container" style="margin-top: 100px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="section-title m-0">Watch History</h2>
-        <button class="btn btn-sm btn-outline-danger" tabindex="0" onclick="clearHistory()">
+        <button class="btn btn-sm btn-outline-danger" onclick="clearHistory()">
             <i class="fas fa-trash-alt me-1"></i> Clear History
         </button>
     </div>
@@ -49,7 +49,6 @@ function loadHistory() {
                 let html = `
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 px-2">
                         <div class="movie-card w-100 position-relative overflow-hidden rounded-3 shadow-sm" 
-                             tabindex="0"
                              style="transition: all 0.3s ease; cursor: pointer;"
                              onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${item.server}', image: '${encImage}', title: '${encTitle}'})"
                              onmouseover="this.style.transform='scale(1.05) translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"

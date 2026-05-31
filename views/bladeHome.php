@@ -123,11 +123,10 @@
 
                     rowHtml += `
                     <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
-                         tabindex="0"
                          style="transition: all 0.3s ease; cursor: pointer;"
                          onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})"
-                         onmouseover="this.focus();"
-                         onmouseout="this.blur();">
+                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
+                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
                         <img src="${show.poster}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
                         <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
@@ -171,11 +170,10 @@
 
                     rowHtml += `
                     <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
-                         tabindex="0"
                          style="transition: all 0.3s ease; cursor: pointer;"
                          onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${show.server}', image: '${encImage}', title: '${encTitle}'})"
-                         onmouseover="this.focus();"
-                         onmouseout="this.blur();">
+                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
+                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
                         <img src="${show.poster}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
                         <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
@@ -196,14 +194,11 @@
             }
         });
 
-        // Whitelist of buttons for D-pad
-        $('.btn, .nav-link').attr('tabindex', '0');
-
         // Fetch Main Data (Servers)
         $.getJSON('api/index.php?endpoint=Main', function(response) {
             if (response.ok) {
                 const data = response.data;
-                
+
                 // Function to set random hero from TVDB servers
                 const setRandomHero = (shows, serverId) => {
                     if (!shows || shows.length === 0) return;
@@ -257,17 +252,17 @@
 
                                 serverRes.data.shows.forEach(show => {
                                     const encHref = encryptLink(show.href);
+                                    // Prefer backdrop for high-quality background on next pages
                                     const imageForNextPage = show.backdrop || show.image;
                                     const encImage = encryptLink(imageForNextPage);
                                     const encTitle = encryptLink(show.title);
                                     const safeTitle = show.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                                     rowHtml += `
                                     <div class="movie-card position-relative overflow-hidden rounded-3 shadow-sm" 
-                                         tabindex="0"
                                          style="transition: all 0.3s ease; cursor: pointer;"
                                          onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server.id}', image: '${encImage}', title: '${encTitle}'})"
-                                         onmouseover="this.focus();"
-                                         onmouseout="this.blur();">
+                                         onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"
+                                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';">
                                         <img src="${show.image}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.classList.add('img-error')">
                                         <div class="title-overlay position-absolute bottom-0 start-0 w-100 p-2" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%); line-height: 1.3;">${safeTitle}</div>
                                         <button class="btn btn-sm position-absolute top-0 end-0 m-2 fav-btn text-white" 
@@ -284,6 +279,7 @@
                                     <button class="scroll-btn scroll-right d-none d-md-flex" onclick="scrollRow('${rowId}', 1)"><i class="fas fa-chevron-right"></i></button>
                                 </div>`;
 
+                                // Append directly to container (First to load appears first)
                                 $('#content-rows').append(rowHtml);
                             }
                         });

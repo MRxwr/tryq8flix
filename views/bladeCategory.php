@@ -80,7 +80,6 @@ function loadContent(page) {
                 let html = `
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4 px-2">
                         <div class="movie-card w-100 position-relative overflow-hidden rounded-3 shadow-sm" 
-                             tabindex="0"
                              style="transition: all 0.3s ease; cursor: pointer;"
                              onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${currentServer}', image: '${encImage}', title: '${encTitle}'})"
                              onmouseover="this.style.transform='scale(1.05) translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(229,9,20,0.4)';"

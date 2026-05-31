@@ -25,7 +25,7 @@ $(document).ready(function() {
                     const encryptedUrl = '?q=' + encodeURIComponent(encryptLink(qString));
 
                     let html = `
-                        <div class="live-match-card movie-card" tabindex="0" onclick="window.location.href='${encryptedUrl}'">
+                        <div class="live-match-card">
                             <div class="d-flex align-items-center" style="width: 40%;">
                                 <img src="${match.rightTeamLogo}" class="team-logo me-3">
                                 <span>${match.rightTeamName}</span>
@@ -39,6 +39,7 @@ $(document).ready(function() {
                                 <span>${match.leftTeamName}</span>
                                 <img src="${match.leftTeamLogo}" class="team-logo ms-3">
                             </div>
+                            <a href="${encryptedUrl}" class="stretched-link"></a>
                         </div>
                     `;
                     $('#matches-list').append(html);

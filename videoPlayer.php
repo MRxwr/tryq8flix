@@ -162,39 +162,6 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             echo "loadVideo('" . $videoUrl . "');";
         }
         ?>
-
-        // TV Remote controls for Video Player
-        document.addEventListener('keydown', function(e) {
-            const video = document.getElementById('videoPlayer');
-            
-            // Exit/Back button (Esc or Backspace)
-            if (e.keyCode === 27 || e.keyCode === 8) {
-                window.history.back();
-                return;
-            }
-
-            if (video) {
-                switch(e.keyCode) {
-                    case 13: // Enter/OK - Play/Pause
-                    case 32: // Space - Play/Pause
-                        if (video.paused) video.play();
-                        else video.pause();
-                        break;
-                    case 39: // Right Arrow - Seek Forward 10s
-                        video.currentTime += 10;
-                        break;
-                    case 37: // Left Arrow - Seek Backward 10s
-                        video.currentTime -= 10;
-                        break;
-                    case 38: // Up Arrow - Volume Up
-                        video.volume = Math.min(1, video.volume + 0.1);
-                        break;
-                    case 40: // Down Arrow - Volume Down
-                        video.volume = Math.max(0, video.volume - 0.1);
-                        break;
-                }
-            }
-        });
     </script>
     </body>
 </html>

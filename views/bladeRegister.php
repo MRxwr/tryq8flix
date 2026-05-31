@@ -5,28 +5,28 @@
         <h2 class="mb-4 text-white fw-bold" style="text-shadow: 1px 1px 8px #000, 0 0 2px #e50914;">Sign Up</h2>
         <form id="registerForm">
             <div class="mb-3">
-                <input type="text" class="form-control" id="username" placeholder="Username" tabindex="0" required>
+                <input type="text" class="form-control" id="username" placeholder="Username" required>
             </div>
             <div class="mb-3">
-                <input type="email" class="form-control" id="email" placeholder="Email Address" tabindex="0" required>
+                <input type="email" class="form-control" id="email" placeholder="Email Address" required>
             </div>
             <div class="mb-3 position-relative">
-                <input type="password" class="form-control" id="password" placeholder="Password" tabindex="0" required>
-                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #8c8c8c;" tabindex="0">
+                <input type="password" class="form-control" id="password" placeholder="Password" required>
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #8c8c8c;">
                     <i class="fa fa-eye"></i>
                 </span>
             </div>
             <div class="mb-3 position-relative">
-                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" tabindex="0" required>
-                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #8c8c8c;" tabindex="0">
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #8c8c8c;">
                     <i class="fa fa-eye"></i>
                 </span>
             </div>
-            <button type="submit" class="btn btn-netflix w-100 mt-3" tabindex="0">Sign Up</button>
+            <button type="submit" class="btn btn-netflix w-100 mt-3">Sign Up</button>
         </form>
         
         <div class="mt-5 text-white">
-            Already have an account? <a href="?v=Login" class="text-white text-decoration-none" tabindex="0">Sign in now</a>.
+            Already have an account? <a href="?v=Login" class="text-white text-decoration-none">Sign in now</a>.
         </div>
     </div>
 </div>
