@@ -399,6 +399,95 @@
                 // Navigate
                 navigateTo('?q=' + encodeURIComponent(encrypted));
             };
+
+            // TV Remote Navigation (Spatial Navigation)
+            document.addEventListener('keydown', function(e) {
+                const focusables = Array.from(document.querySelectorAll('[tabindex="0"]:not([disabled])')).filter(el => {
+                    const rect = el.getBoundingClientRect();
+                    return rect.width > 0 && rect.height > 0 && window.getComputedStyle(el).display !== 'none';
+                });
+                
+                let index = focusables.indexOf(document.activeElement);
+
+                // If nothing is focused and it's an arrow key, focus the first item
+                if (index === -1 && [37, 38, 39, 40].includes(e.keyCode)) {
+                    if (focusables.length > 0) {
+                        focusables[0].focus();
+                        e.preventDefault();
+                    }
+                    return;
+                }
+
+                if (index === -1) return;
+
+                const current = focusables[index];
+                
+                // If we are in an input/textarea, let the arrow keys work normally unless they are at the horizontal edges
+                if (current.tagName === 'INPUT' || current.tagName === 'TEXTAREA') {
+                    if (e.keyCode === 13) { // Enter
+                        // Let it submit
+                        return;
+                    }
+                    // For up/down in input, we might want to move focus
+                    if (e.keyCode !== 38 && e.keyCode !== 40) {
+                         return; // Let left/right work for cursor
+                    }
+                }
+
+                const rect = current.getBoundingClientRect();
+
+                function findNearest(direction) {
+                    let nearest = null;
+                    let minDistance = Infinity;
+
+                    focusables.forEach(el => {
+                        if (el === current) return;
+                        const r = el.getBoundingClientRect();
+                        let distance;
+
+                        if (direction === 'right' && r.left >= rect.right - 10) {
+                            distance = Math.pow(r.left - rect.right, 2) + Math.pow(r.top - rect.top, 2);
+                        } else if (direction === 'left' && r.right <= rect.left + 10) {
+                            distance = Math.pow(rect.left - r.right, 2) + Math.pow(r.top - rect.top, 2);
+                        } else if (direction === 'down' && r.top >= rect.bottom - 10) {
+                            distance = Math.pow(r.top - rect.bottom, 2) + Math.pow(r.left - rect.left, 2);
+                        } else if (direction === 'up' && r.bottom <= rect.top + 10) {
+                            distance = Math.pow(rect.top - r.bottom, 2) + Math.pow(r.left - rect.left, 2);
+                        }
+
+                        if (distance !== undefined && distance < minDistance) {
+                            minDistance = distance;
+                            nearest = el;
+                        }
+                    });
+                    return nearest;
+                }
+
+                let next = null;
+                if (e.keyCode === 39) next = findNearest('right');
+                if (e.keyCode === 37) next = findNearest('left');
+                if (e.keyCode === 40) next = findNearest('down');
+                if (e.keyCode === 38) next = findNearest('up');
+                if (e.keyCode === 13) {
+                    if (current.tagName !== 'INPUT' && current.tagName !== 'BUTTON') {
+                        current.click();
+                    }
+                }
+
+                if (next) {
+                    e.preventDefault();
+                    next.focus();
+                    next.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                }
+            });
+
+            // Set initial focus
+            setTimeout(() => {
+                const focusables = document.querySelectorAll('[tabindex="0"]:not([disabled])');
+                if (focusables.length > 0 && (!document.activeElement || document.activeElement === document.body)) {
+                    focusables[0].focus();
+                }
+            }, 1000);
         });
     </script>
 </head>

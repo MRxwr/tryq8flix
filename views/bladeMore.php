@@ -5,7 +5,7 @@
     <div class="hero-content">
         <h1 class="hero-title" id="hero-title">Loading...</h1>
         <p class="hero-desc" id="hero-desc"></p>
-        <button id="favBtnHero" class="btn btn-secondary-netflix" style="display:none;">
+        <button id="favBtnHero" class="btn btn-secondary-netflix" tabindex="0" style="display:none;">
             <i class="far fa-heart"></i> Add to Favorites
         </button>
     </div>
@@ -123,7 +123,7 @@ $(document).ready(function() {
                         const encTitle = encryptLink(season.title);
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}'})" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100 movie-card" tabindex="0" onclick="navigateToEncrypted({v: 'More', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}'})" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h5 class="card-title">${season.title}</h5>
                                     </div>
@@ -153,7 +153,7 @@ $(document).ready(function() {
                         const encTitle = encryptLink(ep.title);
                         html += `
                             <div class="col-6 col-md-3 col-lg-2 mb-3">
-                                <div class="card bg-dark text-white h-100" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}', more_link: '${encMoreLink}', series_title: '${encSeriesTitle}'})" style="cursor:pointer;">
+                                <div class="card bg-dark text-white h-100 movie-card" tabindex="0" onclick="navigateToEncrypted({v: 'Servers', href: '${encHref}', server: '${server}', image: '${encImage}', title: '${encTitle}', more_link: '${encMoreLink}', series_title: '${encSeriesTitle}'})" style="cursor:pointer;">
                                     <div class="card-body text-center d-flex align-items-center justify-content-center">
                                         <h6 class="card-title">${ep.title}</h6>
                                     </div>

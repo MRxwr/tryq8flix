@@ -5,7 +5,7 @@
     <div class="hero-content w-100">
         <h1 class="hero-title fw-bold" id="episode-title" style="font-size: 3.5rem; text-shadow: 0 4px 10px rgba(0,0,0,0.8);">Loading...</h1>
         
-        <button class="btn btn-secondary-netflix mt-3" onclick="history.back()">
+        <button class="btn btn-secondary-netflix mt-3" tabindex="0" onclick="history.back()">
             <i class="fas fa-arrow-left"></i> Back
         </button>
     </div>
@@ -19,13 +19,13 @@
     
     <div id="player-container" class="mt-5" style="display:none;">
         <div class="d-flex justify-content-center gap-2 mb-3" id="episode-controls">
-             <button id="prev-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
+             <button id="prev-ep-btn" class="btn btn-sm btn-outline-light" tabindex="0" style="display:none;">
                 <i class="fas fa-step-backward"></i> Previous
              </button>
-             <button id="more-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;" onclick="goToMoreEpisodes()">
+             <button id="more-ep-btn" class="btn btn-sm btn-outline-light" tabindex="0" style="display:none;" onclick="goToMoreEpisodes()">
                 <i class="fas fa-list"></i> More Episodes
              </button>
-             <button id="next-ep-btn" class="btn btn-sm btn-outline-light" style="display:none;">
+             <button id="next-ep-btn" class="btn btn-sm btn-outline-light" tabindex="0" style="display:none;">
                 <i class="fas fa-step-forward"></i> Next
              </button>
         </div>
@@ -177,7 +177,7 @@ $(document).ready(function() {
                          if(videoUrl) {
                             let html = `
                                 <div class="col-md-3 mb-3">
-                                    <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${videoUrl.replace(/'/g, "\\'")}', this)">
+                                    <button class="btn btn-outline-light w-100 py-3 movie-card" tabindex="0" onclick="playVideo('${videoUrl.replace(/'/g, "\\'")}', this)">
                                         ${serverLabel}
                                     </button>
                                 </div>
@@ -242,7 +242,7 @@ $(document).ready(function() {
                     if(safeLink) {
                         let html = `
                             <div class="col-md-3 mb-3">
-                                <button class="btn btn-outline-light w-100 py-3" onclick="playVideo('${safeLink}', this)">
+                                <button class="btn btn-outline-light w-100 py-3 movie-card" tabindex="0" onclick="playVideo('${safeLink}', this)">
                                     ${srv.name || 'Server ' + (index+1)}
                                 </button>
                             </div>
