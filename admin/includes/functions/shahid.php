@@ -62,7 +62,7 @@ function searchShahidListing($url){
     // Clean up HTML before parsing
     $html = trim($html);
     
-    var_dump($html); die();
+    //var_dump($html); die();
 	$dom = str_get_html($html);
 	$data = [
 		'shows' => []
