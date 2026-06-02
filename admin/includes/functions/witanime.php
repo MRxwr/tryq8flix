@@ -53,7 +53,7 @@ function witanimeHome($url) {
             $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
             $jsonData = [
                 'href' => $href,
-                'image' => trim($posterUrl),
+                'image' => trim($image),
                 'episode' => $episode,
                 'category' => $category,
                 'title' => $title,
