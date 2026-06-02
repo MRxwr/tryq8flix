@@ -113,31 +113,27 @@ function witanimeListings($url) {
     }
 
     // Scrape episodes (new structure)
-    $episodesRow = $htmlDom->find('section.allepcont .row', 0);
-    if ($episodesRow) {
-        foreach ($episodesRow->find('a') as $episodeLink) {
-            $link = $episodeLink->href;
-            $img = $episodeLink->find('img', 0);
-            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
-            $epInfo = $episodeLink->find('.ep-info h3', 0);
-            $title = $epInfo ? trim($epInfo->plaintext) : '';
-            $epnumDiv = $episodeLink->find('.epnum', 0);
+    $episodesList = $htmlDom->find('ul#ULEpisodesList', 0);
+    if ($episodesList) {
+        foreach ($episodesList->find('li a') as $episodeLink) {
+            $onclick = $episodeLink->getAttribute('onclick');
+            $link = '';
+            if (preg_match("/openEpisode\('([^']+)'\)/", $onclick, $matches)) {
+                $link = base64_decode($matches[1]);
+            }
+            $title = trim($episodeLink->plaintext);
             $episodeNumber = '';
             $episodeNumberDigits = '';
-            if ($epnumDiv) {
-                // Extract number from text
-                if (preg_match('/(\d+)/u', $epnumDiv->plaintext, $matches)) {
-                    $episodeNumber = $matches[1];
-                    $episodeNumberDigits = $episodeNumber;
-                }
+            if (preg_match('/(\d+)/u', $title, $matches)) {
+                $episodeNumber = $matches[1];
+                $episodeNumberDigits = $episodeNumber;
             }
             $episodesData[] = [
                 'link' => $link,
                 'title' => $title,
                 'episode_number' => $episodeNumberDigits,
                 'episode_text' => $episodeNumber,
-                'poster' => $posterUrl
+                'poster' => ''
             ];
         }
     }
