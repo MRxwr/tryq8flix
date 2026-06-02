@@ -12,6 +12,14 @@ function witanimeHome($url) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     // Use a standard Desktop User-Agent
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_ENCODING, "");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
+        "Cache-Control: no-cache",
+        "Pragma: no-cache",
+        "Upgrade-Insecure-Requests: 1"
+    ]);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
@@ -65,13 +73,25 @@ function witanimeHome($url) {
 }
 
 function witanimeListings($url) {
-    // Use a custom curl call with a fixed User-Agent
+    $url = trim($url);
+    $url = str_replace(' ', '+', $url);
+
+    // Use a custom curl call with a fixed User-Agent to ensure consistency
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // Use the same standard Desktop User-Agent as in witanimeHome
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_ENCODING, "");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
+        "Cache-Control: no-cache",
+        "Pragma: no-cache",
+        "Upgrade-Insecure-Requests: 1"
+    ]);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $html = curl_exec($ch);
@@ -81,70 +101,79 @@ function witanimeListings($url) {
     $seasonsData = [];
     $episodesData = [];
 
-    // Scrape seasons (new structure)
-    $seasonsList = $htmlDom->find('section.allseasonss ul.Blocks--List', 0);
-    if ($seasonsList) {
-        foreach ($seasonsList->find('div.Block--Item') as $seasonBox) {
-            $a = $seasonBox->find('a', 0);
-            $link = $a ? $a->href : '';
-            $img = $seasonBox->find('img', 0);
-            $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
-            $title = '';
-            $h3 = $seasonBox->find('h3', 0);
-            if ($h3) {
-                $title = trim($h3->plaintext);
+    if ($htmlDom) {
+        // Scrape seasons (new structure)
+        $seasonsList = $htmlDom->find('section.allseasonss ul.Blocks--List', 0);
+        if ($seasonsList) {
+            foreach ($seasonsList->find('div.Block--Item') as $seasonBox) {
+                $a = $seasonBox->find('a', 0);
+                $link = $a ? $a->href : '';
+                $img = $seasonBox->find('img', 0);
+                $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : ($img ? $img->src : '');
+                $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
+                $title = '';
+                $h3 = $seasonBox->find('h3', 0);
+                if ($h3) {
+                    $title = trim($h3->plaintext);
+                }
+                $seasonNumber = '';
+                $seasonNumberDigits = '';
+                // Try to extract season number from title if possible
+                if (preg_match('/(\d+)/u', $title, $matches)) {
+                    $seasonNumber = $matches[1];
+                    $seasonNumberDigits = $seasonNumber;
+                }
+                $seasonsData[] = [
+                    'link' => $link,
+                    'title' => $title,
+                    'season_number' => $seasonNumberDigits,
+                    'season_text' => $seasonNumber,
+                    'poster' => $posterUrl
+                ];
             }
-            $seasonNumber = '';
-            $seasonNumberDigits = '';
-            // Try to extract season number from title if possible
-            if (preg_match('/(\d+)/u', $title, $matches)) {
-                $seasonNumber = $matches[1];
-                $seasonNumberDigits = $seasonNumber;
-            }
-            $seasonsData[] = [
-                'link' => $link,
-                'title' => $title,
-                'season_number' => $seasonNumberDigits,
-                'season_text' => $seasonNumber,
-                'poster' => $posterUrl
-            ];
         }
+
+        // Scrape episodes (new structure based on user snippet)
+        $episodesList = $htmlDom->find('ul#ULEpisodesList', 0);
+        if (!$episodesList) {
+            $episodesList = $htmlDom->find('ul.all-episodes-list', 0);
+        }
+        if (!$episodesList) {
+            $episodesList = $htmlDom->find('div.all-episodes ul', 0);
+        }
+
+        if ($episodesList) {
+            foreach ($episodesList->find('li a') as $episodeLink) {
+                $onclick = $episodeLink->getAttribute('onclick');
+                $link = '';
+                if ($onclick && preg_match("/openEpisode\('([^']+)'\)/", $onclick, $matches)) {
+                    $link = base64_decode($matches[1]);
+                }
+                
+                $title = trim($episodeLink->plaintext);
+                $episodeNumber = '';
+                $episodeNumberDigits = '';
+                if (preg_match('/(\d+)/u', $title, $matches)) {
+                    $episodeNumber = $matches[1];
+                    $episodeNumberDigits = $episodeNumber;
+                }
+                $episodesData[] = [
+                    'link' => $link,
+                    'title' => $title,
+                    'episode_number' => $episodeNumberDigits,
+                    'episode_text' => $episodeNumber,
+                    'poster' => ''
+                ];
+            }
+        }
+        $htmlDom->clear();
+        unset($htmlDom);
     }
 
-    // Scrape episodes (new structure)
-    $episodesList = $htmlDom->find('ul#ULEpisodesList', 0);
-    if ($episodesList) {
-        foreach ($episodesList->find('li a') as $episodeLink) {
-            $onclick = $episodeLink->getAttribute('onclick');
-            $link = '';
-            if (preg_match("/openEpisode\('([^']+)'\)/", $onclick, $matches)) {
-                $link = base64_decode($matches[1]);
-            }
-            $title = trim($episodeLink->plaintext);
-            $episodeNumber = '';
-            $episodeNumberDigits = '';
-            if (preg_match('/(\d+)/u', $title, $matches)) {
-                $episodeNumber = $matches[1];
-                $episodeNumberDigits = $episodeNumber;
-            }
-            $episodesData[] = [
-                'link' => $link,
-                'title' => $title,
-                'episode_number' => $episodeNumberDigits,
-                'episode_text' => $episodeNumber,
-                'poster' => ''
-            ];
-        }
-    }
-
-    $data = [
+    return [
         'seasons' => $seasonsData,
         'episodes' => $episodesData
     ];
-    $htmlDom->clear();
-	unset($htmlDom);
-    return $data;
 }
 
 function witanimeServers($url) {
