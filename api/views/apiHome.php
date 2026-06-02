@@ -238,7 +238,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                     $url .= "/episode/page/{$_GET["page"]}/";
                 }
                 if (isset($_GET["search"]) && !empty($_GET["search"]) && (!isset($_GET["page"]) || empty($_GET["page"]))) {
-                    $_GET["search"] = urlencode(str_replace(" ", "+", $_GET["search"]));
+                    $_GET["search"] = str_replace(" ", "+", $_GET["search"]);
                     $url .= "?search_param=animes&s={$_GET["search"]}";
                 }
                 $data = witanimeHome("{$url}");
