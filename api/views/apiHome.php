@@ -241,7 +241,6 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
                     $url .= "/episode/page/{$_GET["page"]}/";
                 }
-                echo $url;
                 $data = witanimeHome("{$url}");
                 echo dataOutput(array("shows" => $data));
                 die();
