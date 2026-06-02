@@ -241,6 +241,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                     $_GET["search"] = urlencode($_GET["search"]);;
                     $url .= "?search_param=animes&s={$_GET["search"]}";
                 }
+                echo "URL: " . $url . "\n"; // Debugging line to check the constructed URL
                 $data = witanimeHome("{$url}");
                 echo dataOutput(array("shows" => $data));
                 die();
