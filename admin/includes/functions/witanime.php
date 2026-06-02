@@ -31,7 +31,7 @@ function witanimeHome($url) {
     ];
     if ($dom) {
         foreach ($dom->find('div.anime-card-container') as $item) {
-            $titleAnchor = $item->find('.anime-card-title h3 a', 0);
+            $titleAnchor = $item->find('.episodes-card-title h3 a', 0);
             $href = $titleAnchor ? $titleAnchor->href : '';
             $title = $titleAnchor ? trim($titleAnchor->plaintext) : '';
 
@@ -74,7 +74,20 @@ function witanimeHome($url) {
 
 function witanimeListings($url) {
     $url = trim($url);
-    $url = str_replace(' ', '+', $url);
+    // Properly encode Arabic/special characters in the URL
+    $url_parts = parse_url($url);
+    if (isset($url_parts['path'])) {
+        $path_segments = explode('/', $url_parts['path']);
+        foreach ($path_segments as &$segment) {
+            $segment = rawurlencode(rawurldecode($segment));
+        }
+        $url_parts['path'] = implode('/', $path_segments);
+        
+        $url = (isset($url_parts['scheme']) ? $url_parts['scheme'] . '://' : '') .
+               (isset($url_parts['host']) ? $url_parts['host'] : '') .
+               $url_parts['path'] .
+               (isset($url_parts['query']) ? '?' . $url_parts['query'] : '');
+    }
 
     // Use a custom curl call with a fixed User-Agent to ensure consistency
     $ch = curl_init();
@@ -144,19 +157,28 @@ function witanimeListings($url) {
 
         if ($episodesList) {
             foreach ($episodesList->find('li a') as $episodeLink) {
-                $onclick = $episodeLink->getAttribute('onclick');
-                $link = '';
-                if ($onclick && preg_match("/openEpisode\('([^']+)'\)/", $onclick, $matches)) {
-                    $link = base64_decode($matches[1]);
-                }
-                
                 $title = trim($episodeLink->plaintext);
                 $episodeNumber = '';
                 $episodeNumberDigits = '';
+                
+                // Extract number from title (e.g., "الحلقة 1")
                 if (preg_match('/(\d+)/u', $title, $matches)) {
                     $episodeNumber = $matches[1];
                     $episodeNumberDigits = $episodeNumber;
                 }
+                
+                // Construct link by replacing the number in the current URL
+                // e.g., .../liar-game-الحلقة-8/ -> .../liar-game-الحلقة-1/
+                $link = $url;
+                if ($episodeNumberDigits !== '') {
+                    // This pattern looks for the last sequence of digits in the slug
+                    $link = preg_replace('/(\d+)(\/)?$/', $episodeNumberDigits . '$2', rtrim($url, '/'));
+                    if (strpos($link, 'episode') === false) {
+                        // If current URL is anime page, ensure it points to episode
+                        $link = str_replace('/anime/', '/episode/', $link);
+                    }
+                }
+
                 $episodesData[] = [
                     'link' => $link,
                     'title' => $title,
