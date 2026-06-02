@@ -234,13 +234,14 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 $url = $website14;
                 //strip last /
                 $url = rtrim($url, '/');
+                if (isset($_GET["search"]) && !empty($_GET["search"]) ){
+                    $_GET["search"] = str_replace(" ", "+", $_GET["search"]);
+                    $url .= "?search_param=animes&s={$_GET["search"]}";
+                }
                 if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
                     $url .= "/episode/page/{$_GET["page"]}/";
                 }
-                if (isset($_GET["search"]) && !empty($_GET["search"]) ){
-                    $_GET["search"] = str_replace(" ", "+", $_GET["search"]);
-                    $url = "?search_param=animes&s={$_GET["search"]}";
-                }
+                echo $url;
                 $data = witanimeHome("{$url}");
                 echo dataOutput(array("shows" => $data));
                 die();
