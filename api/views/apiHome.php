@@ -230,6 +230,20 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 $data = scrapEgyDeadLAT("{$url}");
                 echo dataOutput(array("shows" => $data));
                 die();
+            }elseif ($_GET["server"] == 16) {
+                $url = $website14;
+                //strip last /
+                $url = rtrim($url, '/');
+                if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
+                    $url .= "/episode/page/{$_GET["page"]}/";
+                }
+                if (isset($_GET["search"]) && !empty($_GET["search"]) && (!isset($_GET["page"]) || empty($_GET["page"]))) {
+                    $_GET["search"] = urlencode($_GET["search"]);;
+                    $url .= "?search_param=animes&s={$_GET["search"]}";
+                }
+                $data = witanimeHome("{$url}");
+                echo dataOutput(array("shows" => $data));
+                die();
             } else {
                 echo dataError(array("msg" => "Invalid Server"));
                 die();
