@@ -38,6 +38,8 @@ if( isset($_GET["action"]) && !empty($_GET["action"]) ){
                 $data = tvdbMoviesListings($_GET["href"]);
             }elseif( $_GET["server"] == 15 ){
                 $data = EgyDeadLATListing($_GET["href"]);
+            }elseif( $_GET["server"] == 16 ){
+                $data = witanimeListings($_GET["href"]);
             }else{
                 echo dataError(array("msg" => "Invalid Server"));die();
             }

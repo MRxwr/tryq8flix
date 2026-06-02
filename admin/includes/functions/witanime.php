@@ -22,38 +22,37 @@ function witanimeHome($url) {
         'shows' => []
     ];
     if ($dom) {
-        $list = $dom->find('ul.Blocks--List', 0);
-        if ($list) {
-            foreach ($list->find('div.Block--Item') as $item) {
-                $a = $item->find('a', 0);
-                $href = $a ? $a->href : '';
-                $img = $item->find('img', 0);
-                $image = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-                $genres = [];
-                $genresList = $item->find('ul.Genres', 0);
-                if ($genresList) {
-                    foreach ($genresList->find('li') as $li) {
-                        $genres[] = trim($li->plaintext);
-                    }
-                }
-                $title = '';
-                $h3 = $item->find('h3', 0);
-                if ($h3) {
-                    $title = trim($h3->plaintext);
-                }
-                // Keep same array keys, fill missing with empty string/array
-                $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
-                $jsonData = [
-                    'href' => $href,
-                    'image' => trim($posterUrl),
-                    'episode' => '',
-                    'category' => '',
-                    'title' => $title,
-                    'description' => '',
-                    'genres' => $genres
-                ];
-                $data['shows'][] = $jsonData;
-            }
+        foreach ($dom->find('div.anime-card-container') as $item) {
+            $titleAnchor = $item->find('.anime-card-title h3 a', 0);
+            $href = $titleAnchor ? $titleAnchor->href : '';
+            $title = $titleAnchor ? trim($titleAnchor->plaintext) : '';
+
+            $img = $item->find('.anime-card-poster img', 0);
+            $image = $img ? $img->src : '';
+
+            $epAnchor = $item->find('.episodes-card-title h3 a', 0);
+            $episode = $epAnchor ? trim($epAnchor->plaintext) : '';
+
+            $statusAnchor = $item->find('.anime-card-status a', 0);
+            $category = $statusAnchor ? trim($statusAnchor->plaintext) : '';
+
+            $descriptionDiv = $item->find('.anime-card-title', 0);
+            $description = $descriptionDiv ? trim($descriptionDiv->getAttribute('data-content')) : '';
+
+            $genres = [];
+            
+            // Keep same array keys, fill missing with empty string/array
+            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
+            $jsonData = [
+                'href' => $href,
+                'image' => trim($posterUrl),
+                'episode' => $episode,
+                'category' => $category,
+                'title' => $title,
+                'description' => $description,
+                'genres' => $genres
+            ];
+            $data['shows'][] = $jsonData;
         }
         $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
