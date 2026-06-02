@@ -286,11 +286,13 @@ function witanimeServers($url) {
         // Map server names from the HTML structure
         $dom = str_get_html($html);
         if ($dom) {
-            $lis = $dom->find('div.watch--servers--list ul li.server--item');
-            foreach ($lis as $index => $li) {
-                $nameSpan = $li->find('span', 0);
-                $name = $nameSpan ? trim($nameSpan->plaintext) : 'Server ' . ($index + 1);
+            $serverLinks = $dom->find('ul#episode-servers li a.server-link');
+            foreach ($serverLinks as $a) {
+                $serverId = $a->getAttribute('data-server-id');
+                $nameSpan = $a->find('span.ser', 0);
+                $name = $nameSpan ? trim($nameSpan->plaintext) : 'Server ' . ($serverId);
                 
+                $index = (int)$serverId;
                 if (isset($decodedLinks[$index])) {
                     $servers[] = [
                         'name' => $name,
