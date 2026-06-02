@@ -199,7 +199,7 @@ function witanimeListings($url) {
 }
 
 function witanimeServers($url) {
-    $url = trim($url);
+    echo $url = trim($url);
     // Properly encode Arabic/special characters in the URL
     $url_parts = parse_url($url);
     if (isset($url_parts['path'])) {
