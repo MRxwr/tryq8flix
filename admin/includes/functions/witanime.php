@@ -199,33 +199,110 @@ function witanimeListings($url) {
 }
 
 function witanimeServers($url) {
-    $html = curlCall("{$url}watch");
-    $dom = str_get_html($html);
-    $servers = [];
-    if ($dom) {
-        $lis = $dom->find('div.watch--servers--list ul li.server--item');
-        foreach ($lis as $li) {
-            $dataLink = $li->getAttribute('data-link');
-            $nameSpan = $li->find('span', 0);
-            $name = $nameSpan ? trim($nameSpan->plaintext) : '';
-            $decodedLink = '';
-            if ($dataLink) {
-                // PHP equivalent of decodeLink JS function
-                $split = explode('0REL0Y&', $dataLink);
-                $part = $split[0];
-                $reversed = strrev($part);
-                $decodedLink = base64_decode($reversed);
-            }
-            $servers[] = [
-                'name' => $name,
-                'link' => $decodedLink
-            ];
+    $url = trim($url);
+    // Properly encode Arabic/special characters in the URL
+    $url_parts = parse_url($url);
+    if (isset($url_parts['path'])) {
+        $path_segments = explode('/', $url_parts['path']);
+        foreach ($path_segments as &$segment) {
+            $segment = rawurlencode(rawurldecode($segment));
         }
-        $dom->clear();
-        unset($dom);
-    } else {
-        echo 'Error: Invalid DOM object.';
+        $url_parts['path'] = implode('/', $path_segments);
+        
+        $url = (isset($url_parts['scheme']) ? $url_parts['scheme'] . '://' : '') .
+               (isset($url_parts['host']) ? $url_parts['host'] : '') .
+               $url_parts['path'] .
+               (isset($url_parts['query']) ? '?' . $url_parts['query'] : '');
     }
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    curl_setopt($ch, CURLOPT_ENCODING, "");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language: en-US,en;q=0.9,ar;q=0.8",
+        "Cache-Control: no-cache",
+        "Pragma: no-cache",
+        "Upgrade-Insecure-Requests: 1"
+    ]);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    $html = curl_exec($ch);
+    curl_close($ch);
+
+    $servers = [];
+    if (!$html) return $servers;
+
+    // Extract _zG and _zH from scripts
+    $resourceRegistry = [];
+    $configRegistry = [];
+
+    if (preg_match('/var\s+_zG\s*=\s*"([^"]+)"/', $html, $matches)) {
+        $resourceRegistry = json_decode(base64_decode($matches[1]), true);
+    }
+    if (preg_match('/var\s+_zH\s*=\s*"([^"]+)"/', $html, $matches)) {
+        $configRegistry = json_decode(base64_decode($matches[1]), true);
+    }
+
+    if (!empty($resourceRegistry) && !empty($configRegistry)) {
+        $FRAMEWORK_HASH = "23a97133-caf3-4eb4-9466-93d0a4ff8198";
+
+        // Logic to decode each server
+        $decodedLinks = [];
+        foreach ($resourceRegistry as $i => $resourceData) {
+            if (!isset($configRegistry[$i])) continue;
+            
+            $configSettings = $configRegistry[$i];
+            
+            // reverse string
+            $resourceData = strrev($resourceData);
+
+            // keep only base64 chars
+            $resourceData = preg_replace('/[^A-Za-z0-9+\/=]/', '', $resourceData);
+
+            // decode base64
+            $decoded = base64_decode($resourceData);
+            if (!$decoded) continue;
+
+            // offset logic
+            $indexKey = (int)base64_decode($configSettings['k']);
+            $offset = (int)$configSettings['d'][$indexKey];
+
+            if ($offset > 0) {
+                $decoded = substr($decoded, 0, -$offset);
+            }
+
+            if (preg_match('/^https:\/\/yonaplay\.net\/embed\.php\?id=\d+$/', $decoded)) {
+                $decoded .= '&apiKey=' . $FRAMEWORK_HASH;
+            }
+
+            $decodedLinks[] = $decoded;
+        }
+
+        // Map server names from the HTML structure
+        $dom = str_get_html($html);
+        if ($dom) {
+            $lis = $dom->find('div.watch--servers--list ul li.server--item');
+            foreach ($lis as $index => $li) {
+                $nameSpan = $li->find('span', 0);
+                $name = $nameSpan ? trim($nameSpan->plaintext) : 'Server ' . ($index + 1);
+                
+                if (isset($decodedLinks[$index])) {
+                    $servers[] = [
+                        'name' => $name,
+                        'link' => $decodedLinks[$index]
+                    ];
+                }
+            }
+            $dom->clear();
+            unset($dom);
+        }
+    }
+
     return $servers;
 }
 ?>
