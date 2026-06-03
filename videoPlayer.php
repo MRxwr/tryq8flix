@@ -106,12 +106,11 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     }
 
     // Always use iframe for all incoming links
-    // Added sandbox attribute to block popups and top-level navigation, while allowing video and scripts
+    // Removed sandbox to avoid "Sandbox detected" blocks, using JS instead to mitigate popups
     echo "<iframe id='frame' src='{$_GET["link"]}' 
             style='width:100%;height:100vh;border: none;overflow: hidden;' 
             allowFullScreen 
-            referrerpolicy='no-referrer'
-            sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation-by-user-activation'></iframe>";
+            referrerpolicy='no-referrer'></iframe>";
     
     // Keep old code commented for reference
     // if($useVideoPlayer) {
@@ -125,30 +124,41 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 ?>
 
     <script>
-        // Proactive Ad-Block and Popup Prevention
+        // Ad-Block & Popup Interceptor (No-Sandbox Mode)
         (function() {
-            // Block window.open
-            var originalOpen = window.open;
+            // 1. Block window.open in the top window
             window.open = function() {
-                console.log("Blocked a popup attempt.");
-                return null;
+                console.warn("Popup blocked.");
+                return { focus: function() {}, close: function() {} }; 
             };
 
-            // Prevent the parent page from being redirected by the iframe
+            // 2. Prevent the iframe from redirecting the main page (Tab-nabbing/Redirection)
+            var preventRedirect = 0;
             window.onbeforeunload = function() {
-                return "Are you sure you want to leave?";
+                preventRedirect++;
+                if (preventRedirect > 0) {
+                    // This creates a browser prompt if the site tries to redirect you
+                    setTimeout(function() {
+                        preventRedirect = 0;
+                    }, 100);
+                    return "External site tried to redirect you. Stay on this page?";
+                }
             };
 
-            // Monitor iframe for suspicious activity
+            // 3. Focus-loss detection (Commonly used by servers to open hidden popunder tabs)
+            window.onblur = function() {
+                // If the page loses focus while the user is interacting with the iframe,
+                // we try to force focus back to stop popunders.
+                setTimeout(function() {
+                    window.focus();
+                }, 500);
+            };
+
+            // 4. Periodically clear common ad-element patterns if they escape the iframe
             setInterval(function() {
-                var iframe = document.getElementById('frame');
-                if (iframe) {
-                    // Force the sandbox to stay strict if script tries to change it
-                    if (!iframe.hasAttribute('sandbox')) {
-                        iframe.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation-by-user-activation');
-                    }
-                }
-            }, 1000);
+                const garbage = document.querySelectorAll('a[target="_blank"], .ad-container, [id*="pop"]');
+                garbage.forEach(el => el.remove());
+            }, 2000);
         })();
 
         function setupVideoPlayer(videoElement, sourceUrl) {
