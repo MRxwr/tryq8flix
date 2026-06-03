@@ -124,41 +124,61 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 ?>
 
     <script>
-        // Ad-Block & Popup Interceptor (No-Sandbox Mode)
+        // Stronger Popup & Ad Interceptor for Mobile Safari
         (function() {
-            // 1. Block window.open in the top window
-            window.open = function() {
-                console.warn("Popup blocked.");
-                return { focus: function() {}, close: function() {} }; 
-            };
+            // 1. Hard-lock window.open using defineProperty
+            try {
+                Object.defineProperty(window, 'open', {
+                    value: function() { 
+                        console.warn("Safari popup attempt blocked."); 
+                        return null; 
+                    },
+                    writable: false,
+                    configurable: false
+                });
+            } catch (e) {}
 
-            // 2. Prevent the iframe from redirecting the main page (Tab-nabbing/Redirection)
-            var preventRedirect = 0;
-            window.onbeforeunload = function() {
-                preventRedirect++;
-                if (preventRedirect > 0) {
-                    // This creates a browser prompt if the site tries to redirect you
-                    setTimeout(function() {
-                        preventRedirect = 0;
-                    }, 100);
-                    return "External site tried to redirect you. Stay on this page?";
+            // 2. Intercept all clicks to prevent "invisible layer" ads
+            window.addEventListener('click', function(e) {
+                // Check if the click is on an element that looks like an ad
+                if (e.target.tagName === 'A' && e.target.target === '_blank') {
+                    e.preventDefault();
+                    console.warn("Blocked link popup.");
                 }
+            }, true);
+
+            // 3. Prevent the iframe from breaking out of its container
+            window.onbeforeunload = function() {
+                // iOS Safari requires a non-empty string or specific interaction
+                return "Ad attempt detected. stay here?";
             };
 
-            // 3. Focus-loss detection (Commonly used by servers to open hidden popunder tabs)
-            window.onblur = function() {
-                // If the page loses focus while the user is interacting with the iframe,
-                // we try to force focus back to stop popunders.
-                setTimeout(function() {
-                    window.focus();
-                }, 500);
-            };
+            // 4. Mobile Safari specifically: Detect focus shifts
+            var hidden, visibilityChange;
+            if (typeof document.hidden !== "undefined") {
+                hidden = "hidden";
+                visibilityChange = "visibilitychange";
+            } else if (typeof document.webkitHidden !== "undefined") {
+                hidden = "webkitHidden";
+                visibilityChange = "webkitvisibilitychange";
+            }
 
-            // 4. Periodically clear common ad-element patterns if they escape the iframe
-            setInterval(function() {
-                const garbage = document.querySelectorAll('a[target="_blank"], .ad-container, [id*="pop"]');
-                garbage.forEach(el => el.remove());
-            }, 2000);
+            document.addEventListener(visibilityChange, function() {
+                if (document[hidden] === false) {
+                    // Page became visible again (user likely coming back from a popup)
+                    // We can attempt to stop the reload or just stay put
+                }
+            }, false);
+
+            // 5. CSS Shield to kill invisible ad overlays from common ad networks
+            const style = document.createElement('style');
+            style.innerHTML = `
+                #frame { pointer-events: auto !important; }
+                .ad-mask, [class*="overlay"], [class*="popup"], [id*="pop"] { 
+                    display:none !important; width:0 !important; height:0 !important; pointer-events:none !important; 
+                }
+            `;
+            document.head.appendChild(style);
         })();
 
         function setupVideoPlayer(videoElement, sourceUrl) {
