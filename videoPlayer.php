@@ -106,7 +106,12 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     }
 
     // Always use iframe for all incoming links
-    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
+    // Added sandbox attribute to block popups and top-level navigation, while allowing video and scripts
+    echo "<iframe id='frame' src='{$_GET["link"]}' 
+            style='width:100%;height:100vh;border: none;overflow: hidden;' 
+            allowFullScreen 
+            referrerpolicy='no-referrer'
+            sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation-by-user-activation'></iframe>";
     
     // Keep old code commented for reference
     // if($useVideoPlayer) {
@@ -120,6 +125,32 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 ?>
 
     <script>
+        // Proactive Ad-Block and Popup Prevention
+        (function() {
+            // Block window.open
+            var originalOpen = window.open;
+            window.open = function() {
+                console.log("Blocked a popup attempt.");
+                return null;
+            };
+
+            // Prevent the parent page from being redirected by the iframe
+            window.onbeforeunload = function() {
+                return "Are you sure you want to leave?";
+            };
+
+            // Monitor iframe for suspicious activity
+            setInterval(function() {
+                var iframe = document.getElementById('frame');
+                if (iframe) {
+                    // Force the sandbox to stay strict if script tries to change it
+                    if (!iframe.hasAttribute('sandbox')) {
+                        iframe.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation-by-user-activation');
+                    }
+                }
+            }, 1000);
+        })();
+
         function setupVideoPlayer(videoElement, sourceUrl) {
             if (sourceUrl.includes('.m3u8')) {
                 setupHlsPlayer(videoElement, sourceUrl);
