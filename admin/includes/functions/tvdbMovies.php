@@ -72,7 +72,9 @@ function tvdbMoviesServers($id) {
         ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
+        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Peachify', 'link' => "https://peachify.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Xpass', 'link' => "https://play.xpass.top/e/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 }
 
