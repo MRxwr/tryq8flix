@@ -11,20 +11,6 @@ require("admin/includes/config.php");
 require("admin/includes/functions.php");
 
 function extractVideoSource($html) {
-    // Try to find common video patterns in scripts or tags
-    $patterns = [
-        '/file["\']?\s*[:=]\s*["\'](https?:[^"\'\s]+\.(?:m3u8|mp4)[^"\'\s]*)["\']/', // JSON/JS file:
-        '/["\']?url["\']?\s*:\s*["\'](https?:[^"\'\s]+\.(?:m3u8|mp4)[^"\'\s]*)["\']/', // JSON/JS url:
-        '/<source[^>]+src=["\'](https?:[^"\']+\.(?:m3u8|mp4)[^"\']*)["\']/i',        // <source> tag
-        '/video_url["\']?\s*:\s*["\'](https?:[^"\'\s]+)["\']/'                       // common video_url variable
-    ];
-
-    foreach ($patterns as $pattern) {
-        if (preg_match($pattern, $html, $matches)) {
-            return $matches[1];
-        }
-    }
-
     $pattern = '/jwplayer\("vplayer"\)\.setup\({.*?sources:\s*\[{file:"(.*?)",/s';
     if (preg_match($pattern, $html, $matches)) {
         return $matches[1];
@@ -119,14 +105,15 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         }
     }
 
-    if($useVideoPlayer && !empty($videoUrl)) {
-        // Use native video tag with attributes that force Android/Xiaomi browsers to use their native player UI
-        echo "<video id='videoPlayer' controls autoplay playsinline webkit-playsinline 
-              x5-playsinline x5-video-player-type='h5' x5-video-player-fullscreen='true'
-              style='width:100%;height:100vh;background:#000;display:block;'></video>";
-    } else {
-        echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
-    }
+    // Always use iframe for all incoming links
+    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
+    
+    // Keep old code commented for reference
+    // if($useVideoPlayer) {
+    //     echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+    // } else {
+    //     echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
+    // }
 }else{
     echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
 }
