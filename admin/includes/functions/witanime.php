@@ -31,7 +31,7 @@ function witanimeHome($url) {
     ];
     if ($dom) {
         foreach ($dom->find('div.anime-card-container') as $item) {
-            $titleAnchor = $item->find('.episodes-card-title h3 a', 0);
+            $titleAnchor = $item->find('.anime-card-title h3 a', 0);
             $href = $titleAnchor ? $titleAnchor->href : '';
             $title = $titleAnchor ? trim($titleAnchor->plaintext) : '';
 
@@ -147,45 +147,76 @@ function witanimeListings($url) {
         }
 
         // Scrape episodes (new structure based on user snippet)
-        $episodesList = $htmlDom->find('ul#ULEpisodesList', 0);
-        if (!$episodesList) {
-            $episodesList = $htmlDom->find('ul.all-episodes-list', 0);
-        }
-        if (!$episodesList) {
-            $episodesList = $htmlDom->find('div.all-episodes ul', 0);
-        }
-
-        if ($episodesList) {
-            foreach ($episodesList->find('li a') as $episodeLink) {
-                $title = trim($episodeLink->plaintext);
-                $episodeNumber = '';
-                $episodeNumberDigits = '';
-                
-                // Extract number from title (e.g., "الحلقة 1")
-                if (preg_match('/(\d+)/u', $title, $matches)) {
-                    $episodeNumber = $matches[1];
-                    $episodeNumberDigits = $episodeNumber;
+        if (preg_match('/var\s+processedEpisodeData\s*=\s*\'([^\']+)\'/', $html, $matches)) {
+            $encoded = $matches[1];
+            $parts = explode('.', $encoded);
+            if (count($parts) === 2) {
+                $payload = base64_decode($parts[0]);
+                $key = base64_decode($parts[1]);
+                $json = '';
+                $keyLen = strlen($key);
+                for ($i = 0; $i < strlen($payload); $i++) {
+                    $json .= $payload[$i] ^ $key[$i % $keyLen];
                 }
-                
-                // Construct link by replacing the number in the current URL
-                // e.g., .../liar-game-الحلقة-8/ -> .../liar-game-الحلقة-1/
-                $link = $url;
-                if ($episodeNumberDigits !== '') {
-                    // This pattern looks for the last sequence of digits in the slug
-                    $link = preg_replace('/(\d+)(\/)?$/', $episodeNumberDigits . '$2', rtrim($url, '/'));
-                    if (strpos($link, 'episode') === false) {
-                        // If current URL is anime page, ensure it points to episode
-                        $link = str_replace('/anime/', '/episode/', $link);
+                $episodes = json_decode($json, true);
+                if (is_array($episodes)) {
+                    foreach ($episodes as $ep) {
+                        $title = isset($ep['text']) ? trim($ep['text']) : '';
+                        $episodeNumber = '';
+                        $episodeNumberDigits = '';
+                        if (preg_match('/(\d+)/u', $title, $matchesNum)) {
+                            $episodeNumber = $matchesNum[1];
+                            $episodeNumberDigits = $episodeNumber;
+                        }
+                        $episodesData[] = [
+                            'link' => isset($ep['url']) ? $ep['url'] : '',
+                            'title' => $title,
+                            'episode_number' => $episodeNumberDigits,
+                            'episode_text' => $episodeNumber,
+                            'poster' => isset($ep['screenshot']) ? $ep['screenshot'] : ''
+                        ];
                     }
                 }
+            }
+        }
 
-                $episodesData[] = [
-                    'link' => $link,
-                    'title' => $title,
-                    'episode_number' => $episodeNumberDigits,
-                    'episode_text' => $episodeNumber,
-                    'poster' => ''
-                ];
+        // Fallback to HTML scraping if script data not found
+        if (empty($episodesData)) {
+            $episodesList = $htmlDom->find('ul#ULEpisodesList', 0);
+            if (!$episodesList) {
+                $episodesList = $htmlDom->find('ul.all-episodes-list', 0);
+            }
+            if (!$episodesList) {
+                $episodesList = $htmlDom->find('div.all-episodes ul', 0);
+            }
+
+            if ($episodesList) {
+                foreach ($episodesList->find('li a') as $episodeLink) {
+                    $title = trim($episodeLink->plaintext);
+                    $episodeNumber = '';
+                    $episodeNumberDigits = '';
+                    
+                    if (preg_match('/(\d+)/u', $title, $matches)) {
+                        $episodeNumber = $matches[1];
+                        $episodeNumberDigits = $episodeNumber;
+                    }
+                    
+                    $link = $url;
+                    if ($episodeNumberDigits !== '') {
+                        $link = preg_replace('/(\d+)(\/)?$/', $episodeNumberDigits . '$2', rtrim($url, '/'));
+                        if (strpos($link, 'episode') === false) {
+                            $link = str_replace('/anime/', '/episode/', $link);
+                        }
+                    }
+
+                    $episodesData[] = [
+                        'link' => $link,
+                        'title' => $title,
+                        'episode_number' => $episodeNumberDigits,
+                        'episode_text' => $episodeNumber,
+                        'poster' => ''
+                    ];
+                }
             }
         }
         $htmlDom->clear();
