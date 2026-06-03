@@ -26,11 +26,9 @@ $videoUrl = "";
 $useVideoPlayer = false;
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
-    $rawLink = $_GET["link"];
-    $encodedLink = fix_arabic_url($rawLink);
     $curl = curl_init();
     curl_setopt_array($curl, array(
-        CURLOPT_URL => "{$encodedLink}",
+        CURLOPT_URL => "{$_GET["link"]}",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -47,8 +45,8 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     curl_close($curl);
     
     // First check if the link itself is a direct video file
-    if(strpos($encodedLink, ".mp4") !== false || strpos($encodedLink, ".m3u8") !== false) {
-        $videoUrl = $encodedLink;
+    if(strpos($_GET["link"], ".mp4") !== false || strpos($_GET["link"], ".m3u8") !== false) {
+        $videoUrl = $_GET["link"];
         $useVideoPlayer = true;
     } 
     // Then try to extract video source from response
@@ -56,7 +54,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         // First try using the extractVideoSource function
         $extractedUrl = extractVideoSource($response);
         if($extractedUrl) {
-            $videoUrl = fix_arabic_url($extractedUrl);
+            $videoUrl = $extractedUrl;
             // Crop after .m3u8 if present
             if (strpos($videoUrl, ".m3u8") !== false) {
                 $videoUrl = substr($videoUrl, 0, strpos($videoUrl, ".m3u8")) . ".m3u8";
@@ -106,11 +104,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     }
 
     // Always use iframe for all incoming links
-    // Removed sandbox to avoid "Sandbox detected" blocks, using JS instead to mitigate popups
-    echo "<iframe id='frame' src='{$_GET["link"]}' 
-            style='width:100%;height:100vh;border: none;overflow: hidden;' 
-            allowFullScreen 
-            referrerpolicy='no-referrer'></iframe>";
+    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
     
     // Keep old code commented for reference
     // if($useVideoPlayer) {
@@ -124,63 +118,6 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 ?>
 
     <script>
-        // Stronger Popup & Ad Interceptor for Mobile Safari
-        (function() {
-            // 1. Hard-lock window.open using defineProperty
-            try {
-                Object.defineProperty(window, 'open', {
-                    value: function() { 
-                        console.warn("Safari popup attempt blocked."); 
-                        return null; 
-                    },
-                    writable: false,
-                    configurable: false
-                });
-            } catch (e) {}
-
-            // 2. Intercept all clicks to prevent "invisible layer" ads
-            window.addEventListener('click', function(e) {
-                // Check if the click is on an element that looks like an ad
-                if (e.target.tagName === 'A' && e.target.target === '_blank') {
-                    e.preventDefault();
-                    console.warn("Blocked link popup.");
-                }
-            }, true);
-
-            // 3. Prevent the iframe from breaking out of its container
-            window.onbeforeunload = function() {
-                // iOS Safari requires a non-empty string or specific interaction
-                return "Ad attempt detected. stay here?";
-            };
-
-            // 4. Mobile Safari specifically: Detect focus shifts
-            var hidden, visibilityChange;
-            if (typeof document.hidden !== "undefined") {
-                hidden = "hidden";
-                visibilityChange = "visibilitychange";
-            } else if (typeof document.webkitHidden !== "undefined") {
-                hidden = "webkitHidden";
-                visibilityChange = "webkitvisibilitychange";
-            }
-
-            document.addEventListener(visibilityChange, function() {
-                if (document[hidden] === false) {
-                    // Page became visible again (user likely coming back from a popup)
-                    // We can attempt to stop the reload or just stay put
-                }
-            }, false);
-
-            // 5. CSS Shield to kill invisible ad overlays from common ad networks
-            const style = document.createElement('style');
-            style.innerHTML = `
-                #frame { pointer-events: auto !important; }
-                .ad-mask, [class*="overlay"], [class*="popup"], [id*="pop"] { 
-                    display:none !important; width:0 !important; height:0 !important; pointer-events:none !important; 
-                }
-            `;
-            document.head.appendChild(style);
-        })();
-
         function setupVideoPlayer(videoElement, sourceUrl) {
             if (sourceUrl.includes('.m3u8')) {
                 setupHlsPlayer(videoElement, sourceUrl);
