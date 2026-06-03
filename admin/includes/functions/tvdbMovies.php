@@ -74,7 +74,25 @@ function tvdbMoviesServers($id) {
         ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Peachify', 'link' => "https://peachify.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Xpass', 'link' => "https://play.xpass.top/e/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
+        ['name' => 'Server Xpass', 'link' => "https://play.xpass.top/e/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Mistify', 'link' => "https://mistify.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Simplify', 'link' => "https://simplify.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Asia', 'link' => "https://asia.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Cine', 'link' => "https://cine.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidmux', 'link' => "https://vidmux.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Pablo', 'link' => "https://pablo.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server India', 'link' => "https://india.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Diablo', 'link' => "https://diablo.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Azute', 'link' => "https://azute.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidind', 'link' => "https://vidind.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidora', 'link' => "https://vidora.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Fade', 'link' => "https://fade.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Nero', 'link' => "https://nero.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Flixify', 'link' => "https://flixify.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Neon', 'link' => "https://neon.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Astra', 'link' => "https://astra.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Sage', 'link' => "https://sage.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Aura', 'link' => "https://aura.top/embed/movie/{$id}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 }
 
