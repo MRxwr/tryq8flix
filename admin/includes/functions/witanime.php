@@ -54,9 +54,9 @@ function witanimeHome($url) {
             $jsonData = [
                 'href' => $href,
                 'image' => trim($image),
-                'episode' => "{$title} {$episode}",
+                'episode' => $episode,
                 'category' => $category,
-                'title' => $title,
+                'title' => "{$title} {$episode}",
                 'description' => $description,
                 'genres' => $genres
             ];
