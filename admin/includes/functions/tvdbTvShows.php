@@ -158,14 +158,14 @@ function tvdbTvShowsServers($id_info) {
     $date = isset($res['first_air_date']) ? $res['first_air_date'] : "";
 
     return [
-        //['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        //['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        //['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        //['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        //['name' => 'Server Vidcore', 'link' => "https://vidcore.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidcore', 'link' => "https://vidcore.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vaplayer', 'link' => "https://vaplayer.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server ZXC', 'link' => "https://zxcstream.xyz/player/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        //['name' => 'Server Mapple', 'link' => "https://mapple.uk/watch/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
+        ['name' => 'Server Mapple', 'link' => "https://mapple.uk/watch/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 } 
 ?>
