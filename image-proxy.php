@@ -8,7 +8,14 @@ if (!isset($_GET['url'])) {
     exit;
 }
 
-$url = $_GET['url'];
+function fix_arabic_url($url) {
+    if (empty($url)) return $url;
+    return preg_replace_callback('/[^\x21-\x7e]/', function($match) {
+        return rawurlencode($match[0]);
+    }, $url);
+}
+
+$url = fix_arabic_url($_GET['url']);
 
 $cacheDir = 'temp_images/';
 if (!is_dir($cacheDir)) {

@@ -26,9 +26,11 @@ $videoUrl = "";
 $useVideoPlayer = false;
 
 if( isset($_GET["link"]) && !empty($_GET["link"]) ){
+    $rawLink = $_GET["link"];
+    $encodedLink = fix_arabic_url($rawLink);
     $curl = curl_init();
     curl_setopt_array($curl, array(
-        CURLOPT_URL => "{$_GET["link"]}",
+        CURLOPT_URL => "{$encodedLink}",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -45,8 +47,8 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     curl_close($curl);
     
     // First check if the link itself is a direct video file
-    if(strpos($_GET["link"], ".mp4") !== false || strpos($_GET["link"], ".m3u8") !== false) {
-        $videoUrl = $_GET["link"];
+    if(strpos($encodedLink, ".mp4") !== false || strpos($encodedLink, ".m3u8") !== false) {
+        $videoUrl = $encodedLink;
         $useVideoPlayer = true;
     } 
     // Then try to extract video source from response
@@ -54,7 +56,7 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
         // First try using the extractVideoSource function
         $extractedUrl = extractVideoSource($response);
         if($extractedUrl) {
-            $videoUrl = $extractedUrl;
+            $videoUrl = fix_arabic_url($extractedUrl);
             // Crop after .m3u8 if present
             if (strpos($videoUrl, ".m3u8") !== false) {
                 $videoUrl = substr($videoUrl, 0, strpos($videoUrl, ".m3u8")) . ".m3u8";

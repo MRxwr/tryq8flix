@@ -17,7 +17,7 @@ if (!isset($_GET['url'])) {
     exit("Missing URL parameter");
 }
 
-$url = $_GET['url'];
+$url = fix_arabic_url($_GET['url']);
 
 // Basic URL validation
 if (!filter_var($url, FILTER_VALIDATE_URL)) {

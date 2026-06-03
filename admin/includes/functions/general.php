@@ -90,8 +90,16 @@ function randomLetter(){
 	return substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),0,1);
 }
 
+function fix_arabic_url($url) {
+    if (empty($url)) return $url;
+    return preg_replace_callback('/[^\x21-\x7e]/', function($match) {
+        return rawurlencode($match[0]);
+    }, $url);
+}
+
 function scrapePage($url) {
 	GLOBAL $scrappingBeeToken;
+	$url = fix_arabic_url($url);
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
