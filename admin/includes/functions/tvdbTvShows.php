@@ -163,25 +163,7 @@ function tvdbTvShowsServers($id_info) {
         ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Peachify', 'link' => "https://peachify.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Xpass', 'link' => "https://play.xpass.top/e/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Mistify', 'link' => "https://mistify.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Simplify', 'link' => "https://simplify.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Asia', 'link' => "https://asia.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Cine', 'link' => "https://cine.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidmux', 'link' => "https://vidmux.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Pablo', 'link' => "https://pablo.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server India', 'link' => "https://india.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Diablo', 'link' => "https://diablo.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Azute', 'link' => "https://azute.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidind', 'link' => "https://vidind.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidora', 'link' => "https://vidora.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Fade', 'link' => "https://fade.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Nero', 'link' => "https://nero.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Flixify', 'link' => "https://flixify.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Neon', 'link' => "https://neon.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Astra', 'link' => "https://astra.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Sage', 'link' => "https://sage.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Aura', 'link' => "https://aura.top/embed/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
+        ['name' => 'Server Xpass', 'link' => "https://play.xpass.top/e/tv/{$id}/{$s}/{$e}", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 } 
 ?>
