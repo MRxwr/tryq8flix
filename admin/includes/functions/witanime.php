@@ -54,7 +54,7 @@ function witanimeHome($url) {
             $jsonData = [
                 'href' => $href,
                 'image' => trim($image),
-                'episode' => $episode,
+                'episode' => "{$title} {$episode}",
                 'category' => $category,
                 'title' => $title,
                 'description' => $description,
@@ -161,13 +161,17 @@ function witanimeListings($url) {
                 $episodes = json_decode($json, true);
                 if (is_array($episodes)) {
                     foreach ($episodes as $ep) {
-                        $title = isset($ep['text']) ? trim($ep['text']) : '';
+                        $epNum = isset($ep['number']) ? $ep['number'] : '';
+                        $epType = isset($ep['type']) ? $ep['type'] : 'الحلقة';
+                        $title = trim($epType . ' ' . $epNum);
+                        
                         $episodeNumber = '';
                         $episodeNumberDigits = '';
-                        if (preg_match('/(\d+)/u', $title, $matchesNum)) {
+                        if (preg_match('/(\d+)/u', $epNum, $matchesNum)) {
                             $episodeNumber = $matchesNum[1];
                             $episodeNumberDigits = $episodeNumber;
                         }
+                        
                         $episodesData[] = [
                             'link' => isset($ep['url']) ? $ep['url'] : '',
                             'title' => $title,
