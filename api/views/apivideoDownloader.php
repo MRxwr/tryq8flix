@@ -89,7 +89,11 @@ function runVideoDownloader($action, $url)
 
     $bin = ensureYtDlpBinary();
     if (!$bin['ok']) {
-        return $bin;
+        $fallback = runPlatformFallback($action, $url);
+        if ($fallback['ok']) {
+            return $fallback;
+        }
+        return array('ok' => false, 'error' => $bin['error'] . ' | fallback failed: ' . $fallback['error']);
     }
     $ytDlp = $bin['path'];
 
@@ -100,11 +104,19 @@ function runVideoDownloader($action, $url)
         $command = $safeBin . ' --no-warnings --no-playlist -J ' . $safeUrl . ' 2>&1';
         $raw = shell_exec($command);
         if (!is_string($raw) || trim($raw) === '') {
+            $fallback = runPlatformFallback($action, $url);
+            if ($fallback['ok']) {
+                return $fallback;
+            }
             return array('ok' => false, 'error' => 'Empty response from yt-dlp');
         }
 
         $decoded = json_decode(trim($raw), true);
         if (!is_array($decoded)) {
+            $fallback = runPlatformFallback($action, $url);
+            if ($fallback['ok']) {
+                return $fallback;
+            }
             return array('ok' => false, 'error' => 'Invalid downloader response: ' . trim($raw));
         }
 
@@ -128,6 +140,10 @@ function runVideoDownloader($action, $url)
         $command = $safeBin . ' --no-warnings --no-playlist -f mp4/best -g ' . $safeUrl . ' 2>&1';
         $raw = shell_exec($command);
         if (!is_string($raw) || trim($raw) === '') {
+            $fallback = runPlatformFallback($action, $url);
+            if ($fallback['ok']) {
+                return $fallback;
+            }
             return array('ok' => false, 'error' => 'Could not get stream url from yt-dlp');
         }
 
@@ -141,6 +157,10 @@ function runVideoDownloader($action, $url)
         }
 
         if (empty($urls)) {
+            $fallback = runPlatformFallback($action, $url);
+            if ($fallback['ok']) {
+                return $fallback;
+            }
             return array('ok' => false, 'error' => 'No direct stream URL found: ' . trim($raw));
         }
 
@@ -154,6 +174,102 @@ function runVideoDownloader($action, $url)
     }
 
     return array('ok' => false, 'error' => 'Unsupported action');
+}
+
+function runPlatformFallback($action, $url)
+{
+    $host = strtolower(parse_url($url, PHP_URL_HOST) ?: '');
+
+    if (strpos($host, 'x.com') !== false || strpos($host, 'twitter.com') !== false) {
+        return runVXTwitterFallback($action, $url);
+    }
+
+    return array('ok' => false, 'error' => 'No fallback available for this platform on this host');
+}
+
+function runVXTwitterFallback($action, $url)
+{
+    $tweetId = extractTwitterStatusId($url);
+    if (empty($tweetId)) {
+        return array('ok' => false, 'error' => 'Could not detect tweet ID for fallback');
+    }
+
+    $apiUrl = 'https://api.vxtwitter.com/Twitter/status/' . rawurlencode($tweetId);
+    $json = fetchRemoteJson($apiUrl);
+    if (!is_array($json)) {
+        return array('ok' => false, 'error' => 'VX fallback API did not return valid JSON');
+    }
+
+    $mediaUrls = array();
+    if (!empty($json['mediaURLs']) && is_array($json['mediaURLs'])) {
+        foreach ($json['mediaURLs'] as $u) {
+            if (is_string($u) && preg_match('/^https?:\/\//i', $u)) {
+                $mediaUrls[] = $u;
+            }
+        }
+    }
+
+    if (empty($mediaUrls) && !empty($json['media_extended']) && is_array($json['media_extended'])) {
+        foreach ($json['media_extended'] as $m) {
+            if (!empty($m['url']) && is_string($m['url']) && preg_match('/^https?:\/\//i', $m['url'])) {
+                $mediaUrls[] = $m['url'];
+            }
+        }
+    }
+
+    if ($action === 'link') {
+        if (empty($mediaUrls)) {
+            return array('ok' => false, 'error' => 'VX fallback found no media URL');
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $mediaUrls[0],
+                'all_urls' => $mediaUrls,
+                'source' => 'vxtwitter-fallback'
+            )
+        );
+    }
+
+    $duration = 0;
+    if (!empty($json['media_extended'][0]['duration_millis'])) {
+        $duration = intval(round(intval($json['media_extended'][0]['duration_millis']) / 1000));
+    }
+
+    return array(
+        'ok' => true,
+        'data' => array(
+            'id' => isset($json['tweetID']) ? strval($json['tweetID']) : strval($tweetId),
+            'title' => isset($json['text']) ? trim($json['text']) : 'Twitter Video',
+            'webpage_url' => isset($json['tweetURL']) ? $json['tweetURL'] : $url,
+            'uploader' => isset($json['user_name']) ? trim($json['user_name']) : (isset($json['user_screen_name']) ? trim($json['user_screen_name']) : ''),
+            'duration' => $duration,
+            'thumbnail' => !empty($json['media_extended'][0]['thumbnail_url']) ? $json['media_extended'][0]['thumbnail_url'] : '',
+            'ext' => 'mp4',
+            'format' => 'fallback',
+            'extractor' => 'vxtwitter-fallback'
+        )
+    );
+}
+
+function extractTwitterStatusId($url)
+{
+    if (preg_match('/\/status\/(\d+)/i', $url, $m)) {
+        return $m[1];
+    }
+    return '';
+}
+
+function fetchRemoteJson($url)
+{
+    $raw = downloadRemoteFile($url);
+    if (!is_string($raw) || trim($raw) === '') {
+        return null;
+    }
+
+    $decoded = json_decode($raw, true);
+    return is_array($decoded) ? $decoded : null;
 }
 
 function ensureYtDlpBinary()
