@@ -171,31 +171,94 @@ function ensureYtDlpBinary()
         if (!$isWindows) {
             @chmod($binPath, 0755);
         }
-        return array('ok' => true, 'path' => $binPath);
+        if (isUsableYtDlpBinary($binPath)) {
+            return array('ok' => true, 'path' => $binPath);
+        }
+
+        // Existing file is broken (commonly python-based launcher on old hosts), replace it.
+        @unlink($binPath);
     }
 
     if (!is_dir($binDir) && !@mkdir($binDir, 0755, true)) {
         return array('ok' => false, 'error' => 'Failed to create bin directory');
     }
 
-    $downloadUrl = $isWindows
-        ? 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe'
-        : 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp';
-
-    $binaryData = downloadRemoteFile($downloadUrl);
-    if ($binaryData === false || strlen($binaryData) < 1024) {
-        return array('ok' => false, 'error' => 'Failed to download yt-dlp binary');
+    $install = installYtDlpBinary($binPath, $isWindows);
+    if (!$install['ok']) {
+        return $install;
     }
 
-    if (@file_put_contents($binPath, $binaryData) === false) {
-        return array('ok' => false, 'error' => 'Failed to write yt-dlp binary');
-    }
-
-    if (!$isWindows) {
-        @chmod($binPath, 0755);
+    if (!isUsableYtDlpBinary($binPath)) {
+        return array('ok' => false, 'error' => 'yt-dlp installed but not executable on this host');
     }
 
     return array('ok' => true, 'path' => $binPath);
+}
+
+function installYtDlpBinary($binPath, $isWindows)
+{
+    $downloadCandidates = $isWindows
+        ? array(
+            'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe'
+        )
+        : array(
+            // Prefer standalone Linux binary first to avoid Python-version issues.
+            'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux',
+            // Fallback to generic file if standalone binary is unavailable.
+            'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'
+        );
+
+    foreach ($downloadCandidates as $downloadUrl) {
+        $binaryData = downloadRemoteFile($downloadUrl);
+        if ($binaryData === false || strlen($binaryData) < 1024) {
+            continue;
+        }
+
+        if (@file_put_contents($binPath, $binaryData) === false) {
+            continue;
+        }
+
+        if (!$isWindows) {
+            @chmod($binPath, 0755);
+        }
+
+        if (isUsableYtDlpBinary($binPath)) {
+            return array('ok' => true, 'path' => $binPath);
+        }
+
+        @unlink($binPath);
+    }
+
+    return array('ok' => false, 'error' => 'Failed to download a working yt-dlp binary for this host');
+}
+
+function isUsableYtDlpBinary($binPath)
+{
+    if (!is_file($binPath)) {
+        return false;
+    }
+
+    $safeBin = escapeshellarg($binPath);
+    $raw = shell_exec($safeBin . ' --version 2>&1');
+    if (!is_string($raw) || trim($raw) === '') {
+        return false;
+    }
+
+    $rawLower = strtolower($raw);
+    if (strpos($rawLower, 'traceback') !== false) {
+        return false;
+    }
+    if (strpos($rawLower, 'unsupported version of python') !== false) {
+        return false;
+    }
+    if (strpos($rawLower, 'command not found') !== false) {
+        return false;
+    }
+    if (strpos($rawLower, 'permission denied') !== false) {
+        return false;
+    }
+
+    return (bool)preg_match('/\d{4}\.\d{2}\.\d{2}/', trim($raw));
 }
 
 function downloadRemoteFile($url)
