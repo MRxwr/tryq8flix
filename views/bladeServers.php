@@ -133,17 +133,26 @@ $(document).ready(function() {
     
     // Display episode hero section
     if(type === 'live') {
-        const stadiumBg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070&auto=format&fit=crop';
-        $('#episode-hero').css('background-image', `url(${stadiumBg})`);
-        $('#episode-title').hide();
-        
         if (leftLogo && rightLogo) {
+            // Use team logos as background - create a split background with both logos
+            $('#episode-hero').css('background', 
+                `linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.6) 100%), 
+                 linear-gradient(to right, url(${leftLogo}) 0%, transparent 40%, transparent 60%, url(${rightLogo}) 100%)`
+            );
+            $('#episode-hero').css('background-size', 'auto, 40% auto, 40% auto');
+            $('#episode-hero').css('background-position', 'center, left center, right center');
+            $('#episode-hero').css('background-repeat', 'no-repeat');
+            
             $('#hero-left-logo').attr('src', rightLogo);
             $('#hero-right-logo').attr('src', leftLogo);
             $('#hero-left-name').text(rightName);
             $('#hero-right-name').text(leftName);
+            $('#episode-title').hide();
             $('#live-match-header').show();
         } else {
+            // Fallback to generic stadium image if logos not available
+            const stadiumBg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070&auto=format&fit=crop';
+            $('#episode-hero').css('background-image', `url(${stadiumBg})`);
             $('#episode-title').text(title || 'Live Match').show();
         }
         
@@ -188,6 +197,17 @@ $(document).ready(function() {
                      // Update hero section with match details
                      $('#episode-title').text(`${details.leftTeamName} VS ${details.rightTeamName}`);
                      
+                     // Use team logos as dynamic background
+                     if (details.leftTeamLogo && details.rightTeamLogo) {
+                         $('#episode-hero').css('background', 
+                             `linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.6) 100%), 
+                              linear-gradient(to right, url(${details.leftTeamLogo}) 0%, transparent 40%, transparent 60%, url(${details.rightTeamLogo}) 100%)`
+                         );
+                         $('#episode-hero').css('background-size', 'auto, 40% auto, 40% auto');
+                         $('#episode-hero').css('background-position', 'center, left center, right center');
+                         $('#episode-hero').css('background-repeat', 'no-repeat');
+                     }
+                     
                      // Remove any existing meta info to avoid duplication on retries
                      $('.match-meta-info-container').remove();
                      
@@ -201,12 +221,6 @@ $(document).ready(function() {
                          </div>
                      `;
                      $('#episode-title').after(infoHtml);
-                     
-                     if (details.leftTeamLogo && details.rightTeamLogo) {
-                         // Create a banner style background with both logos
-                         $('#episode-hero').css('background', `linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url(${details.leftTeamLogo}) left center no-repeat, url(${details.rightTeamLogo}) right center no-repeat`);
-                         $('#episode-hero').css('background-size', 'contain, 30%, 30%');
-                     }
                  }
 
                  if(servers.length > 0) {
