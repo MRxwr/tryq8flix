@@ -197,6 +197,8 @@ function ensureYtDlpBinary()
 
 function installYtDlpBinary($binPath, $isWindows)
 {
+    $errors = array();
+
     $downloadCandidates = $isWindows
         ? array(
             'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe'
@@ -211,10 +213,26 @@ function installYtDlpBinary($binPath, $isWindows)
     foreach ($downloadCandidates as $downloadUrl) {
         $binaryData = downloadRemoteFile($downloadUrl);
         if ($binaryData === false || strlen($binaryData) < 1024) {
+            $errors[] = 'php-download-failed: ' . $downloadUrl;
+            if (downloadRemoteFileWithShell($downloadUrl, $binPath)) {
+                if (!$isWindows) {
+                    @chmod($binPath, 0755);
+                }
+
+                if (isUsableYtDlpBinary($binPath)) {
+                    return array('ok' => true, 'path' => $binPath);
+                }
+
+                $errors[] = 'shell-download-invalid-binary: ' . $downloadUrl;
+                @unlink($binPath);
+            } else {
+                $errors[] = 'shell-download-failed: ' . $downloadUrl;
+            }
             continue;
         }
 
         if (@file_put_contents($binPath, $binaryData) === false) {
+            $errors[] = 'write-failed: ' . $downloadUrl;
             continue;
         }
 
@@ -227,9 +245,11 @@ function installYtDlpBinary($binPath, $isWindows)
         }
 
         @unlink($binPath);
+        $errors[] = 'downloaded-but-not-usable: ' . $downloadUrl;
     }
 
-    return array('ok' => false, 'error' => 'Failed to download a working yt-dlp binary for this host');
+    $detail = empty($errors) ? '' : (' [' . implode(' | ', array_slice($errors, 0, 4)) . ']');
+    return array('ok' => false, 'error' => 'Failed to download a working yt-dlp binary for this host' . $detail);
 }
 
 function isUsableYtDlpBinary($binPath)
@@ -291,6 +311,40 @@ function downloadRemoteFile($url)
             return $data;
         }
     }
+
+    return false;
+}
+
+function downloadRemoteFileWithShell($url, $targetPath)
+{
+    if (!function_exists('shell_exec')) {
+        return false;
+    }
+
+    $safeUrl = escapeshellarg($url);
+    $safeTarget = escapeshellarg($targetPath);
+
+    // Prefer curl if available.
+    $curlCmd = 'curl -L --fail --connect-timeout 20 --max-time 180 -A "Mozilla/5.0 TryQ8Flix Downloader" -o ' . $safeTarget . ' ' . $safeUrl . ' 2>&1';
+    $curlOut = shell_exec($curlCmd);
+    if (is_file($targetPath) && filesize($targetPath) > 1024) {
+        return true;
+    }
+
+    // Fallback to wget.
+    $wgetCmd = 'wget -O ' . $safeTarget . ' --timeout=180 --user-agent="Mozilla/5.0 TryQ8Flix Downloader" ' . $safeUrl . ' 2>&1';
+    $wgetOut = shell_exec($wgetCmd);
+    if (is_file($targetPath) && filesize($targetPath) > 1024) {
+        return true;
+    }
+
+    if (is_file($targetPath) && filesize($targetPath) <= 1024) {
+        @unlink($targetPath);
+    }
+
+    // Avoid unused-variable optimizations and keep debug outputs available if needed later.
+    $null = $curlOut;
+    $null = $wgetOut;
 
     return false;
 }
