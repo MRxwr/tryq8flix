@@ -32,7 +32,7 @@ if (!in_array($action, array('info', 'link'), true)) {
     die();
 }
 
-$result = runVideoDownloaderNode($action, $url);
+$result = runVideoDownloader($action, $url);
 if ($result['ok']) {
     echo dataOutput($result['data']);
 } else {
@@ -81,90 +81,153 @@ function isAllowedVideoUrl($url)
     return false;
 }
 
-function runVideoDownloaderNode($action, $url)
+function runVideoDownloader($action, $url)
+{
+    if (!function_exists('shell_exec')) {
+        return array('ok' => false, 'error' => 'Server does not allow shell execution');
+    }
+
+    $bin = ensureYtDlpBinary();
+    if (!$bin['ok']) {
+        return $bin;
+    }
+    $ytDlp = $bin['path'];
+
+    $safeUrl = escapeshellarg($url);
+    $safeBin = escapeshellarg($ytDlp);
+
+    if ($action === 'info') {
+        $command = $safeBin . ' --no-warnings --no-playlist -J ' . $safeUrl . ' 2>&1';
+        $raw = shell_exec($command);
+        if (!is_string($raw) || trim($raw) === '') {
+            return array('ok' => false, 'error' => 'Empty response from yt-dlp');
+        }
+
+        $decoded = json_decode(trim($raw), true);
+        if (!is_array($decoded)) {
+            return array('ok' => false, 'error' => 'Invalid downloader response: ' . trim($raw));
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'id' => isset($decoded['id']) ? $decoded['id'] : '',
+                'title' => isset($decoded['title']) ? $decoded['title'] : '',
+                'webpage_url' => isset($decoded['webpage_url']) ? $decoded['webpage_url'] : $url,
+                'uploader' => !empty($decoded['uploader']) ? $decoded['uploader'] : (!empty($decoded['channel']) ? $decoded['channel'] : ''),
+                'duration' => isset($decoded['duration']) ? intval($decoded['duration']) : 0,
+                'thumbnail' => isset($decoded['thumbnail']) ? $decoded['thumbnail'] : '',
+                'ext' => isset($decoded['ext']) ? $decoded['ext'] : '',
+                'format' => isset($decoded['format']) ? $decoded['format'] : '',
+                'extractor' => !empty($decoded['extractor_key']) ? $decoded['extractor_key'] : (isset($decoded['extractor']) ? $decoded['extractor'] : '')
+            )
+        );
+    }
+
+    if ($action === 'link') {
+        $command = $safeBin . ' --no-warnings --no-playlist -f mp4/best -g ' . $safeUrl . ' 2>&1';
+        $raw = shell_exec($command);
+        if (!is_string($raw) || trim($raw) === '') {
+            return array('ok' => false, 'error' => 'Could not get stream url from yt-dlp');
+        }
+
+        $lines = preg_split('/\r\n|\r|\n/', trim($raw));
+        $urls = array();
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!empty($line) && preg_match('/^https?:\/\//i', $line)) {
+                $urls[] = $line;
+            }
+        }
+
+        if (empty($urls)) {
+            return array('ok' => false, 'error' => 'No direct stream URL found: ' . trim($raw));
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $urls[0],
+                'all_urls' => $urls
+            )
+        );
+    }
+
+    return array('ok' => false, 'error' => 'Unsupported action');
+}
+
+function ensureYtDlpBinary()
 {
     $projectRoot = realpath(__DIR__ . '/../../');
     if ($projectRoot === false) {
         return array('ok' => false, 'error' => 'Unable to resolve project path');
     }
 
-    $nodeScript = <<<'JS'
-const fs = require('fs');
-const path = require('path');
+    $isWindows = (stripos(PHP_OS, 'WIN') === 0);
+    $binDir = $projectRoot . DIRECTORY_SEPARATOR . 'bin';
+    $binPath = $binDir . DIRECTORY_SEPARATOR . ($isWindows ? 'yt-dlp.exe' : 'yt-dlp');
 
-(async () => {
-  const YTDlpWrap = require('yt-dlp-wrap').default;
-  const action = process.argv[1];
-  const targetUrl = process.argv[2];
-  const projectRoot = process.argv[3];
-
-  const binPath = path.join(projectRoot, 'bin', process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp');
-
-  if (!fs.existsSync(binPath)) {
-    fs.mkdirSync(path.dirname(binPath), { recursive: true });
-    await YTDlpWrap.downloadFromGithub(binPath);
-  }
-
-  const ytDlpWrap = new YTDlpWrap(binPath);
-
-  if (action === 'info') {
-    const info = await ytDlpWrap.getVideoInfo(targetUrl);
-    const normalized = {
-      id: info.id || '',
-      title: info.title || '',
-      webpage_url: info.webpage_url || targetUrl,
-      uploader: info.uploader || info.channel || '',
-      duration: info.duration || 0,
-      thumbnail: info.thumbnail || '',
-      ext: info.ext || '',
-      format: info.format || '',
-      extractor: info.extractor_key || info.extractor || ''
-    };
-    process.stdout.write(JSON.stringify({ ok: true, data: normalized }));
-    return;
-  }
-
-  if (action === 'link') {
-    const raw = await ytDlpWrap.execPromise(['--no-warnings', '--no-playlist', '-f', 'mp4/best', '-g', targetUrl]);
-    const candidates = String(raw || '')
-      .split(/\r?\n/)
-      .map(v => v.trim())
-      .filter(v => v.length > 0);
-
-    process.stdout.write(JSON.stringify({
-      ok: true,
-      data: {
-        stream_url: candidates.length > 0 ? candidates[0] : '',
-        all_urls: candidates
-      }
-    }));
-    return;
-  }
-
-  process.stdout.write(JSON.stringify({ ok: false, error: 'Unsupported action' }));
-})();
-JS;
-
-    $command = 'node -e ' . escapeshellarg($nodeScript) . ' '
-        . escapeshellarg($action) . ' '
-        . escapeshellarg($url) . ' '
-        . escapeshellarg($projectRoot) . ' 2>&1';
-
-    $raw = shell_exec($command);
-
-    if ($raw === null) {
-        return array('ok' => false, 'error' => 'Node execution failed');
+    if (is_file($binPath)) {
+        if (!$isWindows) {
+            @chmod($binPath, 0755);
+        }
+        return array('ok' => true, 'path' => $binPath);
     }
 
-    $decoded = json_decode(trim($raw), true);
-    if (!is_array($decoded)) {
-        return array('ok' => false, 'error' => 'Invalid downloader response: ' . trim($raw));
+    if (!is_dir($binDir) && !@mkdir($binDir, 0755, true)) {
+        return array('ok' => false, 'error' => 'Failed to create bin directory');
     }
 
-    if (isset($decoded['ok']) && $decoded['ok'] === true) {
-        return array('ok' => true, 'data' => $decoded['data']);
+    $downloadUrl = $isWindows
+        ? 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe'
+        : 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp';
+
+    $binaryData = downloadRemoteFile($downloadUrl);
+    if ($binaryData === false || strlen($binaryData) < 1024) {
+        return array('ok' => false, 'error' => 'Failed to download yt-dlp binary');
     }
 
-    $error = isset($decoded['error']) ? $decoded['error'] : 'Unknown downloader error';
-    return array('ok' => false, 'error' => $error);
+    if (@file_put_contents($binPath, $binaryData) === false) {
+        return array('ok' => false, 'error' => 'Failed to write yt-dlp binary');
+    }
+
+    if (!$isWindows) {
+        @chmod($binPath, 0755);
+    }
+
+    return array('ok' => true, 'path' => $binPath);
+}
+
+function downloadRemoteFile($url)
+{
+    if (function_exists('curl_init')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 TryQ8Flix Downloader');
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if (is_string($data) && $data !== '') {
+            return $data;
+        }
+    }
+
+    if (ini_get('allow_url_fopen')) {
+        $context = stream_context_create(array(
+            'http' => array(
+                'follow_location' => 1,
+                'timeout' => 120,
+                'user_agent' => 'Mozilla/5.0 TryQ8Flix Downloader'
+            )
+        ));
+        $data = @file_get_contents($url, false, $context);
+        if (is_string($data) && $data !== '') {
+            return $data;
+        }
+    }
+
+    return false;
 }
