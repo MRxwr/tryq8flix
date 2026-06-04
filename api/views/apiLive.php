@@ -65,7 +65,9 @@ function searchMatches()
 				@$matchResult = $match->find('.MT_Data .MT_Result', 0)->plaintext;
 				@$matchStatus = $match->find('.MT_Data .MT_Stat', 0)->plaintext;
 
-				// Extract league info (third li element)
+				// Extract info
+				@$channel = $match->find('.MT_Info ul li', 0)->plaintext;
+				@$commentator = $match->find('.MT_Info ul li', 1)->plaintext;
 				@$leagueInfo = $match->find('.MT_Info ul li', 2)->plaintext;
 
 				$jsonData = [
@@ -78,6 +80,8 @@ function searchMatches()
 					'result' => trim($matchResult),
 					'liveStatus' => trim($matchStatus),
 					'league' => trim($leagueInfo),
+					'channel' => trim($channel),
+					'commentator' => trim($commentator),
 				];
 				$data['matches'][] = $jsonData;
 			} else {
@@ -106,10 +110,52 @@ function liveMatch($view)
 {
 	$html = liveCurl("{$view}");
 	$dom = str_get_html($html);
+	$data = [
+		'matches' => [],
+		'details' => null
+	];
+
 	if ($dom) {
-		$data = [
-			'matches' => []
-		];
+		// Scrape match details (teams, flags, etc.)
+		$matchElement = $dom->find('.albaflex .AY_Match', 0);
+		if (!$matchElement) {
+			$matchElement = $dom->find('.AY_Match', 0);
+		}
+
+		if ($matchElement) {
+			@$leftTeamName = $matchElement->find('.MT_Team.TM1 .TM_Name', 0)->plaintext;
+			@$leftTeamLogo = $matchElement->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('data-src');
+			if (empty($leftTeamLogo)) {
+				@$leftTeamLogo = $matchElement->find('.MT_Team.TM1 .TM_Logo img', 0)->getAttribute('src');
+			}
+
+			@$rightTeamName = $matchElement->find('.MT_Team.TM2 .TM_Name', 0)->plaintext;
+			@$rightTeamLogo = $matchElement->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('data-src');
+			if (empty($rightTeamLogo)) {
+				@$rightTeamLogo = $matchElement->find('.MT_Team.TM2 .TM_Logo img', 0)->getAttribute('src');
+			}
+
+			@$matchTime = $matchElement->find('.MT_Data .MT_Time', 0)->plaintext;
+			@$matchResult = $matchElement->find('.MT_Data .MT_Result', 0)->plaintext;
+			@$matchStatus = $matchElement->find('.MT_Data .MT_Stat', 0)->plaintext;
+
+			@$channel = $matchElement->find('.MT_Info ul li', 0)->plaintext;
+			@$commentator = $matchElement->find('.MT_Info ul li', 1)->plaintext;
+			@$leagueInfo = $matchElement->find('.MT_Info ul li', 2)->plaintext;
+
+			$data['details'] = [
+				'rightTeamName' => trim($rightTeamName),
+				'leftTeamName' => trim($leftTeamName),
+				'rightTeamLogo' => $rightTeamLogo,
+				'leftTeamLogo' => $leftTeamLogo,
+				'matchTime' => trim($matchTime),
+				'result' => trim($matchResult),
+				'liveStatus' => trim($matchStatus),
+				'league' => trim($leagueInfo),
+				'channel' => trim($channel),
+				'commentator' => trim($commentator),
+			];
+		}
 
 		$iframes = $dom->find('iframe');
 
@@ -199,7 +245,7 @@ function liveMatch($view)
 	} else {
 		$matches = '';
 	}
-	return (isset($matches) && !empty($matches)) ? json_decode($matches, true)['matches'] : array();
+	return (isset($matches) && !empty($matches)) ? json_decode($matches, true) : array();
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'match') {

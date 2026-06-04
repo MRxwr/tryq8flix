@@ -34,6 +34,11 @@ $(document).ready(function() {
                                 <div class="match-time">${match.matchTime}</div>
                                 <div class="small text-muted">${match.result || 'VS'}</div>
                                 <div class="badge bg-danger">${match.liveStatus}</div>
+                                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                                    ${match.league ? `<div>${match.league}</div>` : ''}
+                                    ${match.channel ? `<div>${match.channel}</div>` : ''}
+                                    ${match.commentator ? `<div>${match.commentator}</div>` : ''}
+                                </div>
                             </div>
                             <div class="d-flex align-items-center justify-content-end" style="width: 40%;">
                                 <span>${match.leftTeamName}</span>

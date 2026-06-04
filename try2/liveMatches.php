@@ -13,6 +13,7 @@ $xValue = md5(time());
 // Get match URL from parameter
 $matchUrl = isset($_GET['match']) ? $_GET['match'] : '';
 $liveStreams = [];
+$matchDetails = null;
 
 // If match URL is provided, fetch live streams from API
 if (!empty($matchUrl)) {
@@ -37,14 +38,16 @@ if (!empty($matchUrl)) {
     if ($apiResponse) {
         $apiData = json_decode($apiResponse, true);
         
-        if (isset($apiData['data']) && is_array($apiData['data'])) {
-            $liveStreams = $apiData['data'];
-        } elseif (isset($apiData['ok']) && $apiData['ok'] && isset($apiData['data'])) {
-            // Handle the exact format from your API response
-            $liveStreams = $apiData['data'];
+        if (isset($apiData['data'])) {
+            if (isset($apiData['data']['matches'])) {
+                $liveStreams = $apiData['data']['matches'];
+                $matchDetails = isset($apiData['data']['details']) ? $apiData['data']['details'] : null;
+            } else {
+                $liveStreams = $apiData['data'];
+            }
         } else {
             // Log the API response for debugging
-            error_log("API Response: " . $apiResponse);
+            error_log("API Response format unexpected: " . substr($apiResponse, 0, 100));
         }
     } else {
         // Log the failed API call
@@ -300,6 +303,65 @@ if (!$currentStream && !empty($liveStreams)) {
             pointer-events: none;
             background: transparent;
         }
+
+        /* Match Header Styles */
+        .match-header {
+            background: #211f20;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e50914;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.2);
+        }
+        .team-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .team-box {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 10px;
+        }
+        .match-vs {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e50914;
+            padding: 0 20px;
+        }
+        .header-team-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+        .header-team-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .match-meta-info {
+            margin-top: 15px;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        .meta-item {
+            background: rgba(255,255,255,0.05);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        .meta-item i {
+            color: #e50914;
+            margin-left: 5px;
+        }
         
         /* Additional security styling */
         .player-container {
@@ -363,7 +425,44 @@ if (!$currentStream && !empty($liveStreams)) {
         <!-- Page Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <?php if (!empty($matchUrl)): ?>
+                <?php if ($matchDetails): ?>
+                <div class="match-header" style="background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('<?php echo $matchDetails['leftTeamLogo']; ?>') left center / 25% no-repeat, url('<?php echo $matchDetails['rightTeamLogo']; ?>') right center / 25% no-repeat, #211f20;">
+                    <div class="team-container">
+                        <div class="team-box">
+                            <img src="<?php echo $matchDetails['leftTeamLogo']; ?>" alt="<?php echo $matchDetails['leftTeamName']; ?>" class="header-team-logo">
+                            <div class="header-team-name"><?php echo $matchDetails['leftTeamName']; ?></div>
+                        </div>
+                        <div class="match-vs">
+                            <?php if (!empty($matchDetails['result']) && $matchDetails['result'] != '0-0' && $matchDetails['result'] != 'VS'): ?>
+                                <?php echo $matchDetails['result']; ?>
+                            <?php else: ?>
+                                VS
+                            <?php endif; ?>
+                        </div>
+                        <div class="team-box">
+                            <img src="<?php echo $matchDetails['rightTeamLogo']; ?>" alt="<?php echo $matchDetails['rightTeamName']; ?>" class="header-team-logo">
+                            <div class="header-team-name"><?php echo $matchDetails['rightTeamName']; ?></div>
+                        </div>
+                    </div>
+                    <div class="match-meta-info">
+                        <?php if (!empty($matchDetails['league'])): ?>
+                        <div class="meta-item"><i class="bi bi-trophy-fill"></i> <?php echo $matchDetails['league']; ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($matchDetails['channel'])): ?>
+                        <div class="meta-item"><i class="bi bi-tv"></i> <?php echo $matchDetails['channel']; ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($matchDetails['commentator'])): ?>
+                        <div class="meta-item"><i class="bi bi-mic-fill"></i> <?php echo $matchDetails['commentator']; ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($matchDetails['matchTime'])): ?>
+                        <div class="meta-item"><i class="bi bi-clock-fill"></i> <?php echo $matchDetails['matchTime']; ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($matchDetails['liveStatus'])): ?>
+                        <div class="meta-item badge bg-danger text-white px-3"><?php echo $matchDetails['liveStatus']; ?></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php elseif (!empty($matchUrl)): ?>
                 <h1 class="text-center mb-3">
                     <i class="bi bi-broadcast me-2"></i>مشاهدة المباراة مباشر
                 </h1>

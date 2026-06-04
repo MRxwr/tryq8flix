@@ -166,13 +166,40 @@ $(document).ready(function() {
 
              console.log("Live Match API Response:", response);
 
-             // Check if response has data array
-             if(response && response.data && Array.isArray(response.data)) {
-                 if(response.data.length > 0) {
-                     response.data.forEach((srv, index) => {
-                         // Support both 'live' (matches) and 'link' (movies) keys just in case
+             // Check if response has data
+             if(response && response.data) {
+                 const servers = response.data.matches || (Array.isArray(response.data) ? response.data : []);
+                 const details = response.data.details;
+
+                 if (details) {
+                     // Update hero section with match details
+                     $('#episode-title').text(`${details.leftTeamName} VS ${details.rightTeamName}`);
+                     
+                     // Remove any existing meta info to avoid duplication on retries
+                     $('.match-meta-info-container').remove();
+                     
+                     let infoHtml = `
+                         <div class="match-meta-info-container mt-3 d-flex flex-wrap gap-3">
+                             ${details.league ? `<span class="badge bg-secondary"><i class="fas fa-trophy"></i> ${details.league}</span>` : ''}
+                             ${details.channel ? `<span class="badge bg-info text-dark"><i class="fas fa-tv"></i> ${details.channel}</span>` : ''}
+                             ${details.commentator ? `<span class="badge bg-warning text-dark"><i class="fas fa-microphone"></i> ${details.commentator}</span>` : ''}
+                             ${details.matchTime ? `<span class="badge bg-dark"><i class="fas fa-clock"></i> ${details.matchTime}</span>` : ''}
+                             ${details.liveStatus ? `<span class="badge bg-danger"><i class="fas fa-signal"></i> ${details.liveStatus}</span>` : ''}
+                         </div>
+                     `;
+                     $('#episode-title').after(infoHtml);
+                     
+                     if (details.leftTeamLogo && details.rightTeamLogo) {
+                         // Create a banner style background with both logos
+                         $('#episode-hero').css('background', `linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url(${details.leftTeamLogo}) left center no-repeat, url(${details.rightTeamLogo}) right center no-repeat`);
+                         $('#episode-hero').css('background-size', 'contain, 30%, 30%');
+                     }
+                 }
+
+                 if(servers.length > 0) {
+                     servers.forEach((srv, index) => {
                          const videoUrl = srv.live || srv.link;
-                         const serverLabel = srv.serv ? `Server ${srv.serv}` : (srv.name || `Server ${index + 1}`);
+                         const serverLabel = srv.name || `Server ${index + 1}`;
 
                          if(videoUrl) {
                             let html = `
