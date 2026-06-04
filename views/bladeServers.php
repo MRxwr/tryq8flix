@@ -19,8 +19,19 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.7) 100%);
+        background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.9) 100%);
         z-index: 1;
+    }
+    #episode-hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.6) 100%);
+        z-index: 1;
+        pointer-events: none;
     }
     #episode-hero .hero-overlay {
         display: none;
@@ -33,18 +44,18 @@
         position: absolute;
         top: 0;
         height: 100%;
-        width: 45%;
+        width: 50%;
         object-fit: cover;
-        opacity: 0.3;
+        opacity: 0.6;
         z-index: 0;
     }
     .bg-logo-left {
         left: 0;
-        object-position: left;
+        object-position: center left;
     }
     .bg-logo-right {
         right: 0;
-        object-position: right;
+        object-position: center right;
     }
     @media (max-width: 768px) {
         .hero {
