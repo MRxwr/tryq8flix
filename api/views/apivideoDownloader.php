@@ -252,73 +252,7 @@ function runTikWmFallback($action, $url)
 
 function runInstagramFallback($action, $url)
 {
-    // Best host-compatible route: extract rapidcdn tokenized URL from vxinstagram page.
-    $vx = runVxInstagramFallback($action, $url);
-    if ($vx['ok']) {
-        return $vx;
-    }
-
-    $shortcode = extractInstagramShortcode($url);
-    $oembedUrl = 'https://www.instagram.com/api/v1/oembed/?url=' . rawurlencode($url);
-    $oembed = fetchRemoteJson($oembedUrl);
-
-    // Try multiple Instagram-owned pages to find a direct video URL in embedded JSON/meta.
-    $candidatePages = array(
-        rtrim($url, '/') . '/embed/captioned/',
-        rtrim($url, '/') . '/embed/',
-        rtrim($url, '/') . '/'
-    );
-
-    if (!empty($shortcode)) {
-        $candidatePages[] = 'https://www.instagram.com/reel/' . rawurlencode($shortcode) . '/embed/captioned/';
-        $candidatePages[] = 'https://www.instagram.com/reel/' . rawurlencode($shortcode) . '/';
-    }
-
-    $videoUrl = '';
-    foreach (array_unique($candidatePages) as $pageUrl) {
-        $html = fetchInstagramHtml($pageUrl);
-        if (!is_string($html) || trim($html) === '') {
-            continue;
-        }
-        $videoUrl = extractInstagramVideoUrlFromHtml($html);
-        if (!empty($videoUrl)) {
-            break;
-        }
-    }
-
-    if ($action === 'link') {
-        if (empty($videoUrl) || !preg_match('/^https?:\/\//i', $videoUrl)) {
-            return array('ok' => false, 'error' => 'Instagram fallback found no direct video URL on this post');
-        }
-
-        return array(
-            'ok' => true,
-            'data' => array(
-                'stream_url' => $videoUrl,
-                'all_urls' => array($videoUrl),
-                'source' => 'instagram-meta-fallback'
-            )
-        );
-    }
-
-    $title = is_array($oembed) && !empty($oembed['title']) ? $oembed['title'] : 'Instagram Video';
-    $thumbnail = is_array($oembed) && !empty($oembed['thumbnail_url']) ? $oembed['thumbnail_url'] : '';
-    $author = is_array($oembed) && !empty($oembed['author_name']) ? $oembed['author_name'] : '';
-
-    return array(
-        'ok' => true,
-        'data' => array(
-            'id' => !empty($shortcode) ? $shortcode : '',
-            'title' => $title,
-            'webpage_url' => $url,
-            'uploader' => $author,
-            'duration' => 0,
-            'thumbnail' => $thumbnail,
-            'ext' => 'mp4',
-            'format' => 'fallback',
-            'extractor' => 'instagram-meta-fallback'
-        )
-    );
+    return runVxInstagramFallback($action, $url);
 }
 
 function runVxInstagramFallback($action, $url)
@@ -335,8 +269,28 @@ function runVxInstagramFallback($action, $url)
     }
 
     $downloadUrl = '';
-    if (preg_match('~href=["\'](https://d\.rapidcdn\.app/v2\?token=[^"\']+)["\']~i', $html, $m) && !empty($m[1])) {
-        $downloadUrl = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $dom = str_get_html($html);
+    if ($dom) {
+        foreach ($dom->find('a') as $anchor) {
+            $classAttr = trim((string)$anchor->getAttribute('class'));
+            if ($classAttr === '') {
+                continue;
+            }
+
+            $classes = preg_split('/\s+/', $classAttr);
+            if (!in_array('btn', $classes, true) || !in_array('btn-success', $classes, true)) {
+                continue;
+            }
+
+            $href = trim((string)$anchor->getAttribute('href'));
+            if ($href !== '') {
+                $downloadUrl = html_entity_decode($href, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                break;
+            }
+        }
+
+        $dom->clear();
+        unset($dom);
     }
 
     if (empty($downloadUrl) || !preg_match('/^https?:\/\//i', $downloadUrl)) {
@@ -373,93 +327,12 @@ function runVxInstagramFallback($action, $url)
     );
 }
 
-function extractMetaTagContent($html, $attrName, $attrValue)
-{
-    $pattern = '/<meta[^>]*' . preg_quote($attrName, '/') . '=["\']' . preg_quote($attrValue, '/') . '["\'][^>]*content=["\']([^"\']+)["\'][^>]*>/i';
-    if (preg_match($pattern, $html, $m) && !empty($m[1])) {
-        return html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    }
-
-    // Attribute order can be reversed.
-    $pattern2 = '/<meta[^>]*content=["\']([^"\']+)["\'][^>]*' . preg_quote($attrName, '/') . '=["\']' . preg_quote($attrValue, '/') . '["\'][^>]*>/i';
-    if (preg_match($pattern2, $html, $m2) && !empty($m2[1])) {
-        return html_entity_decode($m2[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    }
-
-    return '';
-}
-
 function extractInstagramShortcode($url)
 {
     if (preg_match('#instagram\.com/(?:reel|p|tv)/([A-Za-z0-9_-]+)#i', $url, $m)) {
         return $m[1];
     }
     return '';
-}
-
-function fetchInstagramHtml($url)
-{
-    if (!function_exists('curl_init')) {
-        return downloadRemoteFile($url);
-    }
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language: en-US,en;q=0.9',
-        'Referer: https://www.instagram.com/'
-    ));
-    $html = curl_exec($ch);
-    curl_close($ch);
-
-    return is_string($html) ? $html : '';
-}
-
-function extractInstagramVideoUrlFromHtml($html)
-{
-    // Standard OG tags first.
-    $ogVideo = extractMetaTagContent($html, 'property', 'og:video');
-    if (!empty($ogVideo) && preg_match('/^https?:\/\//i', $ogVideo)) {
-        return $ogVideo;
-    }
-
-    $ogVideoUrl = extractMetaTagContent($html, 'property', 'og:video:url');
-    if (!empty($ogVideoUrl) && preg_match('/^https?:\/\//i', $ogVideoUrl)) {
-        return $ogVideoUrl;
-    }
-
-    // JSON-embedded URL patterns used by Instagram pages.
-    $patterns = array(
-        '~"video_url"\s*:\s*"((?:https?:)?\\\\/\\\\/[^\"]+)"~i',
-        '~"contentUrl"\s*:\s*"((?:https?:)?\\\\/\\\\/[^\"]+)"~i',
-        '~"video_versions"\s*:\s*\[\s*\{[^\}]*"url"\s*:\s*"((?:https?:)?\\\\/\\\\/[^\"]+)"~i',
-        '~"playback_video_uri"\s*:\s*"((?:https?:)?\\\\/\\\\/[^\"]+)"~i'
-    );
-
-    foreach ($patterns as $pattern) {
-        if (preg_match($pattern, $html, $m) && !empty($m[1])) {
-            $decoded = decodeEscapedUrl($m[1]);
-            if (!empty($decoded) && preg_match('/^https?:\/\//i', $decoded)) {
-                return $decoded;
-            }
-        }
-    }
-
-    return '';
-}
-
-function decodeEscapedUrl($value)
-{
-    $decoded = str_replace('\\/', '/', $value);
-    $decoded = preg_replace('/\\u0026/i', '&', $decoded);
-    $decoded = html_entity_decode($decoded, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    return trim($decoded);
 }
 
 function runVXTwitterFallback($action, $url)
