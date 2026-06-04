@@ -252,6 +252,12 @@ function runTikWmFallback($action, $url)
 
 function runInstagramFallback($action, $url)
 {
+    // Best host-compatible route: extract rapidcdn tokenized URL from vxinstagram page.
+    $vx = runVxInstagramFallback($action, $url);
+    if ($vx['ok']) {
+        return $vx;
+    }
+
     $shortcode = extractInstagramShortcode($url);
     $oembedUrl = 'https://www.instagram.com/api/v1/oembed/?url=' . rawurlencode($url);
     $oembed = fetchRemoteJson($oembedUrl);
@@ -311,6 +317,58 @@ function runInstagramFallback($action, $url)
             'ext' => 'mp4',
             'format' => 'fallback',
             'extractor' => 'instagram-meta-fallback'
+        )
+    );
+}
+
+function runVxInstagramFallback($action, $url)
+{
+    $shortcode = extractInstagramShortcode($url);
+    if (empty($shortcode)) {
+        return array('ok' => false, 'error' => 'Instagram shortcode not found for vx fallback');
+    }
+
+    $vxUrl = 'https://www.vxinstagram.com/reels/' . rawurlencode($shortcode) . '/';
+    $html = downloadRemoteFile($vxUrl);
+    if (!is_string($html) || trim($html) === '') {
+        return array('ok' => false, 'error' => 'VXInstagram page fetch failed');
+    }
+
+    $downloadUrl = '';
+    if (preg_match('~href=["\'](https://d\.rapidcdn\.app/v2\?token=[^"\']+)["\']~i', $html, $m) && !empty($m[1])) {
+        $downloadUrl = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    if (empty($downloadUrl) || !preg_match('/^https?:\/\//i', $downloadUrl)) {
+        return array('ok' => false, 'error' => 'VXInstagram download URL not found');
+    }
+
+    if ($action === 'link') {
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $downloadUrl,
+                'all_urls' => array($downloadUrl),
+                'source' => 'vxinstagram-fallback'
+            )
+        );
+    }
+
+    $oembedUrl = 'https://www.instagram.com/api/v1/oembed/?url=' . rawurlencode($url);
+    $oembed = fetchRemoteJson($oembedUrl);
+
+    return array(
+        'ok' => true,
+        'data' => array(
+            'id' => $shortcode,
+            'title' => (is_array($oembed) && !empty($oembed['title'])) ? $oembed['title'] : 'Instagram Video',
+            'webpage_url' => $url,
+            'uploader' => (is_array($oembed) && !empty($oembed['author_name'])) ? $oembed['author_name'] : '',
+            'duration' => 0,
+            'thumbnail' => (is_array($oembed) && !empty($oembed['thumbnail_url'])) ? $oembed['thumbnail_url'] : '',
+            'ext' => 'mp4',
+            'format' => 'fallback',
+            'extractor' => 'vxinstagram-fallback'
         )
     );
 }
