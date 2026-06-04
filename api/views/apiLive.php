@@ -151,9 +151,9 @@ function liveMatch($view)
 				'matchTime' => trim($matchTime),
 				'result' => trim($matchResult),
 				'liveStatus' => trim($matchStatus),
-				'league' => trim($leagueInfo),
-				'channel' => trim($channel),
-				'commentator' => trim($commentator),
+				'league' => trim($leagueInfo) ?: 'مباراة',
+				'channel' => trim($channel) ?: 'غير معروف',
+				'commentator' => trim($commentator) ?: 'غير معروف',
 			];
 		}
 

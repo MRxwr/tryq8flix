@@ -18,32 +18,55 @@ $(document).ready(function() {
                 if(match.rightTeamName) {
                     const qParams = {
                         v: 'Servers',
-                        link: encryptLink(match.href),
-                        type: 'live'
+                        link: match.href,
+                        type: 'live',
+                        title: `${match.leftTeamName} VS ${match.rightTeamName}`,
+                        image: match.leftTeamLogo,
+                        leftLogo: match.leftTeamLogo,
+                        rightLogo: match.rightTeamLogo,
+                        leftName: match.leftTeamName,
+                        rightName: match.rightTeamName
                     };
-                    const qString = Object.keys(qParams).map(key => key + '=' + encodeURIComponent(qParams[key])).join('&');
-                    const encryptedUrl = '?q=' + encodeURIComponent(encryptLink(qString));
+                    const queryString = Object.keys(qParams).map(key => key + '=' + encodeURIComponent(qParams[key])).join('&');
+                    const encryptedUrl = '?q=' + encodeURIComponent(encryptLink(queryString));
 
                     let html = `
                         <div class="live-match-card">
-                            <div class="d-flex align-items-center" style="width: 40%;">
-                                <img src="${match.rightTeamLogo}" class="team-logo me-3">
-                                <span>${match.rightTeamName}</span>
-                            </div>
-                            <div class="text-center" style="width: 20%;">
-                                <div class="match-time">${match.matchTime}</div>
-                                <div class="small text-muted">${match.result || 'VS'}</div>
-                                <div class="badge bg-danger">${match.liveStatus}</div>
-                                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
-                                    ${match.league ? `<div>${match.league}</div>` : ''}
-                                    ${match.channel ? `<div>${match.channel}</div>` : ''}
-                                    ${match.commentator ? `<div>${match.commentator}</div>` : ''}
+                            <div class="match-main">
+                                <div class="team-box">
+                                    <span class="team-name text-white me-3 d-none d-md-inline">${match.leftTeamName}</span>
+                                    <img src="${match.leftTeamLogo}" class="team-logo" alt="${match.leftTeamName}">
+                                    <span class="team-name text-white ms-2 d-inline d-md-none">${match.leftTeamName}</span>
+                                </div>
+                                
+                                <div class="match-center">
+                                    <span class="match-time">${match.matchTime}</span>
+                                    <div class="match-result">${match.result || '0 - 0'}</div>
+                                    <span class="badge-live">${match.liveStatus}</span>
+                                </div>
+                                
+                                <div class="team-box left">
+                                    <span class="team-name text-white me-2 d-inline d-md-none">${match.rightTeamName}</span>
+                                    <img src="${match.rightTeamLogo}" class="team-logo" alt="${match.rightTeamName}">
+                                    <span class="team-name text-white ms-3 d-none d-md-inline">${match.rightTeamName}</span>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center justify-content-end" style="width: 40%;">
-                                <span>${match.leftTeamName}</span>
-                                <img src="${match.leftTeamLogo}" class="team-logo ms-3">
+                            
+                            <div class="match-footer">
+                                <div class="footer-item">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>${match.league || 'مباراة'}</span>
+                                </div>
+                                <div class="footer-item">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>${match.commentator || 'غير معروف'}</span>
+                                </div>
+                                <div class="footer-item">
+                                    <i class="fas fa-tv"></i>
+                                    <span>${match.channel || 'غير معروف'}</span>
+                                </div>
                             </div>
+                            
                             <a href="${encryptedUrl}" class="stretched-link"></a>
                         </div>
                     `;

@@ -230,22 +230,109 @@
             position: relative;
             background-color: #2f2f2f;
             border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .live-match-card:hover {
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .match-main {
+            padding: 20px 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
+        .match-footer {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #b3b3b3;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-item i {
+            color: #e50914;
+        }
+
+        .team-box {
+            display: flex;
+            align-items: center;
+            width: 40%;
+        }
+
+        .team-box.left {
+            justify-content: flex-end;
+            text-align: right;
+        }
+
         .team-logo {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             object-fit: contain;
+        }
+
+        .team-name {
+            font-weight: 600;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .match-center {
+            text-align: center;
+            width: 20%;
         }
 
         .match-time {
             font-weight: bold;
             color: #e50914;
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        .match-result {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .badge-live {
+            background-color: #e50914;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .team-name {
+                font-size: 0.85rem;
+            }
+            .match-footer {
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-start;
+            }
+            .footer-item {
+                width: 100%;
+            }
         }
 
         /* Scroll Buttons for Desktop */
