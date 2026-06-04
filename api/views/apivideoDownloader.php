@@ -278,7 +278,31 @@ function runVxInstagramFallback($action, $url)
     $downloadUrl = '';
     $dom = str_get_html($html);
     if ($dom) {
+        // Best source: direct media URL from meta tags (offload MP4).
+        $ogVideo = $dom->find('meta[property=og:video]', 0);
+        if ($ogVideo) {
+            $candidate = trim((string)$ogVideo->getAttribute('content'));
+            if (!empty($candidate)) {
+                $downloadUrl = html_entity_decode($candidate, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+        }
+
+        if (empty($downloadUrl)) {
+            $twStream = $dom->find('meta[name=twitter:player:stream]', 0);
+            if ($twStream) {
+                $candidate = trim((string)$twStream->getAttribute('content'));
+                if (!empty($candidate)) {
+                    $downloadUrl = html_entity_decode($candidate, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                }
+            }
+        }
+
+        // Fallback: Download button link if meta tags are unavailable.
         foreach ($dom->find('a') as $anchor) {
+            if (!empty($downloadUrl)) {
+                break;
+            }
+
             $classAttr = trim((string)$anchor->getAttribute('class'));
             if ($classAttr === '') {
                 continue;
