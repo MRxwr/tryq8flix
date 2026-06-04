@@ -8,6 +8,44 @@
     .vs-hero-box h1 {
         font-size: 5rem;
     }
+    #episode-hero {
+        position: relative;
+        overflow: hidden;
+    }
+    #episode-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.7) 100%);
+        z-index: 1;
+    }
+    #episode-hero .hero-overlay {
+        display: none;
+    }
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    .bg-logo-left, .bg-logo-right {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 45%;
+        object-fit: cover;
+        opacity: 0.3;
+        z-index: 0;
+    }
+    .bg-logo-left {
+        left: 0;
+        object-position: left;
+    }
+    .bg-logo-right {
+        right: 0;
+        object-position: right;
+    }
     @media (max-width: 768px) {
         .hero {
             min-height: 350px !important;
@@ -134,14 +172,14 @@ $(document).ready(function() {
     // Display episode hero section
     if(type === 'live') {
         if (leftLogo && rightLogo) {
-            // Use team logos as background - create a split background with both logos
-            $('#episode-hero').css('background', 
-                `linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.6) 100%), 
-                 linear-gradient(to right, url(${leftLogo}) 0%, transparent 40%, transparent 60%, url(${rightLogo}) 100%)`
-            );
-            $('#episode-hero').css('background-size', 'auto, 40% auto, 40% auto');
-            $('#episode-hero').css('background-position', 'center, left center, right center');
-            $('#episode-hero').css('background-repeat', 'no-repeat');
+            // Remove any existing background logos
+            $('#episode-hero img.bg-logo-left, #episode-hero img.bg-logo-right').remove();
+            
+            // Add background logos
+            $('#episode-hero').prepend(`
+                <img class="bg-logo-left" src="${leftLogo}" alt="left-team">
+                <img class="bg-logo-right" src="${rightLogo}" alt="right-team">
+            `);
             
             $('#hero-left-logo').attr('src', rightLogo);
             $('#hero-right-logo').attr('src', leftLogo);
@@ -197,15 +235,13 @@ $(document).ready(function() {
                      // Update hero section with match details
                      $('#episode-title').text(`${details.leftTeamName} VS ${details.rightTeamName}`);
                      
-                     // Use team logos as dynamic background
+                     // Add background logos for visual impact
                      if (details.leftTeamLogo && details.rightTeamLogo) {
-                         $('#episode-hero').css('background', 
-                             `linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.6) 100%), 
-                              linear-gradient(to right, url(${details.leftTeamLogo}) 0%, transparent 40%, transparent 60%, url(${details.rightTeamLogo}) 100%)`
-                         );
-                         $('#episode-hero').css('background-size', 'auto, 40% auto, 40% auto');
-                         $('#episode-hero').css('background-position', 'center, left center, right center');
-                         $('#episode-hero').css('background-repeat', 'no-repeat');
+                         $('#episode-hero img.bg-logo-left, #episode-hero img.bg-logo-right').remove();
+                         $('#episode-hero').prepend(`
+                             <img class="bg-logo-left" src="${details.leftTeamLogo}" alt="left-team">
+                             <img class="bg-logo-right" src="${details.rightTeamLogo}" alt="right-team">
+                         `);
                      }
                      
                      // Remove any existing meta info to avoid duplication on retries
