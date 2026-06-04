@@ -115,7 +115,7 @@ $(document).ready(function() {
         showMessage('info', 'Fetching video details...');
 
         $.ajax({
-            url: 'api/index.php?endpoint=VideoDownloader&action=info',
+            url: 'api/index.php?endpoint=videoDownloader&action=info',
             method: 'POST',
             data: { url: url },
             dataType: 'json'
@@ -163,7 +163,7 @@ $(document).ready(function() {
         showMessage('info', 'Preparing your downloadable MP4 link...');
 
         $.ajax({
-            url: 'api/index.php?endpoint=VideoDownloader&action=link',
+            url: 'api/index.php?endpoint=videoDownloader&action=link',
             method: 'POST',
             data: { url: url },
             dataType: 'json'

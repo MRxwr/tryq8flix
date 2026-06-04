@@ -25,6 +25,17 @@ if (strpos($endpoint, '/') !== false) {
     $endpointFile = "views/{$folder}/api{$filename}.php";
 } else {
     $endpointFile = "views/api{$endpoint}.php";
+
+    // Linux hosts are case-sensitive; resolve with case-insensitive fallback.
+    if (!file_exists($endpointFile)) {
+        $targetBase = basename($endpointFile);
+        foreach (glob('views/api*.php') as $candidate) {
+            if (strcasecmp(basename($candidate), $targetBase) === 0) {
+                $endpointFile = $candidate;
+                break;
+            }
+        }
+    }
 }
 if (isset($_GET["endpoint"]) && file_exists($endpointFile)) {
     require_once($endpointFile);
