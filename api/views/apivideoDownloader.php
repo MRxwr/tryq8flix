@@ -184,7 +184,141 @@ function runPlatformFallback($action, $url)
         return runVXTwitterFallback($action, $url);
     }
 
+    if (strpos($host, 'tiktok.com') !== false) {
+        return runTikWmFallback($action, $url);
+    }
+
+    if (strpos($host, 'instagram.com') !== false) {
+        return runInstagramFallback($action, $url);
+    }
+
     return array('ok' => false, 'error' => 'No fallback available for this platform on this host');
+}
+
+function runTikWmFallback($action, $url)
+{
+    $apiUrl = 'https://www.tikwm.com/api/?url=' . rawurlencode($url);
+    $json = fetchRemoteJson($apiUrl);
+    if (!is_array($json) || !isset($json['code']) || intval($json['code']) !== 0 || empty($json['data']) || !is_array($json['data'])) {
+        return array('ok' => false, 'error' => 'TikTok fallback API failed');
+    }
+
+    $data = $json['data'];
+    $playUrl = !empty($data['play']) ? $data['play'] : (!empty($data['wmplay']) ? $data['wmplay'] : '');
+
+    if ($action === 'link') {
+        if (empty($playUrl) || !preg_match('/^https?:\/\//i', $playUrl)) {
+            return array('ok' => false, 'error' => 'TikTok fallback found no playable URL');
+        }
+
+        $allUrls = array();
+        if (!empty($data['play']) && preg_match('/^https?:\/\//i', $data['play'])) {
+            $allUrls[] = $data['play'];
+        }
+        if (!empty($data['wmplay']) && preg_match('/^https?:\/\//i', $data['wmplay'])) {
+            $allUrls[] = $data['wmplay'];
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $playUrl,
+                'all_urls' => array_values(array_unique($allUrls)),
+                'source' => 'tikwm-fallback'
+            )
+        );
+    }
+
+    $uploader = '';
+    if (!empty($data['author']) && is_array($data['author'])) {
+        $uploader = !empty($data['author']['nickname']) ? $data['author']['nickname'] : (!empty($data['author']['unique_id']) ? $data['author']['unique_id'] : '');
+    }
+
+    return array(
+        'ok' => true,
+        'data' => array(
+            'id' => isset($data['id']) ? strval($data['id']) : '',
+            'title' => isset($data['title']) ? trim($data['title']) : 'TikTok Video',
+            'webpage_url' => $url,
+            'uploader' => $uploader,
+            'duration' => isset($data['duration']) ? intval($data['duration']) : 0,
+            'thumbnail' => !empty($data['cover']) ? $data['cover'] : (!empty($data['origin_cover']) ? $data['origin_cover'] : ''),
+            'ext' => 'mp4',
+            'format' => 'fallback',
+            'extractor' => 'tikwm-fallback'
+        )
+    );
+}
+
+function runInstagramFallback($action, $url)
+{
+    // Use ddinstagram mirror to bypass login wall when possible.
+    $mirrorUrl = preg_replace('/^https?:\/\/(www\.)?instagram\.com\//i', 'https://ddinstagram.com/', $url);
+    if (empty($mirrorUrl)) {
+        $mirrorUrl = $url;
+    }
+
+    $html = downloadRemoteFile($mirrorUrl);
+    if (!is_string($html) || trim($html) === '') {
+        return array('ok' => false, 'error' => 'Instagram fallback failed to fetch page');
+    }
+
+    $videoUrl = extractMetaTagContent($html, 'property', 'og:video');
+    if (empty($videoUrl)) {
+        $videoUrl = extractMetaTagContent($html, 'property', 'og:video:url');
+    }
+    if (empty($videoUrl)) {
+        $videoUrl = extractMetaTagContent($html, 'name', 'twitter:player:stream');
+    }
+
+    if ($action === 'link') {
+        if (empty($videoUrl) || !preg_match('/^https?:\/\//i', $videoUrl)) {
+            return array('ok' => false, 'error' => 'Instagram fallback found no video URL on this post');
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $videoUrl,
+                'all_urls' => array($videoUrl),
+                'source' => 'instagram-meta-fallback'
+            )
+        );
+    }
+
+    $title = extractMetaTagContent($html, 'property', 'og:title');
+    $thumbnail = extractMetaTagContent($html, 'property', 'og:image');
+
+    return array(
+        'ok' => true,
+        'data' => array(
+            'id' => '',
+            'title' => !empty($title) ? $title : 'Instagram Video',
+            'webpage_url' => $url,
+            'uploader' => '',
+            'duration' => 0,
+            'thumbnail' => $thumbnail,
+            'ext' => 'mp4',
+            'format' => 'fallback',
+            'extractor' => 'instagram-meta-fallback'
+        )
+    );
+}
+
+function extractMetaTagContent($html, $attrName, $attrValue)
+{
+    $pattern = '/<meta[^>]*' . preg_quote($attrName, '/') . '=["\']' . preg_quote($attrValue, '/') . '["\'][^>]*content=["\']([^"\']+)["\'][^>]*>/i';
+    if (preg_match($pattern, $html, $m) && !empty($m[1])) {
+        return html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    // Attribute order can be reversed.
+    $pattern2 = '/<meta[^>]*content=["\']([^"\']+)["\'][^>]*' . preg_quote($attrName, '/') . '=["\']' . preg_quote($attrValue, '/') . '["\'][^>]*>/i';
+    if (preg_match($pattern2, $html, $m2) && !empty($m2[1])) {
+        return html_entity_decode($m2[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    return '';
 }
 
 function runVXTwitterFallback($action, $url)
