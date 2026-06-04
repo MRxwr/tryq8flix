@@ -138,9 +138,12 @@ $(document).ready(function() {
 
             showMessage('success', 'Video found. You can download it now.');
         }).fail(function(xhr) {
-            const msg = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg
-                ? xhr.responseJSON.data.msg
-                : 'Network/server error while analyzing the link.';
+            let msg = 'Network/server error while analyzing the link.';
+            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) {
+                msg = xhr.responseJSON.data.msg;
+            } else if (xhr.responseText && String(xhr.responseText).trim() !== '') {
+                msg = String(xhr.responseText).slice(0, 500);
+            }
             showMessage('danger', msg);
         }).always(function() {
             btn.prop('disabled', false).html(oldText);
@@ -183,9 +186,12 @@ $(document).ready(function() {
                 showMessage('success', 'Download link is ready. Tap Download Now to save the video.');
             }
         }).fail(function(xhr) {
-            const msg = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg
-                ? xhr.responseJSON.data.msg
-                : 'Network/server error while preparing download.';
+            let msg = 'Network/server error while preparing download.';
+            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) {
+                msg = xhr.responseJSON.data.msg;
+            } else if (xhr.responseText && String(xhr.responseText).trim() !== '') {
+                msg = String(xhr.responseText).slice(0, 500);
+            }
             showMessage('danger', msg);
         }).always(function() {
             btn.prop('disabled', false).html(oldText);

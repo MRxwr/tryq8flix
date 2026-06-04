@@ -378,10 +378,10 @@ function extractInstagramVideoUrlFromHtml($html)
 
     // JSON-embedded URL patterns used by Instagram pages.
     $patterns = array(
-        '/"video_url"\s*:\s*"(https?:\\\/\\\/[^"\\]+)"/i',
-        '/"contentUrl"\s*:\s*"(https?:\\\/\\\/[^"\\]+)"/i',
-        '/"video_versions"\s*:\s*\[\s*\{[^\}]*"url"\s*:\s*"(https?:\\\/\\\/[^"\\]+)"/i',
-        '/"playback_video_uri"\s*:\s*"(https?:\\\/\\\/[^"\\]+)"/i'
+        '/"video_url"\s*:\s*"((?:https?:)?\\\/\\\/[^"\r\n]+)"/i',
+        '/"contentUrl"\s*:\s*"((?:https?:)?\\\/\\\/[^"\r\n]+)"/i',
+        '/"video_versions"\s*:\s*\[\s*\{[^\}]*"url"\s*:\s*"((?:https?:)?\\\/\\\/[^"\r\n]+)"/i',
+        '/"playback_video_uri"\s*:\s*"((?:https?:)?\\\/\\\/[^"\r\n]+)"/i'
     );
 
     foreach ($patterns as $pattern) {
