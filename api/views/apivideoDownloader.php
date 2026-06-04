@@ -164,35 +164,48 @@ function ensureYtDlpBinary()
     }
 
     $isWindows = (stripos(PHP_OS, 'WIN') === 0);
-    $binDir = $projectRoot . DIRECTORY_SEPARATOR . 'bin';
-    $binPath = $binDir . DIRECTORY_SEPARATOR . ($isWindows ? 'yt-dlp.exe' : 'yt-dlp');
+    $binName = $isWindows ? 'yt-dlp.exe' : 'yt-dlp';
+    $candidateDirs = array();
 
-    if (is_file($binPath)) {
-        if (!$isWindows) {
-            @chmod($binPath, 0755);
+    // On shared hosting, executables are often blocked in public_html; /tmp is usually executable.
+    $tmpDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'tryq8flix-bin';
+    $candidateDirs[] = $tmpDir;
+    $candidateDirs[] = $projectRoot . DIRECTORY_SEPARATOR . 'bin';
+
+    $attemptErrors = array();
+
+    foreach ($candidateDirs as $binDir) {
+        $binPath = $binDir . DIRECTORY_SEPARATOR . $binName;
+
+        if (is_file($binPath)) {
+            if (!$isWindows) {
+                @chmod($binPath, 0755);
+            }
+            if (isUsableYtDlpBinary($binPath)) {
+                return array('ok' => true, 'path' => $binPath);
+            }
+            @unlink($binPath);
         }
+
+        if (!is_dir($binDir) && !@mkdir($binDir, 0755, true)) {
+            $attemptErrors[] = 'mkdir-failed: ' . $binDir;
+            continue;
+        }
+
+        $install = installYtDlpBinary($binPath, $isWindows);
+        if (!$install['ok']) {
+            $attemptErrors[] = $install['error'];
+            continue;
+        }
+
         if (isUsableYtDlpBinary($binPath)) {
             return array('ok' => true, 'path' => $binPath);
         }
 
-        // Existing file is broken (commonly python-based launcher on old hosts), replace it.
-        @unlink($binPath);
+        $attemptErrors[] = 'installed-but-not-executable: ' . $binPath;
     }
 
-    if (!is_dir($binDir) && !@mkdir($binDir, 0755, true)) {
-        return array('ok' => false, 'error' => 'Failed to create bin directory');
-    }
-
-    $install = installYtDlpBinary($binPath, $isWindows);
-    if (!$install['ok']) {
-        return $install;
-    }
-
-    if (!isUsableYtDlpBinary($binPath)) {
-        return array('ok' => false, 'error' => 'yt-dlp installed but not executable on this host');
-    }
-
-    return array('ok' => true, 'path' => $binPath);
+    return array('ok' => false, 'error' => 'yt-dlp failed in all locations: ' . implode(' | ', array_slice($attemptErrors, 0, 5)));
 }
 
 function installYtDlpBinary($binPath, $isWindows)
@@ -278,7 +291,17 @@ function isUsableYtDlpBinary($binPath)
         return false;
     }
 
-    return (bool)preg_match('/\d{4}\.\d{2}\.\d{2}/', trim($raw));
+    if (preg_match('/\d{4}\.\d{2}\.\d{2}/', trim($raw))) {
+        return true;
+    }
+
+    // Some builds may not print date-style version; check help output as fallback.
+    $helpRaw = shell_exec($safeBin . ' --help 2>&1');
+    if (is_string($helpRaw) && stripos($helpRaw, 'yt-dlp [OPTIONS] URL') !== false) {
+        return true;
+    }
+
+    return false;
 }
 
 function downloadRemoteFile($url)
