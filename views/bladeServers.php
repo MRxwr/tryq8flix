@@ -133,8 +133,8 @@ $(document).ready(function() {
     
     // Display episode hero section
     if(type === 'live') {
-        const stadiumBg = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070&auto=format&fit=crop';
-        $('#episode-hero').css('background-image', `url(${stadiumBg})`);
+        const matchBg = 'https://images.unsplash.com/photo-1599158150601-1417ebbaafdd?q=80&w=1336&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+        $('#episode-hero').css('background-image', `url(${matchBg})`);
         $('#episode-title').hide();
         
         if (leftLogo && rightLogo) {
