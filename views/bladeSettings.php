@@ -44,6 +44,9 @@
                     <a href="?v=Home" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-home me-2"></i> Home
                     </a>
+                    <a href="?v=Download" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                        <i class="fas fa-cloud-download-alt me-2"></i> Video Downloader
+                    </a>
                     <a href="?v=Favorites" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
                         <i class="fas fa-heart me-2"></i> My Favorites
                     </a>
