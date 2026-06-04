@@ -18,14 +18,14 @@ $(document).ready(function() {
                 if(match.rightTeamName) {
                     const qParams = {
                         v: 'Servers',
-                        link: match.href,
+                        link: encryptLink(match.href),
                         type: 'live',
-                        title: `${match.leftTeamName} VS ${match.rightTeamName}`,
-                        image: match.leftTeamLogo,
-                        leftLogo: match.leftTeamLogo,
-                        rightLogo: match.rightTeamLogo,
-                        leftName: match.leftTeamName,
-                        rightName: match.rightTeamName
+                        title: encryptLink(`${match.leftTeamName} VS ${match.rightTeamName}`),
+                        image: encryptLink(match.leftTeamLogo),
+                        leftLogo: encryptLink(match.leftTeamLogo),
+                        rightLogo: encryptLink(match.rightTeamLogo),
+                        leftName: encryptLink(match.leftTeamName),
+                        rightName: encryptLink(match.rightTeamName)
                     };
                     const queryString = Object.keys(qParams).map(key => key + '=' + encodeURIComponent(qParams[key])).join('&');
                     const encryptedUrl = '?q=' + encodeURIComponent(encryptLink(queryString));
