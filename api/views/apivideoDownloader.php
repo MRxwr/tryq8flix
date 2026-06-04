@@ -83,6 +83,13 @@ function isAllowedVideoUrl($url)
 
 function runVideoDownloader($action, $url)
 {
+    $host = strtolower(parse_url($url, PHP_URL_HOST) ?: '');
+
+    // Force Instagram to use VX fallback directly on this hosting setup.
+    if (strpos($host, 'instagram.com') !== false) {
+        return runInstagramFallback($action, $url);
+    }
+
     if (!function_exists('shell_exec')) {
         return array('ok' => false, 'error' => 'Server does not allow shell execution');
     }
@@ -329,7 +336,7 @@ function runVxInstagramFallback($action, $url)
 
 function extractInstagramShortcode($url)
 {
-    if (preg_match('#instagram\.com/(?:reel|p|tv)/([A-Za-z0-9_-]+)#i', $url, $m)) {
+    if (preg_match('#(?:www\.)?instagram\.com/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)#i', $url, $m)) {
         return $m[1];
     }
     return '';
