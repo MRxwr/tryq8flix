@@ -272,7 +272,7 @@
         .team-box {
             display: flex;
             align-items: center;
-            width: 40%;
+            width: 42%;
         }
 
         .team-box.left {
@@ -284,6 +284,7 @@
             width: 45px;
             height: 45px;
             object-fit: contain;
+            flex-shrink: 0;
         }
 
         .team-name {
@@ -292,46 +293,60 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            flex-grow: 1;
         }
 
         .match-center {
             text-align: center;
-            width: 20%;
+            width: 16%;
+            flex-shrink: 0;
         }
 
         .match-time {
             font-weight: bold;
             color: #e50914;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             display: block;
         }
 
         .match-result {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
-            margin: 5px 0;
+            margin: 2px 0;
         }
 
         .badge-live {
             background-color: #e50914;
             color: white;
-            font-size: 0.7rem;
-            padding: 2px 8px;
+            font-size: 0.65rem;
+            padding: 1px 6px;
             border-radius: 4px;
             text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
+            .match-main {
+                padding: 15px 10px;
+            }
+            .team-logo {
+                width: 35px;
+                height: 35px;
+            }
             .team-name {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
+            }
+            .match-result {
+                font-size: 0.9rem;
             }
             .match-footer {
-                flex-direction: column;
-                gap: 5px;
-                align-items: flex-start;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                font-size: 0.75rem;
             }
             .footer-item {
-                width: 100%;
+                width: 48%;
+                margin-bottom: 5px;
             }
         }
 

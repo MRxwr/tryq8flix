@@ -1,5 +1,39 @@
 <?php include 'header.php'; ?>
 
+<style>
+    .team-hero-box img {
+        width: 120px;
+        height: 120px;
+    }
+    .vs-hero-box h1 {
+        font-size: 5rem;
+    }
+    @media (max-width: 768px) {
+        .hero {
+            min-height: 350px !important;
+        }
+        .team-hero-box img {
+            width: 70px !important;
+            height: 70px !important;
+        }
+        .vs-hero-box h1 {
+            font-size: 2.5rem !important;
+        }
+        .vs-hero-box {
+            padding: 0 10px !important;
+        }
+        .hero-title {
+            font-size: 2rem !important;
+        }
+        #live-match-header .d-flex {
+            gap: 1.5rem !important;
+        }
+        .team-hero-box h3 {
+            font-size: 1.1rem !important;
+        }
+    }
+</style>
+
 <div id="episode-hero" class="hero" style="display:none; background-size: cover; background-position: center; min-height: 500px; display: flex; align-items: flex-end; padding-bottom: 40px;">
     <div class="hero-overlay"></div>
     <div class="hero-content w-100">
@@ -61,19 +95,19 @@ $(document).ready(function() {
     if (urlParams.has('q')) {
         const decryptedQ = decryptLink(urlParams.get('q'));
         const params = new URLSearchParams(decryptedQ);
-        href = params.get('href') || params.get('link');
+        href = decryptLink(params.get('href') || params.get('link'));
         server = params.get('server');
         type = params.get('type');
-        link = params.get('link') || params.get('href');
-        image = params.get('image');
-        title = params.get('title');
-        more_link = params.get('more_link');
-        series_title = params.get('series_title');
+        link = decryptLink(params.get('link') || params.get('href'));
+        image = decryptLink(params.get('image'));
+        title = decryptLink(params.get('title'));
+        more_link = decryptLink(params.get('more_link'));
+        series_title = decryptLink(params.get('series_title'));
         
-        leftLogo = params.get('leftLogo');
-        rightLogo = params.get('rightLogo');
-        leftName = params.get('leftName');
-        rightName = params.get('rightName');
+        leftLogo = decryptLink(params.get('leftLogo'));
+        rightLogo = decryptLink(params.get('rightLogo'));
+        leftName = decryptLink(params.get('leftName'));
+        rightName = decryptLink(params.get('rightName'));
     } else {
         href = decryptLink(urlParams.get('href'));
         server = urlParams.get('server');
