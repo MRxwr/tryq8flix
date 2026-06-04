@@ -41,9 +41,12 @@
                             <p id="preview-meta" class="text-white-50 mb-3"></p>
 
                             <div class="d-flex flex-wrap gap-2">
-                                <button id="download-btn" class="btn btn-success">
-                                    <i class="fas fa-download me-1"></i>Download MP4
+                                <button id="prepare-download-btn" class="btn btn-success">
+                                    <i class="fas fa-download me-1"></i>Prepare Download
                                 </button>
+                                <a id="download-direct-btn" class="btn btn-success d-none" href="#" target="_blank" rel="noopener" download>
+                                    <i class="fas fa-file-arrow-down me-1"></i>Download Now
+                                </a>
                                 <a id="open-source-btn" class="btn btn-outline-light" href="#" target="_blank" rel="noopener">
                                     <i class="fas fa-external-link-alt me-1"></i>Open Source Post
                                 </a>
@@ -84,6 +87,7 @@ $(document).ready(function() {
         $('#preview-uploader').text('');
         $('#preview-meta').text('');
         $('#open-source-btn').attr('href', '#');
+        $('#download-direct-btn').addClass('d-none').attr('href', '#');
         latestSourceUrl = '';
     }
 
@@ -143,7 +147,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#download-btn').on('click', function() {
+    $('#prepare-download-btn').on('click', function() {
         const url = ($('#download-url').val() || '').trim();
         if (!url) {
             showMessage('warning', 'Paste and analyze a URL first.');
@@ -168,16 +172,16 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            const a = document.createElement('a');
-            a.href = directUrl;
-            a.target = '_blank';
-            a.rel = 'noopener';
-            a.download = '';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const proxiedDownloadUrl = 'video-proxy.php?download=1&url=' + encodeURIComponent(directUrl);
+            $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
 
-            showMessage('success', 'Download link is ready. If it did not auto-start, open in new tab and save the video.');
+            // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
+            const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
+            if (win) {
+                showMessage('success', 'Download started. If it did not, use the Download Now button.');
+            } else {
+                showMessage('success', 'Download link is ready. Tap Download Now to save the video.');
+            }
         }).fail(function(xhr) {
             const msg = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg
                 ? xhr.responseJSON.data.msg

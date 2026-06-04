@@ -17,6 +17,8 @@ if (!isset($_GET['url'])) {
     exit("Missing URL parameter");
 }
 
+$forceDownload = isset($_GET['download']) && $_GET['download'] == '1';
+
 $url = fix_arabic_url($_GET['url']);
 
 // Basic URL validation
@@ -56,6 +58,15 @@ if ($fileSize > 0) {
     header('Content-Length: ' . $fileSize);
 }
 header('Cache-Control: public, max-age=86400');
+
+if ($forceDownload) {
+    $path = parse_url($url, PHP_URL_PATH);
+    $filename = $path ? basename($path) : 'video.mp4';
+    if (!$filename || strpos($filename, '.') === false) {
+        $filename = 'video.mp4';
+    }
+    header('Content-Disposition: attachment; filename="' . str_replace('"', '', $filename) . '"');
+}
 
 // Handle range requests
 if ($range) {
