@@ -209,9 +209,8 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            const downloadUrl = directUrl; 
-            
-            $('#download-direct-btn').attr('href', downloadUrl).removeClass('d-none');
+            const proxiedDownloadUrl = /*'video-proxy.php?download=1&url=' + */(directUrl);
+            $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
 
             latestPreviewVideoUrl = directUrl;
             const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
@@ -219,21 +218,12 @@ $(document).ready(function() {
                 useVideoPreview(directUrl);
             }
 
-            // Use a hidden iframe to try and trigger the download prompt.
-            let downloadIframe = document.getElementById('download-iframe');
-            if (!downloadIframe) {
-                downloadIframe = document.createElement('iframe');
-                downloadIframe.id = 'download-iframe';
-                downloadIframe.style.display = 'none';
-                document.body.appendChild(downloadIframe);
-            }
-            downloadIframe.src = downloadUrl;
-
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-            if (isIOS) {
-                showMessage('success', 'Link ready. If it starts playing, tap the <b>Share</b> icon and select <b>"Save to Files"</b>. You can also use the <b>Download Now</b> button below.');
+            // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
+            const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
+            if (win) {
+                showMessage('success', 'Download started. If it did not, use the Download Now button.');
             } else {
-                showMessage('success', 'Link ready. If the download doesn\'t start automatically, use the <b>Download Now</b> button (Right-Click > Save As).');
+                showMessage('success', 'Download link is ready. Tap Download Now to save the video.');
             }
         }).fail(function(xhr) {
             let msg = 'Network/server error while preparing download.';
