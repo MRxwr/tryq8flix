@@ -19,8 +19,5 @@
     "url": "https://github.com/MRxwr/tryq8flix/issues"
   },
   "homepage": "https://github.com/MRxwr/tryq8flix#readme",
-  "description": "",
-  "dependencies": {
-    "yt-dlp-wrap": "^2.3.12"
-  }
+  "description": ""
 }
