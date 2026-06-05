@@ -385,9 +385,10 @@ function runInvidiousFallback($action, $url)
         'https://yt.chocolatemoo53.com'
     );
 
+    // Try API first
     foreach ($instances as $instance) {
         $apiUrl = $instance . '/api/v1/videos/' . rawurlencode($videoId);
-        $json = fetchRemoteJson($apiUrl);
+        $json = fetchRemoteJsonWithReferer($apiUrl, $instance);
         if (!is_array($json)) {
             continue;
         }
@@ -492,6 +493,17 @@ function fetchRemoteJson($url)
     return is_array($decoded) ? $decoded : null;
 }
 
+function fetchRemoteJsonWithReferer($url, $referer)
+{
+    $raw = downloadRemoteFileWithReferer($url, $referer);
+    if (!is_string($raw) || trim($raw) === '') {
+        return null;
+    }
+
+    $decoded = json_decode($raw, true);
+    return is_array($decoded) ? $decoded : null;
+}
+
 
 function downloadRemoteFile($url)
 {
@@ -502,17 +514,25 @@ function downloadRemoteFile($url)
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
         curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 TryQ8Flix');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Accept: */*',
+            'Accept: application/json, text/plain, */*',
             'Accept-Language: en-US,en;q=0.9',
-            'Cache-Control: no-cache'
+            'Accept-Encoding: gzip, deflate, br',
+            'Cache-Control: no-cache',
+            'Pragma: no-cache',
+            'Sec-Fetch-Dest: empty',
+            'Sec-Fetch-Mode: cors',
+            'Sec-Fetch-Site: same-origin',
+            'X-Requested-With: XMLHttpRequest'
         ));
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $data = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        if (is_string($data) && $data !== '') {
+        if (is_string($data) && $data !== '' && $httpCode >= 200 && $httpCode < 400) {
             return $data;
         }
     }
@@ -523,6 +543,58 @@ function downloadRemoteFile($url)
                 'follow_location' => 1,
                 'timeout' => 120,
                 'user_agent' => 'Mozilla/5.0 TryQ8Flix Downloader'
+            )
+        ));
+        $data = @file_get_contents($url, false, $context);
+        if (is_string($data) && $data !== '') {
+            return $data;
+        }
+    }
+
+    return false;
+}
+
+function downloadRemoteFileWithReferer($url, $referer)
+{
+    if (function_exists('curl_init')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        curl_setopt($ch, CURLOPT_REFERER, $referer);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Accept: application/json, text/plain, */*',
+            'Accept-Language: en-US,en;q=0.9',
+            'Accept-Encoding: gzip, deflate, br',
+            'Cache-Control: no-cache',
+            'Pragma: no-cache',
+            'Sec-Fetch-Dest: empty',
+            'Sec-Fetch-Mode: cors',
+            'Sec-Fetch-Site: same-origin',
+            'X-Requested-With: XMLHttpRequest',
+            'Origin: ' . $referer
+        ));
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $data = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if (is_string($data) && $data !== '' && $httpCode >= 200 && $httpCode < 400) {
+            return $data;
+        }
+    }
+
+    if (ini_get('allow_url_fopen')) {
+        $context = stream_context_create(array(
+            'http' => array(
+                'follow_location' => 1,
+                'timeout' => 120,
+                'user_agent' => 'Mozilla/5.0 TryQ8Flix Downloader',
+                'header' => "Referer: $referer\r\n"
             )
         ));
         $data = @file_get_contents($url, false, $context);
