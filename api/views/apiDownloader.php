@@ -270,10 +270,26 @@ function extractYouTubeDownloadLinksFromHtml($html)
 
 function runTikWmFallback($action, $url)
 {
-    $apiUrl = 'https://www.tikwm.com/api/?url=' . rawurlencode($url);
-    $json = fetchRemoteJson($apiUrl);
+    $candidates = array($url);
+    $videoId = extractTikTokVideoId($url);
+    if ($videoId !== '') {
+        // TikWM sometimes resolves by numeric ID even when full TikTok URL fails.
+        $candidates[] = $videoId;
+        $candidates[] = 'https://www.tiktok.com/@_/video/' . $videoId;
+    }
+
+    $json = null;
+    $lastApiUrl = '';
+    foreach (array_values(array_unique($candidates)) as $candidateUrl) {
+        $lastApiUrl = 'https://www.tikwm.com/api/?url=' . rawurlencode($candidateUrl);
+        $json = fetchRemoteJson($lastApiUrl);
+        if (is_array($json) && isset($json['code']) && intval($json['code']) === 0 && !empty($json['data']) && is_array($json['data'])) {
+            break;
+        }
+    }
+
     if (!is_array($json) || !isset($json['code']) || intval($json['code']) !== 0 || empty($json['data']) || !is_array($json['data'])) {
-        return array('ok' => false, 'error' => 'TikTok fallback API failed');
+        return array('ok' => false, 'error' => 'TikTok fallback API failed (' . $lastApiUrl . ')');
     }
 
     $data = $json['data'];
@@ -321,6 +337,19 @@ function runTikWmFallback($action, $url)
             'extractor' => 'tikwm-fallback'
         )
     );
+}
+
+function extractTikTokVideoId($url)
+{
+    if (preg_match('#/video/(\d+)#i', $url, $m)) {
+        return $m[1];
+    }
+
+    if (preg_match('/\b(\d{10,})\b/', $url, $m)) {
+        return $m[1];
+    }
+
+    return '';
 }
 
 function runInstagramFallback($action, $url)
