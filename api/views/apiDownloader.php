@@ -137,15 +137,9 @@ function runYouTubePreviewOnly($action, $url)
         return array('ok' => false, 'error' => 'Could not detect YouTube video ID');
     }
 
-    $payload = array('url' => $url);
     $response = downloadRemotePostFile(
         'https://turboscribe.ai/_htmx/NCN20gAEkZMBzQPXkQc',
-        json_encode($payload),
-        array(
-            'Content-Type: application/json',
-            'Referer: https://turboscribe.ai/downloader/youtube/video/free',
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-        )
+        json_encode(array('url' => $url))
     );
 
     if (!is_string($response) || trim($response) === '') {
@@ -450,23 +444,28 @@ function fetchRemoteJson($url)
     return is_array($decoded) ? $decoded : null;
 }
 
-function downloadRemotePostFile($url, $postBody, $headers = array())
+function downloadRemotePostFile($url, $postBody)
 {
     if (function_exists('curl_init')) {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postBody);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(array(
-            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-        ), $headers));
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $postBody,
+            CURLOPT_HTTPHEADER => array(
+                'referer: https://turboscribe.ai/downloader/youtube/video/free',
+                'Content-Type: application/json',
+                'Cookie: hwm-3frzffekSo3DTuuXXweESsIageR15zup1McuRXdzdHg=1780621711437325967.0000000000; lev=1; session-secret=f307ff605aea104b8aac951dc111e57c9d29; snowflake=HyDFRnjG7o4tt8zXZYnOcw%3D%3D'
+            ),
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ));
         $data = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
