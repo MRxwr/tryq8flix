@@ -23,7 +23,7 @@ if (!filter_var($url, FILTER_VALIDATE_URL)) {
 }
 
 if (!isAllowedVideoUrl($url)) {
-    echo dataError(array('msg' => 'Only X/Twitter, Instagram and TikTok links are supported'));
+    echo dataError(array('msg' => 'Only X/Twitter, Instagram, TikTok, and YouTube links are supported'));
     die();
 }
 
@@ -57,7 +57,12 @@ function isAllowedVideoUrl($url)
         'tiktok.com',
         'www.tiktok.com',
         'vm.tiktok.com',
-        'vt.tiktok.com'
+        'vt.tiktok.com',
+        'youtube.com',
+        'www.youtube.com',
+        'youtu.be',
+        'www.youtu.be',
+        'm.youtube.com'
     );
 
     if (in_array($host, $allowedHosts, true)) {
@@ -76,8 +81,12 @@ function isAllowedVideoUrl($url)
     }
     if (preg_match('/(^|\\.)twitter\\.com$/', $host)) {
         return true;
+    }    if (preg_match('/(^|\.)youtube\.com$/', $host)) {
+        return true;
     }
-
+    if (preg_match('/(^|\.)youtu\.be$/', $host)) {
+        return true;
+    }
     return false;
 }
 
@@ -105,6 +114,10 @@ function runPlatformFallback($action, $url)
 
     if (strpos($host, 'instagram.com') !== false) {
         return runInstagramFallback($action, $url);
+    }
+
+    if (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false) {
+        return runInvidiousFallback($action, $url);
     }
 
     return array('ok' => false, 'error' => 'No fallback available for this platform on this host');
@@ -346,6 +359,105 @@ function extractTwitterStatusId($url)
         return $m[1];
     }
     return '';
+}
+
+function extractYouTubeVideoId($url)
+{
+    // Handle youtube.com URLs
+    if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i', $url, $m)) {
+        return $m[1];
+    }
+    return '';
+}
+
+function runInvidiousFallback($action, $url)
+{
+    $videoId = extractYouTubeVideoId($url);
+    if (empty($videoId)) {
+        return array('ok' => false, 'error' => 'Could not extract YouTube video ID');
+    }
+
+    // List of Invidious instances to try (in order of preference)
+    $instances = array(
+        'https://inv.nadeko.net',
+        'https://invidious.nerdvpn.de',
+        'https://inv.thepixora.com',
+        'https://yt.chocolatemoo53.com'
+    );
+
+    foreach ($instances as $instance) {
+        $apiUrl = $instance . '/api/v1/videos/' . rawurlencode($videoId);
+        $json = fetchRemoteJson($apiUrl);
+        if (!is_array($json)) {
+            continue;
+        }
+
+        // Verify we got valid video data
+        if (empty($json['videoId'])) {
+            continue;
+        }
+
+        // Extract the best quality video URL from formatStreams
+        $downloadUrl = '';
+        if (!empty($json['formatStreams']) && is_array($json['formatStreams'])) {
+            // Sort by quality and get the first (best) one
+            usort($json['formatStreams'], function ($a, $b) {
+                $qualityA = isset($a['qualityLabel']) ? intval($a['qualityLabel']) : 0;
+                $qualityB = isset($b['qualityLabel']) ? intval($b['qualityLabel']) : 0;
+                return $qualityB - $qualityA; // Descending
+            });
+
+            if (!empty($json['formatStreams'][0]['url'])) {
+                $downloadUrl = $json['formatStreams'][0]['url'];
+            }
+        }
+
+        if (empty($downloadUrl)) {
+            continue; // Try next instance
+        }
+
+        if ($action === 'link') {
+            return array(
+                'ok' => true,
+                'data' => array(
+                    'stream_url' => $downloadUrl,
+                    'all_urls' => array($downloadUrl),
+                    'source' => 'invidious-fallback'
+                )
+            );
+        }
+
+        $duration = isset($json['lengthSeconds']) ? intval($json['lengthSeconds']) : 0;
+        $thumbnail = '';
+        if (!empty($json['videoThumbnails']) && is_array($json['videoThumbnails'])) {
+            // Get the highest quality thumbnail
+            usort($json['videoThumbnails'], function ($a, $b) {
+                $widthA = isset($a['width']) ? intval($a['width']) : 0;
+                $widthB = isset($b['width']) ? intval($b['width']) : 0;
+                return $widthB - $widthA; // Descending
+            });
+            if (!empty($json['videoThumbnails'][0]['url'])) {
+                $thumbnail = $json['videoThumbnails'][0]['url'];
+            }
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'id' => $videoId,
+                'title' => isset($json['title']) ? trim($json['title']) : 'YouTube Video',
+                'webpage_url' => $url,
+                'uploader' => isset($json['author']) ? trim($json['author']) : '',
+                'duration' => $duration,
+                'thumbnail' => $thumbnail,
+                'ext' => 'mp4',
+                'format' => 'fallback',
+                'extractor' => 'invidious-fallback'
+            )
+        );
+    }
+
+    return array('ok' => false, 'error' => 'All Invidious instances failed for this YouTube video');
 }
 
 function fetchRemoteJson($url)
