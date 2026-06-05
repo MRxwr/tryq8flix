@@ -219,7 +219,7 @@ $(document).ready(function() {
             }
 
             // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
-            const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
+            /*const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');*/
             if (win) {
                 showMessage('success', 'Download started. If it did not, use the Download Now button.');
             } else {
