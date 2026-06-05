@@ -209,10 +209,9 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            // Use proxy to overcome CORS and force download headers
-            const proxiedUrl = 'video-proxy.php?download=1&url=' + encodeURIComponent(directUrl);
+            const downloadUrl = directUrl; 
             
-            $('#download-direct-btn').attr('href', proxiedUrl).removeClass('d-none');
+            $('#download-direct-btn').attr('href', downloadUrl).removeClass('d-none');
 
             latestPreviewVideoUrl = directUrl;
             const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
@@ -220,8 +219,7 @@ $(document).ready(function() {
                 useVideoPreview(directUrl);
             }
 
-            // Use a hidden iframe to trigger the download prompt.
-            // This is more reliable for "Save As" behavior than window.open or link.click
+            // Use a hidden iframe to try and trigger the download prompt.
             let downloadIframe = document.getElementById('download-iframe');
             if (!downloadIframe) {
                 downloadIframe = document.createElement('iframe');
@@ -229,13 +227,13 @@ $(document).ready(function() {
                 downloadIframe.style.display = 'none';
                 document.body.appendChild(downloadIframe);
             }
-            downloadIframe.src = proxiedUrl;
+            downloadIframe.src = downloadUrl;
 
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
             if (isIOS) {
-                showMessage('success', 'Fetching video... If the download prompt doesn\'t appear, tap <b>Download Now</b> below. If it plays, use the <b>Share</b> icon and select <b>"Save to Files"</b>.');
+                showMessage('success', 'Link ready. If it starts playing, tap the <b>Share</b> icon and select <b>"Save to Files"</b>. You can also use the <b>Download Now</b> button below.');
             } else {
-                showMessage('success', 'Download starting. If nothing happens, use the <b>Download Now</b> button below.');
+                showMessage('success', 'Link ready. If the download doesn\'t start automatically, use the <b>Download Now</b> button (Right-Click > Save As).');
             }
         }).fail(function(xhr) {
             let msg = 'Network/server error while preparing download.';

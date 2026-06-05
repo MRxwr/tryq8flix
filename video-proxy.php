@@ -52,7 +52,6 @@ if (isset($_SERVER['HTTP_RANGE'])) {
 }
 
 // Set the appropriate headers
-header('Access-Control-Allow-Origin: *');
 header('Content-Type: ' . $contentType);
 header('Accept-Ranges: bytes');
 if ($fileSize > 0) {
