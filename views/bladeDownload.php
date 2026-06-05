@@ -209,10 +209,8 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            const videoTitle = $('#preview-title').text();
-            const downloadUrl = 'video-downloader-v2.php?url=' + encodeURIComponent(directUrl) + '&title=' + encodeURIComponent(videoTitle);
-            
-            $('#download-direct-btn').attr('href', downloadUrl).removeClass('d-none');
+            const proxiedDownloadUrl = /*'video-proxy.php?download=1&url=' + */(directUrl);
+            $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
 
             latestPreviewVideoUrl = directUrl;
             const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
@@ -220,15 +218,13 @@ $(document).ready(function() {
                 useVideoPreview(directUrl);
             }
 
-            // Attempt to trigger the server-side download/serve process
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.setAttribute('download', '');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showMessage('success', 'Processing on server... Your download should start in a few seconds.');
+            // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
+            const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
+            if (win) {
+                showMessage('success', 'Download started. If it did not, use the Download Now button.');
+            } else {
+                showMessage('success', 'Download link is ready. Tap Download Now to save the video.');
+            }
         }).fail(function(xhr) {
             let msg = 'Network/server error while preparing download.';
             if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) {
