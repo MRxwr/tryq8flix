@@ -58,6 +58,7 @@ function isAllowedVideoUrl($url)
         'www.tiktok.com',
         'vm.tiktok.com',
         'vt.tiktok.com',
+        'v.tiktok.com',
         'youtube.com',
         'www.youtube.com',
         'm.youtube.com',
@@ -270,6 +271,14 @@ function extractYouTubeDownloadLinksFromHtml($html)
 
 function runTikWmFallback($action, $url)
 {
+    $host = strtolower(parse_url($url, PHP_URL_HOST) ?: '');
+    if ($host === 'vt.tiktok.com' || $host === 'vm.tiktok.com' || $host === 'v.tiktok.com') {
+        $resolved = getFinalUrl($url);
+        if (!empty($resolved) && $resolved !== $url) {
+            $url = $resolved;
+        }
+    }
+
     $candidates = array($url);
     $videoId = extractTikTokVideoId($url);
     if ($videoId !== '') {
@@ -579,6 +588,32 @@ function downloadRemotePostFile($url, $postBody)
     return false;
 }
 
+
+function getFinalUrl($url)
+{
+    if (!function_exists('curl_init')) {
+        return $url;
+    }
+
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+        CURLOPT_URL => $url,
+        CURLOPT_HEADER => true,
+        CURLOPT_NOBODY => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    ));
+    curl_exec($ch);
+    $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+    curl_close($ch);
+
+    return $finalUrl ?: $url;
+}
 
 function downloadRemoteFile($url)
 {
