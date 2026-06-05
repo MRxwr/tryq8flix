@@ -209,8 +209,10 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            const downloadUrl = directUrl; 
-            $('#download-direct-btn').attr('href', downloadUrl).removeClass('d-none');
+            // Use proxy to overcome CORS and force download headers
+            const proxiedUrl = 'video-proxy.php?download=1&url=' + encodeURIComponent(directUrl);
+            
+            $('#download-direct-btn').attr('href', proxiedUrl).removeClass('d-none');
 
             latestPreviewVideoUrl = directUrl;
             const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
@@ -218,29 +220,22 @@ $(document).ready(function() {
                 useVideoPreview(directUrl);
             }
 
-            // Detect iOS for specific handling
+            // Use a hidden iframe to trigger the download prompt.
+            // This is more reliable for "Save As" behavior than window.open or link.click
+            let downloadIframe = document.getElementById('download-iframe');
+            if (!downloadIframe) {
+                downloadIframe = document.createElement('iframe');
+                downloadIframe.id = 'download-iframe';
+                downloadIframe.style.display = 'none';
+                document.body.appendChild(downloadIframe);
+            }
+            downloadIframe.src = proxiedUrl;
+
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-            if (isIOS && navigator.share) {
-                // On iPhone, the Share sheet is the most reliable way to get a "Save to Files" prompt
-                navigator.share({
-                    title: $('#preview-title').text() || 'Video Download',
-                    url: downloadUrl
-                }).catch(err => {
-                    // If shared fails or is cancelled, we still have the button ready
-                });
-                showMessage('success', 'Tap the <b>Share</b> menu and select <b>"Save to Files"</b> to download the video.');
+            if (isIOS) {
+                showMessage('success', 'Fetching video... If the download prompt doesn\'t appear, tap <b>Download Now</b> below. If it plays, use the <b>Share</b> icon and select <b>"Save to Files"</b>.');
             } else {
-                // Attempt to trigger download for desktop/android
-                const link = document.createElement('a');
-                link.href = downloadUrl;
-                link.setAttribute('download', 'video.mp4');
-                link.setAttribute('target', '_blank');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                showMessage('success', 'Link ready. If the video starts playing instead of downloading, <b>Right-Click</b> and "Save Video As..." or use the button below.');
+                showMessage('success', 'Download starting. If nothing happens, use the <b>Download Now</b> button below.');
             }
         }).fail(function(xhr) {
             let msg = 'Network/server error while preparing download.';
