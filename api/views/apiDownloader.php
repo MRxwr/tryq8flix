@@ -128,10 +128,6 @@ function runPlatformFallback($action, $url)
 
 function runYouTubePreviewOnly($action, $url)
 {
-    if ($action === 'link') {
-        return array('ok' => false, 'error' => 'YouTube download is not supported');
-    }
-
     $videoId = extractYouTubeVideoId($url);
     if (empty($videoId)) {
         return array('ok' => false, 'error' => 'Could not detect YouTube video ID');
@@ -144,6 +140,22 @@ function runYouTubePreviewOnly($action, $url)
 
     if (!is_string($response) || trim($response) === '') {
         return array('ok' => false, 'error' => 'YouTube metadata fetch failed');
+    }
+
+    if ($action === 'link') {
+        $links = extractYouTubeDownloadLinksFromHtml($response);
+        if (empty($links['all_urls'])) {
+            return array('ok' => false, 'error' => 'No downloadable YouTube media URL found');
+        }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $links['stream_url'],
+                'all_urls' => $links['all_urls'],
+                'source' => 'youtube-html-fallback'
+            )
+        );
     }
 
     $title = 'YouTube Video';
@@ -193,6 +205,67 @@ function extractYouTubeVideoId($url)
         return $m[1];
     }
     return '';
+}
+
+function extractYouTubeDownloadLinksFromHtml($html)
+{
+    $videoUrls = array();
+    $audioUrls = array();
+    $allUrls = array();
+
+    if (!is_string($html) || trim($html) === '') {
+        return array('stream_url' => '', 'all_urls' => array());
+    }
+
+    if (preg_match_all('/<a[^>]+href="([^"]+)"/i', $html, $matches)) {
+        foreach ($matches[1] as $rawHref) {
+            $href = html_entity_decode(trim($rawHref), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if ($href === '' || !preg_match('/^https?:\/\//i', $href)) {
+                continue;
+            }
+
+            $host = strtolower(parse_url($href, PHP_URL_HOST) ?: '');
+            if ($host === '' || strpos($host, 'googlevideo.com') === false) {
+                continue;
+            }
+
+            $path = strtolower(parse_url($href, PHP_URL_PATH) ?: '');
+            if (strpos($path, 'videoplayback') === false) {
+                continue;
+            }
+
+            $allUrls[] = $href;
+
+            $query = parse_url($href, PHP_URL_QUERY) ?: '';
+            $params = array();
+            parse_str($query, $params);
+            $mime = isset($params['mime']) ? strtolower(urldecode((string)$params['mime'])) : '';
+
+            if (strpos($mime, 'video/') === 0) {
+                $videoUrls[] = $href;
+            } elseif (strpos($mime, 'audio/') === 0) {
+                $audioUrls[] = $href;
+            }
+        }
+    }
+
+    $allUrls = array_values(array_unique($allUrls));
+    $videoUrls = array_values(array_unique($videoUrls));
+    $audioUrls = array_values(array_unique($audioUrls));
+
+    $streamUrl = '';
+    if (!empty($videoUrls)) {
+        $streamUrl = $videoUrls[0];
+    } elseif (!empty($audioUrls)) {
+        $streamUrl = $audioUrls[0];
+    } elseif (!empty($allUrls)) {
+        $streamUrl = $allUrls[0];
+    }
+
+    return array(
+        'stream_url' => $streamUrl,
+        'all_urls' => $allUrls
+    );
 }
 
 function runTikWmFallback($action, $url)
