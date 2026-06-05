@@ -385,51 +385,78 @@ function runInvidiousFallback($action, $url)
         'https://yt.chocolatemoo53.com'
     );
 
-    // Try API first
     foreach ($instances as $instance) {
-        $apiUrl = $instance . '/api/v1/videos/' . rawurlencode($videoId);
-        $json = fetchRemoteJsonWithReferer($apiUrl, $instance);
-        if (!is_array($json)) {
-            continue;
-        }
-
-        // Verify we got valid video data (check multiple possible field names)
-        $hasVideoId = !empty($json['videoId']) || !empty($json['id']);
-        if (!$hasVideoId) {
-            continue;
-        }
-
-        // Extract the best quality video URL from formatStreams or adaptiveFormats
-        $downloadUrl = '';
-        $formats = !empty($json['formatStreams']) ? $json['formatStreams'] : (!empty($json['formats']) ? $json['formats'] : array());
+        // Fetch the watch page HTML
+        $watchUrl = $instance . '/watch?v=' . rawurlencode($videoId);
+        $html = downloadRemoteFileWithReferer($watchUrl, $instance);
         
-        if (!empty($formats) && is_array($formats)) {
-            // Sort by quality and get the first (best) one
-            usort($formats, function ($a, $b) {
-                $qualityA = 0;
-                $qualityB = 0;
-                
-                if (isset($a['qualityLabel'])) {
-                    $qualityA = intval($a['qualityLabel']);
-                } elseif (isset($a['height'])) {
-                    $qualityA = intval($a['height']);
-                }
-                
-                if (isset($b['qualityLabel'])) {
-                    $qualityB = intval($b['qualityLabel']);
-                } elseif (isset($b['height'])) {
-                    $qualityB = intval($b['height']);
-                }
-                
-                return $qualityB - $qualityA; // Descending
-            });
-
-            if (!empty($formats[0]['url'])) {
-                $downloadUrl = $formats[0]['url'];
-            }
+        if (!is_string($html) || trim($html) === '') {
+            continue;
         }
 
-        if (empty($downloadUrl)) {
+        $downloadUrl = '';
+        $thumbnail = '';
+        $title = 'YouTube Video';
+        $author = '';
+        $duration = 0;
+
+        // Parse HTML to extract meta tags
+        $dom = str_get_html($html);
+        if ($dom) {
+            // Extract video URL from og:video meta tag
+            $ogVideo = $dom->find('meta[property=og:video]', 0);
+            if ($ogVideo) {
+                $candidate = trim((string)$ogVideo->getAttribute('content'));
+                if (!empty($candidate) && preg_match('/^\//', $candidate)) {
+                    // Relative URL, make it absolute
+                    $downloadUrl = $instance . $candidate;
+                } elseif (!empty($candidate)) {
+                    $downloadUrl = $candidate;
+                }
+            }
+
+            // Extract thumbnail from og:image
+            $ogImage = $dom->find('meta[property=og:image]', 0);
+            if ($ogImage) {
+                $candidate = trim((string)$ogImage->getAttribute('content'));
+                if (!empty($candidate)) {
+                    if (preg_match('/^\//', $candidate)) {
+                        $thumbnail = $instance . $candidate;
+                    } else {
+                        $thumbnail = $candidate;
+                    }
+                }
+            }
+
+            // Extract title from og:title
+            $ogTitle = $dom->find('meta[property=og:title]', 0);
+            if ($ogTitle) {
+                $candidate = trim((string)$ogTitle->getAttribute('content'));
+                if (!empty($candidate)) {
+                    $title = $candidate;
+                }
+            }
+
+            // Try to find duration (look for it in the HTML or calculate from video meta)
+            // Invidious embeds data in the page, look for length in meta or duration attribute
+            $metaTags = $dom->find('meta');
+            foreach ($metaTags as $tag) {
+                $property = strtolower($tag->getAttribute('property') ?: $tag->getAttribute('name') ?: '');
+                if (strpos($property, 'duration') !== false) {
+                    $durationCandidate = trim((string)$tag->getAttribute('content'));
+                    if (!empty($durationCandidate) && is_numeric($durationCandidate)) {
+                        $duration = intval($durationCandidate);
+                        break;
+                    }
+                }
+            }
+
+            $dom->clear();
+            unset($dom);
+        }
+
+        // Validate download URL
+        if (empty($downloadUrl) || !preg_match('/^https?:\/\//i', $downloadUrl)) {
             continue; // Try next instance
         }
 
@@ -443,25 +470,6 @@ function runInvidiousFallback($action, $url)
                 )
             );
         }
-
-        $duration = isset($json['lengthSeconds']) ? intval($json['lengthSeconds']) : (isset($json['duration']) ? intval($json['duration']) : 0);
-        $thumbnail = '';
-        $thumbnails = !empty($json['videoThumbnails']) ? $json['videoThumbnails'] : (!empty($json['thumbnails']) ? $json['thumbnails'] : array());
-        
-        if (!empty($thumbnails) && is_array($thumbnails)) {
-            // Get the highest quality thumbnail
-            usort($thumbnails, function ($a, $b) {
-                $widthA = isset($a['width']) ? intval($a['width']) : 0;
-                $widthB = isset($b['width']) ? intval($b['width']) : 0;
-                return $widthB - $widthA; // Descending
-            });
-            if (!empty($thumbnails[0]['url'])) {
-                $thumbnail = $thumbnails[0]['url'];
-            }
-        }
-
-        $author = isset($json['author']) ? trim($json['author']) : (isset($json['uploader']) ? trim($json['uploader']) : '');
-        $title = isset($json['title']) ? trim($json['title']) : (isset($json['name']) ? trim($json['name']) : 'YouTube Video');
 
         return array(
             'ok' => true,
