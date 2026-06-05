@@ -209,7 +209,7 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            const proxiedDownloadUrl = /*'video-proxy.php?download=1&url=' + */encodeURIComponent(directUrl);
+            const proxiedDownloadUrl = /*'video-proxy.php?download=1&url=' + */(directUrl);
             $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
 
             latestPreviewVideoUrl = directUrl;
