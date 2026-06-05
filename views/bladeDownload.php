@@ -33,6 +33,7 @@
                 <div class="row g-0">
                     <div class="col-md-4">
                         <img id="preview-thumb" src="" alt="Video thumbnail" class="img-fluid rounded-start" style="height:100%; object-fit:cover; min-height:220px;">
+                        <video id="preview-video" class="img-fluid rounded-start d-none" style="height:100%; object-fit:cover; min-height:220px; pointer-events:none;" preload="metadata" muted playsinline></video>
                     </div>
                     <div class="col-md-8">
                         <div class="card-body p-4">
@@ -75,6 +76,7 @@
 <script>
 $(document).ready(function() {
     let latestSourceUrl = '';
+    let latestPreviewVideoUrl = '';
 
     function showMessage(type, msg) {
         $('#downloader-message').html(`<div class="alert alert-${type} mb-0">${msg}</div>`);
@@ -83,12 +85,35 @@ $(document).ready(function() {
     function clearPreview() {
         $('#preview-card').hide();
         $('#preview-thumb').attr('src', '');
+        $('#preview-thumb').removeClass('d-none');
+        const pv = $('#preview-video');
+        pv.addClass('d-none').attr('src', '');
+        const previewEl = pv.get(0);
+        if (previewEl) {
+            previewEl.load();
+        }
         $('#preview-title').text('-');
         $('#preview-uploader').text('');
         $('#preview-meta').text('');
         $('#open-source-btn').attr('href', '#');
         $('#download-direct-btn').addClass('d-none').attr('href', '#');
         latestSourceUrl = '';
+        latestPreviewVideoUrl = '';
+    }
+
+    function useImagePreview(src) {
+        $('#preview-video').addClass('d-none').attr('src', '');
+        $('#preview-thumb').removeClass('d-none').attr('src', src);
+    }
+
+    function useVideoPreview(src) {
+        const pv = $('#preview-video');
+        const pe = pv.get(0);
+        if (!pe) return;
+
+        $('#preview-thumb').addClass('d-none').attr('src', '');
+        pv.removeClass('d-none').attr('src', src);
+        pe.load();
     }
 
     function secondsToHms(total) {
@@ -132,7 +157,15 @@ $(document).ready(function() {
             $('#preview-title').text(data.title || 'Untitled');
             $('#preview-uploader').text(data.uploader ? `By: ${data.uploader}` : 'Uploader unknown');
             $('#preview-meta').text(`Platform: ${data.extractor || 'Unknown'} | Duration: ${secondsToHms(data.duration)}`);
-            $('#preview-thumb').attr('src', data.thumbnail || 'https://dummyimage.com/640x360/1f1f1f/ffffff&text=No+Thumbnail');
+
+            if (data.thumbnail) {
+                useImagePreview(data.thumbnail);
+            } else if (latestPreviewVideoUrl) {
+                useVideoPreview(latestPreviewVideoUrl);
+            } else {
+                useImagePreview('https://dummyimage.com/640x360/1f1f1f/ffffff&text=No+Thumbnail');
+            }
+
             $('#open-source-btn').attr('href', latestSourceUrl);
             $('#preview-card').show();
 
@@ -178,6 +211,12 @@ $(document).ready(function() {
             const proxiedDownloadUrl = 'video-proxy.php?download=1&url=' + encodeURIComponent(directUrl);
             $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
 
+            latestPreviewVideoUrl = directUrl;
+            const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
+            if (!$('#preview-card').is(':hidden') && (!currentThumb || currentThumb.includes('dummyimage.com'))) {
+                useVideoPreview(directUrl);
+            }
+
             // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
             const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
             if (win) {
@@ -202,6 +241,23 @@ $(document).ready(function() {
         $('#download-url').val('');
         $('#downloader-message').empty();
         clearPreview();
+    });
+
+    // Hard block preview video playback interactions.
+    $('#preview-video').on('play click touchstart', function(e) {
+        e.preventDefault();
+        this.pause();
+        this.currentTime = 0;
+    });
+
+    // Keep only a still frame loaded and never allow continuous playback.
+    $('#preview-video').on('loadeddata', function() {
+        this.pause();
+        try {
+            this.currentTime = 0.1;
+        } catch (err) {
+            this.currentTime = 0;
+        }
     });
 });
 </script>
