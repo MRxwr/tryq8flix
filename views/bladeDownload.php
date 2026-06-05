@@ -4,7 +4,7 @@
     <div class="hero-overlay"></div>
     <div class="hero-content" style="max-width: 760px;">
         <h1 class="hero-title">Video Downloader</h1>
-        <p class="hero-desc text-white-50">Paste an X/Twitter, Instagram, or TikTok video link and get a downloadable MP4 stream.</p>
+                    <p class="hero-desc text-white-50">Paste an X/Twitter, Instagram, TikTok, or YouTube link and preview the metadata. YouTube download support is disabled.</p>
     </div>
 </div>
 
@@ -17,7 +17,7 @@
 
                     <div class="input-group mb-3">
                         <span class="input-group-text bg-secondary border-0 text-white"><i class="fas fa-video"></i></span>
-                        <input id="download-url" type="url" class="form-control bg-secondary text-white border-0" placeholder="https://x.com/... or https://instagram.com/... or https://tiktok.com/...">
+                        <input id="download-url" type="url" class="form-control bg-secondary text-white border-0" placeholder="https://x.com/... or https://instagram.com/... or https://tiktok.com/... or https://youtube.com/...">
                     </div>
 
                     <div class="d-flex flex-wrap gap-2">
@@ -61,7 +61,8 @@
                 <div class="card-body p-4">
                     <h5 class="mb-3"><i class="fas fa-circle-info me-2"></i>Notes</h5>
                     <ul class="text-white-50 mb-0">
-                        <li>Supported links: X/Twitter, Instagram, TikTok.</li>
+                        <li>Supported links: X/Twitter, Instagram, TikTok, and YouTube preview links.</li>
+                        <li>YouTube is metadata-only here; downloading is disabled.</li>
                         <li>Some posts may require login or may be private.</li>
                         <li>Use this only for content you own or have rights to download.</li>
                     </ul>

@@ -23,7 +23,7 @@ if (!filter_var($url, FILTER_VALIDATE_URL)) {
 }
 
 if (!isAllowedVideoUrl($url)) {
-    echo dataError(array('msg' => 'Only X/Twitter, Instagram and TikTok links are supported'));
+    echo dataError(array('msg' => 'Only X/Twitter, Instagram, TikTok and YouTube links are supported'));
     die();
 }
 
@@ -57,7 +57,12 @@ function isAllowedVideoUrl($url)
         'tiktok.com',
         'www.tiktok.com',
         'vm.tiktok.com',
-        'vt.tiktok.com'
+        'vt.tiktok.com',
+        'youtube.com',
+        'www.youtube.com',
+        'm.youtube.com',
+        'youtu.be',
+        'www.youtu.be'
     );
 
     if (in_array($host, $allowedHosts, true)) {
@@ -75,6 +80,13 @@ function isAllowedVideoUrl($url)
         return true;
     }
     if (preg_match('/(^|\\.)twitter\\.com$/', $host)) {
+        return true;
+    }
+
+    if (preg_match('/(^|\\.)youtube\\.com$/', $host)) {
+        return true;
+    }
+    if (preg_match('/(^|\\.)youtu\\.be$/', $host)) {
         return true;
     }
 
@@ -107,7 +119,86 @@ function runPlatformFallback($action, $url)
         return runInstagramFallback($action, $url);
     }
 
+    if (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false) {
+        return runYouTubePreviewOnly($action, $url);
+    }
+
     return array('ok' => false, 'error' => 'No fallback available for this platform on this host');
+}
+
+function runYouTubePreviewOnly($action, $url)
+{
+    if ($action === 'link') {
+        return array('ok' => false, 'error' => 'YouTube download is not supported');
+    }
+
+    $videoId = extractYouTubeVideoId($url);
+    if (empty($videoId)) {
+        return array('ok' => false, 'error' => 'Could not detect YouTube video ID');
+    }
+
+    $payload = array('url' => $url);
+    $response = downloadRemotePostFile(
+        'https://turboscribe.ai/_htmx/NCN20gAEkZMBzQPXkQc',
+        json_encode($payload),
+        array(
+            'Content-Type: application/json',
+            'Referer: https://turboscribe.ai/downloader/youtube/video/free',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        )
+    );
+
+    if (!is_string($response) || trim($response) === '') {
+        return array('ok' => false, 'error' => 'YouTube metadata fetch failed');
+    }
+
+    $title = 'YouTube Video';
+    $thumbnail = '';
+    $uploader = '';
+    $duration = 0;
+
+    if (preg_match('/<meta\s+property="og:title"\s+content="([^"]+)"/i', $response, $m)) {
+        $title = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    } elseif (preg_match('/<h1[^>]*>(.*?)<\/h1>/is', $response, $m)) {
+        $title = trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    }
+
+    if (preg_match('/<meta\s+property="og:image"\s+content="([^"]+)"/i', $response, $m)) {
+        $thumbnail = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    } elseif (preg_match('/<img[^>]+src="([^"]+i\.ytimg\.com[^"]+)"/i', $response, $m)) {
+        $thumbnail = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    if (preg_match('/<meta\s+name="author"\s+content="([^"]+)"/i', $response, $m)) {
+        $uploader = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    if (preg_match('/[?&]dur=([0-9.]+)/i', $response, $m)) {
+        $duration = intval(round(floatval($m[1])));
+    }
+
+    return array(
+        'ok' => true,
+        'data' => array(
+            'id' => $videoId,
+            'title' => $title,
+            'webpage_url' => $url,
+            'uploader' => $uploader,
+            'duration' => $duration,
+            'thumbnail' => $thumbnail,
+            'ext' => '',
+            'format' => 'preview-only',
+            'extractor' => 'youtube-preview-only'
+        )
+    );
+}
+
+function extractYouTubeVideoId($url)
+{
+    if (preg_match('/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]+)/i', $url, $m)) {
+        return $m[1];
+    }
+    return '';
 }
 
 function runTikWmFallback($action, $url)
@@ -357,6 +448,34 @@ function fetchRemoteJson($url)
 
     $decoded = json_decode($raw, true);
     return is_array($decoded) ? $decoded : null;
+}
+
+function downloadRemotePostFile($url, $postBody, $headers = array())
+{
+    if (function_exists('curl_init')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postBody);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(array(
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        ), $headers));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $data = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if (is_string($data) && $data !== '' && $httpCode >= 200 && $httpCode < 400) {
+            return $data;
+        }
+    }
+
+    return false;
 }
 
 
