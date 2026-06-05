@@ -133,39 +133,54 @@ function runYouTubePreviewOnly($action, $url)
         return array('ok' => false, 'error' => 'Could not detect YouTube video ID');
     }
 
-    $directResult = runYouTubeDirectYtDlp($action, $url, $videoId);
-    if ($directResult['ok']) {
-        return $directResult;
+    $response = downloadRemotePostFile(
+        'https://turboscribe.ai/_htmx/NCN20gAEkZMBzQPXkQc',
+        json_encode(array('url' => $url))
+    );
+
+    if (!is_string($response) || trim($response) === '') {
+        return array('ok' => false, 'error' => 'YouTube metadata fetch failed');
     }
 
     if ($action === 'link') {
-        return array('ok' => false, 'error' => 'YouTube direct link extraction failed: ' . $directResult['error']);
-    }
-
-    $response = downloadRemoteFile('https://www.youtube.com/oembed?url=' . rawurlencode($url) . '&format=json');
-    $oembed = null;
-    if (is_string($response) && trim($response) !== '') {
-        $decoded = json_decode($response, true);
-        if (is_array($decoded)) {
-            $oembed = $decoded;
+        $links = extractYouTubeDownloadLinksFromHtml($response);
+        if (empty($links['all_urls'])) {
+            return array('ok' => false, 'error' => 'No downloadable YouTube media URL found');
         }
+
+        return array(
+            'ok' => true,
+            'data' => array(
+                'stream_url' => $links['stream_url'],
+                'all_urls' => $links['all_urls'],
+                'source' => 'youtube-html-fallback'
+            )
+        );
     }
 
     $title = 'YouTube Video';
-    $thumbnail = 'https://i.ytimg.com/vi/' . rawurlencode($videoId) . '/hqdefault.jpg';
+    $thumbnail = '';
     $uploader = '';
     $duration = 0;
 
-    if (is_array($oembed) && !empty($oembed['title'])) {
-        $title = trim((string)$oembed['title']);
+    if (preg_match('/<meta\s+property="og:title"\s+content="([^"]+)"/i', $response, $m)) {
+        $title = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    } elseif (preg_match('/<h1[^>]*>(.*?)<\/h1>/is', $response, $m)) {
+        $title = trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     }
 
-    if (is_array($oembed) && !empty($oembed['thumbnail_url'])) {
-        $thumbnail = trim((string)$oembed['thumbnail_url']);
+    if (preg_match('/<meta\s+property="og:image"\s+content="([^"]+)"/i', $response, $m)) {
+        $thumbnail = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    } elseif (preg_match('/<img[^>]+src="([^"]+i\.ytimg\.com[^"]+)"/i', $response, $m)) {
+        $thumbnail = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
-    if (is_array($oembed) && !empty($oembed['author_name'])) {
-        $uploader = trim((string)$oembed['author_name']);
+    if (preg_match('/<meta\s+name="author"\s+content="([^"]+)"/i', $response, $m)) {
+        $uploader = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    if (preg_match('/[?&]dur=([0-9.]+)/i', $response, $m)) {
+        $duration = intval(round(floatval($m[1])));
     }
 
     return array(
@@ -192,85 +207,64 @@ function extractYouTubeVideoId($url)
     return '';
 }
 
-function runYouTubeDirectYtDlp($action, $url, $videoId)
+function extractYouTubeDownloadLinksFromHtml($html)
 {
-    if (!function_exists('shell_exec')) {
-        return array('ok' => false, 'error' => 'shell_exec is unavailable');
-    }
-
-    $baseCmd = 'yt-dlp --no-warnings --no-playlist --dump-single-json ' . escapeshellarg($url) . ' 2>&1';
-    $raw = shell_exec($baseCmd);
-    if (!is_string($raw) || trim($raw) === '') {
-        return array('ok' => false, 'error' => 'yt-dlp returned no output');
-    }
-
-    $json = json_decode($raw, true);
-    if (!is_array($json)) {
-        return array('ok' => false, 'error' => 'yt-dlp did not return valid JSON');
-    }
-
+    $videoUrls = array();
+    $audioUrls = array();
     $allUrls = array();
-    if (!empty($json['formats']) && is_array($json['formats'])) {
-        foreach ($json['formats'] as $fmt) {
-            if (empty($fmt['url']) || !is_string($fmt['url'])) {
+
+    if (!is_string($html) || trim($html) === '') {
+        return array('stream_url' => '', 'all_urls' => array());
+    }
+
+    if (preg_match_all('/<a[^>]+href="([^"]+)"/i', $html, $matches)) {
+        foreach ($matches[1] as $rawHref) {
+            $href = html_entity_decode(trim($rawHref), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if ($href === '' || !preg_match('/^https?:\/\//i', $href)) {
                 continue;
             }
 
-            $candidate = trim($fmt['url']);
-            if (!preg_match('/^https?:\/\//i', $candidate)) {
+            $host = strtolower(parse_url($href, PHP_URL_HOST) ?: '');
+            if ($host === '' || strpos($host, 'googlevideo.com') === false) {
                 continue;
             }
 
-            $allUrls[] = $candidate;
+            $path = strtolower(parse_url($href, PHP_URL_PATH) ?: '');
+            if (strpos($path, 'videoplayback') === false) {
+                continue;
+            }
+
+            $allUrls[] = $href;
+
+            $query = parse_url($href, PHP_URL_QUERY) ?: '';
+            $params = array();
+            parse_str($query, $params);
+            $mime = isset($params['mime']) ? strtolower(urldecode((string)$params['mime'])) : '';
+
+            if (strpos($mime, 'video/') === 0) {
+                $videoUrls[] = $href;
+            } elseif (strpos($mime, 'audio/') === 0) {
+                $audioUrls[] = $href;
+            }
         }
     }
 
-    if (!empty($json['url']) && is_string($json['url']) && preg_match('/^https?:\/\//i', $json['url'])) {
-        $allUrls[] = trim($json['url']);
-    }
-
     $allUrls = array_values(array_unique($allUrls));
+    $videoUrls = array_values(array_unique($videoUrls));
+    $audioUrls = array_values(array_unique($audioUrls));
 
     $streamUrl = '';
-    if (!empty($json['url']) && is_string($json['url']) && preg_match('/^https?:\/\//i', $json['url'])) {
-        $streamUrl = trim($json['url']);
+    if (!empty($videoUrls)) {
+        $streamUrl = $videoUrls[0];
+    } elseif (!empty($audioUrls)) {
+        $streamUrl = $audioUrls[0];
     } elseif (!empty($allUrls)) {
         $streamUrl = $allUrls[0];
     }
 
-    if ($action === 'link') {
-        if ($streamUrl === '') {
-            return array('ok' => false, 'error' => 'yt-dlp found no direct media URLs');
-        }
-
-        return array(
-            'ok' => true,
-            'data' => array(
-                'stream_url' => $streamUrl,
-                'all_urls' => $allUrls,
-                'source' => 'youtube-direct-ytdlp'
-            )
-        );
-    }
-
-    $title = !empty($json['title']) ? trim((string)$json['title']) : 'YouTube Video';
-    $uploader = !empty($json['uploader']) ? trim((string)$json['uploader']) : '';
-    $duration = !empty($json['duration']) ? intval($json['duration']) : 0;
-    $thumbnail = !empty($json['thumbnail']) ? trim((string)$json['thumbnail']) : ('https://i.ytimg.com/vi/' . rawurlencode($videoId) . '/hqdefault.jpg');
-
     return array(
-        'ok' => true,
-        'data' => array(
-            'id' => !empty($json['id']) ? strval($json['id']) : $videoId,
-            'title' => $title,
-            'webpage_url' => !empty($json['webpage_url']) ? (string)$json['webpage_url'] : $url,
-            'uploader' => $uploader,
-            'duration' => $duration,
-            'thumbnail' => $thumbnail,
-            'ext' => !empty($json['ext']) ? (string)$json['ext'] : '',
-            'format' => 'direct',
-            'extractor' => 'youtube-direct-ytdlp'
-        )
+        'stream_url' => $streamUrl,
+        'all_urls' => $allUrls
     );
 }
 
