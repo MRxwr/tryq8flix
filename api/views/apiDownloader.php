@@ -23,7 +23,7 @@ if (!filter_var($url, FILTER_VALIDATE_URL)) {
 }
 
 if (!isAllowedVideoUrl($url)) {
-    echo dataError(array('msg' => 'Only X/Twitter, Instagram, TikTok, and YouTube links are supported'));
+    echo dataError(array('msg' => 'Only X/Twitter, Instagram and TikTok links are supported'));
     die();
 }
 
@@ -57,12 +57,7 @@ function isAllowedVideoUrl($url)
         'tiktok.com',
         'www.tiktok.com',
         'vm.tiktok.com',
-        'vt.tiktok.com',
-        'youtube.com',
-        'www.youtube.com',
-        'youtu.be',
-        'www.youtu.be',
-        'm.youtube.com'
+        'vt.tiktok.com'
     );
 
     if (in_array($host, $allowedHosts, true)) {
@@ -81,12 +76,8 @@ function isAllowedVideoUrl($url)
     }
     if (preg_match('/(^|\\.)twitter\\.com$/', $host)) {
         return true;
-    }    if (preg_match('/(^|\.)youtube\.com$/', $host)) {
-        return true;
     }
-    if (preg_match('/(^|\.)youtu\.be$/', $host)) {
-        return true;
-    }
+
     return false;
 }
 
@@ -114,10 +105,6 @@ function runPlatformFallback($action, $url)
 
     if (strpos($host, 'instagram.com') !== false) {
         return runInstagramFallback($action, $url);
-    }
-
-    if (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false) {
-        return runInvidiousFallback($action, $url);
     }
 
     return array('ok' => false, 'error' => 'No fallback available for this platform on this host');
@@ -361,149 +348,9 @@ function extractTwitterStatusId($url)
     return '';
 }
 
-function extractYouTubeVideoId($url)
-{
-    // Handle youtube.com URLs
-    if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/i', $url, $m)) {
-        return $m[1];
-    }
-    return '';
-}
-
-function runInvidiousFallback($action, $url)
-{
-    $videoId = extractYouTubeVideoId($url);
-    if (empty($videoId)) {
-        return array('ok' => false, 'error' => 'Could not extract YouTube video ID');
-    }
-
-    // List of Invidious instances to try (in order of preference)
-    $instances = array(
-        'https://inv.nadeko.net',
-        'https://invidious.nerdvpn.de',
-        'https://inv.thepixora.com',
-        'https://yt.chocolatemoo53.com'
-    );
-
-    foreach ($instances as $instance) {
-        // Fetch the watch page HTML
-        $watchUrl = $instance . '/watch?v=' . rawurlencode($videoId);
-        $html = downloadRemoteFileWithReferer($watchUrl, $instance);
-        
-        if (!is_string($html) || trim($html) === '') {
-            continue;
-        }
-
-        $downloadUrl = '';
-        $thumbnail = '';
-        $title = 'YouTube Video';
-        $author = '';
-        $duration = 0;
-
-        // Parse HTML to extract meta tags
-        $dom = str_get_html($html);
-        if ($dom) {
-            // Extract video URL from og:video meta tag
-            $ogVideo = $dom->find('meta[property=og:video]', 0);
-            if ($ogVideo) {
-                $candidate = trim((string)$ogVideo->getAttribute('content'));
-                if (!empty($candidate) && preg_match('/^\//', $candidate)) {
-                    // Relative URL, make it absolute
-                    $downloadUrl = $instance . $candidate;
-                } elseif (!empty($candidate)) {
-                    $downloadUrl = $candidate;
-                }
-            }
-
-            // Extract thumbnail from og:image
-            $ogImage = $dom->find('meta[property=og:image]', 0);
-            if ($ogImage) {
-                $candidate = trim((string)$ogImage->getAttribute('content'));
-                if (!empty($candidate)) {
-                    if (preg_match('/^\//', $candidate)) {
-                        $thumbnail = $instance . $candidate;
-                    } else {
-                        $thumbnail = $candidate;
-                    }
-                }
-            }
-
-            // Extract title from og:title
-            $ogTitle = $dom->find('meta[property=og:title]', 0);
-            if ($ogTitle) {
-                $candidate = trim((string)$ogTitle->getAttribute('content'));
-                if (!empty($candidate)) {
-                    $title = $candidate;
-                }
-            }
-
-            // Try to find duration (look for it in the HTML or calculate from video meta)
-            // Invidious embeds data in the page, look for length in meta or duration attribute
-            $metaTags = $dom->find('meta');
-            foreach ($metaTags as $tag) {
-                $property = strtolower($tag->getAttribute('property') ?: $tag->getAttribute('name') ?: '');
-                if (strpos($property, 'duration') !== false) {
-                    $durationCandidate = trim((string)$tag->getAttribute('content'));
-                    if (!empty($durationCandidate) && is_numeric($durationCandidate)) {
-                        $duration = intval($durationCandidate);
-                        break;
-                    }
-                }
-            }
-
-            $dom->clear();
-            unset($dom);
-        }
-
-        // Validate download URL
-        if (empty($downloadUrl) || !preg_match('/^https?:\/\//i', $downloadUrl)) {
-            continue; // Try next instance
-        }
-
-        if ($action === 'link') {
-            return array(
-                'ok' => true,
-                'data' => array(
-                    'stream_url' => $downloadUrl,
-                    'all_urls' => array($downloadUrl),
-                    'source' => 'invidious-fallback'
-                )
-            );
-        }
-
-        return array(
-            'ok' => true,
-            'data' => array(
-                'id' => $videoId,
-                'title' => $title,
-                'webpage_url' => $url,
-                'uploader' => $author,
-                'duration' => $duration,
-                'thumbnail' => $thumbnail,
-                'ext' => 'mp4',
-                'format' => 'fallback',
-                'extractor' => 'invidious-fallback'
-            )
-        );
-    }
-
-    return array('ok' => false, 'error' => 'All Invidious instances failed for this YouTube video');
-}
-
 function fetchRemoteJson($url)
 {
     $raw = downloadRemoteFile($url);
-    if (!is_string($raw) || trim($raw) === '') {
-        return null;
-    }
-
-    $decoded = json_decode($raw, true);
-    return is_array($decoded) ? $decoded : null;
-}
-
-function fetchRemoteJsonWithReferer($url, $referer)
-{
-    $raw = downloadRemoteFileWithReferer($url, $referer);
     if (!is_string($raw) || trim($raw) === '') {
         return null;
     }
@@ -551,58 +398,6 @@ function downloadRemoteFile($url)
                 'follow_location' => 1,
                 'timeout' => 120,
                 'user_agent' => 'Mozilla/5.0 TryQ8Flix Downloader'
-            )
-        ));
-        $data = @file_get_contents($url, false, $context);
-        if (is_string($data) && $data !== '') {
-            return $data;
-        }
-    }
-
-    return false;
-}
-
-function downloadRemoteFileWithReferer($url, $referer)
-{
-    if (function_exists('curl_init')) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-        curl_setopt($ch, CURLOPT_REFERER, $referer);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Accept: application/json, text/plain, */*',
-            'Accept-Language: en-US,en;q=0.9',
-            'Accept-Encoding: gzip, deflate, br',
-            'Cache-Control: no-cache',
-            'Pragma: no-cache',
-            'Sec-Fetch-Dest: empty',
-            'Sec-Fetch-Mode: cors',
-            'Sec-Fetch-Site: same-origin',
-            'X-Requested-With: XMLHttpRequest',
-            'Origin: ' . $referer
-        ));
-        curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        $data = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        if (is_string($data) && $data !== '' && $httpCode >= 200 && $httpCode < 400) {
-            return $data;
-        }
-    }
-
-    if (ini_get('allow_url_fopen')) {
-        $context = stream_context_create(array(
-            'http' => array(
-                'follow_location' => 1,
-                'timeout' => 120,
-                'user_agent' => 'Mozilla/5.0 TryQ8Flix Downloader',
-                'header' => "Referer: $referer\r\n"
             )
         ));
         $data = @file_get_contents($url, false, $context);
