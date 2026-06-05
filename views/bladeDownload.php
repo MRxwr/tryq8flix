@@ -209,8 +209,8 @@ $(document).ready(function() {
             }
 
             const directUrl = res.data.stream_url;
-            const proxiedDownloadUrl = /*'video-proxy.php?download=1&url=' + */(directUrl);
-            $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
+            const downloadUrl = directUrl; 
+            $('#download-direct-btn').attr('href', downloadUrl).removeClass('d-none');
 
             latestPreviewVideoUrl = directUrl;
             const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
@@ -218,12 +218,29 @@ $(document).ready(function() {
                 useVideoPreview(directUrl);
             }
 
-            // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
-            const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
-            if (win) {
-                showMessage('success', 'Download started. If it did not, use the Download Now button.');
+            // Detect iOS for specific handling
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            if (isIOS && navigator.share) {
+                // On iPhone, the Share sheet is the most reliable way to get a "Save to Files" prompt
+                navigator.share({
+                    title: $('#preview-title').text() || 'Video Download',
+                    url: downloadUrl
+                }).catch(err => {
+                    // If shared fails or is cancelled, we still have the button ready
+                });
+                showMessage('success', 'Tap the <b>Share</b> menu and select <b>"Save to Files"</b> to download the video.');
             } else {
-                showMessage('success', 'Download link is ready. Tap Download Now to save the video.');
+                // Attempt to trigger download for desktop/android
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.setAttribute('download', 'video.mp4');
+                link.setAttribute('target', '_blank');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showMessage('success', 'Link ready. If the video starts playing instead of downloading, <b>Right-Click</b> and "Save Video As..." or use the button below.');
             }
         }).fail(function(xhr) {
             let msg = 'Network/server error while preparing download.';
