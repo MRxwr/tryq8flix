@@ -392,23 +392,39 @@ function runInvidiousFallback($action, $url)
             continue;
         }
 
-        // Verify we got valid video data
-        if (empty($json['videoId'])) {
+        // Verify we got valid video data (check multiple possible field names)
+        $hasVideoId = !empty($json['videoId']) || !empty($json['id']);
+        if (!$hasVideoId) {
             continue;
         }
 
-        // Extract the best quality video URL from formatStreams
+        // Extract the best quality video URL from formatStreams or adaptiveFormats
         $downloadUrl = '';
-        if (!empty($json['formatStreams']) && is_array($json['formatStreams'])) {
+        $formats = !empty($json['formatStreams']) ? $json['formatStreams'] : (!empty($json['formats']) ? $json['formats'] : array());
+        
+        if (!empty($formats) && is_array($formats)) {
             // Sort by quality and get the first (best) one
-            usort($json['formatStreams'], function ($a, $b) {
-                $qualityA = isset($a['qualityLabel']) ? intval($a['qualityLabel']) : 0;
-                $qualityB = isset($b['qualityLabel']) ? intval($b['qualityLabel']) : 0;
+            usort($formats, function ($a, $b) {
+                $qualityA = 0;
+                $qualityB = 0;
+                
+                if (isset($a['qualityLabel'])) {
+                    $qualityA = intval($a['qualityLabel']);
+                } elseif (isset($a['height'])) {
+                    $qualityA = intval($a['height']);
+                }
+                
+                if (isset($b['qualityLabel'])) {
+                    $qualityB = intval($b['qualityLabel']);
+                } elseif (isset($b['height'])) {
+                    $qualityB = intval($b['height']);
+                }
+                
                 return $qualityB - $qualityA; // Descending
             });
 
-            if (!empty($json['formatStreams'][0]['url'])) {
-                $downloadUrl = $json['formatStreams'][0]['url'];
+            if (!empty($formats[0]['url'])) {
+                $downloadUrl = $formats[0]['url'];
             }
         }
 
@@ -427,27 +443,32 @@ function runInvidiousFallback($action, $url)
             );
         }
 
-        $duration = isset($json['lengthSeconds']) ? intval($json['lengthSeconds']) : 0;
+        $duration = isset($json['lengthSeconds']) ? intval($json['lengthSeconds']) : (isset($json['duration']) ? intval($json['duration']) : 0);
         $thumbnail = '';
-        if (!empty($json['videoThumbnails']) && is_array($json['videoThumbnails'])) {
+        $thumbnails = !empty($json['videoThumbnails']) ? $json['videoThumbnails'] : (!empty($json['thumbnails']) ? $json['thumbnails'] : array());
+        
+        if (!empty($thumbnails) && is_array($thumbnails)) {
             // Get the highest quality thumbnail
-            usort($json['videoThumbnails'], function ($a, $b) {
+            usort($thumbnails, function ($a, $b) {
                 $widthA = isset($a['width']) ? intval($a['width']) : 0;
                 $widthB = isset($b['width']) ? intval($b['width']) : 0;
                 return $widthB - $widthA; // Descending
             });
-            if (!empty($json['videoThumbnails'][0]['url'])) {
-                $thumbnail = $json['videoThumbnails'][0]['url'];
+            if (!empty($thumbnails[0]['url'])) {
+                $thumbnail = $thumbnails[0]['url'];
             }
         }
+
+        $author = isset($json['author']) ? trim($json['author']) : (isset($json['uploader']) ? trim($json['uploader']) : '');
+        $title = isset($json['title']) ? trim($json['title']) : (isset($json['name']) ? trim($json['name']) : 'YouTube Video');
 
         return array(
             'ok' => true,
             'data' => array(
                 'id' => $videoId,
-                'title' => isset($json['title']) ? trim($json['title']) : 'YouTube Video',
+                'title' => $title,
                 'webpage_url' => $url,
-                'uploader' => isset($json['author']) ? trim($json['author']) : '',
+                'uploader' => $author,
                 'duration' => $duration,
                 'thumbnail' => $thumbnail,
                 'ext' => 'mp4',
@@ -481,7 +502,14 @@ function downloadRemoteFile($url)
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
         curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 TryQ8Flix Downloader');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 TryQ8Flix');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Accept: */*',
+            'Accept-Language: en-US,en;q=0.9',
+            'Cache-Control: no-cache'
+        ));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $data = curl_exec($ch);
         curl_close($ch);
         if (is_string($data) && $data !== '') {
