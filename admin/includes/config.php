@@ -34,5 +34,5 @@ $website11 = "https://animeslayerweb.com/";
 $website12 = "https://y0vx70khe8u.animepec.online/"; // anime4up
 $website13 = "https://egydead.lat/";
 $website14 = "https://witanime.you/";
-$websiteLive = "https://www.balllive.live/";
+$websiteLive = "https://www.soccer-live.tv/";
 $websiteLive2 = "https://beinmatch1.live/";
