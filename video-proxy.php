@@ -33,6 +33,7 @@ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_NOBODY, false); // HEAD request to get headers only
 curl_setopt($ch, CURLOPT_REFERER, $url);
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36');
 
@@ -40,7 +41,6 @@ $response = curl_exec($ch);
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 $fileSize = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
 curl_close($ch);
-var_dump($response);die();
 // Check for range requests (used in video streaming)
 $range = '';
 if (isset($_SERVER['HTTP_RANGE'])) {
