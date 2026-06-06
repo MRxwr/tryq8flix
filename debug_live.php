@@ -83,5 +83,5 @@ if ($dom) {
 	echo '<p style="color:red">DOM parsing failed.</p>';
 }
 
-echo '<h3>Raw HTML:</h3><pre>' . htmlspecialchars(mb_substr($html, 0, 5000)) . '</pre>';
+echo '<h3>Raw HTML (' . strlen($html) . ' bytes):</h3><pre>' . htmlspecialchars($html) . '</pre>';
 echo '<hr><p style="color:#f88">DELETE debug_live.php when done!</p>';
