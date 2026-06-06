@@ -1,4 +1,5 @@
 <?php include 'header.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
     .team-hero-box img {
