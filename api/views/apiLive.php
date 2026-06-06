@@ -278,6 +278,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'match') {
 } elseif (isset($_GET['action']) && $_GET['action'] == 'live') {
 	$matches = searchMatches();
 	echo dataOutput($matches);
+} elseif (isset($_GET['action']) && $_GET['action'] == 'debug') {
+	$url = $_GET['url'] ?? '';
+	$referer = $_GET['referer'] ?? '';
+	$html = liveCurl($url, $referer);
+	header('Content-Type: text/plain; charset=UTF-8');
+	echo $html;
+	die();
 } else {
 	echo dataError('Invalid request.');
 }
