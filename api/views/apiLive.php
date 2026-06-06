@@ -180,6 +180,29 @@ function liveMatch($view)
 				$playerDom = str_get_html($playerHtml);
 
 				if ($playerDom) {
+					$foundServer = false;
+
+					// Check for koora-bar in playerDom as well
+					$kooraBarPlayer = $playerDom->find('.koora-bar', 0);
+					if ($kooraBarPlayer && $kooraBarPlayer->parent()) {
+						$playerIframes = $kooraBarPlayer->parent()->find('iframe');
+						if (!empty($playerIframes)) {
+							foreach ($playerIframes as $idx => $iframe) {
+								$finalUrl = trim($iframe->getAttribute('src'));
+								if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) continue;
+								if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) $finalUrl = 'https:' . $finalUrl;
+								
+								$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+								$data['matches'][] = [
+									'live' => $finalUrl,
+									'name' => 'Server ' . (count($data['matches']) + 1),
+									'src' => $liveMatchesUrl
+								];
+								$foundServer = true;
+							}
+						}
+					}
+
 					// First, try to find iframes directly in entry-content
 					$entryIframes = $playerDom->find('.entry-content iframe');
 					if (!empty($entryIframes)) {
@@ -200,10 +223,11 @@ function liveMatch($view)
 							
 							$jsonData = [
 								'live' => $finalUrl,
-								'name' => 'Server ' . ($idx + 1),
+								'name' => 'Server ' . (count($data['matches']) + 1),
 								'src' => $liveMatchesUrl
 							];
 							$data['matches'][] = $jsonData;
+							$foundServer = true;
 						}
 					}
 					
@@ -237,8 +261,17 @@ function liveMatch($view)
 							$serverDom = str_get_html($serverHtml);
 
 							if ($serverDom) {
-								// First try to find iframes in entry-content
-								$entryIframes2 = $serverDom->find('iframe');
+								$foundSubServer = false;
+								// First try to find iframes in koora-bar or siblings of koora-bar
+								$entryIframes2 = $serverDom->find('.koora-bar iframe');
+								if (empty($entryIframes2)) {
+									// Try to find iframes in the same parent as koora-bar
+									$kooraBar = $serverDom->find('.koora-bar', 0);
+									if ($kooraBar && $kooraBar->parent()) {
+										$entryIframes2 = $kooraBar->parent()->find('iframe');
+									}
+								}
+
 								if (!empty($entryIframes2)) {
 									foreach ($entryIframes2 as $iframe) {
 										$finalUrl = trim($iframe->getAttribute('src'));
@@ -259,8 +292,12 @@ function liveMatch($view)
 											'src' => $liveMatchesUrl
 										];
 										$data['matches'][] = $jsonData;
+										$foundSubServer = true;
+										$foundServer = true;
 									}
-								} else {
+								}
+								
+								if (!$foundSubServer) {
 									// Fallback: Find the iframe on the server page
 									$videoIframe = $serverDom->find('iframe', 0);
 
@@ -285,19 +322,48 @@ function liveMatch($view)
 											'src' => $liveMatchesUrl
 										];
 										$data['matches'][] = $jsonData;
+										$foundServer = true;
 									}
 								}
 							}
 						}
 					}
+
+					// Fallback: if still no servers found, just look for any iframe in playerDom
+					if (!$foundServer) {
+						$allIframes = $playerDom->find('iframe');
+						foreach ($allIframes as $idx => $iframe) {
+							$finalUrl = trim($iframe->getAttribute('src'));
+							if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
+								continue;
+							}
+							if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
+								$finalUrl = 'https:' . $finalUrl;
+							}
+							$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
+							$jsonData = [
+								'live' => $finalUrl,
+								'name' => 'Server ' . (count($data['matches']) + 1),
+								'src' => $liveMatchesUrl
+							];
+							$data['matches'][] = $jsonData;
+							$foundServer = true;
+						}
+					}
+					
+					// Extreme fallback: if STILL no servers, maybe the player page IS the stream (e.g. m3u8 in JS)
+					// but we'll stick to iframes for now as requested.
 				}
+			}
+		}
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	} else {
 		$matches = '';
 	}
-	return (isset($matches) && !empty($matches)) ? json_decode($matches, true) : array();
+	$result = (isset($matches) && !empty($matches)) ? json_decode($matches, true) : array();
+	return (isset($result['matches'])) ? $result['matches'] : $result;
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'match') {
