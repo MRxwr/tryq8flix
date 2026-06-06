@@ -41,7 +41,7 @@ $response = curl_exec($ch);
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 $fileSize = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
 curl_close($ch);
-
+var_dump($response);die();
 // Check for range requests (used in video streaming)
 $range = '';
 if (isset($_SERVER['HTTP_RANGE'])) {
