@@ -182,180 +182,115 @@ function liveMatch($view)
 				if ($playerDom) {
 					$foundServer = false;
 
-					// Check for koora-bar in playerDom as well
-					$kooraBarPlayer = $playerDom->find('.koora-bar', 0);
-					if ($kooraBarPlayer && $kooraBarPlayer->parent()) {
-						$playerIframes = $kooraBarPlayer->parent()->find('iframe');
-						if (!empty($playerIframes)) {
-							foreach ($playerIframes as $idx => $iframe) {
-								$finalUrl = trim($iframe->getAttribute('src'));
-								if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) continue;
-								if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) $finalUrl = 'https:' . $finalUrl;
-								
-								$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-								$data['matches'][] = [
-									'live' => $finalUrl,
-									'name' => 'Server ' . (count($data['matches']) + 1),
-									'src' => $liveMatchesUrl
-								];
-								$foundServer = true;
-							}
-						}
-					}
-
-					// First, try to find iframes directly in entry-content
-					$entryIframes = $playerDom->find('.entry-content iframe');
-					if (!empty($entryIframes)) {
-						foreach ($entryIframes as $idx => $iframe) {
-							$finalUrl = trim($iframe->getAttribute('src'));
-							
-							// Skip wallplaster links or empty
-							if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
-								continue;
-							}
-							
-							// Ensure the url starts with https
-							if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
-								$finalUrl = 'https:' . $finalUrl;
-							}
-							
-							$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-							
-							$jsonData = [
-								'live' => $finalUrl,
-								'name' => 'Server ' . (count($data['matches']) + 1),
-								'src' => $liveMatchesUrl
-							];
-							$data['matches'][] = $jsonData;
-							$foundServer = true;
-						}
-					}
-					
-					// Then find all server links with class aplr-link
-					$serverLinks = $playerDom->find('a.aplr-link');
-
-					if (!empty($serverLinks)) {
-						foreach ($serverLinks as $link) {
+					// Function-like block to process a DOM for server links
+					// Check for aplr-link in the current DOM
+					$currentLinks = $playerDom->find('a.aplr-link');
+					if (!empty($currentLinks)) {
+						foreach ($currentLinks as $link) {
 							$serverUrl = $link->getAttribute('href');
 							$serverName = trim($link->plaintext);
+							if (empty($serverUrl) || strpos($serverUrl, 'javascript:') === 0) continue;
 
-							// Skip if URL is empty or javascript
-							if (empty($serverUrl) || strpos($serverUrl, 'javascript:') === 0) {
-								continue;
-							}
-
-							// Handle relative URLs - make them absolute based on baseSrc
 							if (strpos($serverUrl, 'http') !== 0) {
 								$parsedBase = parse_url($baseSrc);
 								$baseUrl = $parsedBase['scheme'] . '://' . $parsedBase['host'];
-								if (strpos($serverUrl, '/') === 0) {
-									$serverUrl = $baseUrl . $serverUrl;
-								} else {
-									$serverUrl = rtrim($baseSrc, '/') . '/' . $serverUrl;
-								}
+								$serverUrl = (strpos($serverUrl, '/') === 0) ? $baseUrl . $serverUrl : rtrim($baseSrc, '/') . '/' . $serverUrl;
 							}
 
-							// Fetch the individual server page
 							$serverHtml = liveCurl($serverUrl, $baseSrc);
-
 							$serverDom = str_get_html($serverHtml);
-
 							if ($serverDom) {
-								$foundSubServer = false;
-								// First try to find iframes in koora-bar or siblings of koora-bar
-								$entryIframes2 = $serverDom->find('.koora-bar iframe');
-								if (empty($entryIframes2)) {
-									// Try to find iframes in the same parent as koora-bar
-									$kooraBar = $serverDom->find('.koora-bar', 0);
-									if ($kooraBar && $kooraBar->parent()) {
-										$entryIframes2 = $kooraBar->parent()->find('iframe');
-									}
-								}
-
-								if (!empty($entryIframes2)) {
-									foreach ($entryIframes2 as $iframe) {
-										$finalUrl = trim($iframe->getAttribute('src'));
-										
-										if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
-											continue;
-										}
-										
-										if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
-											$finalUrl = 'https:' . $finalUrl;
-										}
-										
-										$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-										
-										$jsonData = [
-											'live' => $finalUrl,
-											'name' => $serverName,
-											'src' => $liveMatchesUrl
-										];
-										$data['matches'][] = $jsonData;
-										$foundSubServer = true;
-										$foundServer = true;
-									}
-								}
-								
-								if (!$foundSubServer) {
-									// Fallback: Find the iframe on the server page
-									$videoIframe = $serverDom->find('iframe', 0);
-
-									if ($videoIframe) {
-										$finalUrl = $videoIframe->getAttribute('src');
-
-										// Skip wallplaster links or empty
-										if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
-											continue;
-										}
-
-										// Ensure the url starts with https
-										if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
-											$finalUrl = 'https:' . $finalUrl;
-										}
-
-										$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-
-										$jsonData = [
-											'live' => $finalUrl,
-											'name' => $serverName,
-											'src' => $liveMatchesUrl
-										];
-										$data['matches'][] = $jsonData;
-										$foundServer = true;
-									}
+								$serverIframes = $serverDom->find('iframe');
+								foreach ($serverIframes as $si) {
+									$finalUrl = trim($si->getAttribute('src'));
+									if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) continue;
+									if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) $finalUrl = 'https:' . $finalUrl;
+									
+									$data['matches'][] = [
+										'live' => $finalUrl,
+										'name' => $serverName,
+										'src' => 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view)
+									];
+									$foundServer = true;
 								}
 							}
 						}
 					}
 
-					// Fallback: if still no servers found, just look for any iframe in playerDom
+					// If no servers found, check iframes in playerDom for more links or streams
+					$playerIframes = $playerDom->find('iframe');
+					foreach ($playerIframes as $pIframe) {
+						$pSrc = trim($pIframe->getAttribute('src'));
+						if (empty($pSrc) || strpos($pSrc, 'wallplaster') !== false) continue;
+						if (strpos($pSrc, 'https:') !== 0 && strpos($pSrc, 'http:') !== 0) $pSrc = 'https:' . $pSrc;
+
+						$p2Html = liveCurl($pSrc, $baseSrc);
+						$p2Dom = str_get_html($p2Html);
+						if ($p2Dom) {
+							// Check for aplr-link in the nested iframe
+							$p2Links = $p2Dom->find('a.aplr-link');
+							if (!empty($p2Links)) {
+								foreach ($p2Links as $link) {
+									$sUrl = $link->getAttribute('href');
+									$sName = trim($link->plaintext);
+									if (empty($sUrl) || strpos($sUrl, 'javascript:') === 0) continue;
+
+									if (strpos($sUrl, 'http') !== 0) {
+										$parsed = parse_url($pSrc);
+										$bUrl = $parsed['scheme'] . '://' . $parsed['host'];
+										$sUrl = (strpos($sUrl, '/') === 0) ? $bUrl . $sUrl : rtrim($pSrc, '/') . '/' . $sUrl;
+									}
+
+									$sHtml = liveCurl($sUrl, $pSrc);
+									$sDom = str_get_html($sHtml);
+									if ($sDom) {
+										foreach ($sDom->find('iframe') as $si) {
+											$final = trim($si->getAttribute('src'));
+											if (empty($final) || strpos($final, 'wallplaster') !== false) continue;
+											if (strpos($final, 'https:') !== 0 && strpos($final, 'http:') !== 0) $final = 'https:' . $final;
+											$data['matches'][] = [
+												'live' => $final,
+												'name' => $sName,
+												'src' => 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view)
+											];
+											$foundServer = true;
+										}
+									}
+								}
+							}
+							
+							// Check for koora-bar or direct iframes in the nested iframe
+							$kb = $p2Dom->find('.koora-bar', 0);
+							if ($kb && $kb->parent()) {
+								foreach ($kb->parent()->find('iframe') as $if) {
+									$final = trim($if->getAttribute('src'));
+									if (empty($final) || strpos($final, 'wallplaster') !== false) continue;
+									if (strpos($final, 'https:') !== 0 && strpos($final, 'http:') !== 0) $final = 'https:' . $final;
+									$data['matches'][] = [
+										'live' => $final,
+										'name' => 'Server ' . (count($data['matches']) + 1),
+										'src' => 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view)
+									];
+									$foundServer = true;
+								}
+							}
+						}
+					}
+
+					// Final fallback if absolutely nothing was found
 					if (!$foundServer) {
-						$allIframes = $playerDom->find('iframe');
-						foreach ($allIframes as $idx => $iframe) {
-							$finalUrl = trim($iframe->getAttribute('src'));
-							if (empty($finalUrl) || strpos($finalUrl, 'wallplaster') !== false) {
-								continue;
-							}
-							if (strpos($finalUrl, 'https:') !== 0 && strpos($finalUrl, 'http:') !== 0) {
-								$finalUrl = 'https:' . $finalUrl;
-							}
-							$liveMatchesUrl = 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view);
-							$jsonData = [
-								'live' => $finalUrl,
+						foreach ($playerDom->find('iframe') as $idx => $iframe) {
+							$final = trim($iframe->getAttribute('src'));
+							if (empty($final) || strpos($final, 'wallplaster') !== false) continue;
+							if (strpos($final, 'https:') !== 0 && strpos($final, 'http:') !== 0) $final = 'https:' . $final;
+							$data['matches'][] = [
+								'live' => $final,
 								'name' => 'Server ' . (count($data['matches']) + 1),
-								'src' => $liveMatchesUrl
+								'src' => 'https://tryq8flix.com/liveMatches.php?match=' . urlencode($view)
 							];
-							$data['matches'][] = $jsonData;
-							$foundServer = true;
 						}
 					}
-					
-					// Extreme fallback: if STILL no servers, maybe the player page IS the stream (e.g. m3u8 in JS)
-					// but we'll stick to iframes for now as requested.
 				}
-			}
-		}
 			}
 		}
 		$matches = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
