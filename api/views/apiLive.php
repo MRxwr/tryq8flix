@@ -188,7 +188,10 @@ function liveMatch($view)
 			return false;
 		};
 
+		$menuFound = false;
 		foreach ($dom->find('iframe') as $iframe) {
+			if ($menuFound) break;
+
 			$baseSrc = trim($iframe->getAttribute('src'));
 			if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) continue;
 			if (strpos($baseSrc, '//') === 0) $baseSrc = 'https:' . $baseSrc;
@@ -197,24 +200,46 @@ function liveMatch($view)
 			$p1Dom = str_get_html($p1Html);
 			if (!$p1Dom) continue;
 
-			if (!$extractMenu($p1Dom, $baseSrc)) {
-				foreach ($p1Dom->find('iframe') as $p2) {
-					$p2Src = trim($p2->getAttribute('src'));
-					if (empty($p2Src) || strpos($p2Src, 'wallplaster') !== false) continue;
-					if (strpos($p2Src, '//') === 0) $p2Src = 'https:' . $p2Src;
+			// Level 1: check the direct player page for aplr-link menu
+			if ($extractMenu($p1Dom, $baseSrc)) {
+				$menuFound = true;
+				break;
+			}
 
-					$p2Html = liveCurl($p2Src, $baseSrc);
-					$p2Dom = str_get_html($p2Html);
-					if (!$p2Dom) continue;
+			// Level 2: look inside iframes of the player page
+			foreach ($p1Dom->find('iframe') as $p2) {
+				if ($menuFound) break;
 
-					if (!$extractMenu($p2Dom, $p2Src)) {
-						// Check for koora-bar or fallback iframe
-						$kb = $p2Dom->find('.koora-bar', 0);
-						$targets = ($kb && $kb->parent()) ? $kb->parent()->find('iframe') : $p2Dom->find('iframe');
-						foreach ($targets as $fIf) {
-							$addUniqueServer($fIf->getAttribute('src'), 'Server ' . (count($data['matches']) + 1));
-						}
-					}
+				$p2Src = trim($p2->getAttribute('src'));
+				if (empty($p2Src) || strpos($p2Src, 'wallplaster') !== false) continue;
+				if (strpos($p2Src, '//') === 0) $p2Src = 'https:' . $p2Src;
+
+				$p2Html = liveCurl($p2Src, $baseSrc);
+				$p2Dom = str_get_html($p2Html);
+				if (!$p2Dom) continue;
+
+				if ($extractMenu($p2Dom, $p2Src)) {
+					$menuFound = true;
+					break;
+				}
+			}
+		}
+
+		// Fallback: no menu found anywhere, grab first valid iframe from each player page
+		if (!$menuFound) {
+			foreach ($dom->find('iframe') as $iframe) {
+				$baseSrc = trim($iframe->getAttribute('src'));
+				if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) continue;
+				if (strpos($baseSrc, '//') === 0) $baseSrc = 'https:' . $baseSrc;
+
+				$p1Html = liveCurl($baseSrc, $view);
+				$p1Dom = str_get_html($p1Html);
+				if (!$p1Dom) continue;
+
+				$kb = $p1Dom->find('.koora-bar', 0);
+				$targets = ($kb && $kb->parent()) ? $kb->parent()->find('iframe') : $p1Dom->find('iframe');
+				foreach ($targets as $fIf) {
+					$addUniqueServer($fIf->getAttribute('src'), 'Server ' . (count($data['matches']) + 1));
 				}
 			}
 		}
