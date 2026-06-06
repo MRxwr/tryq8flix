@@ -196,6 +196,7 @@ function liveMatch($view)
 			if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) continue;
 			if (strpos($baseSrc, '//') === 0) $baseSrc = 'https:' . $baseSrc;
 
+			// Pass match page as referer when fetching the first player iframe
 			$p1Html = liveCurl($baseSrc, $view);
 			$p1Dom = str_get_html($p1Html);
 			if (!$p1Dom) continue;
@@ -214,6 +215,7 @@ function liveMatch($view)
 				if (empty($p2Src) || strpos($p2Src, 'wallplaster') !== false) continue;
 				if (strpos($p2Src, '//') === 0) $p2Src = 'https:' . $p2Src;
 
+				// Pass level-1 URL as referer when fetching level-2 iframe
 				$p2Html = liveCurl($p2Src, $baseSrc);
 				$p2Dom = str_get_html($p2Html);
 				if (!$p2Dom) continue;
