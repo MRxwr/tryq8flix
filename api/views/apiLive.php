@@ -238,7 +238,7 @@ function liveMatch($view)
 
 							if ($serverDom) {
 								// First try to find iframes in entry-content
-								$entryIframes2 = $serverDom->find('.entry-content iframe');
+								$entryIframes2 = $serverDom->find('iframe');
 								if (!empty($entryIframes2)) {
 									foreach ($entryIframes2 as $iframe) {
 										$finalUrl = trim($iframe->getAttribute('src'));
