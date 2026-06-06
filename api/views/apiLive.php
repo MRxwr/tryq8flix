@@ -187,6 +187,18 @@ function liveMatch($view)
 						continue;
 					}
 
+					// Try video > source tag (HLS streams)
+					$videoSrc = $sDom->find('video source', 0);
+					if ($videoSrc) {
+						$addUniqueServer($videoSrc->getAttribute('src'), $sName);
+						continue;
+					}
+					$videoTag = $sDom->find('video', 0);
+					if ($videoTag && $videoTag->getAttribute('src')) {
+						$addUniqueServer($videoTag->getAttribute('src'), $sName);
+						continue;
+					}
+
 					// Fallback: find iframe src inside script/document.write content
 					if (preg_match('/iframe[^>]+src=["\']([^"\']+)["\']/', $sHtml, $m)) {
 						$addUniqueServer($m[1], $sName);
