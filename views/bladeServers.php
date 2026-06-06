@@ -81,6 +81,9 @@
         <div class="ratio ratio-16x9">
             <iframe id="video-player" src="" allowfullscreen referrerpolicy="no-referrer"></iframe>
         </div>
+        <div id="hls-player-container" style="display:none;">
+            <video id="hls-video-player" controls style="width:100%;height:100%;max-height:520px;background:#000;" playsinline></video>
+        </div>
     </div>
 </div>
 
@@ -307,7 +310,35 @@ function playVideo(url, btn) {
     if(btn) $(btn).addClass('active');
 
     $('#player-container').show();
-    $('#video-player').attr('src', 'videoPlayer.php?link=' + encodeURIComponent(url));
+
+    const isHLS = url.includes('.m3u8') || url.includes('.m3u');
+
+    if (isHLS) {
+        $('#video-player').attr('src', '').hide().closest('.ratio').hide();
+        $('#hls-player-container').show();
+        const video = document.getElementById('hls-video-player');
+        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Native HLS (Safari/iOS)
+            video.src = url;
+            video.play();
+        } else {
+            $('#hls-player-container').hide();
+            $('#video-player').closest('.ratio').show();
+            $('#video-player').show().attr('src', 'videoPlayer.php?link=' + encodeURIComponent(url));
+        }
+    } else {
+        $('#hls-player-container').hide();
+        const video = document.getElementById('hls-video-player');
+        if (video) { video.pause(); video.src = ''; }
+        $('#video-player').closest('.ratio').show();
+        $('#video-player').show().attr('src', 'videoPlayer.php?link=' + encodeURIComponent(url));
+    }
+
     $('html, body').animate({
         scrollTop: $("#player-container").offset().top - 100
     }, 500);
