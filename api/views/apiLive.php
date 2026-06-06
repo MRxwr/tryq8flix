@@ -178,9 +178,28 @@ function liveMatch($view)
 
 					$sHtml = liveCurl($sUrl, $currentUrl);
 					$sDom = str_get_html($sHtml);
-					if ($sDom) {
-						$si = $sDom->find('iframe', 0);
-						if ($si) $addUniqueServer($si->getAttribute('src'), $sName);
+					if (!$sDom) continue;
+
+					// Try static iframe first
+					$si = $sDom->find('iframe', 0);
+					if ($si) {
+						$addUniqueServer($si->getAttribute('src'), $sName);
+						continue;
+					}
+
+					// Fallback: find iframe src inside script/document.write content
+					if (preg_match('/iframe[^>]+src=["\']([^"\']+)["\']/', $sHtml, $m)) {
+						$addUniqueServer($m[1], $sName);
+						continue;
+					}
+
+					// Fallback: find src= patterns that look like stream URLs in script blocks
+					if (preg_match_all('/["\']src["\']\s*:\s*["\']([^"\']+)["\']/', $sHtml, $ms)) {
+						foreach ($ms[1] as $streamUrl) {
+							if (strpos($streamUrl, 'wallplaster') !== false) continue;
+							$addUniqueServer($streamUrl, $sName);
+							break;
+						}
 					}
 				}
 				return true;
