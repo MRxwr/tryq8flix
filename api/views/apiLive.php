@@ -176,59 +176,8 @@ function liveMatch($view)
 						$sUrl = (strpos($sUrl, '/') === 0) ? $baseUrl . $sUrl : rtrim($currentUrl, '/') . '/' . $sUrl;
 					}
 
-					$sHtml = liveCurl($sUrl, $currentUrl);
-					$sDom = str_get_html($sHtml);
-					if (!$sDom) continue;
-
-					// Get iframe src or data-initial
-					$si = $sDom->find('iframe', 0);
-					if ($si) {
-						$siSrc = trim($si->getAttribute('src'));
-						if (empty($siSrc) || $siSrc === 'about:blank') {
-							$siSrc = trim($si->getAttribute('data-initial'));
-						}
-
-						if (!empty($siSrc)) {
-							// Check if iframe points back to the same player (loop) — follow it one more level
-							$currentBase = parse_url($currentUrl, PHP_URL_HOST);
-							$siBase = parse_url($siSrc, PHP_URL_HOST);
-							if ($siBase === $currentBase || strpos($siSrc, parse_url($currentUrl, PHP_URL_PATH)) !== false) {
-								// Same domain/path — follow this iframe to find the real stream
-								$si2Html = liveCurl($siSrc, $sUrl);
-								$si2Dom = str_get_html($si2Html);
-								if ($si2Dom) {
-									$si2 = $si2Dom->find('iframe', 0);
-									if ($si2) {
-										$si2Src = trim($si2->getAttribute('src'));
-										if (empty($si2Src) || $si2Src === 'about:blank') $si2Src = trim($si2->getAttribute('data-initial'));
-										if (!empty($si2Src) && $si2Src !== $siSrc) {
-											$addUniqueServer($si2Src, $sName);
-											continue;
-										}
-									}
-									// Try regex on this deeper page
-									if (preg_match('/["\'](?:file|source|src)["\']\s*:\s*["\']([^"\']+\.m3u8[^"\']*)["\']/', $si2Html, $rm)) {
-										$addUniqueServer($rm[1], $sName);
-										continue;
-									}
-								}
-							} else {
-								$addUniqueServer($siSrc, $sName);
-								continue;
-							}
-						}
-					}
-
-					// Fallback: find m3u8 stream URL in script blocks
-					if (preg_match('/["\'](?:file|source|src)["\']\s*:\s*["\']([^"\']+\.m3u8[^"\']*)["\']/', $sHtml, $m)) {
-						$addUniqueServer($m[1], $sName);
-						continue;
-					}
-					// Fallback: any iframe src in raw HTML
-					if (preg_match('/iframe[^>]+src=["\']([^"\']+)["\']/', $sHtml, $m)) {
-						$addUniqueServer($m[1], $sName);
-						continue;
-					}
+					// Use the ?serv=N URL itself as the player link
+					$addUniqueServer($sUrl, $sName);
 				}
 				return true;
 			}
