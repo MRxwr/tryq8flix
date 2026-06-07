@@ -180,18 +180,6 @@ function liveMatch($view)
 					$sDom = str_get_html($sHtml);
 					if (!$sDom) continue;
 
-					// Try video > source tag (HLS streams)
-					$videoSrc = $sDom->find('video source', 0);
-					if ($videoSrc && trim($videoSrc->getAttribute('src'))) {
-						$addUniqueServer($videoSrc->getAttribute('src'), $sName);
-						continue;
-					}
-					$videoTag = $sDom->find('video', 0);
-					if ($videoTag && trim($videoTag->getAttribute('src'))) {
-						$addUniqueServer($videoTag->getAttribute('src'), $sName);
-						continue;
-					}
-
 					// Get iframe src or data-initial
 					$si = $sDom->find('iframe', 0);
 					if ($si) {
@@ -209,16 +197,6 @@ function liveMatch($view)
 								$si2Html = liveCurl($siSrc, $sUrl);
 								$si2Dom = str_get_html($si2Html);
 								if ($si2Dom) {
-									$vs2 = $si2Dom->find('video source', 0);
-									if ($vs2 && trim($vs2->getAttribute('src'))) {
-										$addUniqueServer($vs2->getAttribute('src'), $sName);
-										continue;
-									}
-									$vt2 = $si2Dom->find('video', 0);
-									if ($vt2 && trim($vt2->getAttribute('src'))) {
-										$addUniqueServer($vt2->getAttribute('src'), $sName);
-										continue;
-									}
 									$si2 = $si2Dom->find('iframe', 0);
 									if ($si2) {
 										$si2Src = trim($si2->getAttribute('src'));
