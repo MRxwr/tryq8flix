@@ -180,44 +180,76 @@ function liveMatch($view)
 					$sDom = str_get_html($sHtml);
 					if (!$sDom) continue;
 
-					// Try static iframe first (also check data-initial)
+					// Try video > source tag (HLS streams)
+					$videoSrc = $sDom->find('video source', 0);
+					if ($videoSrc && trim($videoSrc->getAttribute('src'))) {
+						$addUniqueServer($videoSrc->getAttribute('src'), $sName);
+						continue;
+					}
+					$videoTag = $sDom->find('video', 0);
+					if ($videoTag && trim($videoTag->getAttribute('src'))) {
+						$addUniqueServer($videoTag->getAttribute('src'), $sName);
+						continue;
+					}
+
+					// Get iframe src or data-initial
 					$si = $sDom->find('iframe', 0);
 					if ($si) {
 						$siSrc = trim($si->getAttribute('src'));
 						if (empty($siSrc) || $siSrc === 'about:blank') {
 							$siSrc = trim($si->getAttribute('data-initial'));
 						}
+
 						if (!empty($siSrc)) {
-							$addUniqueServer($siSrc, $sName);
-							continue;
+							// Check if iframe points back to the same player (loop) — follow it one more level
+							$currentBase = parse_url($currentUrl, PHP_URL_HOST);
+							$siBase = parse_url($siSrc, PHP_URL_HOST);
+							if ($siBase === $currentBase || strpos($siSrc, parse_url($currentUrl, PHP_URL_PATH)) !== false) {
+								// Same domain/path — follow this iframe to find the real stream
+								$si2Html = liveCurl($siSrc, $sUrl);
+								$si2Dom = str_get_html($si2Html);
+								if ($si2Dom) {
+									$vs2 = $si2Dom->find('video source', 0);
+									if ($vs2 && trim($vs2->getAttribute('src'))) {
+										$addUniqueServer($vs2->getAttribute('src'), $sName);
+										continue;
+									}
+									$vt2 = $si2Dom->find('video', 0);
+									if ($vt2 && trim($vt2->getAttribute('src'))) {
+										$addUniqueServer($vt2->getAttribute('src'), $sName);
+										continue;
+									}
+									$si2 = $si2Dom->find('iframe', 0);
+									if ($si2) {
+										$si2Src = trim($si2->getAttribute('src'));
+										if (empty($si2Src) || $si2Src === 'about:blank') $si2Src = trim($si2->getAttribute('data-initial'));
+										if (!empty($si2Src) && $si2Src !== $siSrc) {
+											$addUniqueServer($si2Src, $sName);
+											continue;
+										}
+									}
+									// Try regex on this deeper page
+									if (preg_match('/["\'](?:file|source|src)["\']\s*:\s*["\']([^"\']+\.m3u8[^"\']*)["\']/', $si2Html, $rm)) {
+										$addUniqueServer($rm[1], $sName);
+										continue;
+									}
+								}
+							} else {
+								$addUniqueServer($siSrc, $sName);
+								continue;
+							}
 						}
 					}
-					/*
-					// Try video > source tag (HLS streams)
-					$videoSrc = $sDom->find('video source', 0);
-					if ($videoSrc) {
-						$addUniqueServer($videoSrc->getAttribute('src'), $sName);
-						continue;
-					}
-					$videoTag = $sDom->find('video', 0);
-					if ($videoTag && $videoTag->getAttribute('src')) {
-						$addUniqueServer($videoTag->getAttribute('src'), $sName);
-						continue;
-					}
-					*/
-					// Fallback: find iframe src inside script/document.write content
-					if (preg_match('/iframe[^>]+src=["\']([^"\']+)["\']/', $sHtml, $m)) {
+
+					// Fallback: find m3u8 stream URL in script blocks
+					if (preg_match('/["\'](?:file|source|src)["\']\s*:\s*["\']([^"\']+\.m3u8[^"\']*)["\']/', $sHtml, $m)) {
 						$addUniqueServer($m[1], $sName);
 						continue;
 					}
-
-					// Fallback: find src= patterns that look like stream URLs in script blocks
-					if (preg_match_all('/["\']src["\']\s*:\s*["\']([^"\']+)["\']/', $sHtml, $ms)) {
-						foreach ($ms[1] as $streamUrl) {
-							if (strpos($streamUrl, 'wallplaster') !== false) continue;
-							$addUniqueServer($streamUrl, $sName);
-							break;
-						}
+					// Fallback: any iframe src in raw HTML
+					if (preg_match('/iframe[^>]+src=["\']([^"\']+)["\']/', $sHtml, $m)) {
+						$addUniqueServer($m[1], $sName);
+						continue;
 					}
 				}
 				return true;
