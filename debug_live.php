@@ -86,20 +86,16 @@ if ($dom) {
 			$servIframe = $servDom ? $servDom->find('iframe', 0) : null;
 			echo '<br><b>Auto-fetch result:</b><br>';
 			if ($servIframe) {
-				echo '✅ Static iframe src: <code>' . htmlspecialchars(trim($servIframe->getAttribute('src'))) . '</code>';
+				$iSrc = trim($servIframe->getAttribute('src'));
+				$iData = trim($servIframe->getAttribute('data-initial'));
+				echo '✅ iframe src: <code>' . htmlspecialchars($iSrc) . '</code>';
+				if ($iData) echo '<br>✅ data-initial: <code>' . htmlspecialchars($iData) . '</code>';
 			} elseif (preg_match('/iframe[^>]+src=["\']([^"\']+)["\']/', $servHtml, $m)) {
 				echo '✅ Regex iframe src: <code>' . htmlspecialchars($m[1]) . '</code>';
 			} else {
-				echo '❌ No iframe found. Raw HTML snippet:<br>';
-				// Show script block content
-				preg_match_all('/<script[^>]*>(.*?)<\/script>/si', $servHtml, $scripts);
-				foreach ($scripts[1] as $script) {
-					$script = trim($script);
-					if (!empty($script) && strlen($script) < 2000) {
-						echo '<pre style="font-size:11px">' . htmlspecialchars($script) . '</pre>';
-					}
-				}
+				echo '❌ No iframe found.';
 			}
+			echo '<br><details><summary>Raw HTML of this server page</summary><pre style="font-size:11px;max-height:400px;overflow:auto">' . htmlspecialchars($servHtml) . '</pre></details>';
 		}
 		echo '</div>';
 	}
