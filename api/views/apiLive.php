@@ -180,11 +180,17 @@ function liveMatch($view)
 					$sDom = str_get_html($sHtml);
 					if (!$sDom) continue;
 
-					// Try static iframe first
+					// Try static iframe first (also check data-initial)
 					$si = $sDom->find('iframe', 0);
 					if ($si) {
-						$addUniqueServer($si->getAttribute('src'), $sName);
-						continue;
+						$siSrc = trim($si->getAttribute('src'));
+						if (empty($siSrc) || $siSrc === 'about:blank') {
+							$siSrc = trim($si->getAttribute('data-initial'));
+						}
+						if (!empty($siSrc)) {
+							$addUniqueServer($siSrc, $sName);
+							continue;
+						}
 					}
 					/*
 					// Try video > source tag (HLS streams)
@@ -224,6 +230,10 @@ function liveMatch($view)
 			if ($menuFound) break;
 
 			$baseSrc = trim($iframe->getAttribute('src'));
+			// Also check data-initial for lazy-loaded iframes
+			if (empty($baseSrc) || $baseSrc === 'about:blank') {
+				$baseSrc = trim($iframe->getAttribute('data-initial'));
+			}
 			if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) continue;
 			if (strpos($baseSrc, '//') === 0) $baseSrc = 'https:' . $baseSrc;
 
@@ -238,11 +248,14 @@ function liveMatch($view)
 				break;
 			}
 
-			// Level 2: look inside iframes of the player page
+			// Level 2: look inside iframes of the player page (check data-initial too)
 			foreach ($p1Dom->find('iframe') as $p2) {
 				if ($menuFound) break;
 
 				$p2Src = trim($p2->getAttribute('src'));
+				if (empty($p2Src) || $p2Src === 'about:blank') {
+					$p2Src = trim($p2->getAttribute('data-initial'));
+				}
 				if (empty($p2Src) || strpos($p2Src, 'wallplaster') !== false) continue;
 				if (strpos($p2Src, '//') === 0) $p2Src = 'https:' . $p2Src;
 
@@ -262,6 +275,9 @@ function liveMatch($view)
 		if (!$menuFound) {
 			foreach ($dom->find('iframe') as $iframe) {
 				$baseSrc = trim($iframe->getAttribute('src'));
+				if (empty($baseSrc) || $baseSrc === 'about:blank') {
+					$baseSrc = trim($iframe->getAttribute('data-initial'));
+				}
 				if (empty($baseSrc) || strpos($baseSrc, 'wallplaster') !== false) continue;
 				if (strpos($baseSrc, '//') === 0) $baseSrc = 'https:' . $baseSrc;
 
