@@ -53,11 +53,16 @@ if ($dom) {
 	echo '<h3>Iframes found: ' . count($iframes) . '</h3>';
 	foreach ($iframes as $i => $if) {
 		$src = trim($if->getAttribute('src'));
-		if (strpos($src, '//') === 0) $src = 'https:' . $src;
+		$dataInitial = trim($if->getAttribute('data-initial'));
+		// Use data-initial if src is blank
+		$followSrc = ($src === 'about:blank' || empty($src)) ? $dataInitial : $src;
+		if (strpos($followSrc, '//') === 0) $followSrc = 'https:' . $followSrc;
 		echo '<div class="box">';
-		echo '<b>Iframe ' . ($i+1) . ':</b> <code>' . htmlspecialchars($src) . '</code><br>';
-		if (!empty($src)) {
-			$encodedSrc = urlencode($src);
+		echo '<b>Iframe ' . ($i+1) . ':</b> src=<code>' . htmlspecialchars($src) . '</code>';
+		if ($dataInitial) echo ' | data-initial=<code>' . htmlspecialchars($dataInitial) . '</code>';
+		echo '<br>';
+		if (!empty($followSrc) && $followSrc !== 'about:blank') {
+			$encodedSrc = urlencode($followSrc);
 			$encodedRef = urlencode($url);
 			echo '<a href="?url=' . $encodedSrc . '&referer=' . $encodedRef . '">→ Follow this iframe</a>';
 		}
