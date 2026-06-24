@@ -24,7 +24,7 @@ function scrapEgyDead($url) {
 
 				$movieData = [
 					'href' => $link ? $link->href : '',
-					'image' => $image ? $image->src : '',
+					'image' => $image ? ("https://tryq8flix.com/video-proxy.php?url=" . urlencode($image->src)) : '',
 					'title' => $title ? $title->plaintext : '',
 					'category' => $category ? $category->plaintext : '',
 					'episode' => $episode ? $episode->plaintext : '',
