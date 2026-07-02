@@ -73,12 +73,12 @@ function egyDeadListing($url) {
     foreach ($htmlDom->find('.seasons-list .movieItem') as $seasonItem) {
         $seasonLink = $seasonItem->find('a', 0);
         $link = $seasonLink->href;
-        $title = $seasonLink->title;
+        $title = $seasonLink->h1;
         $seasonNumber = preg_replace('/[^0-9]/', '', $title);
         $seasonsData[] = [
             'link' => $link,
             'title' => $title,
-            'season_number' => $seasonNumber
+            'season_number' => $title
         ];
     }
 
