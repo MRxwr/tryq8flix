@@ -54,6 +54,7 @@ function extractSeasonUrlEgyDead($html) {
 function egyDeadListing($url) {
 	$_POST["id"] = $url;
 	$html = $_POST["id"];
+    echo "https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]);
     if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
         return [
             'seasons' => [],
@@ -61,7 +62,6 @@ function egyDeadListing($url) {
         ];
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
-        echo "https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]);
         $html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]));
         $html = extractSeasonUrlEgyDead($html);
     }
