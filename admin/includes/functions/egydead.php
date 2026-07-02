@@ -1,5 +1,6 @@
 <?php
 function scrapEgyDead($url) {
+    echo $url;
 	$html = curlCall($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
