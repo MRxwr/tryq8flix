@@ -28,7 +28,7 @@ if (isset($_GET["action"]) && !empty($_GET["action"])) {
                 //strip last /
                 $url = rtrim($url, '/');
                 if (isset($_GET["page"]) && !empty($_GET["page"]) && (!isset($_GET["search"]) || empty($_GET["search"]))) {
-                    $url .= "/?page={$_GET["page"]}/";
+                    $url .= "/page/{$_GET["page"]}/";
                 }
                 if (isset($_GET["search"]) && !empty($_GET["search"]) && (!isset($_GET["page"]) || empty($_GET["page"]))) {
                     $_GET["search"] = urlencode($_GET["search"]);;
