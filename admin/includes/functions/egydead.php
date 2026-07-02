@@ -1,7 +1,6 @@
 <?php
 function scrapEgyDead($url) {
 	$html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($url));
-    var_dump($html); // Debugging line to check the HTML content
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
