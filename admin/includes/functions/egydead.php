@@ -1,6 +1,6 @@
 <?php
 function scrapEgyDead($url) {
-	$html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($url));
+	$html = curlCall($url);
 	$dom = str_get_html($html);
 	$mainSection = $dom->find('.main-section', 0);
 	if (strpos($url, 'category') !== false) {
@@ -54,7 +54,6 @@ function extractSeasonUrlEgyDead($html) {
 function egyDeadListing($url) {
 	$_POST["id"] = $url;
 	$html = $_POST["id"];
-    echo "https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]);
     if (strpos(strtolower($_POST["id"]), 'season') === false && strpos(strtolower($_POST["id"]), 'episode') === false) {
         return [
             'seasons' => [],
@@ -62,10 +61,10 @@ function egyDeadListing($url) {
         ];
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
-        $html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]));
+        $html = curlCall($_POST["id"]);
         $html = extractSeasonUrlEgyDead($html);
     }
-    $html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($html));
+    $html = curlCall($html);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -74,12 +73,12 @@ function egyDeadListing($url) {
     foreach ($htmlDom->find('.seasons-list .movieItem') as $seasonItem) {
         $seasonLink = $seasonItem->find('a', 0);
         $link = $seasonLink->href;
-        $title = $seasonLink->h1;
+        $title = $seasonLink->title;
         $seasonNumber = preg_replace('/[^0-9]/', '', $title);
         $seasonsData[] = [
             'link' => $link,
             'title' => $title,
-            'season_number' => $title
+            'season_number' => $seasonNumber
         ];
     }
 
@@ -114,7 +113,7 @@ function egyDeadServers($url) {
     $_POST["id"] = $url;
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]),
+    CURLOPT_URL => "{$_POST["id"]}",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
