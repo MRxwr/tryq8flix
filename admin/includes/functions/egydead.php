@@ -61,6 +61,7 @@ function egyDeadListing($url) {
         ];
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
+        echo "https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]);
         $html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]));
         $html = extractSeasonUrlEgyDead($html);
     }
