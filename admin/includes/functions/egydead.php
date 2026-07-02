@@ -61,10 +61,10 @@ function egyDeadListing($url) {
         ];
     }
     if (strpos(strtolower($_POST["id"]), 'season') === false) {
-        $html = curlCall($_POST["id"]);
+        $html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]));
         $html = extractSeasonUrlEgyDead($html);
     }
-    $html = curlCall($html);
+    $html = curlCall("https://tryq8flix.com/video-proxy.php?url=" . urlencode($html));
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     $episodesData = [];
@@ -113,7 +113,7 @@ function egyDeadServers($url) {
     $_POST["id"] = $url;
     $curl = curl_init();
     curl_setopt_array($curl, array(
-    CURLOPT_URL => "{$_POST["id"]}",
+    CURLOPT_URL => "https://tryq8flix.com/video-proxy.php?url=" . urlencode($_POST["id"]),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
