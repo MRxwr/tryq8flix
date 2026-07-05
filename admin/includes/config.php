@@ -35,4 +35,4 @@ $website12 = "https://y0vx70khe8u.animepec.online/"; // anime4up
 $website13 = "https://egydead.lat/";
 $website14 = "https://witanime.you/";
 $websiteLive = "https://yallasellit.com/";
-$websiteLive2 = "https://beinmatch1.live/";
+$websiteLive2 = "https://beinmatch2026.com/";
