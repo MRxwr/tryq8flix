@@ -159,8 +159,8 @@ function tvdbTvShowsServers($id_info) {
 
     return [
         ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc CC', 'link' => "https://vsembed.su/v2/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc ME', 'link' => "https://vsembed.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidcore', 'link' => "https://vidcore.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vaplayer', 'link' => "https://vaplayer.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
