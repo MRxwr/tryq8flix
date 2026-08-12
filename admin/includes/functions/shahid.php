@@ -72,7 +72,7 @@ function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = shahidCurl($url.$collection.$category);
+	$html = curlCall($url.$collection.$category);
     
     // Debug: Check if HTML content is valid
     if (empty($html)) {
