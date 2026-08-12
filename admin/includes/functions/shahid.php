@@ -72,7 +72,7 @@ function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
-	$html = curlCall("https://tryq8flix.com/video-proxy.php?" . $url.$collection.$category);
+	$html = file_get_contents("https://tryq8flix.com/video-proxy.php?" . $url.$collection.$category);
     var_dump($html); die();
     // Debug: Check if HTML content is valid
     if (empty($html)) {
