@@ -78,46 +78,93 @@ function wecimaListing($url) {
     return $data;
 }
 function scrapeWecimaServers($url) {
-    $html = curlCall("{$url}");
+    $html = curlCall($url);
     $dom = str_get_html($html);
-    $data = [ 'shows' => [] ];
-    
-    if ($dom) {
-        // Try to find the common containers for servers
-        $servers = $dom->find('.WatchServersList li');
-        
-        foreach ($servers as $item) {
-            $link = '';
-            $name = trim($item->plaintext);
-            
-            // 1. Check for data-watch attribute (as seen in your provided HTML)
-            if ($item->hasAttribute('data-watch')) {
-                $link = $item->getAttribute('data-watch');
-            } 
-            // 2. Fallback to old obfuscated logic (data-url + base64)
-            elseif ($btn = $item->find('btn', 0)) {
-                $encoded = $btn->getAttribute('data-url');
-                if ($encoded) {
-                    $cleaned = str_replace('+', '', $encoded);
-                    $link = base64_decode('aHR0cHM6Ly' . substr($cleaned, 5));
-                }
+
+    $shows = [];
+
+    if (!$dom) {
+        return $shows;
+    }
+
+    $servers = $dom->find('.WatchServersList li');
+
+    foreach ($servers as $item) {
+        $link = '';
+        $name = trim($item->plaintext);
+
+        if ($item->hasAttribute('data-watch')) {
+            $link = html_entity_decode(
+                trim($item->getAttribute('data-watch')),
+                ENT_QUOTES | ENT_HTML5,
+                'UTF-8'
+            );
+
+            $parts = parse_url($link);
+            $query = [];
+
+            if (isset($parts['query'])) {
+                parse_str($parts['query'], $query);
             }
 
-            if ($link) {
-                // Clean the name from common strings or numbers
-                $name = str_replace('سيرفر', '', $name);
-                $name = trim(preg_replace('/\s+/', ' ', $name));
-                
-                $data['shows'][] = [ 
-                    'name' => $name ?: "Server", 
-                    'link' => $link 
-                ];
+            if (!empty($query['mycimafsd'])) {
+                $encoded = trim($query['mycimafsd']);
+
+                $encoded = strtr($encoded, '-_', '+/');
+
+                $padding = strlen($encoded) % 4;
+
+                if ($padding) {
+                    $encoded .= str_repeat('=', 4 - $padding);
+                }
+
+                $decoded = base64_decode($encoded, true);
+
+                if (
+                    $decoded !== false &&
+                    filter_var($decoded, FILTER_VALIDATE_URL) &&
+                    preg_match('#^https?://#i', $decoded)
+                ) {
+                    $link = $decoded;
+                }
+            }
+        } elseif ($btn = $item->find('btn', 0)) {
+            $encoded = $btn->getAttribute('data-url');
+
+            if ($encoded) {
+                $cleaned = str_replace('+', '', $encoded);
+
+                $decoded = base64_decode(
+                    'aHR0cHM6Ly' . substr($cleaned, 5),
+                    true
+                );
+
+                if (
+                    $decoded !== false &&
+                    filter_var($decoded, FILTER_VALIDATE_URL)
+                ) {
+                    $link = $decoded;
+                }
             }
         }
-        $dom->clear();
-        unset($dom);
+
+        if (!$link) {
+            continue;
+        }
+
+        $name = str_replace('سيرفر', '', $name);
+        $name = trim(preg_replace('/\s+/u', ' ', $name));
+
+        $shows[] = [
+            'name' => $name ?: 'Server',
+            'link' => $link
+        ];
     }
-    return $data['shows'];
+
+    $dom->clear();
+    unset($dom);
+
+    return $shows;
 }
 
 function scrapeWecimaSearch($query) {
