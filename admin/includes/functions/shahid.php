@@ -72,6 +72,7 @@ function searchShahidListing($url){
 	GLOBAL $website, $_GET;
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
+    echo "Searching Shahid listing with URL: {$url}{$collection}{$category}\n"; // Debugging line
 	$html = curlCall($url.$collection.$category);
     
     // Debug: Check if HTML content is valid
