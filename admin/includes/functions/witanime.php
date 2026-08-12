@@ -284,7 +284,7 @@ function witanimeServers($url) {
     }
 
     if (!empty($resourceRegistry) && !empty($configRegistry)) {
-        $FRAMEWORK_HASH = "23a97133-caf3-4eb4-9466-93d0a4ff8198";
+        $FRAMEWORK_HASH = "9933bd27-92ea-4ee9-807d-e612029d6318";
 
         // Logic to decode each server
         $decodedLinks = [];
