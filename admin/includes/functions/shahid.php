@@ -73,7 +73,6 @@ function searchShahidListing($url){
 	$collection = ( isset($_GET["collection"]) ) ? "?order={$_GET["collection"]}" : "" ;
 	$category = ( isset($_GET["category"]) ) ? "&category={$_GET["category"]}" : "" ;
 	$html = file_get_contents("https://tryq8flix.com/video-proxy.php?url=" . $url.$collection.$category);
-    var_dump($html); die();
     // Debug: Check if HTML content is valid
     if (empty($html)) {
         echo 'Error: Empty HTML response from shahidCurl.';
@@ -128,7 +127,7 @@ function searchShahidListing($url){
 }
 
 function shahidMore($url){
-    $html = shahidCurl("{$url}");
+    $html = file_get_contents("https://tryq8flix.com/video-proxy.php?url=" . $url);
     $htmlDom = str_get_html($html);
     $seasonsData = [];
     foreach ($htmlDom->find('div.items a.epss') as $linkNode) {
@@ -180,7 +179,7 @@ function shahidMore($url){
 function shahidServers($url){
     $url = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$url)));
     $mainServer = [];
-    $html = shahidCurl("{$url}");
+    $html = file_get_contents("https://tryq8flix.com/video-proxy.php?url=" . $url);
     $pattern = '/let servers\s*=\s*JSON\.parse\(\'(.*?)\'\);/s';
     preg_match($pattern, $html, $matches);
     if (isset($matches[1])) {
