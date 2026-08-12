@@ -22,7 +22,7 @@ $scrappingBeeToken = "0K5RT5UBE82PSAHTQGPJW0XSFE4AR92XXK9YCXF9H0VHSUZT0P2XJQCDOO
 //websites
 $website = "https://shahheed4u.net/";
 $website2 = "https://web7.topcinema.cloud/";
-$website3 = "https://mycima.horse/";
+$website3 = "https://wecima.sarl/";
 $website4 = "https://p42qg.sbs/";
 $website5 = "https://shaheid4u.live/";
 $website6 = "https://w6.shahidwbas.tv/";
