@@ -272,14 +272,14 @@ function witanimeServers($url) {
     $servers = [];
     if (!$html) return $servers;
 
-    // Extract _zX and _zK from scripts
+    // Extract _zT and _zV from scripts
     $resourceRegistry = [];
     $configRegistry = [];
 
-    if (preg_match('/var\s+_zX\s*=\s*"([^"]+)"/', $html, $matches)) {
+    if (preg_match('/var\s+_zT\s*=\s*"([^"]+)"/', $html, $matches)) {
         $resourceRegistry = json_decode(base64_decode($matches[1]), true);
     }
-    if (preg_match('/var\s+_zK\s*=\s*"([^"]+)"/', $html, $matches)) {
+    if (preg_match('/var\s+_zV\s*=\s*"([^"]+)"/', $html, $matches)) {
         $configRegistry = json_decode(base64_decode($matches[1]), true);
     }
 
