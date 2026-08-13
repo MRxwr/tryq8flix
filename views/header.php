@@ -5,9 +5,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TryQ8Flix</title>
+
+    <!-- PWA Meta Tags for Chrome, Firefox, Huawei, and Safari -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#141414">
+    
+    <!-- Safari specific tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TryQ8Flix">
+    <link rel="apple-touch-icon" href="/logos/icon-192x192.png">
+    
+    <!-- Register Service Worker for offline and caching -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Custom PWA Install Prompt -->
+    <style>
+        #pwa-install-banner {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: #e50914;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        #pwa-install-banner button {
+            background: #fff;
+            color: #e50914;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+        #pwa-install-banner .close-btn {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+    </style>
+    <script>
+        let deferredPrompt;
+
+        window.addEventListener('load', () => {
+            const installBanner = document.getElementById('pwa-install-banner');
+            const installBtn = document.getElementById('pwa-install-btn');
+            const closeBtn = document.getElementById('pwa-close-btn');
+            const iosMsg = document.getElementById('pwa-ios-msg');
+
+            // Handle Chrome/Firefox/Huawei
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBanner.style.display = 'block';
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installBanner.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                }
+            });
+
+            closeBtn.addEventListener('click', () => {
+                installBanner.style.display = 'none';
+            });
+
+            // Handle iOS Safari
+            const isIos = () => {
+              const userAgent = window.navigator.userAgent.toLowerCase();
+              return /iphone|ipad|ipod/.test(userAgent);
+            };
+            const isInStandaloneMode = () => ('standalone' in window.navigator) && window.navigator.standalone;
+
+            if (isIos() && !isInStandaloneMode()) {
+                installBanner.style.display = 'block';
+                installBtn.style.display = 'none';
+                iosMsg.style.display = 'block';
+            }
+        });
+    </script>
     <style>
         body {
             background-color: #141414;
@@ -506,6 +611,17 @@
 </head>
 
 <body>
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner">
+        <div><i class="fas fa-layer-group me-2"></i> Install TryQ8Flix App for the best experience!</div>
+        <div id="pwa-ios-msg" style="display: none; margin-top: 10px; font-size: 0.9em;">
+            To install on iOS: tap the <strong>Share</strong> icon below, then select <strong>Add to Home Screen</strong>.
+        </div>
+        <div>
+            <button id="pwa-install-btn">Install</button>
+            <button id="pwa-close-btn" class="close-btn">Not Now</button>
+        </div>
+    </div>
     <div class="page-transition-overlay"></div>
     <nav class="navbar fixed-top">
         <div class="container-fluid d-flex justify-content-between align-items-center">
