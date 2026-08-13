@@ -92,34 +92,25 @@ function scrapeWecimaServers($url) {
     foreach ($servers as $item) {
         $link = '';
         $name = trim($item->plaintext);
-
         if ($item->hasAttribute('data-watch')) {
             $link = html_entity_decode(
                 trim($item->getAttribute('data-watch')),
                 ENT_QUOTES | ENT_HTML5,
                 'UTF-8'
             );
-
             $parts = parse_url($link);
             $query = [];
-
             if (isset($parts['query'])) {
                 parse_str($parts['query'], $query);
             }
-
             if (!empty($query['mycimafsd'])) {
                 $encoded = trim($query['mycimafsd']);
-
                 $encoded = strtr($encoded, '-_', '+/');
-
                 $padding = strlen($encoded) % 4;
-
                 if ($padding) {
                     $encoded .= str_repeat('=', 4 - $padding);
                 }
-
                 $decoded = base64_decode($encoded, true);
-
                 if (
                     $decoded !== false &&
                     filter_var($decoded, FILTER_VALIDATE_URL) &&
@@ -130,31 +121,22 @@ function scrapeWecimaServers($url) {
             }
         } elseif ($btn = $item->find('btn', 0)) {
             $encoded = $btn->getAttribute('data-url');
-
             if ($encoded) {
                 $cleaned = str_replace('+', '', $encoded);
-
                 $decoded = base64_decode(
                     'aHR0cHM6Ly' . substr($cleaned, 5),
                     true
                 );
-
-                if (
-                    $decoded !== false &&
-                    filter_var($decoded, FILTER_VALIDATE_URL)
-                ) {
+                if ($decoded !== false && filter_var($decoded, FILTER_VALIDATE_URL)){
                     $link = $decoded;
                 }
             }
         }
-
         if (!$link) {
             continue;
         }
-
         $name = str_replace('سيرفر', '', $name);
         $name = trim(preg_replace('/\s+/u', ' ', $name));
-
         $shows[] = [
             'name' => $name ?: 'Server',
             'link' => $link
