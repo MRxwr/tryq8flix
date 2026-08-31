@@ -23,7 +23,7 @@ function tuktukHome($url) {
                     }
                 }
                 $title = '';
-                $h3 = $item->find('h3', 0);
+                $h3 = $item->find('h2', 0);
                 if ($h3) {
                     $title = trim($h3->plaintext);
                 }
