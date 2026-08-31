@@ -76,7 +76,7 @@ function tuktukListings($url) {
             $link = $a ? $a->href : '';
             $img = $seasonBox->find('img', 0);
             $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
+            $posterUrl = trim($poster);
             $title = '';
             $h3 = $seasonBox->find('h3', 0);
             if ($h3) {
@@ -106,7 +106,7 @@ function tuktukListings($url) {
             $link = $episodeLink->href;
             $img = $episodeLink->find('img', 0);
             $poster = $img && $img->getAttribute('data-src') ? $img->getAttribute('data-src') : '';
-            $posterUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($poster));
+            $posterUrl = trim($poster);
             $epInfo = $episodeLink->find('.ep-info h3', 0);
             $title = $epInfo ? trim($epInfo->plaintext) : '';
             $epnumDiv = $episodeLink->find('.epnum', 0);
@@ -139,7 +139,7 @@ function tuktukListings($url) {
 }
 
 function tuktukServers($url) {
-    $html = curlCall("{$url}watch");
+    $html = file_get_contents("https://tryq8flix.com/video-proxy.php?url=" . $url);
     $dom = str_get_html($html);
     $servers = [];
     if ($dom) {
