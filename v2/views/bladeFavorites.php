@@ -1,0 +1,1 @@
+<section class="page"><p class="eyebrow">SAVED FOR LATER</p><h1>My List</h1><p class="muted">Your favorites stay with the title, even if its poster or source changes.</p><div id="favorites-results" class="movie-grid"></div><p id="list-status" role="status"></p></section>
