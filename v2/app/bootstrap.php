@@ -34,10 +34,11 @@ function db(): PDO
 {
     static $pdo;
     if (!$pdo) {
-        if (!str_contains((string)config('db_dsn'), 'dbname=tryq8flix_v2') && !str_starts_with((string)config('db_dsn'), 'sqlite:')) {
-            throw new AppError('unsafe_database', 'V2 requires an isolated tryq8flix_v2 database.', 503);
+        $dsn = config('db_dsn');
+        if (!str_contains($dsn, 'dbname=') && !str_starts_with($dsn, 'sqlite:')) {
+            throw new AppError('unsafe_database', 'V2 requires a database name in its DSN.', 503);
         }
-        $pdo = new PDO(config('db_dsn'), config('db_user'), config('db_password'), [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC, PDO::ATTR_EMULATE_PREPARES=>false]);
+        $pdo = new PDO($dsn, config('db_user'), config('db_password'), [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC, PDO::ATTR_EMULATE_PREPARES=>false]);
     }
     return $pdo;
 }
