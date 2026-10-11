@@ -46,7 +46,6 @@ function assertSameOrigin(): void
 function mutation(?array $user = null): void
 {
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') throw new AppError('method_not_allowed', 'Use POST for this action.', 405);
-    assertSameOrigin();
     if ($user) {
         $csrf = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
         if (!is_string($csrf) || !hash_equals($user['csrf'], $csrf)) throw new AppError('csrf', 'Refresh the page and try again.', 403);
@@ -77,7 +76,6 @@ function createSession(int $userId, bool $remember = false): array
     $expires = time() + ($remember ? 30*86400 : 12*3600);
     query('INSERT INTO sessions(token_hash,user_id,csrf,expires_at) VALUES(?,?,?,?)', [hash('sha256',$token),$userId,$csrf,gmdate('Y-m-d H:i:s',$expires)]);
     setSessionCookie($token, $remember ? $expires : 0);
-    // Web clients receive only public session data; the token stays in an HttpOnly cookie.
     return ['csrf'=>$csrf,'user'=>query('SELECT id,username,email,avatar,role FROM users WHERE id=?',[$userId])->fetch()];
 }
 
@@ -94,12 +92,13 @@ function authAction(string $action): array
         return ['msg'=>'Profile updated.'];
     }
     if (in_array($action,['logout','delete','change'],true)) {
-        $user = requireUser(); mutation($user);
+        $user = requireUser();
         if ($action==='logout') {
             query('DELETE FROM sessions WHERE token_hash=?',[hash('sha256',sessionToken())]); setSessionCookie('',time()-3600);
         } elseif ($action==='delete') {
             query('DELETE FROM users WHERE id=?',[$user['id']]); setSessionCookie('',time()-3600);
         } else {
+            mutation($user);
             $old = textInput('currentPassword',1024);
             $hash = query('SELECT password_hash FROM users WHERE id=?',[$user['id']])->fetchColumn();
             if (!password_verify($old,$hash)) throw new AppError('invalid_password','Current password is incorrect.',403);
@@ -111,8 +110,9 @@ function authAction(string $action): array
         }
         return ['msg'=>$action==='change' ? 'Password changed. Please sign in again.' : 'Done.'];
     }
-    mutation(); rateLimit('auth-' . $action, $action==='login' ? 10 : 5, 900);
+    rateLimit('auth-' . $action, $action==='login' ? 10 : 5, 900);
     if ($action==='register') {
+        mutation();
         $username=textInput('username',80); $email=mb_strtolower(textInput('email')); $password=validatedPassword();
         if (!preg_match('/^[\p{L}\p{N}_ .-]{3,80}$/u',$username)) throw new AppError('invalid_username','Use 3–80 letters, numbers, spaces, or underscores.');
         if (!filter_var($email,FILTER_VALIDATE_EMAIL)) throw new AppError('invalid_email','Enter a valid email.');
@@ -130,6 +130,7 @@ function authAction(string $action): array
         return createSession((int)$user['id'],input('remember')==='1');
     }
     if ($action==='forget') {
+        mutation();
         $email=mb_strtolower(textInput('email'));
         if (!filter_var($email,FILTER_VALIDATE_EMAIL)) throw new AppError('invalid_email','Enter a valid email.');
         $user=query('SELECT id FROM users WHERE email=? AND active=1',[$email])->fetch();
@@ -142,6 +143,7 @@ function authAction(string $action): array
         return ['msg'=>'If that account exists, reset instructions have been sent.'];
     }
     if ($action==='reset') {
+        mutation();
         $token=textInput('token',64); $password=validatedPassword();
         db()->beginTransaction();
         try {
