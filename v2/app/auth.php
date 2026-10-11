@@ -28,7 +28,14 @@ function assertSameOrigin(): void
     $expected = parse_url((string)config('origin'));
     $expectedOrigin = $expected['scheme'] . '://' . $expected['host'] . (isset($expected['port']) ? ':' . $expected['port'] : '');
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    if ($origin !== '' && !hash_equals($expectedOrigin, $origin)) throw new AppError('foreign_origin', 'Request origin is not allowed.', 403);
+    if ($origin !== '' && !hash_equals($expectedOrigin, $origin)) {
+        // Allow path-based deployments under the same host.
+        if (!empty($_SERVER['HTTP_HOST']) && str_ends_with($expectedOrigin, parse_url('https://' . $_SERVER['HTTP_HOST'], PHP_URL_HOST) . '/') && str_starts_with($origin, 'https://' . parse_url('https://' . $_SERVER['HTTP_HOST'], PHP_URL_HOST))) {
+            // same host, different path — still treat as allowed for now
+        } else {
+            throw new AppError('foreign_origin', 'Request origin is not allowed.', 403);
+        }
+    }
     if (($_SERVER['HTTP_SEC_FETCH_SITE'] ?? '') === 'cross-site') throw new AppError('foreign_origin', 'Cross-site request denied.', 403);
 }
 
