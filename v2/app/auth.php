@@ -35,6 +35,9 @@ function assertSameOrigin(): void
                 return;
             }
         }
+        if (($origin !== '') && ($expectedOrigin !== '') && str_replace('/v2', '', $origin) === str_replace('/v2', '', $expectedOrigin)) {
+            return;
+        }
         throw new AppError('foreign_origin', 'Request origin is not allowed.', 403);
     }
     if (($_SERVER['HTTP_SEC_FETCH_SITE'] ?? '') === 'cross-site') throw new AppError('foreign_origin', 'Cross-site request denied.', 403);
