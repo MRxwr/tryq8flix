@@ -1,7 +1,0 @@
-/config/local.php
-/storage/*
-!/storage/.htaccess
-!/storage/.gitkeep
-/logos/avatars/
-/tests/browser-output/
-/node_modules/
