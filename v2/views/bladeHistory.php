@@ -40,7 +40,7 @@
     function load() {
         grid.innerHTML = gridSkeleton(12);
         empty.classList.add("hide");
-        $.getJSON(apiUrl("endpoint=History&action=list"), function (response) {
+        return $.getJSON(apiUrl("endpoint=History&action=list"), function (response) {
             var items = response && response.ok && response.data.history ? response.data.history : [];
             if (!items.length) {
                 grid.innerHTML = "";
@@ -70,6 +70,12 @@
                 else showToast("Could not clear history", "fa-triangle-exclamation");
             }, "json");
         });
+    });
+
+    // Pulling the page down re-reads the list the tab is showing.
+    Q8.onRefresh(function () {
+        Q8.clearApiCache("endpoint=History");
+        return load();
     });
 
     load();

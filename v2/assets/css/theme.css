@@ -859,6 +859,53 @@ select.input option:disabled { color: var(--text-faint); }
 }
 .page-fade.is-hidden { opacity: 0; }
 
+/* ---------------------------------------------------------- pull to refresh */
+/* A ring that slides out from under the nav bar as the top of a tab is pulled
+   down. It tracks the finger without a transition, fills in when the pull is
+   long enough to commit, then settles into the nav bar and spins while the tab
+   fetches. It rests in the empty middle of the bar (below the nav's z-index, so
+   it reads as emerging from behind it) rather than over the page: the bar is the
+   one band of the screen with nothing in the centre, so the spinner never
+   covers the content the user is looking at. */
+.pull-refresh {
+    position: fixed;
+    left: 50%;
+    top: calc(var(--nav-h) / 2 - 20px);
+    z-index: 55;
+    display: grid;
+    place-items: center;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(18, 18, 26, 0.94);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(-50%, -58px, 0) scale(0.72);
+    transition: opacity 0.22s var(--ease), transform 0.28s var(--ease);
+}
+.pull-refresh.is-pulling { transition: none; }
+.pull-refresh.is-busy { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
+.pull-refresh__ring {
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.16);
+    border-top-color: var(--text-faint);
+    transition: border-color 0.2s var(--ease);
+}
+.pull-refresh.is-ready .pull-refresh__ring { border-top-color: var(--brand); }
+.pull-refresh.is-busy .pull-refresh__ring { border-top-color: var(--brand); animation: spin 0.7s linear infinite; }
+/* Spoken state, not a visible label. */
+.pull-refresh__text {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 /* ---------------------------------------------------------- install banner */
 .install {
     position: fixed;

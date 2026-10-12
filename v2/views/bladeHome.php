@@ -25,6 +25,10 @@
 <script>
 (function () {
     var hero = { href: "", image: "", title: "", server: "" };
+    var contentRows = document.getElementById("content-rows");
+    // Bumped on every run, so replies that were still on the wire when a
+    // refresh cleared the rows cannot be appended into the new run.
+    var run = 0;
 
     function rowSection(title, rowId, itemsHtml, moreHref) {
         return '<section class="row-section">' +
@@ -93,64 +97,102 @@
     }
     renderTips();
 
-    // ---- continue watching -------------------------------------------------
-    $.getJSON(apiUrl("endpoint=History&action=list"), function (response) {
-        if (!response || !response.ok || !response.data.history || !response.data.history.length) return;
-        var shows = response.data.history.slice(0, 20);
-        var items = shows.map(function (show) {
-            return posterCard({
-                href: show.link, server: show.server, image: show.poster,
-                title: show.title, target: "Servers", showFav: false, badge: "Continue"
+    /* Everything this view fetches, in one run. Started again on a
+       pull-to-refresh, so the run ends only when the last reply lands — the
+       pull indicator has something concrete to wait for. */
+    function readRows() {
+        var token = ++run;
+        var outstanding = 0;
+        var settled = false;
+        var done = $.Deferred();
+
+        function get(url, callback) {
+            outstanding++;
+            return $.getJSON(url, function (response) {
+                if (token === run) callback(response);
+            }).always(function () {
+                outstanding--;
+                if (settled && outstanding === 0) done.resolve();
             });
-        }).join("");
-        document.getElementById("content-rows").insertAdjacentHTML(
-            "afterbegin", rowSection("Continue Watching", "row-history", items, "?v=History"));
-    });
+        }
 
-    // ---- favorites ---------------------------------------------------------
-    $.getJSON(apiUrl("endpoint=Favorites&action=list"), function (response) {
-        if (!response || !response.ok || !response.data.favorites || !response.data.favorites.length) return;
-        var items = response.data.favorites.slice(0, 20).map(function (show) {
-            return posterCard({
-                href: show.link, server: show.server, image: show.poster,
-                title: show.title, target: "More", isFav: true
-            });
-        }).join("");
-        document.getElementById("content-rows").insertAdjacentHTML(
-            "beforeend", rowSection("My Favorites", "row-favorites", items, "?v=Favorites"));
-    });
+        contentRows.innerHTML = "";
 
-    // ---- per-server rows ---------------------------------------------------
-    $.getJSON(apiUrl("endpoint=Main"), function (response) {
-        if (!response || !response.ok || !response.data.servers) return;
-        var heroSet = false;
+        // ---- continue watching ---------------------------------------------
+        get(apiUrl("endpoint=History&action=list"), function (response) {
+            if (!response || !response.ok || !response.data.history || !response.data.history.length) return;
+            var shows = response.data.history.slice(0, 20);
+            var items = shows.map(function (show) {
+                return posterCard({
+                    href: show.link, server: show.server, image: show.poster,
+                    title: show.title, target: "Servers", showFav: false, badge: "Continue"
+                });
+            }).join("");
+            contentRows.insertAdjacentHTML(
+                "afterbegin", rowSection("Continue Watching", "row-history", items, "?v=History"));
+        });
 
-        response.data.servers.forEach(function (server) {
-            $.getJSON(apiUrl("endpoint=Home&action=view&page=1&server=" + server.id), function (serverRes) {
-                if (!serverRes || !serverRes.ok || !serverRes.data.shows || !serverRes.data.shows.length) return;
+        // ---- favorites -----------------------------------------------------
+        get(apiUrl("endpoint=Favorites&action=list"), function (response) {
+            if (!response || !response.ok || !response.data.favorites || !response.data.favorites.length) return;
+            var items = response.data.favorites.slice(0, 20).map(function (show) {
+                return posterCard({
+                    href: show.link, server: show.server, image: show.poster,
+                    title: show.title, target: "More", isFav: true
+                });
+            }).join("");
+            contentRows.insertAdjacentHTML(
+                "beforeend", rowSection("My Favorites", "row-favorites", items, "?v=Favorites"));
+        });
 
-                if (!heroSet && (server.id == "13" || server.id == "14")) {
-                    var pick = serverRes.data.shows[Math.floor(Math.random() * serverRes.data.shows.length)];
-                    setHeroFromShow(pick, server.id);
-                    heroSet = true;
-                }
+        // ---- per-server rows -----------------------------------------------
+        get(apiUrl("endpoint=Main"), function (response) {
+            if (!response || !response.ok || !response.data.servers) return;
+            var heroSet = false;
 
-                var items = serverRes.data.shows.map(function (show) {
-                    return posterCard({
-                        href: show.href, server: server.id,
-                        image: show.image, title: show.title, target: "More"
-                    });
-                }).join("");
+            response.data.servers.forEach(function (server) {
+                get(apiUrl("endpoint=Home&action=view&page=1&server=" + server.id), function (serverRes) {
+                    if (!serverRes || !serverRes.ok || !serverRes.data.shows || !serverRes.data.shows.length) return;
 
-                var moreHref = "?q=" + encodeURIComponent(encryptLink(
-                    "v=Category&server=" + server.id + "&title=" + encodeURIComponent(server.name)));
+                    if (!heroSet && (server.id == "13" || server.id == "14")) {
+                        var pick = serverRes.data.shows[Math.floor(Math.random() * serverRes.data.shows.length)];
+                        setHeroFromShow(pick, server.id);
+                        heroSet = true;
+                    }
 
-                document.getElementById("content-rows").insertAdjacentHTML(
-                    "beforeend", rowSection(server.name, "row-" + server.id, items, moreHref));
+                    var items = serverRes.data.shows.map(function (show) {
+                        return posterCard({
+                            href: show.href, server: server.id,
+                            image: show.image, title: show.title, target: "More"
+                        });
+                    }).join("");
+
+                    var moreHref = "?q=" + encodeURIComponent(encryptLink(
+                        "v=Category&server=" + server.id + "&title=" + encodeURIComponent(server.name)));
+
+                    contentRows.insertAdjacentHTML(
+                        "beforeend", rowSection(server.name, "row-" + server.id, items, moreHref));
+                });
             });
         });
+
+        settled = true;
+        if (outstanding === 0) done.resolve();
+        return done.promise();
+    }
+
+    // Pulling the tab down means "ask again", so the endpoints this view reads
+    // are dropped from the api cache first — otherwise the repeat would be
+    // answered with the same payload it is meant to replace.
+    Q8.onRefresh(function () {
+        Q8.clearApiCache("endpoint=History");
+        Q8.clearApiCache("endpoint=Favorites");
+        Q8.clearApiCache("endpoint=Main");
+        Q8.clearApiCache("endpoint=Home");
+        return $.when(readRows(), loadFavorites());
     });
 
+    readRows();
     loadFavorites();
 })();
 </script>

@@ -38,13 +38,16 @@
     var spinner = document.getElementById("loadingIndicator");
     var initial = document.getElementById("initialMessage");
 
-    $.getJSON(apiUrl("endpoint=Main"), function (response) {
-        if (response && response.ok && response.data.servers) {
-            document.getElementById("serverSelect").innerHTML = response.data.servers.map(function (s) {
-                return '<option value="' + escapeHtml(s.id) + '">' + escapeHtml(s.name) + "</option>";
-            }).join("");
-        }
-    });
+    function loadServers() {
+        return $.getJSON(apiUrl("endpoint=Main"), function (response) {
+            if (response && response.ok && response.data.servers) {
+                document.getElementById("serverSelect").innerHTML = response.data.servers.map(function (s) {
+                    return '<option value="' + escapeHtml(s.id) + '">' + escapeHtml(s.name) + "</option>";
+                }).join("");
+            }
+        });
+    }
+    loadServers();
 
     function search(more) {
         var q = document.getElementById("searchInput").value.trim();
@@ -62,7 +65,7 @@
             spinner.classList.remove("hide");
         }
 
-        $.getJSON(apiUrl("endpoint=Home&action=view&page=" + page + "&server=" + encodeURIComponent(serverId) +
+        return $.getJSON(apiUrl("endpoint=Home&action=view&page=" + page + "&server=" + encodeURIComponent(serverId) +
             "&search=" + encodeURIComponent(query)), function (response) {
             if (!more) grid.innerHTML = "";
 
@@ -106,6 +109,29 @@
             if (!loading && !done && query) search(true);
         }
     }, { passive: true });
+
+    // Pulling the Search tab down re-reads the source list and, when results are
+    // on screen, runs the same query again from the first page.
+    Q8.onRefresh(function () {
+        var select = document.getElementById("serverSelect");
+        var chosen = select.value;
+        Q8.clearApiCache("endpoint=Main");
+        Q8.clearApiCache("endpoint=Home");
+
+        var out = $.Deferred();
+        $.when(loadServers()).always(function () {
+            // The source the user picked survives the select being rebuilt.
+            var kept = false;
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === chosen) kept = true;
+            }
+            if (kept) select.value = chosen;
+
+            if (query && !loading) $.when(search(false)).always(function () { out.resolve(); });
+            else out.resolve();
+        });
+        return out.promise();
+    });
 
     loadFavorites();
 })();

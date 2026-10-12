@@ -61,7 +61,7 @@
         list.innerHTML = '<div class="center-state" style="grid-column:1/-1;"><div class="spinner"></div></div>';
         // Refresh means "ask again": the cached list is only there for coming
         // back to the tab, never for an explicit refresh.
-        (forceFresh ? Q8.freshGetJSON : $.getJSON)(apiUrl("endpoint=Live&action=live"), function (response) {
+        return (forceFresh ? Q8.freshGetJSON : $.getJSON)(apiUrl("endpoint=Live&action=live"), function (response) {
             var matches = (response && response.ok && response.data) ? response.data.filter(function (m) { return m.rightTeamName; }) : [];
             if (!matches.length) {
                 list.innerHTML = '<div class="center-state" style="grid-column:1/-1;">' +
@@ -78,6 +78,8 @@
     }
 
     document.getElementById("refresh-matches").addEventListener("click", function () { load(true); });
+    // The pull gesture means what the Refresh button means: ask again.
+    Q8.onRefresh(function () { return load(true); });
     load();
 })();
 </script>

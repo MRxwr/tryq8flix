@@ -56,13 +56,26 @@
         if (!byId("profile-avatar") && !byId("editProfileForm")) return;
 
         // Fetch the profile shown in the header card.
-        $.getJSON(window.apiUrl("endpoint=User&action=profile"), function (response) {
-            if (response && response.ok) applyProfile(response.data);
-            else window.navigateTo("?v=Login");
-        }).fail(function () {
-            var name = byId("profile-username");
-            if (name) name.textContent = "Error loading profile";
-        });
+        function loadProfile() {
+            return $.getJSON(window.apiUrl("endpoint=User&action=profile"), function (response) {
+                if (response && response.ok) applyProfile(response.data);
+                else window.navigateTo("?v=Login");
+            }).fail(function () {
+                var name = byId("profile-username");
+                if (name) name.textContent = "Error loading profile";
+            });
+        }
+        loadProfile();
+
+        // Pulling the page down re-reads the account record the card shows. It
+        // opts in from the card itself rather than from init(): this module is
+        // shared, so a page without the card has nothing of its own to refresh.
+        if (byId("profile-avatar") && window.Q8 && window.Q8.onRefresh) {
+            window.Q8.onRefresh(function () {
+                window.Q8.clearApiCache("endpoint=User");
+                return loadProfile();
+            });
+        }
 
         // Open modals.
         var editBtn = byId("editProfileBtn");

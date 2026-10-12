@@ -43,7 +43,7 @@
 
     function load() {
         grid.innerHTML = gridSkeleton(12);
-        $.getJSON(apiUrl("endpoint=Favorites&action=list"), function (response) {
+        return $.getJSON(apiUrl("endpoint=Favorites&action=list"), function (response) {
             var favs = response && response.ok && response.data.favorites ? response.data.favorites : [];
             if (favs.length) {
                 empty.classList.add("hide");
@@ -79,6 +79,12 @@
         if (e.target.closest && e.target.closest(".poster__fav")) {
             setTimeout(load, 700);
         }
+    });
+
+    // Pulling the Saved tab down re-reads the list the tab is showing.
+    Q8.onRefresh(function () {
+        Q8.clearApiCache("endpoint=Favorites");
+        return $.when(load(), loadFavorites());
     });
 
     load();

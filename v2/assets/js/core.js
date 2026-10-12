@@ -359,9 +359,15 @@
         return keys;
     }
 
-    function cacheReadable(url) {
-        if (cacheBypass || typeof url !== "string" || url.indexOf(API_BASE) !== 0) return false;
+    // Reads that may be stored at all: api reads, and personal ones only while a
+    // session cookie is present.
+    function cacheWritable(url) {
+        if (typeof url !== "string" || url.indexOf(API_BASE) !== 0) return false;
         return authed || !isPersonal(url);
+    }
+
+    function cacheReadable(url) {
+        return !cacheBypass && cacheWritable(url);
     }
 
     function cacheGet(url) {
@@ -400,8 +406,18 @@
 
     var nativeGetJSON = $.getJSON;
 
-    // For the places that mean "ask again" — an explicit Refresh button.
-    function freshGetJSON(url, callback) { return nativeGetJSON.call($, url, callback); }
+    // For the places that mean "ask again" — an explicit Refresh button, or a
+    // pull-to-refresh. Goes to the network and records the answer, so the entry
+    // a tab comes back to matches what the user just saw rather than the payload
+    // it replaced.
+    function freshGetJSON(url, data, callback) {
+        if (typeof data === "function") { callback = data; data = undefined; }
+        if (!cacheWritable(url)) return nativeGetJSON.call($, url, data, callback);
+        return nativeGetJSON.call($, url, data, function (res) {
+            if (res && res.ok !== false) cachePut(url, res);
+            if (callback) callback(res);
+        });
+    }
 
     /* Wrapping the reader is what makes this work for every view at once: they
        all read through $.getJSON, so a hit simply hands the stored payload back
@@ -409,16 +425,21 @@
     function installApiCache() {
         $.getJSON = function (url, data, callback) {
             if (typeof data === "function") { callback = data; data = undefined; }
-            if (!cacheReadable(url)) return nativeGetJSON.call($, url, data, callback);
+            if (!cacheWritable(url)) return nativeGetJSON.call($, url, data, callback);
+
+            // Never let an error envelope stick as the cached answer.
+            function record(res) {
+                if (res && res.ok !== false) cachePut(url, res);
+                if (callback) callback(res);
+            }
+
+            // A bypassed read (a reload, or freshGetJSON) skips the stored copy
+            // but still records what came back: the refresh is what the entry
+            // should now hold.
+            if (!cacheReadable(url)) return nativeGetJSON.call($, url, data, record);
 
             var cached = cacheGet(url);
-            if (cached === null) {
-                return nativeGetJSON.call($, url, data, function (res) {
-                    // Never let an error envelope stick as the cached answer.
-                    if (res && res.ok !== false) cachePut(url, res);
-                    if (callback) callback(res);
-                });
-            }
+            if (cached === null) return nativeGetJSON.call($, url, data, record);
 
             var defer = $.Deferred();
             var promise = defer.promise();
@@ -670,6 +691,172 @@
         });
     }
 
+    /* -------------------------------------------------- pull to refresh
+       Drag down with the page already at the top and the view fetches its own
+       data again, in place: no navigation, no reload, the rendered page stays
+       where it is.
+
+       A view says what "refresh" means for it (onRefresh) because only it knows
+       which reads fill it. Those reads are answered from the api cache while you
+       move between tabs, so a handler drops the endpoints it is about to repeat
+       — otherwise the pull would be handed the very payload it was asked to
+       replace. A page with no handler never arms the gesture at all. */
+    var refreshers = [];
+    function onRefresh(fn) { if (typeof fn === "function") refreshers.push(fn); }
+
+    // The indicator is a small ring that follows the finger, fills in once the
+    // pull is long enough to commit, then spins until the view's reads settle.
+    var PULL_MAX = 92;       // furthest the ring travels, px
+    var PULL_TRIGGER = 58;   // travel that commits to a refresh
+    var PULL_DAMPING = 0.55; // finger travel -> ring travel
+    var PULL_HOLD = 380;     // keep the ring up at least this long, ms
+    var PULL_REST = 58;      // resting offset above the ring's anchor
+
+    function runRefreshers() {
+        var tasks = [];
+        for (var i = 0; i < refreshers.length; i++) {
+            // One view failing to start must not cost the others their refresh.
+            try { tasks.push(refreshers[i]()); } catch (e) { tasks.push(null); }
+        }
+        if (!tasks.length) return null;
+        var settled = $.Deferred();
+        // always(), not done(): a read that fails still ends the refresh.
+        $.when.apply($, tasks).always(function () { settled.resolve(); });
+        return settled.promise();
+    }
+
+    function initPullToRefresh() {
+        var indicator = null, ring = null, text = null;
+        var startX = 0, startY = 0;
+        var tracking = false, pulling = false, busy = false;
+
+        // Built on the first pull so pages that cannot refresh stay untouched.
+        function build() {
+            if (indicator) return;
+            indicator = document.createElement("div");
+            indicator.className = "pull-refresh";
+            indicator.setAttribute("role", "status");
+            indicator.innerHTML =
+                '<span class="pull-refresh__ring" aria-hidden="true"></span>' +
+                '<span class="pull-refresh__text">Pull to refresh</span>';
+            ring = indicator.querySelector(".pull-refresh__ring");
+            text = indicator.querySelector(".pull-refresh__text");
+            document.body.appendChild(indicator);
+        }
+
+        function clearInline() {
+            indicator.style.opacity = "";
+            indicator.style.transform = "";
+            ring.style.transform = "";
+        }
+
+        // No transition while the finger is down: the ring is attached to it.
+        function follow(distance) {
+            var ready = distance >= PULL_TRIGGER;
+            var grow = Math.min(1, distance / 30);
+            indicator.style.opacity = String(grow);
+            indicator.style.transform = "translate3d(-50%," + Math.round(distance - PULL_REST) +
+                "px,0) scale(" + (0.72 + 0.28 * grow).toFixed(3) + ")";
+            ring.style.transform = "rotate(" + Math.round(distance * 2.6) + "deg)";
+            indicator.classList.toggle("is-ready", ready);
+            text.textContent = ready ? "Release to refresh" : "Pull to refresh";
+        }
+
+        function snapBack() {
+            indicator.classList.remove("is-pulling", "is-ready");
+            clearInline();
+            text.textContent = "Pull to refresh";
+        }
+
+        function finish() {
+            busy = false;
+            text.textContent = "Updated";
+            indicator.classList.remove("is-busy");
+            clearInline();
+        }
+
+        function refresh() {
+            busy = true;
+            var started = Date.now();
+            var finished = false;
+
+            indicator.classList.remove("is-pulling", "is-ready");
+            indicator.classList.add("is-busy");
+            clearInline();
+            text.textContent = "Refreshing";
+
+            // A read that never comes back must not leave the ring spinning.
+            var watchdog = setTimeout(function () {
+                if (!finished) { finished = true; finish(); }
+            }, 12000);
+
+            function complete() {
+                if (finished) return;
+                finished = true;
+                clearTimeout(watchdog);
+                // A refresh served instantly would otherwise look like a no-op.
+                setTimeout(finish, Math.max(0, PULL_HOLD - (Date.now() - started)));
+            }
+
+            var task = runRefreshers();
+            if (task) task.always(complete);
+            else complete();
+        }
+
+        document.addEventListener("touchstart", function (e) {
+            if (busy || !refreshers.length || e.touches.length !== 1) { tracking = false; return; }
+            // Only a pull that begins at the very top is ours.
+            if ((window.scrollY || window.pageYOffset || 0) > 0) { tracking = false; return; }
+            var t = e.target;
+            // The elements the tab swipe also leaves alone: they own the gesture.
+            if (t && t.closest && t.closest(SWIPE_BLOCKERS)) { tracking = false; return; }
+            build();
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            tracking = true;
+            pulling = false;
+        }, { passive: true });
+
+        document.addEventListener("touchmove", function (e) {
+            if (!tracking || e.touches.length !== 1) return;
+            var dx = e.touches[0].clientX - startX;
+            var dy = e.touches[0].clientY - startY;
+
+            if (!pulling) {
+                if (dy < 8) {
+                    // Upwards is the page scrolling, sideways is the tab swipe.
+                    if (Math.abs(dy) > 6 || Math.abs(dx) >= 12) tracking = false;
+                    return;
+                }
+                if (Math.abs(dx) >= Math.abs(dy)) { tracking = false; return; }
+                if ((window.scrollY || window.pageYOffset || 0) > 0) { tracking = false; return; }
+                pulling = true;
+                indicator.classList.add("is-pulling");
+            }
+
+            // The gesture is ours now, so the browser's own overscroll — and on
+            // Android its own pull-to-refresh — stays out of the way.
+            if (e.cancelable) e.preventDefault();
+            follow(Math.min(PULL_MAX, (dy - 8) * PULL_DAMPING));
+        }, { passive: false });
+
+        function end(e, allowRefresh) {
+            if (!tracking) return;
+            var wasPulling = pulling;
+            tracking = false;
+            pulling = false;
+            if (!wasPulling) return;
+
+            var touch = (e.changedTouches && e.changedTouches[0]) || null;
+            var distance = touch ? Math.min(PULL_MAX, (touch.clientY - startY - 8) * PULL_DAMPING) : 0;
+            if (allowRefresh && distance >= PULL_TRIGGER) refresh();
+            else snapBack();
+        }
+        document.addEventListener("touchend", function (e) { end(e, true); }, { passive: true });
+        // A cancelled gesture is not a request for data.
+        document.addEventListener("touchcancel", function (e) { end(e, false); }, { passive: true });
+    }
+
     /* -------------------------------------------------- bootstrapping */
     // `history.scrollRestoration` would fight our own restore.
     try { if (history.scrollRestoration) history.scrollRestoration = "manual"; } catch (e) { /* ignore */ }
@@ -729,6 +916,7 @@
         });
 
         initSwipe();
+        initPullToRefresh();
     });
 
     // restore overlay on back/forward cache
@@ -766,6 +954,7 @@
         saveScroll: saveScroll,
         restoreScroll: beginScrollRestore,
         freshGetJSON: freshGetJSON,
+        onRefresh: onRefresh,
         clearApiCache: cacheDrop,
         viewSignature: viewSignature,
         tabOrder: function () { return TAB_ORDER.slice(); },
