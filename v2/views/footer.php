@@ -18,6 +18,7 @@
             <span>&copy; <?= date("Y") ?> TryQ8Flix · Stream responsibly.</span>
         </div>
     </footer>
+    </div><!-- /.app -->
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="assets/js/core.js"></script>

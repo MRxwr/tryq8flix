@@ -133,3 +133,7 @@ $v2BottomNav = array(
             });
         })();
     </script>
+
+    <!-- Transform target for tab swipes. Nav bars stay outside the shell so the
+         fixed positioning survives the drag; header/footer delimit its content. -->
+    <div class="app" id="app-shell" data-view="<?= htmlspecialchars($v2View) ?>">
