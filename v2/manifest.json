@@ -1,0 +1,25 @@
+{
+  "name": "TryQ8Flix",
+  "short_name": "Q8Flix",
+  "description": "Stream movies, TV shows and live matches.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07070b",
+  "theme_color": "#07070b",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "../logos/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../logos/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
