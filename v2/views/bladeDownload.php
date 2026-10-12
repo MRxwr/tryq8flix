@@ -1,182 +1,264 @@
-<?php include __DIR__ . '/header.php'; ?>
+<?php include 'header.php'; ?>
 
-<main class="page">
-    <div class="page-head">
-        <div>
-            <div class="eyebrow">Tools</div>
-            <h1 class="page-title">Video Downloader</h1>
-            <p class="page-sub">Paste an X/Twitter, Instagram, TikTok or YouTube link to preview it. YouTube is metadata-only.</p>
-        </div>
+<div class="hero" style="background-image: url('https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?q=80&w=1500&auto=format&fit=crop'); min-height: 62vh; align-items: flex-end;">
+    <div class="hero-overlay"></div>
+    <div class="hero-content" style="max-width: 760px;">
+        <h1 class="hero-title">Video Downloader</h1>
+                    <p class="hero-desc text-white-50">Paste an X/Twitter, Instagram, TikTok, or YouTube link and preview the metadata. YouTube download support is disabled.</p>
     </div>
+</div>
 
-    <section class="surface mb-3">
-        <div class="surface__body">
-            <div class="input-group mb-2">
-                <input class="input" type="url" id="download-url"
-                       placeholder="https://x.com/... or https://instagram.com/... or https://tiktok.com/...">
-                <button class="btn btn--primary" id="analyze-btn"><i class="fa-solid fa-magnifying-glass"></i> Analyze</button>
-                <button class="btn btn--ghost" id="clear-btn"><i class="fa-solid fa-eraser"></i> Clear</button>
-            </div>
-            <div id="downloader-message"></div>
-        </div>
-    </section>
+<div class="container" style="margin-top: 30px; margin-bottom: 60px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-dark text-white border-secondary shadow-lg">
+                <div class="card-body p-4">
+                    <h4 class="mb-3"><i class="fas fa-link me-2 text-danger"></i>Paste Video URL</h4>
 
-    <section class="surface mb-3 hide" id="preview-card">
-        <div class="surface__body">
-            <div style="display:grid;grid-template-columns:1fr;gap:20px;">
-                <div style="display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:20px;align-items:start;" id="preview-grid">
-                    <div>
-                        <img id="preview-thumb" alt="Video thumbnail" style="border-radius:14px;width:100%;object-fit:cover;">
-                        <video id="preview-video" class="hide" preload="metadata" muted playsinline
-                               style="border-radius:14px;width:100%;object-fit:cover;pointer-events:none;"></video>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-secondary border-0 text-white"><i class="fas fa-video"></i></span>
+                        <input id="download-url" type="url" class="form-control bg-secondary text-white border-0" placeholder="https://x.com/... or https://instagram.com/... or https://tiktok.com/... or https://youtube.com/...">
                     </div>
-                    <div>
-                        <h3 class="mb-1" id="preview-title" style="font-weight:800;">—</h3>
-                        <p class="muted small mb-1" id="preview-uploader"></p>
-                        <p class="faint small mb-3" id="preview-meta"></p>
-                        <div class="input-group">
-                            <button class="btn btn--primary" id="prepare-download-btn"><i class="fa-solid fa-download"></i> Prepare download</button>
-                            <a class="btn btn--light hide" id="download-direct-btn" href="#" target="_blank" rel="noopener" download>
-                                <i class="fa-solid fa-file-arrow-down"></i> Download now
-                            </a>
-                            <a class="btn btn--ghost" id="open-source-btn" href="#" target="_blank" rel="noopener">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open source
-                            </a>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button id="analyze-btn" class="btn btn-netflix"><i class="fas fa-search me-1"></i>Analyze</button>
+                        <button id="clear-btn" class="btn btn-secondary-netflix"><i class="fas fa-eraser me-1"></i>Clear</button>
+                    </div>
+
+                    <div id="downloader-message" class="mt-3"></div>
+                </div>
+            </div>
+
+            <div id="preview-card" class="card bg-dark text-white border-secondary shadow-lg mt-4" style="display:none;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img id="preview-thumb" src="" alt="Video thumbnail" class="img-fluid rounded-start" style="height:100%; object-fit:cover; min-height:220px;">
+                        <video id="preview-video" class="img-fluid rounded-start d-none" style="height:100%; object-fit:cover; min-height:220px; pointer-events:none;" preload="metadata" muted playsinline></video>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body p-4">
+                            <h5 id="preview-title" class="card-title mb-2">-</h5>
+                            <p id="preview-uploader" class="text-white-50 mb-1"></p>
+                            <p id="preview-meta" class="text-white-50 mb-3"></p>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <button id="prepare-download-btn" class="btn btn-success">
+                                    <i class="fas fa-download me-1"></i>Prepare Download
+                                </button>
+                                <a id="download-direct-btn" class="btn btn-success d-none" href="#" target="_blank" rel="noopener" download>
+                                    <i class="fas fa-file-arrow-down me-1"></i>Download Now
+                                </a>
+                                <a id="open-source-btn" class="btn btn-outline-light" href="#" target="_blank" rel="noopener">
+                                    <i class="fas fa-external-link-alt me-1"></i>Open Source Post
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section class="surface">
-        <div class="surface__head"><i class="fa-solid fa-circle-info"></i> Notes</div>
-        <div class="surface__body prose small">
-            <ul>
-                <li>Supported: X/Twitter, Instagram, TikTok and YouTube preview links.</li>
-                <li>YouTube downloads are disabled on this instance.</li>
-                <li>Private or login-only posts may not work.</li>
-                <li>Only download content you own or have rights to.</li>
-            </ul>
+            <div class="card bg-dark text-white border-secondary mt-4">
+                <div class="card-body p-4">
+                    <h5 class="mb-3"><i class="fas fa-circle-info me-2"></i>Notes</h5>
+                    <ul class="text-white-50 mb-0">
+                        <li>Supported links: X/Twitter, Instagram, TikTok, and YouTube preview links.</li>
+                        <li>YouTube is metadata-only here; downloading is disabled.</li>
+                        <li>Some posts may require login or may be private.</li>
+                        <li>Use this only for content you own or have rights to download.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </section>
-</main>
+    </div>
+</div>
 
-<?php include __DIR__ . '/footer.php'; ?>
+<?php include 'footer.php'; ?>
 
 <script>
-(function () {
-    var latestSourceUrl = "";
-    var latestPreviewVideo = "";
+$(document).ready(function() {
+    let latestSourceUrl = '';
+    let latestPreviewVideoUrl = '';
 
-    function message(type, text) {
-        document.getElementById("downloader-message").innerHTML =
-            '<div class="alert alert--' + type + '">' + text + "</div>";
+    function showMessage(type, msg) {
+        $('#downloader-message').html(`<div class="alert alert-${type} mb-0">${msg}</div>`);
     }
+
     function clearPreview() {
-        document.getElementById("preview-card").classList.add("hide");
-        document.getElementById("preview-thumb").src = "";
-        document.getElementById("preview-thumb").classList.remove("hide");
-        var v = document.getElementById("preview-video");
-        v.classList.add("hide"); v.removeAttribute("src");
-        try { v.load(); } catch (e) {}
-        document.getElementById("preview-title").textContent = "—";
-        document.getElementById("preview-uploader").textContent = "";
-        document.getElementById("preview-meta").textContent = "";
-        document.getElementById("open-source-btn").setAttribute("href", "#");
-        document.getElementById("download-direct-btn").classList.add("hide");
-        latestSourceUrl = ""; latestPreviewVideo = "";
-    }
-    function useImage(src) {
-        var v = document.getElementById("preview-video");
-        v.classList.add("hide"); v.removeAttribute("src");
-        document.getElementById("preview-thumb").classList.remove("hide");
-        document.getElementById("preview-thumb").src = src;
-    }
-    function useVideo(src) {
-        document.getElementById("preview-thumb").classList.add("hide");
-        document.getElementById("preview-thumb").src = "";
-        var v = document.getElementById("preview-video");
-        v.classList.remove("hide"); v.src = src;
-        try { v.load(); } catch (e) {}
-    }
-    function hms(total) {
-        var s = Number(total || 0);
-        if (!s || s < 1) return "unknown length";
-        var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-        function p(n) { return String(n).padStart(2, "0"); }
-        return h > 0 ? h + ":" + p(m) + ":" + p(sec) : m + ":" + p(sec);
+        $('#preview-card').hide();
+        $('#preview-thumb').attr('src', '');
+        $('#preview-thumb').removeClass('d-none');
+        const pv = $('#preview-video');
+        pv.addClass('d-none').attr('src', '');
+        const previewEl = pv.get(0);
+        if (previewEl) {
+            previewEl.load();
+        }
+        $('#preview-title').text('-');
+        $('#preview-uploader').text('');
+        $('#preview-meta').text('');
+        $('#open-source-btn').attr('href', '#');
+        $('#download-direct-btn').addClass('d-none').attr('href', '#');
+        latestSourceUrl = '';
+        latestPreviewVideoUrl = '';
     }
 
-    document.getElementById("analyze-btn").addEventListener("click", function () {
-        var url = document.getElementById("download-url").value.trim();
-        if (!url) { message("warn", "Paste a video URL first."); return; }
+    function useImagePreview(src) {
+        $('#preview-video').addClass('d-none').attr('src', '');
+        $('#preview-thumb').removeClass('d-none').attr('src', src);
+    }
+
+    function useVideoPreview(src) {
+        const pv = $('#preview-video');
+        const pe = pv.get(0);
+        if (!pe) return;
+
+        $('#preview-thumb').addClass('d-none').attr('src', '');
+        pv.removeClass('d-none').attr('src', src);
+        pe.load();
+    }
+
+    function secondsToHms(total) {
+        const sec = Number(total || 0);
+        if (!sec || sec < 1) return 'Unknown duration';
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    $('#analyze-btn').on('click', function() {
+        const url = ($('#download-url').val() || '').trim();
+        if (!url) {
+            showMessage('warning', 'Please paste a video URL first.');
+            return;
+        }
+
         clearPreview();
-        var btn = this, old = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Analyzing…';
-        message("info", "Fetching video details…");
+        const btn = $(this);
+        const oldText = btn.html();
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...');
+        showMessage('info', 'Fetching video details...');
 
-        $.ajax({ url: apiUrl("endpoint=Downloader&action=info"), method: "POST", data: { url: url }, dataType: "json" })
-            .done(function (res) {
-                if (!res || !res.ok) { message("err", (res && res.data && res.data.msg) || "Failed to analyze this link."); return; }
-                var d = res.data || {};
-                latestSourceUrl = d.webpage_url || url;
-                document.getElementById("preview-title").textContent = d.title || "Untitled";
-                document.getElementById("preview-uploader").textContent = d.uploader ? "By: " + d.uploader : "Uploader unknown";
-                document.getElementById("preview-meta").textContent =
-                    "Platform: " + (d.extractor || "Unknown") + " · Duration: " + hms(d.duration);
-                if (d.thumbnail) useImage(d.thumbnail);
-                else if (latestPreviewVideo) useVideo(latestPreviewVideo);
-                document.getElementById("open-source-btn").setAttribute("href", latestSourceUrl);
-                document.getElementById("preview-card").classList.remove("hide");
-                message("ok", "Video found. You can download it now.");
-            })
-            .fail(function (xhr) {
-                message("err", (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) ||
-                    "Network or server error while analyzing.");
-            })
-            .always(function () { btn.disabled = false; btn.innerHTML = old; });
+        $.ajax({
+            url: 'api/index.php?endpoint=Downloader&action=info',
+            method: 'POST',
+            data: { url: url },
+            dataType: 'json'
+        }).done(function(res) {
+            if (!res || !res.ok) {
+                const err = res && res.data && res.data.msg ? res.data.msg : 'Failed to analyze this link.';
+                showMessage('danger', err);
+                return;
+            }
+
+            const data = res.data || {};
+            latestSourceUrl = data.webpage_url || url;
+
+            $('#preview-title').text(data.title || 'Untitled');
+            $('#preview-uploader').text(data.uploader ? `By: ${data.uploader}` : 'Uploader unknown');
+            $('#preview-meta').text(`Platform: ${data.extractor || 'Unknown'} | Duration: ${secondsToHms(data.duration)}`);
+
+            if (data.thumbnail) {
+                useImagePreview(data.thumbnail);
+            } else if (latestPreviewVideoUrl) {
+                useVideoPreview(latestPreviewVideoUrl);
+            } else {
+                useImagePreview('https://dummyimage.com/640x360/1f1f1f/ffffff&text=No+Thumbnail');
+            }
+
+            $('#open-source-btn').attr('href', latestSourceUrl);
+            $('#preview-card').show();
+
+            showMessage('success', 'Video found. You can download it now.');
+        }).fail(function(xhr) {
+            let msg = 'Network/server error while analyzing the link.';
+            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) {
+                msg = xhr.responseJSON.data.msg;
+            } else if (xhr.responseText && String(xhr.responseText).trim() !== '') {
+                msg = String(xhr.responseText).slice(0, 500);
+            }
+            showMessage('danger', msg);
+        }).always(function() {
+            btn.prop('disabled', false).html(oldText);
+        });
     });
 
-    document.getElementById("prepare-download-btn").addEventListener("click", function () {
-        var url = document.getElementById("download-url").value.trim();
-        if (!url) { message("warn", "Paste and analyze a URL first."); return; }
-        var btn = this, old = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Preparing…';
-        message("info", "Preparing your download link…");
+    $('#prepare-download-btn').on('click', function() {
+        const url = ($('#download-url').val() || '').trim();
+        if (!url) {
+            showMessage('warning', 'Paste and analyze a URL first.');
+            return;
+        }
 
-        $.ajax({ url: apiUrl("endpoint=Downloader&action=link"), method: "POST", data: { url: url }, dataType: "json" })
-            .done(function (res) {
-                if (!res || !res.ok || !res.data || !res.data.stream_url) {
-                    message("err", (res && res.data && res.data.msg) || "Unable to get a direct link."); return;
-                }
-                var direct = res.data.stream_url;
-                document.getElementById("download-direct-btn").setAttribute("href", direct);
-                document.getElementById("download-direct-btn").classList.remove("hide");
-                latestPreviewVideo = direct;
-                var win = window.open(direct, "_blank", "noopener");
-                message("ok", win ? "Download started." : "Download link is ready — tap Download now.");
-            })
-            .fail(function (xhr) {
-                message("err", (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) ||
-                    "Network or server error while preparing.");
-            })
-            .always(function () { btn.disabled = false; btn.innerHTML = old; });
+        const btn = $(this);
+        const oldText = btn.html();
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Preparing...');
+        showMessage('info', 'Preparing your downloadable MP4 link...');
+
+        $.ajax({
+            url: 'api/index.php?endpoint=Downloader&action=link',
+            method: 'POST',
+            data: { url: url },
+            dataType: 'json'
+        }).done(function(res) {
+            if (!res || !res.ok || !res.data || !res.data.stream_url) {
+                const err = res && res.data && res.data.msg ? res.data.msg : 'Unable to get direct download link.';
+                showMessage('danger', err);
+                return;
+            }
+
+            const directUrl = res.data.stream_url;
+            const proxiedDownloadUrl = /*'video-proxy.php?download=1&url=' + */(directUrl);
+            $('#download-direct-btn').attr('href', proxiedDownloadUrl).removeClass('d-none');
+
+            latestPreviewVideoUrl = directUrl;
+            const currentThumb = ($('#preview-thumb').attr('src') || '').toLowerCase();
+            if (!$('#preview-card').is(':hidden') && (!currentThumb || currentThumb.includes('dummyimage.com'))) {
+                useVideoPreview(directUrl);
+            }
+
+            // Try auto-open once, but keep a real clickable link regardless of popup restrictions.
+            const win = window.open(proxiedDownloadUrl, '_blank', 'noopener');
+            if (win) {
+                showMessage('success', 'Download started. If it did not, use the Download Now button.');
+            } else {
+                showMessage('success', 'Download link is ready. Tap Download Now to save the video.');
+            }
+        }).fail(function(xhr) {
+            let msg = 'Network/server error while preparing download.';
+            if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.msg) {
+                msg = xhr.responseJSON.data.msg;
+            } else if (xhr.responseText && String(xhr.responseText).trim() !== '') {
+                msg = String(xhr.responseText).slice(0, 500);
+            }
+            showMessage('danger', msg);
+        }).always(function() {
+            btn.prop('disabled', false).html(oldText);
+        });
     });
 
-    document.getElementById("clear-btn").addEventListener("click", function () {
-        document.getElementById("download-url").value = "";
-        document.getElementById("downloader-message").innerHTML = "";
+    $('#clear-btn').on('click', function() {
+        $('#download-url').val('');
+        $('#downloader-message').empty();
         clearPreview();
     });
 
-    var pv = document.getElementById("preview-video");
-    pv.addEventListener("play", function () { this.pause(); this.currentTime = 0; });
-    pv.addEventListener("loadeddata", function () {
+    // Hard block preview video playback interactions.
+    $('#preview-video').on('play click touchstart', function(e) {
+        e.preventDefault();
         this.pause();
-        try { this.currentTime = 0.1; } catch (e) { this.currentTime = 0; }
+        this.currentTime = 0;
     });
-})();
+
+    // Keep only a still frame loaded and never allow continuous playback.
+    $('#preview-video').on('loadeddata', function() {
+        this.pause();
+        try {
+            this.currentTime = 0.1;
+        } catch (err) {
+            this.currentTime = 0;
+        }
+    });
+});
 </script>

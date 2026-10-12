@@ -1,117 +1,281 @@
-<?php include __DIR__ . '/header.php'; ?>
+<?php include 'header.php'; ?>
 
-<main class="page">
-    <div class="page-head">
-        <div>
-            <div class="eyebrow">Account</div>
-            <h1 class="page-title">Profile</h1>
-        </div>
-    </div>
-
-    <div class="grid-2">
-        <section class="surface">
-            <div class="surface__body">
-                <div class="profile-hero">
-                    <img class="profile-avatar" id="profile-avatar" alt="Profile picture">
-                    <h2 class="profile-name" id="profile-username">Loading…</h2>
-                    <div>
-                        <div class="pill-label">Email</div>
-                        <div data-profile-email>—</div>
+<div class="container" style="margin-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card bg-dark text-white p-4">
+                <div class="text-center mb-4">
+                    <img id="profile-avatar" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="rounded-3 shadow" width="100" alt="Profile">
+                    <h3 class="mt-3" id="profile-username">Loading...</h3>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <label class="text-white-50 small text-uppercase fw-bold" style="font-size: 0.75rem;">Subscription</label>
+                        <div class="fs-6">Premium Plan (4K HDR)</div>
                     </div>
-                    <div id="profile-email" class="hide"></div>
-                    <span class="chip chip--brand"><i class="fa-solid fa-crown"></i> Premium · 4K HDR</span>
+                    <!-- Hidden email for edit modal pre-fill -->
+                    <div id="profile-email" class="d-none"></div>
                 </div>
+                
+                <hr class="bg-secondary">
+                
+                <button class="btn btn-outline-light w-100 mb-3">Manage Profiles</button>
+                <button id="editProfileBtn" class="btn btn-outline-light w-100 mb-3">Edit Profile</button>
+                <button id="changePasswordBtn" class="btn btn-outline-light w-100 mb-3">Change Password</button>
+                <button id="deleteAccountBtn" class="btn btn-outline-danger w-100">Delete Account</button>
             </div>
-        </section>
+        </div>
+    </div>
+</div>
 
-        <section class="surface">
-            <div class="surface__head"><i class="fa-solid fa-sliders"></i> Manage account</div>
-            <div class="surface__body stack--sm" style="display:grid;">
-                <button class="btn btn--ghost btn--block" id="editProfileBtn"><i class="fa-solid fa-pen"></i> Edit profile</button>
-                <button class="btn btn--ghost btn--block" id="changePasswordBtn"><i class="fa-solid fa-key"></i> Change password</button>
-                <a class="btn btn--ghost btn--block" href="?v=History"><i class="fa-solid fa-clock-rotate-left"></i> Watch history</a>
-                <a class="btn btn--ghost btn--block" href="?v=Favorites"><i class="fa-solid fa-heart"></i> My favorites</a>
-                <button class="btn btn--danger btn--block" id="deleteAccountBtn"><i class="fa-solid fa-trash-can"></i> Delete account</button>
-                <a class="btn btn--primary btn--block" href="?v=Logout" data-no-fade><i class="fa-solid fa-right-from-bracket"></i> Log out</a>
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">Edit Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editProfileForm">
+            <div id="ep-message" class="mb-3"></div>
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control bg-secondary text-white border-0" id="editEmail" required>
             </div>
-        </section>
-    </div>
-</main>
-
-<!-- Edit profile -->
-<div class="overlay hide" id="editProfileModal">
-    <div class="modal">
-        <div class="modal__head">
-            <h5>Edit profile</h5>
-            <button class="modal__close" data-modal-close="editProfileModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal__body">
-            <form id="editProfileForm">
-                <div id="ep-message"></div>
-                <div class="field">
-                    <label class="field__label" for="editEmail">Email address</label>
-                    <input class="input" type="email" id="editEmail" required>
+            <div class="mb-3">
+                <label class="form-label">Profile Picture</label>
+                <div class="d-flex align-items-center p-3 border border-secondary rounded bg-secondary bg-opacity-10">
+                    <label for="editAvatar" class="btn btn-netflix me-3">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>Choose Image
+                    </label>
+                    <span id="fileName" class="text-white-50 fst-italic text-truncate" style="max-width: 200px;">No file chosen</span>
                 </div>
-                <div class="field">
-                    <label class="field__label">Profile picture</label>
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <label for="editAvatar" class="btn btn--ghost btn--sm"><i class="fa-solid fa-cloud-arrow-up"></i> Choose image</label>
-                        <span id="fileName" class="faint small">No file chosen</span>
-                    </div>
-                    <input type="file" id="editAvatar" accept="image/*" class="hide">
-                    <div class="faint xsmall mt-1">JPG, PNG, GIF or WEBP.</div>
-                </div>
-                <button type="submit" class="btn btn--primary btn--block"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
-            </form>
-        </div>
+                <input type="file" class="d-none" id="editAvatar" accept="image/*">
+                <div class="form-text text-muted mt-2">Allowed formats: JPG, PNG, GIF, WEBP</div>
+            </div>
+            <button type="submit" class="btn btn-netflix w-100">Save Changes</button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Change password -->
-<div class="overlay hide" id="changePasswordModal">
-    <div class="modal">
-        <div class="modal__head">
-            <h5>Change password</h5>
-            <button class="modal__close" data-modal-close="changePasswordModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal__body">
-            <form id="changePasswordForm">
-                <div id="cp-message"></div>
-                <div class="field field--icon">
-                    <label class="field__label" for="newPassword">New password</label>
-                    <input class="input" type="password" id="newPassword" required>
-                    <button type="button" class="peek" data-peek="newPassword" aria-label="Show password"><i class="fa-regular fa-eye"></i></button>
-                </div>
-                <div class="field field--icon">
-                    <label class="field__label" for="confirmNewPassword">Confirm password</label>
-                    <input class="input" type="password" id="confirmNewPassword" required>
-                    <button type="button" class="peek" data-peek="confirmNewPassword" aria-label="Show password"><i class="fa-regular fa-eye"></i></button>
-                </div>
-                <button type="submit" class="btn btn--primary btn--block"><i class="fa-solid fa-key"></i> Update password</button>
-            </form>
-        </div>
+<!-- Delete Account Confirmation Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-danger">Delete Account</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+        <p class="text-muted small">All your data, including watch history and favorites, will be permanently removed.</p>
+        <div id="da-message" class="mb-3"></div>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete My Account</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Delete account -->
-<div class="overlay hide" id="deleteAccountModal">
-    <div class="modal">
-        <div class="modal__head">
-            <h5 style="color:var(--danger);">Delete account</h5>
-            <button class="modal__close" data-modal-close="deleteAccountModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal__body">
-            <p class="mb-1">Are you sure? This cannot be undone.</p>
-            <p class="faint small">Your watch history, favorites and profile will be permanently removed.</p>
-            <div id="da-message"></div>
-        </div>
-        <div class="modal__foot">
-            <button class="btn btn--ghost" data-modal-close="deleteAccountModal">Cancel</button>
-            <button class="btn btn--danger" id="confirmDeleteBtn">Delete my account</button>
-        </div>
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title">Change Password</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="changePasswordForm">
+            <div id="cp-message" class="mb-3"></div>
+            <div class="mb-3 position-relative">
+                <label class="form-label">New Password</label>
+                <input type="password" class="form-control bg-secondary text-white border-0" id="newPassword" required>
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #e5e5e5; margin-top: 10px;">
+                    <i class="fa fa-eye"></i>
+                </span>
+            </div>
+            <div class="mb-3 position-relative">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control bg-secondary text-white border-0" id="confirmNewPassword" required>
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer; color: #e5e5e5; margin-top: 10px;">
+                    <i class="fa fa-eye"></i>
+                </span>
+            </div>
+            <button type="submit" class="btn btn-netflix w-100">Update Password</button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
-<?php include __DIR__ . '/footer.php'; ?>
-<script src="assets/js/profile.js"></script>
-<script>Q8Profile.init();</script>
+<?php include 'footer.php'; ?>
+
+<script>
+$(document).ready(function() {
+    // Fetch profile data from API
+    $.getJSON('api/index.php?endpoint=User&action=profile', function(response) {
+        if(response.ok) {
+            const user = response.data;
+            $('#profile-username').text(user.username);
+            $('#profile-email').text(user.email);
+            if(user.avatar) {
+                $('#profile-avatar').attr('src', user.avatar);
+            }
+        } else {
+            // If token is invalid or expired, redirect to login
+            navigateTo('?v=Login');
+        }
+    }).fail(function() {
+        // Handle network errors
+        $('#profile-username').text('Error loading profile');
+    });
+
+    // Open modal
+    $('#changePasswordBtn').click(function() {
+        var myModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+        myModal.show();
+    });
+
+    // Open Edit Profile Modal
+    $('#editProfileBtn').click(function() {
+        // Pre-fill email
+        $('#editEmail').val($('#profile-email').text());
+        // Reset file input
+        $('#editAvatar').val('');
+        $('#fileName').text('No file chosen');
+        
+        var myModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+        myModal.show();
+    });
+
+    // File Input Change Handler
+    $('#editAvatar').change(function() {
+        var fileName = $(this).val().split('\\').pop();
+        $('#fileName').text(fileName ? fileName : 'No file chosen');
+    });
+
+    // Handle Edit Profile Submission
+    $('#editProfileForm').submit(function(e) {
+        e.preventDefault();
+        const btn = $(this).find('button[type="submit"]');
+        const originalText = btn.text();
+        btn.prop('disabled', true).text('Saving...');
+        $('#ep-message').html('');
+
+        const formData = new FormData();
+        formData.append('email', $('#editEmail').val());
+        const avatarFile = $('#editAvatar')[0].files[0];
+        if(avatarFile) {
+            formData.append('avatar', avatarFile);
+        }
+
+        $.ajax({
+            url: 'api/index.php?endpoint=User&action=profile&update=1',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                const res = (typeof response === 'string') ? JSON.parse(response) : response;
+                if(res.ok) {
+                    $('#ep-message').html('<div class="alert alert-success">' + res.data.msg + '</div>');
+                    // Update UI
+                    $('#profile-email').text($('#editEmail').val());
+                    // Reload page to see new avatar or fetch profile again
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    $('#ep-message').html('<div class="alert alert-danger">' + res.data.msg + '</div>');
+                    btn.prop('disabled', false).text(originalText);
+                }
+            },
+            error: function() {
+                $('#ep-message').html('<div class="alert alert-danger">Network error. Please try again.</div>');
+                btn.prop('disabled', false).text(originalText);
+            }
+        });
+    });
+
+    // Open Delete Account Modal
+    $('#deleteAccountBtn').click(function() {
+        var myModal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+        myModal.show();
+    });
+
+    // Handle Account Deletion
+    $('#confirmDeleteBtn').click(function() {
+        const btn = $(this);
+        btn.prop('disabled', true).text('Deleting...');
+        
+        $.post('api/index.php?endpoint=User&action=delete', function(response) {
+            const res = (typeof response === 'string') ? JSON.parse(response) : response;
+            if(res.ok) {
+                $('#da-message').html('<div class="alert alert-success">' + res.data.msg + '</div>');
+                setTimeout(() => {
+                    // Clear cookie and redirect to login
+                    document.cookie = "tryq8flix2=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = '?v=Login';
+                }, 2000);
+            } else {
+                $('#da-message').html('<div class="alert alert-danger">' + res.data.msg + '</div>');
+                btn.prop('disabled', false).text('Delete My Account');
+            }
+        }).fail(function() {
+            $('#da-message').html('<div class="alert alert-danger">Network error. Please try again.</div>');
+            btn.prop('disabled', false).text('Delete My Account');
+        });
+    });
+
+    // Toggle password visibility
+    $(document).on('click', '.toggle-password', function() {
+        const input = $(this).siblings('input');
+        const icon = $(this).find('i');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    $('#changePasswordForm').submit(function(e) {
+        e.preventDefault();
+        const password = $('#newPassword').val();
+        const confirmPassword = $('#confirmNewPassword').val();
+        
+        if(password !== confirmPassword) {
+            $('#cp-message').html('<div class="alert alert-danger">Passwords do not match!</div>');
+            return;
+        }
+
+        $.post('api/index.php?endpoint=User&action=change', {
+            password: password,
+            confirmPassword: confirmPassword
+        }, function(response) {
+            const res = (typeof response === 'string') ? JSON.parse(response) : response;
+            if(res.ok) {
+                $('#cp-message').html('<div class="alert alert-success">' + res.data.msg + '</div>');
+                $('#changePasswordForm')[0].reset();
+                setTimeout(() => {
+                    // Close modal properly
+                    const modalEl = document.getElementById('changePasswordModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                    $('#cp-message').empty();
+                }, 2000);
+            } else {
+                $('#cp-message').html('<div class="alert alert-danger">' + res.data.msg + '</div>');
+            }
+        });
+    });
+});
+</script>

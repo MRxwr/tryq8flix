@@ -1,0 +1,242 @@
+<?php
+namespace V2Legacy;
+function shahidSpaceCurl($url) {
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://eternitech.com/wp-admin/admin-ajax.php',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => array('x' => $url,'action' => 'ws_ajax','id' => '52','currentpageid' => '257'),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    $jsonResponse = json_decode($response, true);
+    return isset($jsonResponse['data']) ? $jsonResponse['data'] : '';
+}
+
+function searchShahidSpaceListing($url){
+	GLOBAL $website, $_GET;
+	$html = shahidSpaceCurl($url);
+	$dom = str_get_html($html);
+	$data = [
+		'shows' => []
+	];
+	if ($dom) {
+        // Loop through each show block in the new structure
+        foreach ($dom->find('.Small--Box') as $show) {
+            $anchor = $show->find('a.recent--block', 0);
+            $href = $anchor ? $anchor->href : '';
+            $imageTag = $anchor ? $anchor->find('.Poster img', 0) : null;
+            $image = $imageTag ? $imageTag->getAttribute('data-src') : '';
+            $episodeEm = $anchor ? $anchor->find('.number em', 0) : null;
+            $episode = $episodeEm ? $episodeEm->plaintext : '';
+            $categoryLi = $anchor ? $anchor->find('ul.liList li.category', 0) : null;
+            $category = $categoryLi ? $categoryLi->plaintext : '';
+            $titleTag = $anchor ? $anchor->find('inner--title h2', 0) : null;
+            $title = $titleTag ? $titleTag->plaintext : '';
+            $descTag = $anchor ? $anchor->find('inner--title p', 0) : null;
+            $description = $descTag ? $descTag->plaintext : '';
+
+			$proxyImageUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/image-proxy.php?url=' . urlencode(trim($image));
+
+            $jsonData = [
+                'href'       => trim($href),
+                'image'      => trim($image),
+                'episode'    => trim($episode),
+                'views'      => '', // No views in new structure
+                'title'      => trim($title),
+                'category'   => trim($category),
+                'description'=> trim($description)
+            ];
+            $data['shows'][] = $jsonData;
+        }
+        $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        echo 'Error: Invalid DOM object.';
+        $shows = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+	$shows = ( isset($shows) && !empty($shows) ) ? json_decode($shows,true) : array() ;
+	return $shows = $shows["shows"];
+	$dom->clear();
+	unset($dom);
+}
+
+function shahidSpaceMore($url){
+    $html = shahidSpaceCurl("{$url}");
+    $htmlDom = str_get_html($html);
+    $seasonsData = [];
+    $episodesData = [];
+    
+    // Episodes
+    $episodesList = null;
+    foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+        $h3 = $area->find('h3', 0);
+        if ($h3 && strpos($h3->plaintext, 'جميع الحلقات') !== false) {
+            $episodesList = $area->find('div.EpisodesList', 0);
+            break;
+        }
+    }
+    if ($episodesList) {
+        foreach ($episodesList->find('a') as $linkNode) {
+            $link = $linkNode->href;
+            $epNum = $linkNode->find('em', 0);
+            $title = $epNum ? 'الحلقة ' . trim($epNum->plaintext) : '';
+            $episodesData[] = [
+                'link' => $link,
+                'title' => $title,
+                'episode_number' => ''
+            ];
+        }
+    }
+    
+    // Seasons
+    $seasonsList = null;
+    foreach ($htmlDom->find('div.EpisodesArea') as $area) {
+        $h3 = $area->find('h3', 0);
+        if ($h3 && strpos($h3->plaintext, 'جميع المواسم') !== false) {
+            $seasonsList = $area->find('div.EpisodesList', 0);
+            break;
+        }
+    }
+    if ($seasonsList) {
+        foreach ($seasonsList->find('a') as $linkNode) {
+            $link = $linkNode->href;
+            $seasonNum = $linkNode->find('em', 0);
+            $title = $seasonNum ? 'الموسم ' . trim($seasonNum->plaintext) : '';
+            $seasonsData[] = [
+                'link' => $link,
+                'title' => $title,
+                'season_number' => ''
+            ];
+        }
+    }
+    
+    if (strpos(strtolower($url), 'season') === false){
+        // Sort episodes numerically by extracting the number from the title
+        usort($episodesData, function($a, $b) {
+            preg_match('/(\d+)/', $a['title'], $matchA);
+            preg_match('/(\d+)/', $b['title'], $matchB);
+            $numA = isset($matchA[1]) ? intval($matchA[1]) : 0;
+            $numB = isset($matchB[1]) ? intval($matchB[1]) : 0;
+            return $numA - $numB;
+        });
+        // Sort seasons numerically by extracting the number from the title
+        usort($seasonsData, function($a, $b) {
+            preg_match('/(\d+)/', $a['title'], $matchA);
+            preg_match('/(\d+)/', $b['title'], $matchB);
+            $numA = isset($matchA[1]) ? intval($matchA[1]) : 0;
+            $numB = isset($matchB[1]) ? intval($matchB[1]) : 0;
+            return $numA - $numB;
+        });
+    }
+	
+    $data = [
+        'seasons' => $seasonsData,
+        'episodes' => $episodesData
+    ];
+    $htmlDom->clear();
+	unset($htmlDom);
+    return $data;
+}
+function extractDomain($url) {
+	$parsedUrl = parse_url($url);
+	if ($parsedUrl && isset($parsedUrl['host'])) {
+		return $parsedUrl['host'];
+	} else {
+		return false;
+	}
+}
+function shahidSpaceServers($url){
+    $videoUrl = $url;
+	if (substr($videoUrl, -7) !== '/watch/') {
+		$videoUrl = rtrim($videoUrl, '/') . '/watch/';
+	}
+    $mainServer = [];
+    $html = shahidSpaceCurl("{$videoUrl}");
+    $htmlDom = str_get_html($html);
+    $servers = [];
+    
+    // Define unwanted domains (you may need to adjust this array based on your requirements)
+    $notWanted = ['example.com', 'unwanted.com']; // Add domains you want to exclude
+    
+    if ($htmlDom) {
+        foreach ($htmlDom->find('div.ServersList ul#watch li') as $li) {
+            $url = $li->getAttribute('data-watch');
+            $nameTag = $li->find('span#serverName', 0);
+            $name = $nameTag ? $nameTag->plaintext : '';
+            $domain = extractDomain($url);
+            if ($url && !in_array(strtolower($domain), $notWanted)) {
+                $servers[] = ["url" => $url, "name" => $name];
+            }
+        }
+    }
+    
+    foreach ($servers as $server) {
+        $mainServer[]["link"] = $server["url"];
+    }
+    
+    $htmlDom->clear();
+    unset($htmlDom);
+    return $mainServer;
+}
+
+function outputData5($shows){ 
+	$user = checkLogin();
+	$output = "";
+	if( is_array($shows) && !empty($shows) && !empty($user["id"]) ){
+		for ($i = 0; $i < sizeof($shows); $i++) {
+			$checkVideoType = str_replace("film","watch",str_replace("post","watch",str_replace("episode","watch",$shows[$i]["href"])));
+			if( strstr($shows[$i]["href"],"episode") ){
+				$catgoryType = "categoryTitleTv";
+				$shows[$i]["episode"] = $shows[$i]["episode"];
+			}elseif( strstr($shows[$i]["href"],"film") ){
+				$catgoryType = "categoryTitleMovie";
+				$shows[$i]["episode"] = "تشغيل";
+			}else{
+				$catgoryType = "categoryTitlePost";
+				$shows[$i]["episode"] = "تشغيل";
+			}
+			$realTitle = explode("الحلقة",$shows[$i]["title"]);
+			$output .= "
+				<div class='col-xl-4 col-lg-6 col-md-6 col-sm-12 p-1'>
+					<div class='card w-100'>
+						<div class='card-body'>
+							<div class='row w-100 p-0 m-0'>
+								<div class='col-4 p-1'>
+									<img src='{$shows[$i]["image"]}' style='width:100%;height:170px;border-radius: 10px; box-shadow: 0px 0px 10px 0px black;'>
+								</div>
+								<div class='col-8 p-1'>
+									<div style='height:170px; overflow:auto;text-align: -webkit-right;' class='pt-2'>
+										<h6 class='card-title {$catgoryType}' id='".str_replace(' ','-',$shows[$i]["category"])."' style='color:#9f8d5c'><b>{$shows[$i]["category"]}</b></h6>
+										<h6 class='card-title postTitle{$i}'>{$realTitle[0]}</h6>
+										<p class='card-text'>
+											<b>العنوان:</b> {$shows[$i]["episode"]}<br>
+											<b>التفاصيل:</b> ".substr($shows[$i]["description"],0,100)."...
+										</p>
+									</div>
+								</div>
+								<div class='col-6 p-1'>
+									<div data-bs-toggle='modal' data-bs-target='#playVideo' class='btn btn-danger w-100 playVideo nextBtn' id='{$checkVideoType}'><i class='bi bi-play-fill'></i> {$shows[$i]["episode"]}</div>
+								</div>
+								<div class='col-6 p-1'>
+									<div data-bs-toggle='modal' data-bs-target='#threeDots' class='btn btn-warning w-100 threeDots nextBtn' id='{$shows[$i]["href"]}'><i class='bi bi-three-dots'></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			";
+		}
+		echo $output;
+	}else{
+		$msg = "<h1 class='text-center mt-5'>No result.<h1>";
+		echo $msg;
+	}
+}
+?>

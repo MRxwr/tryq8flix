@@ -1,85 +1,81 @@
-<?php include __DIR__ . '/header.php'; ?>
+<?php include 'header.php'; ?>
 
-<main class="page page--wide">
-    <div class="page-head">
-        <div>
-            <div class="eyebrow">Today</div>
-            <h1 class="page-title">Live Matches</h1>
-            <p class="page-sub">Follow the action and pick a stream.</p>
-        </div>
-        <button class="btn btn--ghost btn--sm" id="refresh-matches"><i class="fa-solid fa-rotate"></i> Refresh</button>
+<div class="container" style="margin-top: 100px;">
+    <h2 class="section-title">Live Matches</h2>
+    <div id="matches-list">
+        <div class="text-center"><div class="spinner-border text-danger" role="status"></div></div>
     </div>
+</div>
 
-    <div id="matches-list" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr));">
-        <div class="center-state" style="grid-column:1/-1;"><div class="spinner"></div></div>
-    </div>
-</main>
-
-<?php include __DIR__ . '/footer.php'; ?>
+<?php include 'footer.php'; ?>
 
 <script>
-(function () {
-    var list = document.getElementById("matches-list");
+$(document).ready(function() {
+    $.getJSON('api/index.php?endpoint=Live&action=live', function(response) {
+        $('#matches-list').empty();
+        if(response.ok && response.data.length > 0) {
+            response.data.forEach(match => {
+                if(match.rightTeamName) {
+                    const qParams = {
+                        v: 'Servers',
+                        link: encryptLink(match.href),
+                        type: 'live',
+                        title: encryptLink(`${match.leftTeamName} VS ${match.rightTeamName}`),
+                        image: encryptLink(match.leftTeamLogo),
+                        leftLogo: encryptLink(match.leftTeamLogo),
+                        rightLogo: encryptLink(match.rightTeamLogo),
+                        leftName: encryptLink(match.leftTeamName),
+                        rightName: encryptLink(match.rightTeamName)
+                    };
+                    const queryString = Object.keys(qParams).map(key => key + '=' + encodeURIComponent(qParams[key])).join('&');
+                    const encryptedUrl = '?q=' + encodeURIComponent(encryptLink(queryString));
 
-    function matchCard(m) {
-        var q = {
-            v: "Servers", type: "live",
-            link: encryptLink(m.href), href: encryptLink(m.href),
-            title: encryptLink((m.leftTeamName || "") + " VS " + (m.rightTeamName || "")),
-            image: encryptLink(m.leftTeamLogo || ""),
-            leftLogo: encryptLink(m.leftTeamLogo || ""),
-            rightLogo: encryptLink(m.rightTeamLogo || ""),
-            leftName: encryptLink(m.leftTeamName || ""),
-            rightName: encryptLink(m.rightTeamName || "")
-        };
-        var enc = encryptLink(Object.keys(q).map(function (k) { return k + "=" + encodeURIComponent(q[k]); }).join("&"));
-
-        return '<article class="match" onclick="navigateTo(\'?q=' + encodeURIComponent(enc) + '\')">' +
-            '<div class="match__body">' +
-                '<div class="match__team">' +
-                    '<img src="' + Q8.escAttr(m.leftTeamLogo || "") + '" alt="" loading="lazy">' +
-                    '<span>' + escapeHtml(m.leftTeamName || "") + "</span>" +
-                "</div>" +
-                '<div class="match__mid">' +
-                    '<div class="match__time">' + escapeHtml(m.matchTime || "") + "</div>" +
-                    '<div class="match__score">' + escapeHtml(m.result || "0 - 0") + "</div>" +
-                    '<span class="chip chip--live">' + escapeHtml(m.liveStatus || "Live") + "</span>" +
-                "</div>" +
-                '<div class="match__team">' +
-                    '<img src="' + Q8.escAttr(m.rightTeamLogo || "") + '" alt="" loading="lazy">' +
-                    '<span>' + escapeHtml(m.rightTeamName || "") + "</span>" +
-                "</div>" +
-            "</div>" +
-            '<div class="match__foot">' +
-                '<span><i class="fa-solid fa-trophy"></i> ' + escapeHtml(m.league || "Match") + "</span>" +
-                '<span><i class="fa-solid fa-microphone"></i> ' + escapeHtml(m.commentator || "—") + "</span>" +
-                '<span><i class="fa-solid fa-tv"></i> ' + escapeHtml(m.channel || "—") + "</span>" +
-            "</div></article>";
-    }
-
-    function load(forceFresh) {
-        list.innerHTML = '<div class="center-state" style="grid-column:1/-1;"><div class="spinner"></div></div>';
-        // Refresh means "ask again": the cached list is only there for coming
-        // back to the tab, never for an explicit refresh.
-        return (forceFresh ? Q8.freshGetJSON : $.getJSON)(apiUrl("endpoint=Live&action=live"), function (response) {
-            var matches = (response && response.ok && response.data) ? response.data.filter(function (m) { return m.rightTeamName; }) : [];
-            if (!matches.length) {
-                list.innerHTML = '<div class="center-state" style="grid-column:1/-1;">' +
-                    '<i class="fa-solid fa-futbol big"></i><h3>No live matches right now</h3>' +
-                    "<p>Check back later for upcoming games.</p></div>";
-                return;
-            }
-            list.innerHTML = matches.map(matchCard).join("");
-        }).fail(function () {
-            list.innerHTML = '<div class="center-state" style="grid-column:1/-1;">' +
-                '<i class="fa-solid fa-triangle-exclamation big"></i><h3>Could not load matches</h3>' +
-                "<p>Please try again.</p></div>";
-        });
-    }
-
-    document.getElementById("refresh-matches").addEventListener("click", function () { load(true); });
-    // The pull gesture means what the Refresh button means: ask again.
-    Q8.onRefresh(function () { return load(true); });
-    load();
-})();
+                    let html = `
+                        <div class="live-match-card">
+                            <div class="match-main">
+                                <div class="team-box">
+                                    <span class="team-name text-white me-3 d-none d-md-inline">${match.leftTeamName}</span>
+                                    <img src="${match.leftTeamLogo}" class="team-logo" alt="${match.leftTeamName}">
+                                    <span class="team-name text-white ms-2 d-inline d-md-none">${match.leftTeamName}</span>
+                                </div>
+                                
+                                <div class="match-center">
+                                    <span class="match-time">${match.matchTime}</span>
+                                    <div class="match-result">${match.result || '0 - 0'}</div>
+                                    <span class="badge-live">${match.liveStatus}</span>
+                                </div>
+                                
+                                <div class="team-box left">
+                                    <span class="team-name text-white me-2 d-inline d-md-none">${match.rightTeamName}</span>
+                                    <img src="${match.rightTeamLogo}" class="team-logo" alt="${match.rightTeamName}">
+                                    <span class="team-name text-white ms-3 d-none d-md-inline">${match.rightTeamName}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="match-footer">
+                                <div class="footer-item">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>${match.league || 'مباراة'}</span>
+                                </div>
+                                <div class="footer-item">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>${match.commentator || 'غير معروف'}</span>
+                                </div>
+                                <div class="footer-item">
+                                    <i class="fas fa-tv"></i>
+                                    <span>${match.channel || 'غير معروف'}</span>
+                                </div>
+                            </div>
+                            
+                            <a href="${encryptedUrl}" class="stretched-link"></a>
+                        </div>
+                    `;
+                    $('#matches-list').append(html);
+                }
+            });
+        } else {
+            $('#matches-list').html('<p class="text-center">No live matches found at the moment.</p>');
+        }
+    });
+});
 </script>

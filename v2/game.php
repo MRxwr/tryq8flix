@@ -40,6 +40,21 @@ if ($id === "" || !is_file($modulePath)) {
 
 // Convention every module follows: init + ucfirst(id).
 $initFunction = "init" . strtoupper(substr($id, 0, 1)) . substr($id, 1);
+
+/**
+ * A finished run is saved to the player's own board, so the frame needs the
+ * session that signs that write: the account's CSRF token. This document
+ * deliberately does not send securityHeaders() — it is a stage for legacy
+ * modules that need their own CDN assets and inline scripts, not app HTML.
+ * A database problem must never stop a game from starting, so this is guarded.
+ */
+$player = null;
+try {
+    require_once __DIR__ . '/app/bootstrap.php';
+    $player = currentUser();
+} catch (Throwable $error) {
+    $player = null;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,12 +82,17 @@ $initFunction = "init" . strtoupper(substr($id, 0, 1)) . substr($id, 1);
     <div id="game-container"></div>
 
     <script>
-        // A game frame never loads header.php, so the api path is set here.
-        window.API_BASE = "../api/index.php";
+        // A game frame never loads header.php, so what the scoreboard needs is set
+        // here: the V2 api, and the CSRF token of the signed-in account. Signed
+        // out, a run is simply not saved and the board stays untouched.
+        window.Q8_SCORE = <?= json_encode([
+            "api" => "api/index.php",
+            "csrf" => $player["csrf"] ?? null,
+        ], JSON_UNESCAPED_SLASHES) ?>;
     </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/scoreboard.js"></script>
+    <script src="assets/scoreboard.js"></script>
 
     <?php include $modulePath; ?>
 
@@ -80,7 +100,7 @@ $initFunction = "init" . strtoupper(substr($id, 0, 1)) . substr($id, 1);
         // Every module calls showGamesHome() from its Exit / Logout / Suspend
         // button. Here that means "close this game" — the Games view does the rest.
         function showGamesHome() {
-            try { window.parent.postMessage({ type: "v2:game-exit" }, window.location.origin); }
+            try { window.parent.postMessage({ type: "q8:game-exit" }, window.location.origin); }
             catch (e) { /* ignore */ }
         }
 

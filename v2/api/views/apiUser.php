@@ -1,0 +1,203 @@
+<?php
+if( $_GET["action"] == "login" ){
+    if( !isset($_POST["username"]) || empty($_POST["username"]) ){
+        echo dataError(array("msg" => "Username is required"));die();
+    }
+    if( !isset($_POST["password"]) || empty($_POST["password"]) ){
+        echo dataError(array("msg" => "Password is required"));die();
+    }
+    if( $user = selectDBNew("users",[strtolower($_POST["username"]),sha1($_POST["password"])],"`usernameSmall` LIKE ? AND `password` LIKE ?","`id` DESC LIMIT 1") ){
+        if( $user[0]["status"] == 1 ){
+            echo dataError(array("msg" => "No account found for this username"));die();
+        }
+        if( $user[0]["hidden"] == 1 ){
+            echo dataError(array("msg" => "User is blocked"));die();
+        }
+        $token = md5(uniqid());
+        $firebaseToken = ( isset($_POST["firebaseToken"]) && !empty($_POST["firebaseToken"]) ) ? $_POST["firebaseToken"] : "";
+        updateDB("users",array("keepalive" => $token, "firebaseToken" => $firebaseToken),"`id` = '{$user[0]["id"]}'");
+        echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
+    }else{
+        echo dataError(array("msg" => "Invalid Username or Password"));die();
+    }
+}elseif( $_GET["action"] == "delete" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        $userEmail = $user[0]["email"];
+        $data = array("keepalive" => "", "status" => 1);
+        if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+            // Send email notification
+            $emailData = array(
+                "to" => $userEmail,
+                "subject" => "Account Deleted",
+                "body" => "<p>Your account has been successfully deleted from TryQ8Flix.</p><p>We are sorry to see you go.</p>"
+            );
+            sendMail($emailData);
+            
+            echo dataOutput(array("msg" => "User deleted successfully"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
+}if( $_GET["action"] == "register" ){
+    if( !isset($_POST["username"]) || empty($_POST["username"]) ){
+        echo dataError(array("msg" => "Username is required"));die();
+    }
+    if( !isset($_POST["password"]) || empty($_POST["password"]) ){
+        echo dataError(array("msg" => "Password is required"));die();
+    }
+    if( !isset($_POST["email"]) || empty($_POST["email"]) ){
+        echo dataError(array("msg" => "Email is required"));die();
+    }
+    if( !isset($_POST["confirmPassword"]) || empty($_POST["confirmPassword"]) ){
+        echo dataError(array("msg" => "Confirm Password is required"));die();
+    }
+    if( $_POST["password"] != $_POST["confirmPassword"] ){
+        echo dataError(array("msg" => "Password and Confirm Password do not match"));die();
+    }
+    if( $user = selectDB("users","`usernameSmall` = '".strtolower($_POST["username"])."' AND `status` = '0'") ){
+        echo dataError(array("msg" => "Username already exists"));die();
+    }elseif( $user = selectDB("users","`email` = '{$_POST["email"]}' AND `status` = '0'") ){
+        echo dataError(array("msg" => "Email already exists"));die();
+    }else{
+        $data = array(
+            "username" => $_POST["username"],
+            "usernameSmall" => strtolower($_POST["username"]),
+            "password" => sha1($_POST["password"]),
+            "email" => $_POST["email"]
+        );
+        if( insertDB("users",$data) ){
+            echo dataOutput(array("msg" => "User registered successfully"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }
+}elseif( $_GET["action"] == "appFire" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        echo dataOutput(array("keepalive" => $token, "username" => $user[0]["username"], "id" => $user[0]["id"]));die();
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
+}elseif( $_GET["action"] == "logout" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        $data = array("keepalive" => "");
+        if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+            echo dataOutput(array("msg" => "User logged out successfully"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
+}elseif( $_GET["action"] == "forget" ){
+    if( !isset($_POST["email"]) || empty($_POST["email"]) ){
+        echo dataError(array("msg" => "Email is required"));die();
+    }
+    if( $user = selectDB("users","`email` = '{$_POST["email"]}' AND `status` = '0' AND `hidden` = '0' ORDER BY `id` DESC LIMIT 1") ){
+        $newPass = rand("00000000","99999999");
+        $newPassEnc = sha1($newPass);
+        $data = array("password"=>$newPassEnc);
+        if( updateDB("users",$data,"`email` = '{$_POST["email"]}' AND `status` = '0' AND `hidden` = '0' ORDER BY `id` DESC LIMIT 1") ){
+            $data = array(
+                "site" => "أكدها - ",
+                "subject" => "New password",
+                "body" => "Use this new password [{$newPass}] to login with your email [{$_POST["email"]}]",
+                "to" => $_POST["email"]
+            );
+            sendMail($data);
+            echo dataOutput(array("msg" => "New password sent to your email"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }else{
+        echo dataError(array("msg" => "Email not found"));die();
+    }
+}elseif( $_GET["action"] == "change" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        if( !isset($_POST["password"]) || empty($_POST["password"]) ){
+            echo dataError(array("msg" => "Password is required"));die();
+        }
+        if( !isset($_POST["confirmPassword"]) || empty($_POST["confirmPassword"]) ){
+            echo dataError(array("msg" => "Confirm Password is required"));die();
+        }
+        if( $_POST["password"] != $_POST["confirmPassword"] ){
+            echo dataError(array("msg" => "Password and Confirm Password do not match"));die();
+        }
+        $data = array("password" => sha1($_POST["password"]));
+        if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+            echo dataOutput(array("msg" => "Password changed successfully"));die();
+        }else{
+            echo dataError(array("msg" => "Something went wrong, please try again"));die();
+        }
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
+}elseif( $_GET["action"] == "profile" ){
+    if( empty($token) ){
+        echo dataError(array("msg" => "token is required"));die();
+    }
+    if( isset($_GET["update"]) && $_GET["update"] == "1" ){
+        if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+            $data = array();
+            if( isset($_POST["email"]) && !empty($_POST["email"]) ){
+                if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+                    echo dataError(array("msg" => "Invalid email format"));die();
+                }
+                $data["email"] = $_POST["email"];
+            }
+            if( isset($_FILES["avatar"]) && !empty($_FILES["avatar"]["tmp_name"]) ){
+                $check = getimagesize($_FILES["avatar"]["tmp_name"]);
+                if($check === false) {
+                    echo dataError(array("msg" => "File is not an image"));die();
+                }
+                $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $_FILES["avatar"]["tmp_name"]);
+                finfo_close($finfo);
+                
+                if(!in_array($mime, $allowed)){
+                     echo dataError(array("msg" => "Only JPG, PNG, GIF, and WEBP files are allowed"));die();
+                }
+
+                $filename = uploadImage($_FILES["avatar"]["tmp_name"]);
+                if(!empty($filename)){
+                    $data["avatar"] = "logos/" . $filename;
+                } else {
+                    echo dataError(array("msg" => "Image upload failed"));die();
+                }
+            }
+            if( !empty($data) ){
+                if( updateDB("users",$data,"`keepalive` = '{$token}'") ){
+                    echo dataOutput(array("msg" => "Profile updated successfully"));die();
+                }else{
+                    echo dataError(array("msg" => "Something went wrong, please try again"));die();
+                }
+            }else{
+                echo dataError(array("msg" => "No data to update"));die();
+            }
+        }else{
+            echo dataError(array("msg" => "Invalid token"));die();
+        }
+    }
+    if( $user = selectDB("users","`keepalive` = '{$token}'") ){
+        echo dataOutput(array("username" => $user[0]["username"], "email" => $user[0]["email"], "avatar" => $user[0]["avatar"], "id" => $user[0]["id"]));die();
+    }else{
+        echo dataError(array("msg" => "Invalid token"));die();
+    }
+}else{
+    echo dataError(array("msg" => "Invalid action"));die();
+}
+?>

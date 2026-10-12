@@ -1,67 +1,74 @@
 <?php
-/**
- * TryQ8Flix v2 — front controller.
- *
- * Reuses the live backend for everything that matters:
- *   - admin/includes/config.php   (DB connection + tokens)
- *   - admin/includes/functions.php (checkLogin, DB helpers, dataOutput, …)
- *
- * Only the presentation layer is new. All data still flows through the
- * existing JSON API at ../api/index.php.
- */
+declare(strict_types=1);
 
-require_once("../admin/includes/config.php");
-require_once("../admin/includes/functions.php");
-require_once("../try2/templates/simple_html_dom.php");
+require __DIR__ . '/app/bootstrap.php';
 
-$profileData = checkLogin();
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$path = rtrim($path, '/') === $path ? $path : rtrim($path, '/');
 
-// Decrypt an encrypted navigation payload (?q=…) into normal query params.
-if (isset($_GET['q'])) {
-    $reversed = strrev($_GET['q']);
-    $decoded = base64_decode($reversed);
-    $queryString = urldecode($decoded);
-
-    parse_str($queryString, $params);
-    $_GET = array_merge($_GET, $params);
+if (!str_starts_with($path, basePath() . '/')) {
+    http_response_code(404);
+    echo 'Not found.';
+    exit;
 }
 
-$view = isset($_GET["v"]) ? $_GET["v"] : "Home";
-
-// Views reachable without a session.
-$publicViews = ["Login", "Forget", "Register"];
-
-if (empty($profileData['id']) && !in_array($view, $publicViews)) {
-    header("Location: ?v=Login");
-    exit();
+if (str_contains($_SERVER['REQUEST_URI'] ?? '', '/api/index.php')) {
+    require __DIR__ . '/api/index.php';
+    exit;
 }
 
-// Signed-in users never need the login screen.
-if (!empty($profileData['id']) && $view == "Login") {
-    header("Location: ?v=Home");
-    exit();
-}
-
-// Relative to the /v2/ directory the pages are served from.
-$apiBase = "../api/index.php";
-$rootBase = "../";
-
-$viewFile = "views/blade{$view}.php";
-
-if (isset($_GET["v"]) && !empty($_GET["v"])) {
-    if (file_exists($viewFile)) {
-        require_once($viewFile);
-    } else {
-        http_response_code(404);
-        include __DIR__ . "/views/header.php";
-        echo '<div class="page"><div class="center-state">'
-            . '<i class="fa-solid fa-compass big"></i>'
-            . '<h3>Page not found</h3>'
-            . '<p>We could not find <strong>' . htmlspecialchars($view) . '</strong>. It may have moved.</p>'
-            . '<a class="btn btn--primary" href="?v=Home"><i class="fa-solid fa-house"></i> Back home</a>'
-            . '</div></div>';
-        include __DIR__ . "/views/footer.php";
+if (str_contains($_SERVER['REQUEST_URI'] ?? '', '/assets/')) {
+    $asset = __DIR__ . parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    if (is_file($asset)) {
+        readfile($asset);
+        exit;
     }
-} else {
-    require_once("views/bladeHome.php");
 }
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    require __DIR__ . '/app/auth.php';
+    $action = input('endpoint', '');
+    if ($action === 'User') {
+        $action = input('action', '');
+        try {
+            $result = authAction($action);
+            jsonResponse($result);
+        } catch (AppError $e) {
+            jsonResponse(null, $e->status, $e);
+        }
+    }
+    jsonResponse(['msg' => 'Unknown action.'], 400);
+    exit;
+}
+
+if (str_starts_with($path, basePath() . '/')) {
+    $view = input('v', 'Home');
+    $views = [
+        'Login',
+        'Register',
+        'Forget',
+        'Reset',
+        'Home',
+        'Search',
+        'Category',
+        'More',
+        'Favorites',
+        'History',
+        'Games',
+        'Settings',
+        'About',
+        'Policy',
+        'Terms',
+    ];
+    if (!in_array($view, $views, true)) {
+        $view = 'Home';
+    }
+    $file = __DIR__ . '/views/blade' . $view . '.php';
+    if (is_file($file)) {
+        require $file;
+        exit;
+    }
+}
+
+http_response_code(404);
+echo 'Page not found.';
