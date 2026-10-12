@@ -315,6 +315,135 @@
     function storeSet(key, value) { try { window.sessionStorage.setItem(key, value); } catch (e) { /* ignore */ } }
     function storeDel(key) { try { window.sessionStorage.removeItem(key); } catch (e) { /* ignore */ } }
 
+    /* -------------------------------------------------- api read cache
+       Every tab switch is a full page load, so a view re-ran all of its reads
+       on the way back in — on Home that is seven remote per-server fetches.
+       Successful reads are kept in sessionStorage for a short window so a tab
+       you return to paints from what it already had. An expired entry, an
+       explicit refresh or a page reload still goes to the network. */
+    var CACHE_PREFIX = "v2:api:";
+    var CACHE_TTL = 3 * 60 * 1000;
+    var CACHE_MAX = 60;
+    // Account-scoped reads. These are only cached while a session cookie is
+    // present: logging out just clears the cookie and redirects, so without
+    // this gate a signed-out visit could render the previous account from
+    // what was cached while it was still signed in.
+    var PERSONAL = ["endpoint=User", "endpoint=Favorites", "endpoint=History"];
+    var authed = getCookie("tryq8flix2") !== "";
+
+    function isPersonal(url) {
+        for (var i = 0; i < PERSONAL.length; i++) {
+            if (url.indexOf(PERSONAL[i]) !== -1) return true;
+        }
+        return false;
+    }
+
+    function isReload() {
+        try {
+            var nav = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+            return !!(nav && nav.type === "reload");
+        } catch (e) { return false; }
+    }
+    // A reload is the user asking for fresh data, so nothing is served from
+    // cache for that page load (the reads refresh the entries on the way).
+    var cacheBypass = isReload();
+
+    function cacheKeys() {
+        var keys = [];
+        try {
+            for (var i = 0; i < window.sessionStorage.length; i++) {
+                var key = window.sessionStorage.key(i);
+                if (key && key.indexOf(CACHE_PREFIX) === 0) keys.push(key);
+            }
+        } catch (e) { /* ignore */ }
+        return keys;
+    }
+
+    function cacheReadable(url) {
+        if (cacheBypass || typeof url !== "string" || url.indexOf(API_BASE) !== 0) return false;
+        return authed || !isPersonal(url);
+    }
+
+    function cacheGet(url) {
+        var key = CACHE_PREFIX + url;
+        var raw = storeGet(key);
+        if (!raw) return null;
+        var entry = null;
+        try { entry = JSON.parse(raw); } catch (e) { entry = null; }
+        if (!entry || typeof entry.t !== "number" || (Date.now() - entry.t) > CACHE_TTL) {
+            storeDel(key);
+            return null;
+        }
+        return entry.d === undefined ? null : entry.d;
+    }
+
+    function cachePut(url, data) {
+        var keys = cacheKeys();
+        if (keys.length >= CACHE_MAX) {
+            var oldest = null, oldestAt = Infinity;
+            for (var i = 0; i < keys.length; i++) {
+                var at = 0;
+                try { at = JSON.parse(storeGet(keys[i]) || "{}").t || 0; } catch (e) { at = 0; }
+                if (at < oldestAt) { oldestAt = at; oldest = keys[i]; }
+            }
+            if (oldest) storeDel(oldest);
+        }
+        storeSet(CACHE_PREFIX + url, JSON.stringify({ t: Date.now(), d: data }));
+    }
+
+    // needle === null drops everything.
+    function cacheDrop(needle) {
+        cacheKeys().forEach(function (key) {
+            if (!needle || key.indexOf(needle) !== -1) storeDel(key);
+        });
+    }
+
+    var nativeGetJSON = $.getJSON;
+
+    // For the places that mean "ask again" — an explicit Refresh button.
+    function freshGetJSON(url, callback) { return nativeGetJSON.call($, url, callback); }
+
+    /* Wrapping the reader is what makes this work for every view at once: they
+       all read through $.getJSON, so a hit simply hands the stored payload back
+       and the view's own render path takes over, untouched. */
+    function installApiCache() {
+        $.getJSON = function (url, data, callback) {
+            if (typeof data === "function") { callback = data; data = undefined; }
+            if (!cacheReadable(url)) return nativeGetJSON.call($, url, data, callback);
+
+            var cached = cacheGet(url);
+            if (cached === null) {
+                return nativeGetJSON.call($, url, data, function (res) {
+                    // Never let an error envelope stick as the cached answer.
+                    if (res && res.ok !== false) cachePut(url, res);
+                    if (callback) callback(res);
+                });
+            }
+
+            var defer = $.Deferred();
+            var promise = defer.promise();
+            // Resolved on a microtask, not synchronously: that lands before the
+            // first paint (so no skeleton flash) while callers that attach
+            // handlers in this same turn — loadFavorites() — still receive it.
+            Promise.resolve().then(function () { defer.resolve(cached); });
+            if (callback) promise.done(callback);
+            return promise;
+        };
+
+        // A write invalidates what it changed, so the next tab switch shows the
+        // result of the action rather than the list from before it.
+        $(document).ajaxSuccess(function (e, xhr, settings) {
+            if (!settings || String(settings.type || "GET").toUpperCase() === "GET") return;
+            var match = /[?&]endpoint=([^&]+)/.exec(settings.url || "");
+            // An account write can change whose data this tab is looking at.
+            if (!match || match[1] === "User") cacheDrop(null);
+            else cacheDrop("endpoint=" + match[1]);
+        });
+    }
+    // Signed out: nothing left over from the account that was here before.
+    if (!authed) PERSONAL.forEach(function (endpoint) { cacheDrop(endpoint); });
+    installApiCache();
+
     /* -------------------------------------------------- scroll memory
        The offset is remembered per view signature, so coming back to a list —
        by tab tap, swipe, browser back or reload — lands where the user left it. */
@@ -636,6 +765,8 @@
         highlightWatched: highlightWatched,
         saveScroll: saveScroll,
         restoreScroll: beginScrollRestore,
+        freshGetJSON: freshGetJSON,
+        clearApiCache: cacheDrop,
         viewSignature: viewSignature,
         tabOrder: function () { return TAB_ORDER.slice(); },
         cssUrl: cssUrl,

@@ -4,6 +4,12 @@
    ============================================================ */
 
 :root {
+    /* The app is dark, so the native UI the browser draws on our behalf —
+       select popups, scrollbars, pickers — has to be dark too. Without this a
+       <select> kept our near-white --text for its options while the popup
+       itself stayed on the OS light palette, so every option read as blank. */
+    color-scheme: dark;
+
     --bg: #07070b;
     --bg-2: #0c0c13;
     --surface: rgba(255, 255, 255, 0.045);
@@ -344,12 +350,21 @@ button, input, select, textarea { font: inherit; }
 }
 select.input {
     appearance: none;
+    color-scheme: dark;
     background-image: linear-gradient(45deg, transparent 50%, var(--text-dim) 50%), linear-gradient(135deg, var(--text-dim) 50%, transparent 50%);
     background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%;
     background-size: 6px 6px, 6px 6px;
     background-repeat: no-repeat;
     padding-right: 42px;
 }
+/* The opened list is drawn by the OS, not by us, so there is no box to style —
+   these keep the entries legible on the browsers that do honour option colours,
+   with color-scheme: dark covering the rest. */
+select.input option {
+    background-color: var(--surface-solid);
+    color: var(--text);
+}
+select.input option:disabled { color: var(--text-faint); }
 .field--icon { position: relative; }
 .field--icon .input { padding-right: 46px; }
 .field--icon .peek {
