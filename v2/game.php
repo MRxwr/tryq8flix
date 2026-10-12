@@ -66,8 +66,13 @@ $initFunction = "init" . strtoupper(substr($id, 0, 1)) . substr($id, 1);
 <body>
     <div id="game-container"></div>
 
+    <script>
+        // A game frame never loads header.php, so the api path is set here.
+        window.API_BASE = "../api/index.php";
+    </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/scoreboard.js"></script>
 
     <?php include $modulePath; ?>
 
@@ -78,6 +83,11 @@ $initFunction = "init" . strtoupper(substr($id, 0, 1)) . substr($id, 1);
             try { window.parent.postMessage({ type: "v2:game-exit" }, window.location.origin); }
             catch (e) { /* ignore */ }
         }
+
+        // Every game reports into the same board, read from the readout the
+        // module itself finishes a run with — the module is never asked to
+        // cooperate beyond what it already does on screen.
+        if (window.Q8Score) window.Q8Score.watch(<?= json_encode($id) ?>);
 
         function v2StartGame() {
             var start = window["<?= $initFunction ?>"];
