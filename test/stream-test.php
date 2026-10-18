@@ -37,6 +37,7 @@ if (isset($_GET['extract']) && $_GET['extract'] === '1') {
         ]);
         $apiBody = curl_exec($api);
         $apiError = curl_error($api);
+        $apiErrno = curl_errno($api);
         $apiStatus = (int)curl_getinfo($api, CURLINFO_HTTP_CODE);
         curl_close($api);
         $apiSources = [];
@@ -63,7 +64,7 @@ if (isset($_GET['extract']) && $_GET['extract'] === '1') {
             ], JSON_UNESCAPED_SLASHES); exit;
         }
         // Preserve fallback diagnostics if API is unavailable or returns no media.
-        $apiDiagnostic = 'VidSrc API HTTP '.$apiStatus.($apiError ? ' (connection error)' : '').'; no usable direct URLs. ';
+        $apiDiagnostic = 'VidSrc API HTTP '.$apiStatus.($apiError ? ' (cURL '.$apiErrno.': '.substr($apiError, 0, 240).')' : '').'; no usable direct URLs. ';
     }
     // Follow a few HTTPS redirects manually, only within the provider's original host
     // (including its www/non-www equivalent). Avoid arbitrary redirects/SSRF.
@@ -109,7 +110,7 @@ if (isset($_GET['extract']) && $_GET['extract'] === '1') {
         $nextScheme = strtolower((string)parse_url($location, PHP_URL_SCHEME));
         $nextPort = parse_url($location, PHP_URL_PORT);
         if ($nextScheme !== 'https' || preg_replace('/^www\\./', '', $nextHost) !== $allowedHost || ($nextPort !== null && $nextPort !== 443) || parse_url($location, PHP_URL_USER) !== null) {
-            $err = 'Redirect leads outside the provider host; blocked for safety';
+            $err = 'Redirect to '.substr($nextHost, 0, 120).' blocked (outside provider host)';
             break;
         }
         if ($hop === 5) { $err = 'Too many redirects'; break; }
