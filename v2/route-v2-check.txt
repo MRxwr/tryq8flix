@@ -1,7 +1,0 @@
-Live site decision: v2 should be served under /v2/* path only, so the current tryq8flix.com root stays untouched and v2 can run beside it.
-
-Local behavior to match:
-- /v2/... -> v2 app
-- everything else -> current site unchanged
-
-Next step is to make v2's own routing assume it is mounted at /v2 so assets, links, and API calls use the right base path.
