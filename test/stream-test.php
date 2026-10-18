@@ -20,20 +20,56 @@ if (isset($_GET['extract']) && $_GET['extract'] === '1') {
     if (!function_exists('curl_init')) {
         echo json_encode(['ok'=>false,'message'=>'PHP cURL is not installed','sources'=>[]]); exit;
     }
-    $ch = curl_init($embed);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER=>true, CURLOPT_FOLLOWLOCATION=>false,
-        CURLOPT_CONNECTTIMEOUT=>7, CURLOPT_TIMEOUT=>15,
-        CURLOPT_MAXREDIRS=>0, CURLOPT_SSL_VERIFYPEER=>true,
-        CURLOPT_SSL_VERIFYHOST=>2, CURLOPT_USERAGENT=>'Mozilla/5.0 (compatible; TryQ8FlixPlaybackTest/1.0)',
-        CURLOPT_HTTPHEADER=>['Accept: text/html,application/xhtml+xml'],
-        CURLOPT_ENCODING=>'',
-    ]);
-    $body = curl_exec($ch);
-    $err = curl_error($ch);
-    $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $type = (string)curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-    curl_close($ch);
+    // Follow a few HTTPS redirects manually, only within the provider's original host
+    // (including its www/non-www equivalent). Avoid arbitrary redirects/SSRF.
+    $currentUrl = $embed;
+    $originalHost = strtolower((string)parse_url($embed, PHP_URL_HOST));
+    $allowedHost = preg_replace('/^www\\./', '', $originalHost);
+    $body = false; $err = ''; $status = 0; $type = '';
+    for ($hop = 0; $hop <= 5; $hop++) {
+        $ch = curl_init($currentUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER=>true, CURLOPT_HEADER=>true,
+            CURLOPT_FOLLOWLOCATION=>false,
+            CURLOPT_CONNECTTIMEOUT=>7, CURLOPT_TIMEOUT=>15,
+            CURLOPT_MAXREDIRS=>0, CURLOPT_SSL_VERIFYPEER=>true,
+            CURLOPT_SSL_VERIFYHOST=>2, CURLOPT_USERAGENT=>'Mozilla/5.0 (compatible; TryQ8FlixPlaybackTest/1.0)',
+            CURLOPT_HTTPHEADER=>['Accept: text/html,application/xhtml+xml'],
+            CURLOPT_ENCODING=>'',
+            CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
+        ]);
+        $raw = curl_exec($ch);
+        $err = curl_error($ch);
+        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $type = (string)curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $headerSize = (int)curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
+        if ($raw === false) { $body = false; break; }
+        $headers = substr($raw, 0, $headerSize);
+        $body = substr($raw, $headerSize);
+        if (!in_array($status, [301,302,303,307,308], true)) break;
+        if (!preg_match('/^Location:\\s*(.+)$/im', $headers, $match)) {
+            $err = 'Redirect without Location header'; break;
+        }
+        $location = trim($match[1]);
+        if (str_starts_with($location, '//')) $location = 'https:' . $location;
+        if (str_starts_with($location, '/')) {
+            $parts = parse_url($currentUrl);
+            $location = 'https://' . $parts['host'] . $location;
+        } elseif (!preg_match('~^https?://~i', $location)) {
+            $base = substr($currentUrl, 0, strrpos($currentUrl, '/') + 1);
+            $location = $base . $location;
+        }
+        $nextHost = strtolower((string)parse_url($location, PHP_URL_HOST));
+        $nextScheme = strtolower((string)parse_url($location, PHP_URL_SCHEME));
+        $nextPort = parse_url($location, PHP_URL_PORT);
+        if ($nextScheme !== 'https' || preg_replace('/^www\\./', '', $nextHost) !== $allowedHost || ($nextPort !== null && $nextPort !== 443) || parse_url($location, PHP_URL_USER) !== null) {
+            $err = 'Redirect leads outside the provider host; blocked for safety';
+            break;
+        }
+        if ($hop === 5) { $err = 'Too many redirects'; break; }
+        $currentUrl = $location;
+    }
     if ($body === false || $status < 200 || $status >= 300) {
         echo json_encode(['ok'=>false,'message'=>'Provider HTTP '.$status.($err ? ': '.$err : '').'; cannot inspect embed response','sources'=>[]]); exit;
     }
