@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { api } from '../api/endpoints';
 import type { ServerLink } from '../api/types';
 import { AppPage } from '../components/AppPage';
@@ -7,8 +8,10 @@ import { Hero } from '../components/Hero';
 import { EmptyState, ErrorState, RowSkeleton } from '../components/States';
 import { errorMessage } from '../utils/errors';
 import { watchRoute } from '../utils/routes';
+import { streamBrowser } from '../plugins/streamBrowser';
 
 export function ServersPage() {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const server = params.get('server') ?? '';
   const href = params.get('href') ?? '';
@@ -17,6 +20,7 @@ export function ServersPage() {
 
   const [items, setItems] = useState<ServerLink[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openError, setOpenError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -43,6 +47,20 @@ export function ServersPage() {
   const first = items?.[0];
   const backdrop = first?.backdrop || image;
 
+  const selectServer = async (item: ServerLink) => {
+    setOpenError(null);
+    if (Capacitor.getPlatform() !== 'android') {
+      navigate(watchRoute({ link: item.link, title, server, href, image }));
+      return;
+    }
+
+    try {
+      await streamBrowser.openExternal({ url: item.link });
+    } catch (err) {
+      setOpenError(errorMessage(err));
+    }
+  };
+
   return (
     <AppPage>
       <Hero
@@ -59,21 +77,23 @@ export function ServersPage() {
           </header>
 
           {error ? <ErrorState message={error} onRetry={() => setAttempt((n) => n + 1)} /> : null}
+          {openError ? <ErrorState message={openError} /> : null}
           {!error && items === null ? <div className="server-grid"><RowSkeleton count={4} /></div> : null}
           {items && items.length === 0 ? <EmptyState text="No servers were found for this title." /> : null}
 
           {items && items.length > 0 ? (
             <div className="server-grid">
               {items.map((item, index) => (
-                <Link
+                <button
                   key={`${item.link}-${index}`}
-                  to={watchRoute({ link: item.link, title, server, href, image })}
+                  type="button"
                   className="server-btn"
                   data-tv
                   data-tv-autofocus={index === 0 ? true : undefined}
+                  onClick={() => void selectServer(item)}
                 >
                   {item.name || `Server ${index + 1}`}
-                </Link>
+                </button>
               ))}
             </div>
           ) : null}

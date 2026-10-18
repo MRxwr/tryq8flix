@@ -52,6 +52,7 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        registerPlugin(StreamBrowserPlugin.class);
         registerPlugin(VideoControlsPlugin.class);
         super.onCreate(savedInstanceState);
     }
@@ -136,13 +137,6 @@ public class MainActivity extends BridgeActivity {
                 return true; // block the navigation instead of leaving the app
             }
             return super.shouldOverrideUrlLoading(view, request);
-        }
-
-        // Required on API levels that still call the deprecated overload.
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (!isAllowed(Uri.parse(url))) return true;
-            return super.shouldOverrideUrlLoading(view, url);
         }
 
         @Override

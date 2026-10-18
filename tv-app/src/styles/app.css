@@ -495,12 +495,16 @@ ion-app {
   justify-content: center;
   min-height: 72px;
   padding: 14px 18px;
+  border: 0;
   border-radius: var(--radius);
   background: var(--card);
   color: #fff;
+  font: inherit;
   font-weight: 700;
   font-size: 1.1rem;
   text-decoration: none;
+  text-align: center;
+  cursor: pointer;
   transition: transform 0.2s var(--ease), background 0.2s;
 }
 
