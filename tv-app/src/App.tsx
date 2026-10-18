@@ -1,47 +1,66 @@
+import type { ReactNode } from 'react';
 import { Navigate, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
 
-/* Core CSS required for Ionic components to work properly */
+/* Ionic core styles (router outlet transitions, page layout). */
 import '@ionic/react/css/core.css';
-
-/* Basic CSS for apps built with Ionic */
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
-
-/* Optional CSS utils that can be commented out */
 import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+import './styles/app.css';
 
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+import { AuthProvider } from './auth/AuthContext';
+import { RequireAuth } from './auth/RequireAuth';
+import { TvNavigationRoot } from './tv/TvNavigationRoot';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPage } from './pages/ForgotPage';
+import { HomePage } from './pages/HomePage';
+import { BrowsePage } from './pages/BrowsePage';
+import { SearchPage } from './pages/SearchPage';
+import { TitlePage } from './pages/TitlePage';
+import { ServersPage } from './pages/ServersPage';
+import { PlayerPage } from './pages/PlayerPage';
+import { LivePage } from './pages/LivePage';
+import { FavoritesPage } from './pages/FavoritesPage';
+import { HistoryPage } from './pages/HistoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 
-/* Theme variables */
-import './theme/variables.css';
+// Material-style transitions everywhere: consistent slide/fade on TV hardware.
+setupIonicReact({ mode: 'md', animated: true });
 
-setupIonicReact();
+const protectedRoute = (element: ReactNode) => <RequireAuth>{element}</RequireAuth>;
 
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Navigate to="/home" replace />} />
-      </IonRouterOutlet>
+      <AuthProvider>
+        <TvNavigationRoot />
+        <IonRouterOutlet>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot" element={<ForgotPage />} />
+
+          <Route path="/home" element={protectedRoute(<HomePage />)} />
+          <Route path="/browse" element={protectedRoute(<BrowsePage />)} />
+          <Route path="/search" element={protectedRoute(<SearchPage />)} />
+          <Route path="/title" element={protectedRoute(<TitlePage />)} />
+          <Route path="/servers" element={protectedRoute(<ServersPage />)} />
+          <Route path="/watch" element={protectedRoute(<PlayerPage />)} />
+          <Route path="/live" element={protectedRoute(<LivePage />)} />
+          <Route path="/favorites" element={protectedRoute(<FavoritesPage />)} />
+          <Route path="/history" element={protectedRoute(<HistoryPage />)} />
+          <Route path="/settings" element={protectedRoute(<SettingsPage />)} />
+
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
+        </IonRouterOutlet>
+      </AuthProvider>
     </IonReactRouter>
   </IonApp>
 );
