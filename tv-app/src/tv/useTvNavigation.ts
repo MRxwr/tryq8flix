@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import { pickNeighbour, type Box, type Direction } from './spatialNav';
 
 const FOCUSABLE = 'button:not([disabled]), a[href], input:not([disabled]), select, textarea, [data-tv]';
@@ -14,9 +16,11 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
 const toBox = (rect: DOMRect): Box => ({ left: rect.left, top: rect.top, width: rect.width, height: rect.height });
 
 /** Visible, enabled controls on the current page (inactive Ionic pages are skipped). */
-function focusables(): HTMLElement[] {
+export function focusables(): HTMLElement[] {
   return Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((element) => {
     if (element.closest('.ion-page-hidden, [inert], [aria-hidden="true"]')) return false;
+    const style = window.getComputedStyle(element);
+    if (style.visibility === 'hidden' || style.display === 'none') return false;
     const rect = element.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0;
   });
@@ -28,13 +32,48 @@ function isTextEntry(element: Element | null): boolean {
     || element instanceof HTMLSelectElement;
 }
 
+/**
+ * Scrolls every scroll container between the element and the page so the focused
+ * card is actually on screen. `scrollIntoView` alone does nothing here: the app
+ * scrolls a `.tv-page` div (and each row a `.row__track`), not the document, so the
+ * focus ring used to travel off screen while the page stayed still.
+ */
+function revealElement(element: HTMLElement): void {
+  const margin = 16;
+  let node = element.parentElement;
+
+  while (node && node !== document.body) {
+    const style = window.getComputedStyle(node);
+    const scrollsY = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1;
+    const scrollsX = /(auto|scroll)/.test(style.overflowX) && node.scrollWidth > node.clientWidth + 1;
+
+    if (scrollsY || scrollsX) {
+      const box = node.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
+
+      if (scrollsY) {
+        if (rect.top < box.top + margin) node.scrollTop += rect.top - box.top - margin;
+        else if (rect.bottom > box.bottom - margin) node.scrollTop += rect.bottom - box.bottom + margin;
+      }
+      if (scrollsX) {
+        if (rect.left < box.left + margin) node.scrollLeft += rect.left - box.left - margin;
+        else if (rect.right > box.right - margin) node.scrollLeft += rect.right - box.right + margin;
+      }
+    }
+
+    node = node.parentElement;
+  }
+}
+
 /** Moves focus to the neighbour in `direction`. Returns false when there is none. */
 export function moveFocus(direction: Direction): boolean {
   const items = focusables();
   const active = document.activeElement as HTMLElement | null;
 
   if (!active || !items.includes(active)) {
-    items[0]?.focus({ preventScroll: true });
+    const first = items[0];
+    first?.focus({ preventScroll: true });
+    if (first) revealElement(first);
     return items.length > 0;
   }
 
@@ -48,7 +87,7 @@ export function moveFocus(direction: Direction): boolean {
 
   const next = others[index];
   next.focus({ preventScroll: true });
-  next.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  revealElement(next);
   return true;
 }
 
@@ -86,5 +125,17 @@ export function useTvNavigation(): void {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
+  }, [navigate]);
+
+  // Android TV remotes send a hardware BACK instead of Escape.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const handle = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack || window.history.length > 1) navigate(-1);
+      else CapacitorApp.exitApp();
+    });
+    return () => {
+      void handle.then((listener) => listener.remove());
+    };
   }, [navigate]);
 }
