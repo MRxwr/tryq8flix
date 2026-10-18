@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IonPage } from '@ionic/react';
+import { Capacitor } from '@capacitor/core';
 import { api } from '../api/endpoints';
 import { useAuth } from '../auth/AuthContext';
 import { SITE_ORIGIN } from '../config';
 import { EmptyState } from '../components/States';
 import { toQuery } from '../utils/routes';
+import { videoControls } from '../plugins/videoControls';
 
 /** Some embed hosts are offline; after this long, tell the viewer instead of showing black. */
 const SLOW_AFTER_MS = 12000;
@@ -31,14 +33,55 @@ export function PlayerPage() {
   const [slow, setSlow] = useState(false);
   const [started, setStarted] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [controlError, setControlError] = useState<string | null>(null);
+  const playButton = useRef<HTMLButtonElement>(null);
+  const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const supportsAppControls = Capacitor.getPlatform() === 'android';
 
   useEffect(() => {
     setLoaded(false);
     setSlow(false);
     setStarted(false);
+    setControlsVisible(false);
+    setControlError(null);
     const timer = setTimeout(() => setSlow(true), SLOW_AFTER_MS);
     return () => clearTimeout(timer);
   }, [src, attempt]);
+
+  const showControls = useCallback((focus = false) => {
+    if (!supportsAppControls || document.fullscreenElement) return;
+
+    setControlsVisible(true);
+    if (controlsTimer.current) clearTimeout(controlsTimer.current);
+    controlsTimer.current = setTimeout(() => setControlsVisible(false), 5000);
+
+    if (focus) requestAnimationFrame(() => playButton.current?.focus());
+  }, [supportsAppControls]);
+
+  useEffect(() => {
+    const handleRemoteControls = (event: Event) => {
+      const detail = (event as CustomEvent<{ focus?: boolean }>).detail;
+      showControls(Boolean(detail?.focus));
+    };
+    const updateFullscreen = () => {
+      const active = Boolean(document.fullscreenElement);
+      setFullscreen(active);
+      if (active) {
+        setControlsVisible(false);
+        if (controlsTimer.current) clearTimeout(controlsTimer.current);
+      }
+    };
+
+    window.addEventListener('tv-player-controls-show', handleRemoteControls);
+    document.addEventListener('fullscreenchange', updateFullscreen);
+    return () => {
+      window.removeEventListener('tv-player-controls-show', handleRemoteControls);
+      document.removeEventListener('fullscreenchange', updateFullscreen);
+      if (controlsTimer.current) clearTimeout(controlsTimer.current);
+    };
+  }, [showControls]);
 
   useEffect(() => {
     if (!isAuthenticated || !save || !server || !href) return;
@@ -62,16 +105,32 @@ export function PlayerPage() {
   const startPlayback = useCallback(() => {
     setStarted(true);
     frame.current?.focus();
-  }, []);
+    showControls();
+  }, [showControls]);
+
+  const sendPlaybackKey = useCallback(async (action: 'play' | 'pause') => {
+    const activeButton = document.activeElement;
+    frame.current?.focus();
+    try {
+      await videoControls.sendMediaKey({ action });
+      setControlError(null);
+    } catch {
+      setControlError('This video source did not accept the play/pause command.');
+    } finally {
+      if (activeButton instanceof HTMLElement) activeButton.focus();
+      showControls();
+    }
+  }, [showControls]);
 
   /**
    * Once a video is on screen the viewer stays on it: anything that tries to
    * navigate the app away (a stray link, an ad overlay) is swallowed here.
    */
   const blockNavigation = useCallback((event: React.MouseEvent) => {
+    showControls();
     const anchor = (event.target as Element | null)?.closest?.('a[href]');
     if (anchor && !anchor.hasAttribute('data-tv')) event.preventDefault();
-  }, []);
+  }, [showControls]);
 
   return (
     <IonPage className="tv-page tv-player" onClickCapture={blockNavigation}>
@@ -97,6 +156,30 @@ export function PlayerPage() {
             referrerPolicy="no-referrer"
             onLoad={() => setLoaded(true)}
           />
+
+          {started && controlsVisible && !fullscreen && (
+            <div className="player__controls" role="group" aria-label="Video playback controls">
+              <button
+                ref={playButton}
+                type="button"
+                className="btn"
+                data-tv
+                onClick={() => void sendPlaybackKey('play')}
+              >
+                ▶ Play
+              </button>
+              <button
+                type="button"
+                className="btn"
+                data-tv
+                onClick={() => void sendPlaybackKey('pause')}
+              >
+                ⏸ Pause
+              </button>
+              <span className="player__controls-hint">Some video sources may not support app controls.</span>
+              {controlError && <span className="player__controls-error" role="status">{controlError}</span>}
+            </div>
+          )}
 
           {!started && (
             <div className="player__overlay" role="status" aria-live="polite">
