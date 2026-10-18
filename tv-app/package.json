@@ -11,9 +11,7 @@
         "preview:web": "vite preview --mode tvweb --outDir dist-web",
         "test.e2e": "cypress run",
         "test.unit": "vitest",
-        "lint": "eslint",
-        "apk:install": "adb install path/to/your-app.apk",
-        "apk:run": "adb shell am start -n com.your.package/.MainActivity"
+        "lint": "eslint"
     },
     "dependencies": {
         "@capacitor/android": "8.5.3",

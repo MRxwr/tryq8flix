@@ -12,10 +12,18 @@ const AUTOFOCUS_SELECTORS = [
   'button',
 ];
 
-/** The newest page is the last one in the outlet; older pages linger during transitions. */
+/**
+ * The newest page is the last one in the outlet, but during a transition the
+ * outgoing page is still mounted and still holds the focus. Prefer a page that
+ * does not contain the focused element, so focus follows the screen the viewer
+ * just opened instead of staying behind.
+ */
 function activePage(): HTMLElement | null {
   const pages = Array.from(document.querySelectorAll<HTMLElement>(PAGE));
-  return pages.length ? pages[pages.length - 1] : null;
+  if (!pages.length) return null;
+  const elsewhere = pages.filter((page) => !page.contains(document.activeElement));
+  const pool = elsewhere.length ? elsewhere : pages;
+  return pool[pool.length - 1];
 }
 
 function focusFirstControl(): boolean {
@@ -44,8 +52,9 @@ export function TvNavigationRoot(): null {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Try right away, then again once the outgoing page has finished animating out.
-    const timers = [0, 150, 400].map((delay) => window.setTimeout(focusFirstControl, delay));
+    // Try right away, then keep trying until the outgoing page has finished its
+    // transition and the new page is the one on screen.
+    const timers = [0, 120, 300, 600, 1000].map((delay) => window.setTimeout(focusFirstControl, delay));
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, [pathname]);
 

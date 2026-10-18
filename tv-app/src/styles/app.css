@@ -725,6 +725,13 @@ ion-app {
   display: block;
 }
 
+/* The embed's own fullscreen button hands the whole screen to the player. */
+.player__frame:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+}
+
 .player__empty {
   padding: 120px 4% 0;
 }
@@ -752,6 +759,12 @@ ion-app {
   color: var(--muted);
   font-weight: 400 !important;
   max-width: 520px;
+}
+
+.player__hint--bar {
+  margin-left: auto;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .player__ring {
