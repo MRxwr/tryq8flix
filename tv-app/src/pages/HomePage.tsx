@@ -28,6 +28,17 @@ interface HeroData {
 /** TVDB servers carry backdrops, so the hero rotates through them. */
 const HERO_SERVER_IDS = ['13', '14'];
 
+function isUsableImage(url?: string): url is string {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return (parsed.protocol === 'https:' || parsed.protocol === 'http:')
+      && Boolean(parsed.pathname && !parsed.pathname.endsWith('/original'));
+  } catch {
+    return false;
+  }
+}
+
 export function HomePage() {
   const { isAuthenticated } = useAuth();
   const [servers, setServers] = useState<MainServer[] | null>(null);
@@ -90,26 +101,51 @@ export function HomePage() {
     };
   }, [isAuthenticated, attempt]);
 
-  // Pick one hero title, once. Prefer a TVDB row; fall back to the first ready row.
+  // Wait for TVDB's backdrop-enabled rows before choosing a non-backdrop fallback.
   useEffect(() => {
     if (heroPicked.current || !servers) return;
-    const tvdb = servers.find((server) => HERO_SERVER_IDS.includes(String(server.id)));
-    const candidates = [tvdb, ...servers].filter((s): s is MainServer => Boolean(s));
+
+    const preferred = servers.filter((server) => HERO_SERVER_IDS.includes(String(server.id)));
+    const candidates = [...preferred, ...servers.filter((server) => !HERO_SERVER_IDS.includes(String(server.id)))];
+    const hasPendingPreferred = preferred.some((server) => {
+      const row = rows[String(server.id)];
+      return !row || row.status === 'loading';
+    });
+
+    for (const server of preferred) {
+      const row = rows[String(server.id)];
+      const picks = row?.status === 'ready' ? row.shows.filter((show) => isUsableImage(show.backdrop)) : [];
+      if (picks.length === 0) continue;
+
+      const pick = picks[Math.floor(Math.random() * picks.length)];
+      heroPicked.current = true;
+      setHero({
+        title: pick.title,
+        description: pick.description,
+        backdrop: pick.backdrop,
+        meta: pick.date ?? pick.category,
+        to: titleRoute(server.id, pick),
+      });
+      return;
+    }
+
+    if (hasPendingPreferred) return;
 
     for (const server of candidates) {
       const row = rows[String(server.id)];
-      if (row?.status === 'ready' && row.shows.length > 0) {
-        const pick = row.shows[Math.floor(Math.random() * row.shows.length)];
-        heroPicked.current = true;
-        setHero({
-          title: pick.title,
-          description: pick.description,
-          backdrop: pick.backdrop || pick.image,
-          meta: pick.date ?? pick.category,
-          to: titleRoute(server.id, pick),
-        });
-        return;
-      }
+      const picks = row?.status === 'ready' ? row.shows.filter((show) => isUsableImage(show.image)) : [];
+      if (picks.length === 0) continue;
+
+      const pick = picks[Math.floor(Math.random() * picks.length)];
+      heroPicked.current = true;
+      setHero({
+        title: pick.title,
+        description: pick.description,
+        backdrop: pick.image,
+        meta: pick.date ?? pick.category,
+        to: titleRoute(server.id, pick),
+      });
+      return;
     }
   }, [servers, rows]);
 

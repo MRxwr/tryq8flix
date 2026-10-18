@@ -16,8 +16,13 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
 const toBox = (rect: DOMRect): Box => ({ left: rect.left, top: rect.top, width: rect.width, height: rect.height });
 
 /** Visible, enabled controls on the current page (inactive Ionic pages are skipped). */
-export function focusables(): HTMLElement[] {
-  return Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((element) => {
+export function focusables(direction?: Direction, active?: HTMLElement | null): HTMLElement[] {
+  const row = (direction === 'left' || direction === 'right')
+    ? active?.closest<HTMLElement>('.row__track')
+    : null;
+  const root: ParentNode = row ?? document;
+
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((element) => {
     if (element.closest('.ion-page-hidden, [inert], [aria-hidden="true"]')) return false;
     const style = window.getComputedStyle(element);
     if (style.visibility === 'hidden' || style.display === 'none') return false;
@@ -67,8 +72,8 @@ function revealElement(element: HTMLElement): void {
 
 /** Moves focus to the neighbour in `direction`. Returns false when there is none. */
 export function moveFocus(direction: Direction): boolean {
-  const items = focusables();
   const active = document.activeElement as HTMLElement | null;
+  const items = focusables(direction, active);
 
   if (!active || !items.includes(active)) {
     const first = items[0];

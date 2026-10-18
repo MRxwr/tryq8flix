@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface HeroProps {
@@ -11,6 +11,11 @@ interface HeroProps {
 
 export function Hero({ title, description, backdrop, meta, actions }: HeroProps) {
   const key = backdrop ?? 'none';
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [backdrop]);
 
   return (
     <section className="hero">
@@ -18,12 +23,23 @@ export function Hero({ title, description, backdrop, meta, actions }: HeroProps)
         <motion.div
           key={key}
           className="hero__bg"
-          style={backdrop ? { backgroundImage: `url("${backdrop}")` } : undefined}
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.9, ease: 'easeOut' }}
-        />
+        >
+          {backdrop && !imageFailed ? (
+            <img
+              className="hero__image"
+              src={backdrop}
+              alt=""
+              fetchPriority="high"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              onError={() => setImageFailed(true)}
+            />
+          ) : null}
+        </motion.div>
       </AnimatePresence>
       <motion.div
         key={title}
