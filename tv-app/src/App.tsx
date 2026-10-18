@@ -36,9 +36,12 @@ setupIonicReact({ mode: 'md', animated: true });
 
 const protectedRoute = (element: ReactNode) => <RequireAuth>{element}</RequireAuth>;
 
+// '/' on Android, '/tv-app' when the web build is uploaded to https://tryq8flix.com/tv-app/.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
+
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
+    <IonReactRouter basename={basename}>
       <AuthProvider>
         <TvNavigationRoot />
         <IonRouterOutlet>

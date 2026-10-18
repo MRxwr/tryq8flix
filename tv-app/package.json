@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:web": "tsc && vite build --mode tvweb --outDir dist-web",
     "preview": "vite preview",
+    "preview:web": "vite preview --mode tvweb --outDir dist-web",
     "test.e2e": "cypress run",
     "test.unit": "vitest",
     "lint": "eslint"

@@ -1,0 +1,12 @@
+# Apache fallback for the web build deployed at https://tryq8flix.com/tv-app/
+# Deep links (/tv-app/live, /tv-app/favorites, ...) are handled by the React router,
+# so every unknown path under /tv-app/ is served the app shell.
+# If the build is uploaded somewhere else, change both paths below to match.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /tv-app/
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /tv-app/index.html [L]
+</IfModule>
