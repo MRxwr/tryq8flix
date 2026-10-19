@@ -1,7 +1,7 @@
 <?php 
 require_once("admin/includes/config.php");
 require_once("admin/includes/functions.php");
-require_once("try2/templates/simple_html_dom.php");
+require_once("admin/includes/simple_html_dom.php");
 
 $profileData = checkLogin();
 
