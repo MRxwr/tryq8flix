@@ -42,11 +42,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Android platform
         run: |
+          yes | sdkmanager --licenses >/dev/null || true
           sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
 
       - name: Setup Gradle caching
