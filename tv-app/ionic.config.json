@@ -1,0 +1,7 @@
+{
+  "name": "TryQ8Flix TV",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
