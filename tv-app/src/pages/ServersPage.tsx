@@ -55,7 +55,7 @@ export function ServersPage() {
     }
 
     try {
-      await streamBrowser.openExternal({ url: item.link });
+      await streamBrowser.openInternal({ url: item.link });
     } catch (err) {
       setOpenError(errorMessage(err));
     }

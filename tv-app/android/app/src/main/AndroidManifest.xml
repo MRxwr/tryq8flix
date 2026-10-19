@@ -35,6 +35,10 @@
 
         </activity>
 
+        <!-- Isolated media-sniffing WebView, not exported to other apps. -->
+        <activity android:name=".StreamBrowserActivity" android:exported="false" />
+        <activity android:name=".NativePlayerActivity" android:exported="false" android:screenOrientation="landscape" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

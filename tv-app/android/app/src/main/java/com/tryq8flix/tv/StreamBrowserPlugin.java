@@ -12,6 +12,27 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "StreamBrowser")
 public class StreamBrowserPlugin extends Plugin {
 
+    /** Launch the in-app TV WebView with passive stream detection and ad filtering. */
+    @PluginMethod
+    public void openInternal(PluginCall call) {
+        String value = call.getString("url");
+        Uri uri = value == null ? null : Uri.parse(value);
+        if (!StreamRules.isHttp(uri)) {
+            call.reject("The stream page must use HTTP or HTTPS.");
+            return;
+        }
+        getActivity().runOnUiThread(() -> {
+            try {
+                Intent intent = new Intent(getActivity(), StreamBrowserActivity.class);
+                intent.putExtra(StreamBrowserActivity.EXTRA_URL, value);
+                getActivity().startActivity(intent);
+                call.resolve();
+            } catch (Exception exception) {
+                call.reject("Could not open the internal video browser.", exception);
+            }
+        });
+    }
+
     @PluginMethod
     public void openExternal(PluginCall call) {
         String value = call.getString("url");

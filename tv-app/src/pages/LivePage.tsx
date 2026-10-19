@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { streamBrowser } from '../plugins/streamBrowser';
 import { api } from '../api/endpoints';
 import type { LiveMatch, LivePlayer } from '../api/types';
 import { AppPage } from '../components/AppPage';
@@ -15,6 +17,7 @@ export function LivePage() {
   const [selected, setSelected] = useState<LiveMatch | null>(null);
   const [players, setPlayers] = useState<LivePlayer[] | null>(null);
   const [playersError, setPlayersError] = useState<string | null>(null);
+  const [openError, setOpenError] = useState<string | null>(null);
   const requestId = useRef(0);
 
   useEffect(() => {
@@ -38,6 +41,7 @@ export function LivePage() {
     setSelected(match);
     setPlayers(null);
     setPlayersError(null);
+    setOpenError(null);
     api
       .liveServers(match.href)
       .then((list) => {
@@ -102,6 +106,7 @@ export function LivePage() {
                     .join(' · ')}
                 </p>
                 {playersError ? <ErrorState message={playersError} /> : null}
+                {openError ? <ErrorState message={openError} /> : null}
                 {!playersError && players === null ? <Spinner label="Loading streams" /> : null}
                 {players && players.length === 0 ? <EmptyState text="No streams are available yet." /> : null}
                 {players && players.length > 0 ? (
@@ -110,6 +115,14 @@ export function LivePage() {
                       <Link
                         key={`${player.live}-${index}`}
                         to={watchRoute({ link: player.live, title: matchTitle, save: false })}
+                        onClick={(event) => {
+                          if (Capacitor.getPlatform() !== 'android') return;
+                          event.preventDefault();
+                          setOpenError(null);
+                          void streamBrowser.openInternal({ url: player.live }).catch(() => {
+                            setOpenError('Internal browser could not open this stream.');
+                          });
+                        }}
                         className="server-btn"
                         data-tv
                       >
