@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/endpoints';
 import type { MainServer, Show } from '../api/types';
@@ -22,6 +22,9 @@ export function BrowsePage() {
   const [error, setError] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const loadingMoreRef = useRef(false);
+  const requestId = useRef(0);
+  const pendingScroll = useRef<{ page: HTMLElement; top: number } | null>(null);
 
   useEffect(() => {
     api.main().then((main) => setServers(main.servers ?? [])).catch(() => undefined);
@@ -29,6 +32,10 @@ export function BrowsePage() {
 
   useEffect(() => {
     let cancelled = false;
+    const currentRequest = ++requestId.current;
+    pendingScroll.current = null;
+    loadingMoreRef.current = false;
+    setLoadingMore(false);
     setItems([]);
     setPage(1);
     setStatus('loading');
@@ -37,12 +44,12 @@ export function BrowsePage() {
     api
       .shows(serverId, 1)
       .then((list) => {
-        if (cancelled) return;
+        if (cancelled || currentRequest !== requestId.current) return;
         setItems(list);
         setStatus('ready');
       })
       .catch((err) => {
-        if (cancelled) return;
+        if (cancelled || currentRequest !== requestId.current) return;
         setError(errorMessage(err));
         setStatus('error');
       });
@@ -52,19 +59,56 @@ export function BrowsePage() {
     };
   }, [serverId, attempt]);
 
-  async function loadMore() {
+  useLayoutEffect(() => {
+    const saved = pendingScroll.current;
+    if (!saved) return;
+
+    pendingScroll.current = null;
+    if (saved.page.isConnected) saved.page.scrollTop = saved.top;
+  }, [items]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMoreRef.current || status !== 'ready') return;
+
+    loadingMoreRef.current = true;
+    const currentRequest = requestId.current;
     const next = page + 1;
+    const currentPage = document.querySelector<HTMLElement>('.tv-page:not(.ion-page-hidden)');
+    pendingScroll.current = currentPage ? { page: currentPage, top: currentPage.scrollTop } : null;
     setLoadingMore(true);
+    setError(null);
     try {
       const list = await api.shows(serverId, next);
-      setItems((prev) => [...prev, ...list]);
-      setPage(next);
+      if (currentRequest !== requestId.current) return;
+      setItems((prev) => {
+        const existingHrefs = new Set(prev.map((item) => item.href));
+        return [...prev, ...list.filter((item) => !existingHrefs.has(item.href))];
+      });
+      setPage((current) => Math.max(current, next));
     } catch (err) {
-      setError(errorMessage(err));
+      if (currentRequest === requestId.current) setError(errorMessage(err));
     } finally {
-      setLoadingMore(false);
+      if (currentRequest === requestId.current) {
+        loadingMoreRef.current = false;
+        setLoadingMore(false);
+      }
     }
-  }
+  }, [page, serverId, status]);
+
+  useEffect(() => {
+    if (status !== 'ready') return;
+
+    const pageElement = document.querySelector<HTMLElement>('.tv-page:not(.ion-page-hidden)');
+    if (!pageElement) return;
+
+    const loadWhenNearBottom = () => {
+      const distanceToBottom = pageElement.scrollHeight - pageElement.scrollTop - pageElement.clientHeight;
+      if (distanceToBottom <= Math.max(pageElement.clientHeight, 320)) void loadMore();
+    };
+
+    pageElement.addEventListener('scroll', loadWhenNearBottom, { passive: true });
+    return () => pageElement.removeEventListener('scroll', loadWhenNearBottom);
+  }, [loadMore, status]);
 
   const title = servers.find((server) => String(server.id) === serverId)?.name ?? 'Browse';
 
@@ -81,6 +125,7 @@ export function BrowsePage() {
 
       {status === 'ready' && items.length > 0 ? (
         <>
+          {error ? <ErrorState message={`${error} Scroll down to try again.`} /> : null}
           <PosterGrid
             items={items.map((show) => ({
               title: show.title,
@@ -89,11 +134,7 @@ export function BrowsePage() {
               to: titleRoute(serverId, show),
             }))}
           />
-          <div className="center-row">
-            <button type="button" className="btn" data-tv onClick={loadMore} disabled={loadingMore}>
-              {loadingMore ? 'Loading…' : 'Load more'}
-            </button>
-          </div>
+          {loadingMore ? <GridSkeleton count={6} /> : null}
         </>
       ) : null}
     </AppPage>

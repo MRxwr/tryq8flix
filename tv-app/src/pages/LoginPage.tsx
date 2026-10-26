@@ -24,7 +24,7 @@ export function LoginPage() {
     try {
       const data = await api.login(username.trim(), password);
       signIn(data.keepalive);
-      navigate('/home', { replace: true });
+      navigate('/browse', { replace: true });
     } catch (err) {
       setError(errorMessage(err));
     } finally {

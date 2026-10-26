@@ -20,7 +20,6 @@ import { TvNavigationRoot } from './tv/TvNavigationRoot';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPage } from './pages/ForgotPage';
-import { HomePage } from './pages/HomePage';
 import { BrowsePage } from './pages/BrowsePage';
 import { SearchPage } from './pages/SearchPage';
 import { TitlePage } from './pages/TitlePage';
@@ -49,7 +48,7 @@ const App: React.FC = () => (
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
 
-          <Route path="/home" element={protectedRoute(<HomePage />)} />
+          <Route path="/home" element={<Navigate to="/browse" replace />} />
           <Route path="/browse" element={protectedRoute(<BrowsePage />)} />
           <Route path="/search" element={protectedRoute(<SearchPage />)} />
           <Route path="/title" element={protectedRoute(<TitlePage />)} />
@@ -60,8 +59,8 @@ const App: React.FC = () => (
           <Route path="/history" element={protectedRoute(<HistoryPage />)} />
           <Route path="/settings" element={protectedRoute(<SettingsPage />)} />
 
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="*" element={<Navigate to="/home" replace />} />
+          <Route path="/" element={<Navigate to="/browse" replace />} />
+          <Route path="*" element={<Navigate to="/browse" replace />} />
         </IonRouterOutlet>
       </AuthProvider>
     </IonReactRouter>

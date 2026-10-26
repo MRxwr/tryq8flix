@@ -95,7 +95,7 @@ export function PlayerPage() {
 
   const goBack = useCallback(() => {
     if (window.history.length > 1) navigate(-1);
-    else navigate('/home', { replace: true });
+    else navigate('/browse', { replace: true });
   }, [navigate]);
 
   /**

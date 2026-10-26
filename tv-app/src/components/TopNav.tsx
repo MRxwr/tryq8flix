@@ -1,7 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 
 const LINKS = [
-  { to: '/home', label: 'Home' },
   { to: '/browse', label: 'Browse' },
   { to: '/search', label: 'Search' },
   { to: '/live', label: 'Live' },
@@ -13,7 +12,12 @@ const LINKS = [
 export function TopNav() {
   return (
     <header className="topnav">
-      <Link to="/home" className="topnav__brand" aria-label="TryQ8Flix home">
+      <Link to="/browse" className="topnav__brand" aria-label="TryQ8Flix home">
+        <img
+          className="topnav__logo"
+          src={`${import.meta.env.BASE_URL}Untitled-192.png`}
+          alt=""
+        />
         TRYQ8FLIX
       </Link>
       <nav className="topnav__links" aria-label="Main">

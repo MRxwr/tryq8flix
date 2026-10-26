@@ -90,12 +90,21 @@ ion-app {
 }
 
 .topnav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   color: var(--red);
   font-weight: 900;
   font-size: 1.6rem;
   letter-spacing: 0.04em;
   text-decoration: none;
   margin-right: 12px;
+}
+
+.topnav__logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
 }
 
 .topnav__links {
@@ -433,7 +442,7 @@ ion-app {
 
 .poster-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 22px 18px;
   padding: 12px 6px 28px;
 }
