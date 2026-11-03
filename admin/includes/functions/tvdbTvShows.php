@@ -158,7 +158,7 @@ function tvdbTvShowsServers($id_info) {
     $date = isset($res['first_air_date']) ? $res['first_air_date'] : "";
 
     return [
-        //['name' => 'Direct MKV', 'link' => "https://vidvault.to/direct/tv/{$id}/{$s}/{$e}/0", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Direct MKV', 'link' => "https://vidvault.to/direct/tv/{$id}/{$s}/{$e}/0", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Direct MP4', 'link' => "https://vidvault.to/direct/tv/{$id}/{$s}/{$e}/1", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidsrc CC', 'link' => "https://vsembed.su/v2/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
