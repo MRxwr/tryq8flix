@@ -1,12 +1,14 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adaptive Video Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
+
 <body style="background-color: #1A1A1A;margin: auto;">
-<?php 
+    <?php 
 require("admin/includes/config.php");
 require("admin/includes/functions.php");
 
@@ -23,12 +25,12 @@ function getUrlBase($url) {
 }
 
 $videoSources = array(
-    "https://tryq8flix.com/video/0.mp4",
+    "{$_GET["link"]}",
 );
 $videoUrl = "";
 $useVideoPlayer = false;
 
-if( isset($_GET["link"]) && !empty($_GET["link"]) ){
+if( isset($_GET["link"]) && !empty($_GET["link"]) && !str_contains($_GET["link"], "vidvault.to") ){
     $rawLink = $_GET["link"];
     $encodedLink = fix_arabic_url($rawLink);
     $curl = curl_init();
@@ -109,14 +111,14 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     }
 
     // Always use iframe for all incoming links
-    echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
+    //echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen referrerpolicy='no-referrer'></iframe>";
     
     // Keep old code commented for reference
-    // if($useVideoPlayer) {
-    //     echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
-    // } else {
-    //     echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
-    // }
+     if($useVideoPlayer) {
+         echo "<video id='videoPlayer' controls style='width:100%;height:100vh'></video>";
+     } else {
+         echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
+     }
 }else{
     $videoUrl = $videoSources[0];
     $useVideoPlayer = true;
@@ -125,50 +127,51 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
 ?>
 
     <script>
-        function setupVideoPlayer(videoElement, sourceUrl) {
-            if (sourceUrl.includes('.m3u8')) {
-                setupHlsPlayer(videoElement, sourceUrl);
-            } else if (sourceUrl.includes('.mp4')) {
-                setupMp4Player(videoElement, sourceUrl);
-            } else {
-                console.error('Unsupported video format');
-            }
+    function setupVideoPlayer(videoElement, sourceUrl) {
+        if (sourceUrl.includes('.m3u8')) {
+            setupHlsPlayer(videoElement, sourceUrl);
+        } else if (sourceUrl.includes('.mp4')) {
+            setupMp4Player(videoElement, sourceUrl);
+        } else {
+            console.error('Unsupported video format');
         }
+    }
 
-        function setupHlsPlayer(videoElement, sourceUrl) {
-            if (Hls.isSupported()) {
-                var hls = new Hls();
-                hls.loadSource(sourceUrl);
-                hls.attachMedia(videoElement);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    videoElement.play();
-                });
-            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = sourceUrl;
-                videoElement.addEventListener('loadedmetadata', function() {
-                    videoElement.play();
-                });
-            } else {
-                console.error('HLS is not supported in this browser');
-            }
-        }
-
-        function setupMp4Player(videoElement, sourceUrl) {
+    function setupHlsPlayer(videoElement, sourceUrl) {
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(sourceUrl);
+            hls.attachMedia(videoElement);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                videoElement.play();
+            });
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
             videoElement.src = sourceUrl;
             videoElement.addEventListener('loadedmetadata', function() {
                 videoElement.play();
             });
+        } else {
+            console.error('HLS is not supported in this browser');
         }
+    }
 
-        function loadVideo(url) {
-            var videoElement = document.getElementById('videoPlayer');
-            setupVideoPlayer(videoElement, url);
-        }
-        <?php
+    function setupMp4Player(videoElement, sourceUrl) {
+        videoElement.src = sourceUrl;
+        videoElement.addEventListener('loadedmetadata', function() {
+            videoElement.play();
+        });
+    }
+
+    function loadVideo(url) {
+        var videoElement = document.getElementById('videoPlayer');
+        setupVideoPlayer(videoElement, url);
+    }
+    <?php
         if($useVideoPlayer && !empty($videoUrl) && empty($_GET["link"])) {
             echo "loadVideo(" . json_encode($videoUrl, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ");";
         }
         ?>
     </script>
-    </body>
+</body>
+
 </html>
