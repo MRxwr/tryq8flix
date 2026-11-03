@@ -72,7 +72,7 @@ function tvdbMoviesServers($id) {
         ['name' => 'Direct MKV', 'link' => "https://vidvault.to/direct/movie/{$id}/0", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Direct MP4', 'link' => "https://vidvault.to/direct/movie/{$id}/1", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Server Vidsrc CC', 'link' => "https://vidstuck.cc/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidcore', 'link' => "https://vidcore.net/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
