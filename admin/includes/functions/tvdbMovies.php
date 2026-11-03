@@ -69,6 +69,8 @@ function tvdbMoviesServers($id) {
     $date = isset($res['release_date']) ? $res['release_date'] : "";
 
     return [
+        ['name' => 'Direct MKV', 'link' => "https://vidvault.to/direct/movie/{$id}/0", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Direct MP4', 'link' => "https://vidvault.to/direct/movie/{$id}/1", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidsrc CC', 'link' => "https://vidsrc.cc/v2/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
