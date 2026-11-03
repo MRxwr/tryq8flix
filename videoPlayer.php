@@ -99,25 +99,25 @@ if($incomingLink !== "" && !str_contains($incomingLink, "vidvault.to")){
     $response = false;
     // Direct media must not be downloaded by PHP before playback starts.
     if (!$isDirectVideo) {
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => "{$encodedLink}",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-        CURLOPT_HTTPHEADER => array(
-            "referer: {$website3}",
-        ),
-    ));
-    $response = curl_exec($curl);
-    if ($response === false) {
-        error_log('Video source resolution failed: ' . curl_error($curl));
-    }
-    curl_close($curl);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "{$encodedLink}",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                "referer: {$website3}",
+            ),
+        ));
+        $response = curl_exec($curl);
+        if ($response === false) {
+            error_log('Video source resolution failed: ' . curl_error($curl));
+        }
+        curl_close($curl);
     }
     
     // First check if the link itself is a direct video file
