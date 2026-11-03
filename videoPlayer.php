@@ -22,6 +22,9 @@ function getUrlBase($url) {
     return strtok($url, '?');
 }
 
+$videoSources = array(
+    "https://tryq8flix.com/video/0.mp4",
+);
 $videoUrl = "";
 $useVideoPlayer = false;
 
@@ -115,7 +118,9 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
     //     echo "<iframe id='frame' src='{$_GET["link"]}' style='width:100%;height:100vh;border: none;overflow: hidden;' allowFullScreen></iframe>"; 
     // }
 }else{
-    echo "لا يوجد روابط متاحه للمشاهده حاليا، الرجاء المحاولة لاحقاً";
+    $videoUrl = $videoSources[0];
+    $useVideoPlayer = true;
+    echo '<video id="videoPlayer" controls style="width:100%;height:100vh" src="' . htmlspecialchars($videoUrl, ENT_QUOTES, 'UTF-8') . '"></video>';
 }
 ?>
 
@@ -160,8 +165,8 @@ if( isset($_GET["link"]) && !empty($_GET["link"]) ){
             setupVideoPlayer(videoElement, url);
         }
         <?php
-        if($useVideoPlayer && !empty($videoUrl)) {
-            echo "loadVideo('" . $videoUrl . "');";
+        if($useVideoPlayer && !empty($videoUrl) && empty($_GET["link"])) {
+            echo "loadVideo(" . json_encode($videoUrl, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ");";
         }
         ?>
     </script>
