@@ -297,10 +297,10 @@ embedded iframes, so the app does not need to proxy them.
 
 Given `?link=<url>`:
 
-1. If the URL path ends in `.mp4` or `.m3u8` (case-insensitive), uses it directly without downloading the media in PHP. Query parameters are preserved.
-2. Otherwise fetches the provider page with cURL and sends `Referer: $website3`, with a 20-second timeout.
+1. Fetches the link with cURL and sends `Referer: $website3`.
+2. If the link itself ends in `.mp4` or `.m3u8`, uses it directly.
 3. Otherwise tries, in order: a `jwplayer("vplayer").setup({sources:[{file:"..."}]})` block, then `video.mp4`, any `.mp4`, any `.m3u8`, `<source src>`, and `file: "..."`.
-4. Plays a resolved source in the styled video player; unresolved providers use the original link in an `<iframe>`. Missing links display a message.
+4. **Always** echoes the original link as an `<iframe>`. The direct-video branch is commented out, so the resolved URL is not used.
 
 ### 8.3 `video-proxy.php` (media proxy)
 
@@ -322,16 +322,8 @@ Given `?link=<url>`:
 
 ### 8.6 HLS and MP4 players
 
-`videoPlayer.php` uses Plyr 3.7.8 CSS/JS from a CDN for dark, red-accented controls:
-play/pause, 10-second seeking, timeline, volume, playback speed, and fullscreen,
-plus picture-in-picture and AirPlay where supported. Playback starts on user
-interaction, with inline playback on mobile. Native controls remain available if
-Plyr fails to load.
-
-HLS (`.m3u8`) uses hls.js, or native HLS when available without hls.js support;
-MP4 uses the browser's video decoder. Signed source query parameters are preserved.
-Media and fatal HLS failures display an on-screen message. MKV conversion is not
-provided; browser support still depends on the source container and codecs.
+`videoPlayer.php` includes hls.js from a CDN. Its `setupVideoPlayer` picks HLS for `.m3u8`
+(native HLS on Safari, hls.js elsewhere) and plain `<video src>` for `.mp4`.
 
 ---
 
