@@ -71,14 +71,14 @@ function tvdbMoviesServers($id) {
     return [
         ['name' => 'Direct MKV', 'link' => "https://vidvault.to/direct/movie/{$id}/0", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Direct MP4', 'link' => "https://vidvault.to/direct/movie/{$id}/1", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidstuck.cc/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidcore', 'link' => "https://vidcore.net/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vaplayer', 'link' => "https://vaplayer.ru/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server ZXC', 'link' => "https://zxcstream.xyz/player/movie/{$id}?autoplay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Mapple', 'link' => "https://mapple.uk/watch/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
+        ['name' => 'VidKing', 'link' => "https://www.vidking.net/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vid Stuck', 'link' => "https://vidstuck.cc/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vidsrc ME', 'link' => "https://vidsrc.me/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Videasy', 'link' => "https://player.videasy.net/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vidcore', 'link' => "https://vidcore.net/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vaplayer', 'link' => "https://vaplayer.ru/embed/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'ZXC', 'link' => "https://zxcstream.cc/player/movie/{$id}?autoplay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Mapple', 'link' => "https://mapple.uk/watch/movie/{$id}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 }
 

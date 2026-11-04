@@ -160,14 +160,14 @@ function tvdbTvShowsServers($id_info) {
     return [
         ['name' => 'Direct MKV', 'link' => "https://vidvault.to/direct/tv/{$id}/{$s}/{$e}/0", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
         ['name' => 'Direct MP4', 'link' => "https://vidvault.to/direct/tv/{$id}/{$s}/{$e}/1", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc CC', 'link' => "https://vidstuck.cc/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidsrc ME', 'link' => "https://vsembed.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vidcore', 'link' => "https://vidcore.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Vaplayer', 'link' => "https://vaplayer.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server ZXC', 'link' => "https://zxcstream.xyz/player/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
-        ['name' => 'Server Mapple', 'link' => "https://mapple.uk/watch/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
+        ['name' => 'VidKing', 'link' => "https://www.vidking.net/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vid Stuck', 'link' => "https://vidstuck.cc/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vidsrc ME', 'link' => "https://vsembed.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Videasy', 'link' => "https://player.videasy.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vidcore', 'link' => "https://vidcore.net/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Vaplayer', 'link' => "https://vaplayer.ru/embed/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'ZXC', 'link' => "https://zxcstream.cc/player/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date],
+        ['name' => 'Mapple', 'link' => "https://mapple.uk/watch/tv/{$id}/{$s}/{$e}?autoPlay=true", 'backdrop' => $backdrop, 'overview' => $overview, 'date' => $date]
     ];
 } 
 ?>
